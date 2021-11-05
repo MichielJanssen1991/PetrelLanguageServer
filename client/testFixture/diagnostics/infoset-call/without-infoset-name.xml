@@ -1,0 +1,6 @@
+<module>
+  <rule name="ExampleRule">
+    <action name="Infoset">
+    </action>
+  </rule>
+</module>

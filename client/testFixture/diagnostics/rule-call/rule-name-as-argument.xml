@@ -1,0 +1,7 @@
+<module>
+  <rule name="ExampleRule">
+    <action name="Rule">
+      <argument local-name="rulename" />
+    </action>
+  </rule>
+</module>

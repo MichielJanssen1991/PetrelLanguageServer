@@ -1,0 +1,6 @@
+<module>
+  <rule name="ExampleRule">
+    <action name="rule" rulename="KnownRule">
+    </action>
+  </rule>
+</module>

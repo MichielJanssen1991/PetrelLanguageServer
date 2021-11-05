@@ -1,0 +1,6 @@
+<module>
+  <rule name="ObsoleteRuleForSkipCheck" obsolete="yes">
+    <action name="rule" rulename="UnknownRuleInObsoleteContext">
+    </action>
+  </rule>
+</module>

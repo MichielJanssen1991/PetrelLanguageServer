@@ -1,0 +1,8 @@
+<module>
+  <infoset name="Infoset_Test_Capitalization">
+  </infoset>
+  <rule name="ExampleRule">
+    <action name="infoset" infoset-name="Infoset_Test_Capitalization">
+    </action>
+  </rule>
+</module>

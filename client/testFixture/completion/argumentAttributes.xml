@@ -1,0 +1,7 @@
+<module>
+  <rule>
+    <action name="Infoset">
+    <argument />
+    </action>
+  </rule>
+</module>

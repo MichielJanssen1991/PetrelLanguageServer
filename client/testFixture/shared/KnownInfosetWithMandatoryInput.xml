@@ -1,0 +1,5 @@
+<module>
+  <infoset name="KnownInfosetWithMandatoryInput">
+    <input name="MandatoryInfosetInput" required="yes"/>
+  </infoset>
+</module>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<actions name="Backend" description="Backend actions">
+	<annotation>
+		<documentation>
+			<summary>Example backend type action file.</summary>
+		</documentation>
+	</annotation>
+	<element>
+		<attribute name="type" display-as="yes" type="lookup" classifier="type">
+			<annotation>
+				<documentation>
+					<summary>Reference to a Backend type.</summary>
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="typename" caption="type name" type="lookup" classifier="type"/>
+		<attribute name="infoset-name" caption="infoset name" type="lookup" classifier="infoset"/>
+		<attribute name="rulename" display-as="yes" selectoptions="document(rules)/rules//rule" optionid="concat(ancestor::module/@target-namespace, translate(translate(string(ancestor::module/@target-namespace) = '', 'true', ''), 'false', '.'), @name)" caption="rule name">
+			<annotation>
+				<documentation>
+					<summary>The name of the rule to call.</summary>
+				</documentation>
+			</annotation>
+		</attribute>
+	</element>
+	<module description="Workflow/Rule actions" name="Workflow">
+		<action name="Rule" assembly="Petrel.RuleEngine" classname="Petrel.RuleEngine.RuleAction" caption="Apply a rule" external-invocable="yes">
+			<annotation>
+				<documentation>
+					<summary>With this action you can call a "rule".</summary>
+				</documentation>
+			</annotation>
+			<attribute name="rulename"/>
+			<input name="*" type="mixed"/>
+			<output name="*" type="mixed"/>
+		</action>
+		<action external-invocable="no" name="AddAsynchronousTask" assembly="Petrel.RuleEngine" classname="Petrel.RuleEngine.Asynchronous.AddAsyncTaskAction" caption="Add asynchronous task">
+			<attribute name="rulename" caption="rule name"/>
+			<input name="*" type="mixed"/>
+		</action>
+		<action external-invocable="no" name="AddAsynchroneTask" assembly="Petrel.RuleEngine" classname="Petrel.RuleEngine.Asynchronous.AddAsyncTaskAction" caption="Add asynchrone task" obsolete="yes" obsolete-message="Misspelled; use AddAsynchronousTask instead">
+			<attribute name="rulename" caption="rule name"/>
+			<input name="*" type="mixed"/>
+		</action>
+		<action name="RuleLoopAction" assembly="Petrel.RuleEngine" classname="Petrel.RuleEngine.RuleLoopAction" show-in-frontend="no" caption="Loop a rule" external-invocable="yes">
+			<attribute name="rulename"/>
+			<attribute name="infoset-name"/>
+			<attribute name="remembered-arguments" caption="remembered arguments"/>
+			<attribute name="returned-arguments" caption="returned arguments"/>
+			<attribute name="inputstream"/>
+			<input name="*" type="mixed"/>
+		</action>
+		<action external-invocable="no" name="DefineStream" assembly="Petrel.RuleEngine" classname="Petrel.RuleEngine.Streams.DefineStreamAction" show-in-frontend="no" caption="Define a stream">
+			<attribute name="stream-type" type="enum" caption="stream type">
+				<option value="XmlListStream"/>
+				<option value="PipedlistStream"/>
+			</attribute>
+			<input name="*" type="mixed"/>
+			<input name="data"/>
+			<output name="streamid" type="string"/>
+		</action>
+		<action name="Abort-transaction" assembly="Petrel" classname="Petrel.Actions.AbortTransaction" caption="Abort the current transaction" external-invocable="yes">
+			<attribute name="message"/>
+			<attribute name="message-header" caption="message header"/>
+			<attribute name="message-type"/>
+		</action>
+	</module>
+	<module description="Data actions" name="Data">
+		<action name="Infoset" assembly="Petrel.RuleEngine" classname="Petrel.RuleEngine.InfosetAction" caption="Retrieve an infoset" external-invocable="yes">
+			<attribute name="infoset-name"/>
+			<input name="*" type="mixed"/>
+			<output name="*" type="mixed"/>
+		</action>
+		<action name="Select" assembly="Petrel" classname="Petrel.Actions.SelectAction" caption="Select" external-invocable="yes">
+			<attribute name="type"/>
+		</action>
+		<action name="Update" assembly="Petrel" classname="Petrel.Actions.UpdateAction" caption="Update" external-invocable="yes">
+			<attribute name="type"/>
+			<attribute name="update-attributes" validatestring="[\w-]+(;\|[\w-]+)*" display-as="yes" caption="update attributes"/>
+			<input name="iid" type="iid"/>
+			<input name="*"/>
+			<output name="iid" type="iid"/>
+			<output name="*"/>
+		</action>
+		<action name="InsertOrUpdate" assembly="Petrel" classname="Petrel.Actions.InsertOrUpdateAction" caption="Insert or Update" external-invocable="yes">
+			<attribute name="type"/>
+			<attribute name="matching-fields"/>
+			<input name="*"/>
+			<output name="*"/>
+		</action>
+		<action name="Insert" assembly="Petrel" classname="Petrel.Actions.InsertAction" caption="Insert" external-invocable="yes">
+			<attribute name="type"/>
+			<input name="*"/>
+			<output name="iid" type="iid"/>
+			<output name="*"/>
+		</action>
+		<action name="Delete" assembly="Petrel" classname="Petrel.Actions.DeleteAction" caption="Delete" external-invocable="yes">
+			<attribute name="type"/>
+			<input name="iid" type="iid"/>
+		</action>
+	</module>
+</actions>

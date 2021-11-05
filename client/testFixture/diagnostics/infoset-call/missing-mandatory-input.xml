@@ -1,0 +1,9 @@
+<module>
+  <rule name="ExampleRule">
+    <action name="Infoset" infoset-name="KnownInfosetWithMandatoryInput">
+    </action>
+    <action name="Infoset" infoset-name="KnownInfosetWithMandatoryInput">
+      <argument local-name="MandatoryInfosetInput" value="test"/>
+    </action>
+  </rule>
+</module>

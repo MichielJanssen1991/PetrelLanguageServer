@@ -1,0 +1,4 @@
+<module>
+  <rule name="ExampleRuleWhichIsNotReferenced">
+  </rule>
+</module>

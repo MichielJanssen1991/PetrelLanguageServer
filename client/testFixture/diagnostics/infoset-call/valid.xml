@@ -1,0 +1,11 @@
+<module>
+  <infoset name="Infoset_Test_Valid">
+    <variable name="TestAttribute"/>
+  </infoset>
+  <rule name="ExampleRule">
+    <action name="Infoset" infoset-name="Infoset_Test_Valid">
+      <output local-name="TestAttribute"/>
+      <output local-name="Infoset_Test_Valid"/>
+    </action>
+  </rule>
+</module>

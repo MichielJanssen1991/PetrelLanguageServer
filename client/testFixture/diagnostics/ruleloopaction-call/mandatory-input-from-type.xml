@@ -1,0 +1,10 @@
+<module>
+  <rule name="KnownRuleWithMandatoryInputs">
+    <input name="KnownAttribute" required="yes"/>
+    <input name="UnknownAttribute" required="yes"/>
+  </rule>
+  <rule name="ExampleRule">
+    <action name="RuleLoopAction" rulename="KnownRuleWithMandatoryInputs" infoset-name="KnownInfoset">
+    </action>
+  </rule>
+</module>

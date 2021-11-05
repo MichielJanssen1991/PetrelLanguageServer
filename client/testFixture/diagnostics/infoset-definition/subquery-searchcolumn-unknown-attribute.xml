@@ -1,0 +1,14 @@
+<module>
+  <type name="Type_Test_SearchColumnUnknownAttributeInSubquery">
+    <attribute name="KnownAttribute"/>
+  </type>
+  <infoset name="InfosetDefinition_Test_SearchColumnUnknownAttribute">
+    <search add-relations="no" type="Type_Test_SearchColumnUnknownAttributeInSubquery">
+      <in field="KnownAttribute">
+        <search add-relations="no" type="Type_Test_SearchColumnUnknownAttributeInSubquery">
+          <searchcolumn name="UnknownAttribute" condition="Is" value="1" />
+        </search>
+      </in>
+    </search>
+  </infoset>
+</module>

@@ -1,0 +1,5 @@
+<module>
+  <rule name="ExampleRule">
+    <action name="RuleLoopAction" infoset-name="KnownInfoset"/>
+  </rule>
+</module>

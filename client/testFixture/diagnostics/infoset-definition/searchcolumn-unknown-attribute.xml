@@ -1,0 +1,9 @@
+<module>
+  <type name="Type_Test_SearchColumnUnknownAttribute">
+  </type>
+  <infoset name="InfosetDefinition_Test_SearchColumnUnknownAttribute">
+    <search add-relations="no" type="Type_Test_SearchColumnUnknownAttribute">
+      <searchcolumn condition="Is" name="UnknownAttribute" value="1" />
+    </search>
+  </infoset>
+</module>

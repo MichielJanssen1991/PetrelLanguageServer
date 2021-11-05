@@ -1,0 +1,7 @@
+<module>
+  <rule name="ExampleRule">
+    <action name="Infoset" infoset-name="KnownInfoset">
+    <argument local-name = "UnknownInput"/>
+    </action>
+  </rule>
+</module>

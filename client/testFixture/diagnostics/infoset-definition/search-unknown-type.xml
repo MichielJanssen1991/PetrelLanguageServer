@@ -1,0 +1,5 @@
+<module>
+  <infoset name="InfosetDefinition_Test_SearchColumnUnknownType">
+    <search add-relations="no" type="UnknownType"/>
+  </infoset>
+</module>

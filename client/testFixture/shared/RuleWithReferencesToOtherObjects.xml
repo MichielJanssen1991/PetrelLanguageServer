@@ -1,0 +1,10 @@
+<module>
+	<rule name="RuleWithReferencesToOtherTestObjects" comment="To avoid not referenced problems in all test cases">
+		<action name="rule" rulename="ExampleRule"/>
+		<action name="rule" rulename="KnownRuleWithMandatoryInputs"/>
+		<action name="rule" rulename="ObsoleteRuleForSkipCheck"/>
+		<action name="infoset" infoset-name="InfosetDefinition_Test_SearchColumnUnknownType"/>
+		<action name="infoset" infoset-name="InfosetDefinition_Test_SearchColumnUnknownAttribute"/>
+		<action name="infoset" infoset-name="InfosetDefinition_Test_SearchColumnUnknownRule"/>
+	</rule>
+</module>
