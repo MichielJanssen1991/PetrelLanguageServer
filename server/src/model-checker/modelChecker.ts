@@ -32,7 +32,8 @@ export class ModelChecker {
 		MANDATORY_INPUT_MISSING: (inputName: string, reference: Reference) => `Mandatory input '${inputName}' for ${reference.type} with name '${reference.name}' not provided.`,
 		REFERENCE_CAPITALIZATION: (symbol: SymbolDeclaration, reference: Reference) => `Preferred capitalization for ${reference.type} with name '${reference.name}' is '${symbol.name}'.`,
 		NO_REFERENCES_FOUND: (symbol: SymbolDeclaration) => `No references found to ${symbol.type} with name '${symbol.name}'.`,
-		SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND: (attribute: Reference, typeRef: Reference) => `Attribute '${attribute.name}' not found in ${typeRef.type} with name '${typeRef.name}'.`
+		SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND: (attribute: Reference, typeRef: Reference) => `Attribute '${attribute.name}' not found in ${typeRef.type} with name '${typeRef.name}'.`,
+		VALIDATION_ERROR: (error: string, node: Reference|SymbolDeclaration) => `Error occured when trying to validate ${node.type} with name '${node.name}':${error}.`
 	}
 
 	private static formatReferenceEnumeration(referenceAndSubReferences: Reference[]) {
@@ -82,14 +83,19 @@ export class ModelChecker {
 	private verifyNode(node: SymbolDeclaration | Reference, options: ModelCheckerOptions) {
 		if (node.type == ModelElementTypes.Unknown) { return; }
 		if (objectsTypesWhichRequireContext.has(node.type)) { return; }
-		switch (node.objectType) {
-			case ObjectIdentifierTypes.Symbol: {
-				this.verifySymbol(node as SymbolDeclaration, options);
-				break;
+		try{
+			switch (node.objectType) {
+				case ObjectIdentifierTypes.Symbol: {
+					this.verifySymbol(node as SymbolDeclaration, options);
+					break;
+				}
+				case ObjectIdentifierTypes.Reference: {
+					this.verifyReference(node as Reference, options);
+				}
 			}
-			case ObjectIdentifierTypes.Reference: {
-				this.verifyReference(node as Reference, options);
-			}
+		}
+		catch (error:any){
+			this.addError(node.range,ModelChecker.messages.VALIDATION_ERROR(error.message, node));
 		}
 	}
 
