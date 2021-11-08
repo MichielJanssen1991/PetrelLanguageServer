@@ -4,7 +4,7 @@
 	"author": "Michiel Janssen",
 	"license": "",
 	"version": "1.0.0",
-	"publisher": "vscode-samples",
+	"publisher": "michiel-janssen",
 	"categories": [],
 	"keywords": [
 		"multi-root ready"
@@ -12,10 +12,9 @@
 	"engines": {
 		"vscode": "^1.43.0"
 	},
-	"activationEvents": [
-		"*",
-		"onLanguage:xml",
-		"onLanguage:XML"
+	"activationEvents":  [
+		"workspaceContains:**/petrel-language-server.config.json",
+		"onCommand:petrelLanguageServer.activate"
 	],
 	"main": "./client/out/extension",
 	"contributes": {
@@ -41,7 +40,13 @@
 					"description": "Traces the communication between VS Code and the language server."
 				}
 			}
-		}
+		},
+		"commands": [
+			{
+			  "command": "petrelLanguageServer.activate",
+			  "title": "Activate Petrel Language Server"
+			}
+		  ]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

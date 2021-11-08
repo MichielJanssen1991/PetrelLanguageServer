@@ -1,6 +1,6 @@
 
 import * as path from 'path';
-import { workspace, ExtensionContext } from 'vscode';
+import { workspace, ExtensionContext, commands } from 'vscode';
 
 import {
 	LanguageClient,
@@ -34,7 +34,7 @@ export function activate(context: ExtensionContext) {
 	// Options to control the language client
 	const clientOptions: LanguageClientOptions = {
 		// Register the server for xml and js documents
-		documentSelector: [{ scheme: 'file', language: 'xml' }, {language: 'javascript' }],
+		documentSelector: [{ scheme: 'file', language: 'xml' }, { language: 'javascript' }],
 		synchronize: {
 			// Notify the server about file changes to '.clientrc files contained in the workspace
 			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
@@ -48,6 +48,13 @@ export function activate(context: ExtensionContext) {
 		serverOptions,
 		clientOptions
 	);
+
+	const command = 'petrelLanguageServer.activate';
+	const commandHandler = () => {
+		console.log(`Activating petrel language server`);
+	};
+
+	context.subscriptions.push(commands.registerCommand(command, commandHandler));
 
 	// Start the client. This will also launch the server
 	client.start();
