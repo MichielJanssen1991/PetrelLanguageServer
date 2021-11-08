@@ -1,5 +1,5 @@
-import { NAMES } from './model-definition/attributes';
-import { ModelElementTypes, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
+import { NAMES } from '../model-definition/attributes';
+import { ModelElementTypes, Reference, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from './symbolAndReferenceManager';
 
 /**

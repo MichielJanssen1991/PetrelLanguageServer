@@ -8,7 +8,7 @@ import { ModelDetailLevel } from '../model-definition/symbolsAndReferences';
 import { time, timeEnd } from 'console';
 import { getContextFromLine, wordAtPoint } from '../util/xml';
 import { ModelParser } from './parser/modelParser';
-import { SymbolAndReferenceManager } from '../symbolAndReferenceManager';
+import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { JavascriptParser } from './parser/javascriptParser';
 import { FileParser } from './parser/fileParser';
 

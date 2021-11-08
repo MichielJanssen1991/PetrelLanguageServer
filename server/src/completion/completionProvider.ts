@@ -1,6 +1,6 @@
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver';
 import { ModelElementTypes, Reference, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
-import { SymbolAndReferenceManager } from '../symbolAndReferenceManager';
+import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import * as ReservedWords from '../model-definition/attributes';
 
 export enum CompletionItemDataType {

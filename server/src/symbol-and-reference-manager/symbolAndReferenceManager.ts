@@ -1,9 +1,9 @@
 import FuzzySearch = require('fuzzy-search');
 import { Position } from 'vscode-languageserver-types';
-import { objectsTypesWhichRequireContext } from './model-definition/declarations';
-import { ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from './model-definition/symbolsAndReferences';
-import { flattenNestedListObjects, flattenNestedObjectValues, flattenObjectValues } from './util/array';
-import { pointIsInRange } from './util/other';
+import { objectsTypesWhichRequireContext } from '../model-definition/declarations';
+import { ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { flattenNestedListObjects, flattenNestedObjectValues, flattenObjectValues } from '../util/array';
+import { pointIsInRange } from '../util/other';
 
 type Symbols = { [name: string]: SymbolDeclaration[] }
 type FileSymbols = { [uri: string]: Symbols }

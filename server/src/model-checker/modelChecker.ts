@@ -4,7 +4,7 @@ import { Reference, ModelElementTypes, SymbolDeclaration, ModelDetailLevel, Obje
 import { NAMES } from '../model-definition/attributes';
 import { removeFilesFromDirectories } from '../util/fs';
 import { objectsTypesWhichRequireContext } from '../model-definition/declarations';
-import { ModelManager } from '../modelManager';
+import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 
 type ModelCheckerOptions = {
 	maxNumberOfProblems?: number,

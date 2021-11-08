@@ -7,7 +7,6 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { Analyzer } from './file-analyzer/analyzer';
 import { formatFileURL } from './util/fs';
 import { ModelDetailLevel, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
-import { SymbolAndReferenceManager } from "./symbolAndReferenceManager";
 import { CompletionContext, CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
 
@@ -16,7 +15,7 @@ import { time, timeEnd } from 'console';
 import * as fs from 'fs';
 import path = require('path');
 import { pointIsInRange } from './util/other';
-import { ModelManager } from './modelManager';
+import { ModelManager } from './symbol-and-reference-manager/modelManager';
 
 interface DocumentSettings {
 	maxNumberOfProblems: number;
