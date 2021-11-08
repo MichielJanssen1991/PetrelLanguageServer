@@ -2,9 +2,9 @@ import * as LSP from 'vscode-languageserver';
 import { flattenArray } from '../util/array';
 import { Reference, ModelElementTypes, SymbolDeclaration, ModelDetailLevel, ObjectIdentifierTypes } from '../model-definition/symbolsAndReferences';
 import { NAMES } from '../model-definition/attributes';
-import { SymbolAndReferenceManager } from '../symbolAndReferenceManager';
 import { removeFilesFromDirectories } from '../util/fs';
 import { objectsTypesWhichRequireContext } from '../model-definition/declarations';
+import { ModelManager } from '../modelManager';
 
 type ModelCheckerOptions = {
 	maxNumberOfProblems?: number,
@@ -12,11 +12,11 @@ type ModelCheckerOptions = {
 	skipFolders: string[],
 }
 /**
- * The ModelChecker verifies references and returns a list of diagnostics 
+ * The ModelChecker verifies the model and returns a list of diagnostics 
  */
 export class ModelChecker {
 	private diagnostics: LSP.Diagnostic[] = [];
-	private symbolAndReferenceManager: SymbolAndReferenceManager;
+	private modelManager: ModelManager;
 	private static dataInsertOrUpdateActions = new Set(["Insert", "InsertOrUpdate", "Update"].map(x => x.toLowerCase()));
 	private static dataSelectActions = new Set(["Select"].map(x => x.toLowerCase()));
 	private static infosetCallActions = new Set(["Infoset"].map(x => x.toLowerCase()));
@@ -40,13 +40,13 @@ export class ModelChecker {
 		return referenceAndSubReferences.map(x => `${x.type}: '${x.name}'`).join(" or ");
 	}
 
-	constructor(symbolAndReferenceManager: SymbolAndReferenceManager) {
-		this.symbolAndReferenceManager = symbolAndReferenceManager;
+	constructor(modelManager: ModelManager) {
+		this.modelManager = modelManager;
 	}
 
 	public checkAllFiles(options?: ModelCheckerOptions) {
 		const diagnosticsPerFile: Record<string, LSP.Diagnostic[]> = {};
-		let files = this.symbolAndReferenceManager.getFiles();
+		let files = this.modelManager.getFiles();
 		if (options?.skipFolders) {
 			files = removeFilesFromDirectories(options.skipFolders, files);
 		}
@@ -65,7 +65,7 @@ export class ModelChecker {
 		this.diagnostics = [];
 		const optionsOrDefault: ModelCheckerOptions = options || ModelChecker.defaultOptions;
 
-		const tree = this.symbolAndReferenceManager.getTreeForFile(uri);
+		const tree = this.modelManager.getTreeForFile(uri);
 		this.walkNodes(tree, optionsOrDefault);
 
 		return this.diagnostics;
@@ -112,7 +112,7 @@ export class ModelChecker {
 	}
 
 	private verifyReferencedObjectExists(reference: Reference, options: ModelCheckerOptions) {
-		const referencedSymbol = this.symbolAndReferenceManager.getReferencedObject(reference);
+		const referencedSymbol = this.modelManager.getReferencedObject(reference);
 		const name = reference.name;
 		const referenceNotFound = !referencedSymbol && name && !name.startsWith("{");
 		if (referenceNotFound) {
@@ -197,12 +197,12 @@ export class ModelChecker {
 	private verifyInputsAreKnownInReferencedObjects(reference: Reference) {
 		const referenceAndSubReferences = [reference, ...Object.values(reference.attributeReferences)];
 		const referencedSymbolInputs = referenceAndSubReferences.map(subRef => {
-			const referencedSymbol = this.symbolAndReferenceManager.getReferencedObject(subRef);
-			return referencedSymbol ? this.getSymbolInputs(referencedSymbol) : [];
+			const referencedSymbol = this.modelManager.getReferencedObject(subRef);
+			return referencedSymbol ? this.modelManager.getSymbolInputs(referencedSymbol) : [];
 		});
 		const inputNames = new Set(flattenArray(referencedSymbolInputs).map(x => x.name));
 		this.getAdditionalInputsForAction(reference).forEach(x => { inputNames.add(x); });
-		this.getActionArguments(reference).forEach(argument => {
+		this.modelManager.getActionArguments(reference).forEach(argument => {
 			if (!inputNames.has(argument.name)) {
 				this.addWarning(
 					argument.range, ModelChecker.messages.INPUT_NOT_FOUND(argument.name, referenceAndSubReferences),
@@ -214,13 +214,13 @@ export class ModelChecker {
 	private verifyOutputsAreKnownInReferencedObjects(reference: Reference) {
 		const referenceAndSubReferences = [reference, ...Object.values(reference.attributeReferences)];
 		const referencedSymbolOutputs = referenceAndSubReferences.map(subRef => {
-			const referencedSymbol = this.symbolAndReferenceManager.getReferencedObject(subRef);
-			return referencedSymbol ? this.getSymbolOutputs(referencedSymbol) : [];
+			const referencedSymbol = this.modelManager.getReferencedObject(subRef);
+			return referencedSymbol ? this.modelManager.getSymbolOutputs(referencedSymbol) : [];
 		});
 		const outputNames = new Set(flattenArray(referencedSymbolOutputs).map(x => x.name));
 		this.getAdditionalOutputsForActions(reference).forEach(x => outputNames.add(x));
 
-		this.getActionOutputs(reference).forEach(output => {
+		this.modelManager.getActionOutputs(reference).forEach(output => {
 			const outputName = output.name;
 			if (!outputNames.has(outputName)) {
 				this.addWarning(
@@ -231,7 +231,7 @@ export class ModelChecker {
 	}
 
 	private verifySymbolIsReferenced(symbol: SymbolDeclaration, options: ModelCheckerOptions) {
-		const references = this.symbolAndReferenceManager.getReferencesForSymbol(symbol);
+		const references = this.modelManager.getReferencesForSymbol(symbol);
 		const noReferencesFound = references.length <= 0;
 		if (noReferencesFound && symbol.type != ModelElementTypes.NameSpace && options.detailLevel >= ModelDetailLevel.ArgumentReferences) {
 			this.addInformation(symbol.range, ModelChecker.messages.NO_REFERENCES_FOUND(symbol));
@@ -239,11 +239,11 @@ export class ModelChecker {
 	}
 
 	private verifyReferencedObjectsMandatoryInputsProvided(reference: Reference, subRef: Reference) {
-		const actionArguments = this.getActionArguments(reference);
-		const referencedSymbol = this.symbolAndReferenceManager.getReferencedObject(subRef);
+		const actionArguments = this.modelManager.getActionArguments(reference);
+		const referencedSymbol = this.modelManager.getReferencedObject(subRef);
 		const argumentNames = new Set(actionArguments.map(x => x.name));
 		if (referencedSymbol) {
-			const referencedSymbolMandatoryInputs = this.getMandatorySymbolInputs(referencedSymbol);
+			const referencedSymbolMandatoryInputs = this.modelManager.getMandatorySymbolInputs(referencedSymbol);
 			referencedSymbolMandatoryInputs.forEach(input => {
 				if (!argumentNames.has(input.name)) {
 					this.addError(subRef.range, ModelChecker.messages.MANDATORY_INPUT_MISSING(input.name, subRef));
@@ -253,18 +253,18 @@ export class ModelChecker {
 	}
 
 	private verifyReferencedObjectsMandatoryInputsProvidedForRuleLoop(reference: Reference, subRef: Reference) {
-		const actionArguments = this.getActionArguments(reference);
-		const referencedSymbol = this.symbolAndReferenceManager.getReferencedObject(subRef);
+		const actionArguments = this.modelManager.getActionArguments(reference);
+		const referencedSymbol = this.modelManager.getReferencedObject(subRef);
 		const argumentNames = new Set(actionArguments.map(x => x.name));
 		if (subRef.type == ModelElementTypes.Rule) {
 			const infosetRef = reference.attributeReferences[NAMES.ATTRIBUTE_INFOSET];
-			const infoset = infosetRef ? this.symbolAndReferenceManager.getReferencedObject(infosetRef) : undefined;
+			const infoset = infosetRef ? this.modelManager.getReferencedObject(infosetRef) : undefined;
 			if (infoset) {
-				const query = this.getChildrenOfType(infoset, ModelElementTypes.Search)[0];
+				const query = this.modelManager.getChildrenOfType(infoset, ModelElementTypes.Search)[0];
 				if (query) {
 					const typeRef = query.attributeReferences[NAMES.ATTRIBUTE_TYPE];
 					if (typeRef) {
-						this.getReferencedTypeAttributes(typeRef).forEach(x => argumentNames.add(x));
+						this.modelManager.getReferencedTypeAttributes(typeRef).forEach(x => argumentNames.add(x));
 					}
 				}
 			} else {
@@ -272,7 +272,7 @@ export class ModelChecker {
 			}
 		}
 		if (referencedSymbol) {
-			const referencedSymbolMandatoryInputs = this.getMandatorySymbolInputs(referencedSymbol);
+			const referencedSymbolMandatoryInputs = this.modelManager.getMandatorySymbolInputs(referencedSymbol);
 			referencedSymbolMandatoryInputs.forEach(input => {
 				if (!argumentNames.has(input.name)) {
 					this.addError(reference.range, ModelChecker.messages.MANDATORY_INPUT_MISSING(input.name, subRef));
@@ -286,18 +286,18 @@ export class ModelChecker {
 		if (this.isDataSelectAction(actionReference)) {
 			const typeRef = actionReference.attributeReferences[NAMES.ATTRIBUTE_TYPE];
 			if (typeRef) {
-				this.getReferencedTypeAttributes(typeRef).forEach(x => inputNames.push(x));
+				this.modelManager.getReferencedTypeAttributes(typeRef).forEach(x => inputNames.push(x));
 			}
 		}
 		if (this.isDataInsertOrUpdateActions(actionReference)) {
 			const typeRef = actionReference.attributeReferences[NAMES.ATTRIBUTE_TYPE];
 			if (typeRef) {
-				this.getReferencedTypeAttributes(typeRef).forEach(x => inputNames.push(x));
+				this.modelManager.getReferencedTypeAttributes(typeRef).forEach(x => inputNames.push(x));
 			}
 		}
-		const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionReference);
+		const referencedAction = this.modelManager.getReferencedObject(actionReference);
 		if (referencedAction) {
-			const actionAttributes = this.getChildrenOfType(referencedAction, ModelElementTypes.Attribute);
+			const actionAttributes = this.modelManager.getChildrenOfType(referencedAction, ModelElementTypes.Attribute);
 			const actionAttributesNames = actionAttributes.map(x => x.name);
 			inputNames = inputNames.concat(actionAttributesNames);
 		}
@@ -310,7 +310,7 @@ export class ModelChecker {
 		if (this.isDataSelectAction(reference) || this.isDataInsertOrUpdateActions(reference)) {
 			const typeRef = reference.attributeReferences[NAMES.ATTRIBUTE_TYPE];
 			if (typeRef) {
-				this.getReferencedTypeAttributes(typeRef).forEach(x => outputNames.push(x));
+				this.modelManager.getReferencedTypeAttributes(typeRef).forEach(x => outputNames.push(x));
 			}
 		}
 		if (this.isInfosetCallAction(reference)) {
@@ -333,14 +333,14 @@ export class ModelChecker {
 	}
 
 	private verifyInfosetDeclaration(symbol: SymbolDeclaration, options: ModelCheckerOptions) {
-		const searches = this.getChildrenOfType(symbol, ModelElementTypes.Search) as SymbolDeclaration[];
+		const searches = this.modelManager.getChildrenOfType(symbol, ModelElementTypes.Search) as SymbolDeclaration[];
 		searches.forEach(s => this.verifySearch(s, options));
 	}
 
 	private verifySearch(search: SymbolDeclaration, options: ModelCheckerOptions) {
-		const searchColumns = this.getChildrenOfType(search, ModelElementTypes.SearchColumn);
+		const searchColumns = this.modelManager.getChildrenOfType(search, ModelElementTypes.SearchColumn);
 		const typeRef = search.attributeReferences[NAMES.ATTRIBUTE_TYPE];
-		const typeAttributes = this.getReferencedTypeAttributes(typeRef);
+		const typeAttributes = this.modelManager.getReferencedTypeAttributes(typeRef);
 		searchColumns.forEach(sc => {
 			const attributeRef = sc.attributeReferences.name;
 			if (!typeAttributes.includes(attributeRef.name)) {
@@ -376,53 +376,6 @@ export class ModelChecker {
 		);
 	}
 
-	private getChildrenOfType(object: Reference | SymbolDeclaration, type: ModelElementTypes): (Reference | SymbolDeclaration)[] {
-		const directChilren = object.children.filter(x => (x.type == type));
-		const decoratorsOrIncludeBlocks = object.children.filter(
-			x => x.type == ModelElementTypes.Decorator
-				|| x.type == ModelElementTypes.IncludeBlock
-		);
-
-		const decoratedChildren: (Reference | SymbolDeclaration)[] = decoratorsOrIncludeBlocks.flatMap(decoratorOrIncludeBlockRef => {
-			const decoratorsOrIncludeBlocks = this.symbolAndReferenceManager.getReferencedObject(decoratorOrIncludeBlockRef);
-			return decoratorsOrIncludeBlocks?this.getChildrenOfType(decoratorsOrIncludeBlocks, type):[];
-			}
-		);
-		return [...directChilren, ...decoratedChildren];
-	}
-	private getActionArguments(actionReference: Reference) {
-		return this.getChildrenOfType(actionReference, ModelElementTypes.Input);
-	}
-	private getActionOutputs(actionReference: Reference) {
-		return this.getChildrenOfType(actionReference, ModelElementTypes.Output);
-	}
-	private getSymbolInputs(symbol: SymbolDeclaration) {
-		return symbol.children.filter(x => (x.type == ModelElementTypes.Input));
-	}
-	private getMandatorySymbolInputs(symbol: SymbolDeclaration) {
-		return this.getSymbolInputs(symbol).filter(x => (x.otherAttributes.required));
-	}
-	private getSymbolOutputs(symbol: SymbolDeclaration) {
-		return symbol.children.filter(x => (x.type == ModelElementTypes.Output));
-	}
-
-	private getReferencedTypeAttributes(typeRef: Reference): string[] {
-		const type = typeRef ? this.symbolAndReferenceManager.getReferencedObject(typeRef) : undefined;
-		return type ? this.getTypeAttributes(type) : [];
-	}
-
-	private getTypeAttributes(type: SymbolDeclaration): string[] {
-		let attributeNames = this.getChildrenOfType(type, ModelElementTypes.Attribute).map(x => x.name);
-		const basedOnTypeRef = type.attributeReferences["type"];
-		if (basedOnTypeRef) {
-			const basedOnType = this.symbolAndReferenceManager.getReferencedObject(basedOnTypeRef);
-			if (basedOnType) {
-				attributeNames = attributeNames.concat(this.getTypeAttributes(basedOnType));
-			}
-		} else {
-			attributeNames.push(NAMES.RESERVEDINPUT_IID); //Only for lowest level in inheritance to avoid adding iid each time
-		}
-		return attributeNames;
-	}
+	
 
 }

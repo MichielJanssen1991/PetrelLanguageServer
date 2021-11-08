@@ -16,6 +16,7 @@ import { time, timeEnd } from 'console';
 import * as fs from 'fs';
 import path = require('path');
 import { pointIsInRange } from './util/other';
+import { ModelManager } from './modelManager';
 
 interface DocumentSettings {
 	maxNumberOfProblems: number;
@@ -26,7 +27,7 @@ interface DocumentSettings {
 export default class PetrelLanguageServer {
 	private analyzer: Analyzer;
 	private connection: LSP._Connection;
-	private symbolAndReferenceManager: SymbolAndReferenceManager;
+	private modelManager: ModelManager;
 	private completionProvider: CompletionProvider;
 	private modelChecker: ModelChecker;
 	private documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -35,10 +36,10 @@ export default class PetrelLanguageServer {
 	private settings: DocumentSettings = PetrelLanguageServer.defaultSettings;
 
 	constructor(connection: LSP._Connection) {
-		this.symbolAndReferenceManager = new SymbolAndReferenceManager();
-		this.analyzer = new Analyzer(this.symbolAndReferenceManager);
-		this.modelChecker = new ModelChecker(this.symbolAndReferenceManager);
-		this.completionProvider = new CompletionProvider(this.symbolAndReferenceManager);
+		this.modelManager = new ModelManager();
+		this.analyzer = new Analyzer(this.modelManager);
+		this.modelChecker = new ModelChecker(this.modelManager);
+		this.completionProvider = new CompletionProvider(this.modelManager);
 		this.connection = connection;
 
 		// Make the text document manager listen on the connection
@@ -57,7 +58,7 @@ export default class PetrelLanguageServer {
 		const languageServer = new PetrelLanguageServer(connection);
 		languageServer.settings = PetrelLanguageServer.getConfigSettings(rootPath);
 
-		languageServer.analyzer = await Analyzer.fromRoot({ connection, rootPath }, languageServer.symbolAndReferenceManager, languageServer.settings);
+		languageServer.analyzer = await Analyzer.fromRoot({ connection, rootPath }, languageServer.modelManager, languageServer.settings);
 		return languageServer;
 	}
 
@@ -119,14 +120,14 @@ export default class PetrelLanguageServer {
 		const { inAttribute, tag } = this.analyzer.contextFromLine(uri, pos);
 
 		//Find main reference if any
-		let referencesAtPosition = this.symbolAndReferenceManager.getReferencesForPosition(uri, pos);
+		let referencesAtPosition = this.modelManager.getReferencesForPosition(uri, pos);
 		//Find main declaration if any
-		const declarationsAtPosition = this.symbolAndReferenceManager.getSymbolsForPosition(uri, pos);
+		const declarationsAtPosition = this.modelManager.getSymbolsForPosition(uri, pos);
 
 		//If no reference found possibly a child reference
 		let parentReferenceAtPoint;
 		if (referencesAtPosition.length == 0) {
-			const parentReferencesAtPoint = this.symbolAndReferenceManager.getReferencesForPosition(uri, pos, true);
+			const parentReferencesAtPoint = this.modelManager.getReferencesForPosition(uri, pos, true);
 			if (parentReferencesAtPoint.length > 0) {
 				const parentReferenceAtPoint = parentReferencesAtPoint[0];
 				referencesAtPosition = parentReferenceAtPoint.children.filter(ref =>
@@ -154,10 +155,10 @@ export default class PetrelLanguageServer {
 		if (references.length > 0) {
 			const possibleReferencesSelected = references.filter(x => x.name == word || x.name.endsWith(`.${word}`));
 			symbols = possibleReferencesSelected
-			.map(ref => this.symbolAndReferenceManager.getReferencedObject(ref))
+			.map(ref => this.modelManager.getReferencedObject(ref))
 			.filter(x=> (x!=undefined)) as SymbolDeclaration[];
 		}else{
-			symbols = this.symbolAndReferenceManager.findSymbolsMatchingWord({exactMatch:true,word});
+			symbols = this.modelManager.findSymbolsMatchingWord({exactMatch:true,word});
 		}
 		return this.getSymbolDefinitionLocationLinks(symbols);
 	}
@@ -169,9 +170,9 @@ export default class PetrelLanguageServer {
 		let references: Reference[] = [];
 		if (declarations.length > 0) {
 			const possibleDeclarationsSelected = declarations.filter(x => x.name == word || x.name.endsWith(`.${word}`));
-			references = possibleDeclarationsSelected.flatMap(ref => this.symbolAndReferenceManager.getReferencesForSymbol(ref));
+			references = possibleDeclarationsSelected.flatMap(ref => this.modelManager.getReferencesForSymbol(ref));
 		}else{
-			references = this.symbolAndReferenceManager.findSymbolsMatchingWord({exactMatch:true,word});
+			references = this.modelManager.findSymbolsMatchingWord({exactMatch:true,word});
 		}
 
 		return this.getReferenceLocations(references);
