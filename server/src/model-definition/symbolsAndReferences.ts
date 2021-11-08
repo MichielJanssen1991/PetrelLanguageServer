@@ -22,6 +22,7 @@ export enum ModelElementTypes {
 	Decorator = "Decorator",
 	Profile = "Profile",
 	Unknown = "Unknown",
+	All = "All",
 }
 
 export type ContextQualifiers = {
@@ -49,7 +50,7 @@ export enum ModelDetailLevel {
 }
 
 export interface ObjectIdentifier {
-	name: any,
+	name: string,
 	type: ModelElementTypes,
 	identifier: string,
 	range: LSP.Range,
@@ -72,6 +73,8 @@ export interface SymbolDeclaration extends ObjectIdentifier {
 	attributeReferences: Record<string, Reference>
 	contextQualifiers: ContextQualifiers
 }
+
+export type SymbolOrReference = SymbolDeclaration | Reference;
 
 export function newReference(name: any, type: ModelElementTypes, range: LSP.Range, uri: string): Reference {
 	return {

@@ -1,7 +1,7 @@
 import FuzzySearch = require('fuzzy-search');
 import { Position } from 'vscode-languageserver-types';
 import { objectsTypesWhichRequireContext } from './model-definition/declarations';
-import { ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
+import { ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from './model-definition/symbolsAndReferences';
 import { flattenNestedListObjects, flattenNestedObjectValues, flattenObjectValues } from './util/array';
 import { pointIsInRange } from './util/other';
 
@@ -51,13 +51,13 @@ export class SymbolAndReferenceManager {
 		this.walkNodes(tree);
 	}
 
-	private walkNodes(node: SymbolDeclaration | Reference) {
+	private walkNodes(node: SymbolOrReference) {
 		this.processNode(node);
 		node.children.forEach(x => this.walkNodes(x));
 		Object.values(node.attributeReferences).forEach(x => this.processNode(x));
 	}
 
-	private processNode(node: SymbolDeclaration | Reference) {
+	private processNode(node: SymbolOrReference) {
 		if (!objectsTypesWhichRequireContext.has(node.type)) {
 			switch (node.objectType) {
 				case ObjectIdentifierTypes.Symbol: { this.addSymbolDeclaration(node as SymbolDeclaration); break; }

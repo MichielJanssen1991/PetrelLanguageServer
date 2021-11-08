@@ -1,6 +1,6 @@
 import * as LSP from 'vscode-languageserver';
 import { flattenArray } from '../util/array';
-import { Reference, ModelElementTypes, SymbolDeclaration, ModelDetailLevel, ObjectIdentifierTypes } from '../model-definition/symbolsAndReferences';
+import { Reference, ModelElementTypes, SymbolDeclaration, ModelDetailLevel, ObjectIdentifierTypes, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { NAMES } from '../model-definition/attributes';
 import { removeFilesFromDirectories } from '../util/fs';
 import { objectsTypesWhichRequireContext } from '../model-definition/declarations';
@@ -71,7 +71,7 @@ export class ModelChecker {
 		return this.diagnostics;
 	}
 
-	private walkNodes(node: SymbolDeclaration | Reference, options: ModelCheckerOptions) {
+	private walkNodes(node: SymbolOrReference, options: ModelCheckerOptions) {
 		this.verifyNode(node, options);
 		const isObsolete = (node.objectType == ObjectIdentifierTypes.Symbol && (node as SymbolDeclaration).isObsolete);
 		if (!isObsolete) {
@@ -80,7 +80,7 @@ export class ModelChecker {
 		}
 	}
 
-	private verifyNode(node: SymbolDeclaration | Reference, options: ModelCheckerOptions) {
+	private verifyNode(node: SymbolOrReference, options: ModelCheckerOptions) {
 		if (node.type == ModelElementTypes.Unknown) { return; }
 		if (objectsTypesWhichRequireContext.has(node.type)) { return; }
 		try{

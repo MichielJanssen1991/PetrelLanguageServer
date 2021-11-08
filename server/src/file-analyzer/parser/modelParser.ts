@@ -1,16 +1,14 @@
 import * as LSP from 'vscode-languageserver';
 import { symbolDeclarationDefinitions } from '../../model-definition/declarations';
 import { referenceDefinitions } from '../../model-definition/references';
-import { newReference, Reference, SymbolDeclaration, Definition, newSymbolDeclaration, ModelDetailLevel, ObjectIdentifierTypes, ObjectIdentifier, ModelElementTypes, ContextQualifiers, INodeContext } from '../../model-definition/symbolsAndReferences';
+import { newReference, Reference, SymbolDeclaration, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
 import { ISaxParserExtended, newSaxParserExtended } from './saxParserExtended';
 
 
-type ParsedObject = SymbolDeclaration | Reference;
-
 export class ModelParser extends FileParser implements INodeContext {
 	private parser: ISaxParserExtended;
-	private parsedObjectStack: { depth: number, parsedObject: ParsedObject }[]
+	private parsedObjectStack: { depth: number, parsedObject: SymbolOrReference }[]
 
 	constructor(uri: string, detailLevel: ModelDetailLevel) {
 		super(uri, detailLevel);
@@ -62,7 +60,7 @@ export class ModelParser extends FileParser implements INodeContext {
 			definitions.some(def => {
 				symbol = this.parseNodeForDefinition(node, def);
 				if (symbol) {
-					this.pushToParsedObjectStack(symbol, def);
+					this.pushToParsedObjectStack(symbol);
 					return true;
 				}
 			});
@@ -74,7 +72,7 @@ export class ModelParser extends FileParser implements INodeContext {
 				refDefinitions.some(def => {
 					reference = this.parseNodeForReference(node, def);
 					if (reference) {
-						this.pushToParsedObjectStack(reference, def);
+						this.pushToParsedObjectStack(reference);
 						return true;
 					}
 				});
@@ -106,7 +104,7 @@ export class ModelParser extends FileParser implements INodeContext {
 	}
 
 	// Push the ParsedObject to the parsedObjectStack
-	private pushToParsedObjectStack(parsedObject: ParsedObject, definition: Definition) {
+	private pushToParsedObjectStack(parsedObject: SymbolOrReference) {
 		const depth = this.getCurrentDepth();
 		this.parsedObjectStack.push({ depth: depth, parsedObject });
 	}
@@ -124,7 +122,7 @@ export class ModelParser extends FileParser implements INodeContext {
 		}
 	}
 
-	private processParsedObjectFromStack(item: { depth: number; parsedObject: ParsedObject; }, lastIndex: number) {
+	private processParsedObjectFromStack(item: { depth: number; parsedObject: SymbolOrReference; }, lastIndex: number) {
 		const { parsedObject } = item;
 		parsedObject.contextQualifiers = this.getContextQualifiers();
 		const firstParent = lastIndex >= 0 ? this.parsedObjectStack[lastIndex] : undefined;
