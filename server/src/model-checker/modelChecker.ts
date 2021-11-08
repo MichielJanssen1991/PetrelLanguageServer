@@ -383,13 +383,11 @@ export class ModelChecker {
 				|| x.type == ModelElementTypes.IncludeBlock
 		);
 
-		let decoratedChildren: (Reference | SymbolDeclaration)[] = [];
-		decoratorsOrIncludeBlocks.forEach(decoratorOrIncludeBlockRef => {
+		const decoratedChildren: (Reference | SymbolDeclaration)[] = decoratorsOrIncludeBlocks.flatMap(decoratorOrIncludeBlockRef => {
 			const decoratorsOrIncludeBlocks = this.symbolAndReferenceManager.getReferencedObject(decoratorOrIncludeBlockRef);
-			if (decoratorsOrIncludeBlocks) {
-				decoratedChildren = this.getChildrenOfType(decoratorsOrIncludeBlocks, type);
+			return decoratorsOrIncludeBlocks?this.getChildrenOfType(decoratorsOrIncludeBlocks, type):[];
 			}
-		});
+		);
 		return [...directChilren, ...decoratedChildren];
 	}
 	private getActionArguments(actionReference: Reference) {
