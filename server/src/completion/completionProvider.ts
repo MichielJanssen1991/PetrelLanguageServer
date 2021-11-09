@@ -51,7 +51,7 @@ export class CompletionProvider {
 	private getAttributeCompletions(context: CompletionContext) {
 		let attributeCompletions: CompletionItem[] = [];
 		const actionRef = context.references.find(x => x.type == ModelElementTypes.Action);
-		let attributesForAction = [];
+		let attributesForAction: string[] = [];
 		if (actionRef) {
 			const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionRef);
 			attributesForAction = referencedAction?.children.filter(x => x.type == ModelElementTypes.Attribute).map(x => x.name) || [];
