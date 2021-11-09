@@ -1,4 +1,4 @@
-import { ModelDetailLevel, ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolDeclaration } from '../../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolOrReference } from '../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
@@ -7,13 +7,14 @@ import { CHECKS_MESSAGES } from './messages';
 export class ReferencedObjectExistsCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.All
 	protected objectType = ObjectIdentifierTypes.Reference
+	protected matchCondition = undefined
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);
 
 	}
 
-	protected checkInternal(node: SymbolDeclaration | Reference, options: ModelCheckerOptions)
+	protected checkInternal(node: SymbolOrReference, options: ModelCheckerOptions)
 	{
 		const reference = node as Reference;
 		const referencedSymbol = this.modelManager.getReferencedObject(reference);

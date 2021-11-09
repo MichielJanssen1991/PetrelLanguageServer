@@ -1,5 +1,5 @@
 import { NAMES } from '../../model-definition/attributes';
-import { ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolDeclaration } from '../../model-definition/symbolsAndReferences';
+import { ModelElementTypes, ObjectIdentifierTypes, SymbolDeclaration, SymbolOrReference } from '../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
@@ -8,13 +8,14 @@ import { CHECKS_MESSAGES } from './messages';
 export class InfosetDeclarationCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.Infoset
 	protected objectType = ObjectIdentifierTypes.Symbol
+	protected matchCondition = undefined
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);
 
 	}
 
-	protected checkInternal(node: SymbolDeclaration | Reference, options: ModelCheckerOptions) {
+	protected checkInternal(node: SymbolOrReference, options: ModelCheckerOptions) {
 		this.verifyInfosetDeclaration(node as SymbolDeclaration, options);
 	}
 
