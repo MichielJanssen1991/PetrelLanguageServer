@@ -3,7 +3,8 @@ import { ModelDetailLevel, ModelElementTypes, ObjectIdentifierTypes, Reference, 
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { flattenArray } from '../../util/array';
 import { ModelCheck } from '../modelCheck';
-import { ModelChecker, ModelCheckerOptions } from '../modelChecker';
+import { ModelCheckerOptions } from '../modelChecker';
+import { CHECKS_MESSAGES } from './messages';
 
 export class ActionCallCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.Action
@@ -50,7 +51,7 @@ export class ActionCallCheck extends ModelCheck {
 	private verifyRuleCall(reference: Reference) {
 		const ruleNameNotSpecified = this.verifyMandatoryAttributeProvided(reference, NAMES.ATTRIBUTE_RULE, true);
 		if (ruleNameNotSpecified) {
-			this.addError(reference.range, ModelChecker.messages.RULECALL_WITHOUT_NAME());
+			this.addError(reference.range, CHECKS_MESSAGES.RULECALL_WITHOUT_NAME());
 		}
 		return !ruleNameNotSpecified;
 	}
@@ -58,7 +59,7 @@ export class ActionCallCheck extends ModelCheck {
 	private verifyRuleLoopActionCall(reference: Reference, options: ModelCheckerOptions) {
 		const ruleNameNotSpecified = this.verifyMandatoryAttributeProvided(reference, NAMES.ATTRIBUTE_RULE, true);
 		if (ruleNameNotSpecified) {
-			this.addError(reference.range, ModelChecker.messages.RULELOOPACTIONCALL_WITHOUT_NAME());
+			this.addError(reference.range, CHECKS_MESSAGES.RULELOOPACTIONCALL_WITHOUT_NAME());
 		}
 
 		if (options.detailLevel >= ModelDetailLevel.ArgumentReferences) {
@@ -73,7 +74,7 @@ export class ActionCallCheck extends ModelCheck {
 	private verifyInfosetCall(reference: Reference, options: ModelCheckerOptions) {
 		const infosetNameNotSpecified = this.verifyMandatoryAttributeProvided(reference, NAMES.ATTRIBUTE_INFOSET, true);
 		if (infosetNameNotSpecified && options.detailLevel >= ModelDetailLevel.ArgumentReferences) {
-			this.addWarning(reference.range, ModelChecker.messages.INFOSETCALL_WITHOUT_NAME());
+			this.addWarning(reference.range, CHECKS_MESSAGES.INFOSETCALL_WITHOUT_NAME());
 		}
 		return !infosetNameNotSpecified;
 	}
@@ -99,7 +100,7 @@ export class ActionCallCheck extends ModelCheck {
 		this.modelManager.getActionArguments(reference).forEach(argument => {
 			if (!inputNames.has(argument.name)) {
 				this.addWarning(
-					argument.range, ModelChecker.messages.INPUT_NOT_FOUND(argument.name, referenceAndSubReferences),
+					argument.range, CHECKS_MESSAGES.INPUT_NOT_FOUND(argument.name, referenceAndSubReferences),
 				);
 			}
 		});
@@ -118,7 +119,7 @@ export class ActionCallCheck extends ModelCheck {
 			const outputName = output.name;
 			if (!outputNames.has(outputName)) {
 				this.addWarning(
-					output.range, ModelChecker.messages.OUTPUT_NOT_FOUND(outputName, referenceAndSubReferences)
+					output.range, CHECKS_MESSAGES.OUTPUT_NOT_FOUND(outputName, referenceAndSubReferences)
 				);
 			}
 		});
@@ -132,7 +133,7 @@ export class ActionCallCheck extends ModelCheck {
 			const referencedSymbolMandatoryInputs = this.modelManager.getMandatorySymbolInputs(referencedSymbol);
 			referencedSymbolMandatoryInputs.forEach(input => {
 				if (!argumentNames.has(input.name)) {
-					this.addError(subRef.range, ModelChecker.messages.MANDATORY_INPUT_MISSING(input.name, subRef));
+					this.addError(subRef.range, CHECKS_MESSAGES.MANDATORY_INPUT_MISSING(input.name, subRef));
 				}
 			});
 		}
@@ -161,7 +162,7 @@ export class ActionCallCheck extends ModelCheck {
 			const referencedSymbolMandatoryInputs = this.modelManager.getMandatorySymbolInputs(referencedSymbol);
 			referencedSymbolMandatoryInputs.forEach(input => {
 				if (!argumentNames.has(input.name)) {
-					this.addError(reference.range, ModelChecker.messages.MANDATORY_INPUT_MISSING(input.name, subRef));
+					this.addError(reference.range, CHECKS_MESSAGES.MANDATORY_INPUT_MISSING(input.name, subRef));
 				}
 			});
 		}

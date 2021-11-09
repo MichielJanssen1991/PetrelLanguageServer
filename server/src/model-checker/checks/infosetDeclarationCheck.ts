@@ -2,7 +2,8 @@ import { NAMES } from '../../model-definition/attributes';
 import { ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolDeclaration } from '../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
-import { ModelChecker, ModelCheckerOptions } from '../modelChecker';
+import { ModelCheckerOptions } from '../modelChecker';
+import { CHECKS_MESSAGES } from './messages';
 
 export class InfosetDeclarationCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.Infoset
@@ -29,7 +30,7 @@ export class InfosetDeclarationCheck extends ModelCheck {
 		searchColumns.forEach(sc => {
 			const attributeRef = sc.attributeReferences.name;
 			if (!typeAttributes.includes(attributeRef.name)) {
-				this.addError(attributeRef.range, ModelChecker.messages.SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND(sc, typeRef));
+				this.addError(attributeRef.range, CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND(sc, typeRef));
 			}
 		});
 	}
