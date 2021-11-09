@@ -39,9 +39,7 @@ export class ActionCallCheck extends ModelCheck {
 			this.verifyOutputsAreKnownInReferencedObjects(reference);
 
 			Object.values(reference.attributeReferences).forEach(subRef => {
-				if (reference.name.toLowerCase() != "ruleloopaction") {
-					this.verifyReferencedObjectsMandatoryInputsProvided(reference, subRef);
-				}
+				this.verifyReferencedObjectsMandatoryInputsProvided(reference, subRef);
 			});
 		}
 	}

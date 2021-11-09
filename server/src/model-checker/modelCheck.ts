@@ -1,5 +1,5 @@
 import * as LSP from 'vscode-languageserver';
-import { ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { ModelElementTypes, ObjectIdentifierTypes, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 import { ModelCheckerOptions } from './modelChecker';
 
@@ -21,10 +21,10 @@ export abstract class ModelCheck {
 	}
 
 	public isApplicable(node: SymbolOrReference): boolean {
-		const modelElementTypeIsApplicable = node.type == this.modelElementType || this.modelElementType == ModelElementTypes.All;
-		const objectIdentifierTypeIsApplicable = node.objectType == this.objectType;
-		const condition = this.matchCondition?this.matchCondition(node):true;
-		return modelElementTypeIsApplicable && objectIdentifierTypeIsApplicable && condition;
+		let isApplicable = (node.type == this.modelElementType || this.modelElementType == ModelElementTypes.All);
+		isApplicable = isApplicable && (node.objectType == this.objectType);
+		isApplicable = isApplicable && (this.matchCondition?this.matchCondition(node):true);
+		return isApplicable;
 	}
 
 	protected abstract checkInternal(node: SymbolOrReference, options: ModelCheckerOptions): void
