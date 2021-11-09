@@ -4,9 +4,14 @@ import { Reference, ModelElementTypes, SymbolDeclaration, ModelDetailLevel, Obje
 import { NAMES } from '../model-definition/attributes';
 import { removeFilesFromDirectories } from '../util/fs';
 import { objectsTypesWhichRequireContext } from '../model-definition/declarations';
+import { ModelCheck } from './modelCheck';
+import { ActionCallCheck } from './checks/actionCallCheck';
+import { InfosetDeclarationCheck } from './checks/infosetDeclarationCheck';
+import { ReferencedObjectExistsCheck } from './checks/referencedObjectExistsCheck';
+import { SymbolIsReferencedCheck } from './checks/symbolIsReferencedCheck';
 import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 
-type ModelCheckerOptions = {
+export type ModelCheckerOptions = {
 	maxNumberOfProblems?: number,
 	detailLevel: ModelDetailLevel,
 	skipFolders: string[],
@@ -21,7 +26,8 @@ export class ModelChecker {
 	private static dataSelectActions = new Set(["Select"].map(x => x.toLowerCase()));
 	private static infosetCallActions = new Set(["Infoset"].map(x => x.toLowerCase()));
 	private static defaultOptions: ModelCheckerOptions = { detailLevel: ModelDetailLevel.ArgumentReferences, skipFolders: [] };
-	private static messages = {
+	private checks: ModelCheck[] = [];
+	public static messages = {
 		RULECALL_WITHOUT_NAME: () => "Rule call without rule name specified.",
 		RULELOOPACTIONCALL_WITHOUT_NAME: () => "RuleLoopAction call without rule name specified.",
 		INFOSETCALL_WITHOUT_NAME: () => "Infoset call without infoset name specified.",
@@ -33,7 +39,7 @@ export class ModelChecker {
 		REFERENCE_CAPITALIZATION: (symbol: SymbolDeclaration, reference: Reference) => `Preferred capitalization for ${reference.type} with name '${reference.name}' is '${symbol.name}'.`,
 		NO_REFERENCES_FOUND: (symbol: SymbolDeclaration) => `No references found to ${symbol.type} with name '${symbol.name}'.`,
 		SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND: (attribute: Reference, typeRef: Reference) => `Attribute '${attribute.name}' not found in ${typeRef.type} with name '${typeRef.name}'.`,
-		VALIDATION_ERROR: (error: string, node: Reference|SymbolDeclaration) => `Error occured when trying to validate ${node.type} with name '${node.name}':${error}.`
+		VALIDATION_ERROR: (error: string, node: Reference | SymbolDeclaration) => `Error occured when trying to validate ${node.type} with name '${node.name}':${error}.`
 	}
 
 	private static formatReferenceEnumeration(referenceAndSubReferences: Reference[]) {
@@ -42,6 +48,11 @@ export class ModelChecker {
 
 	constructor(modelManager: ModelManager) {
 		this.modelManager = modelManager;
+
+		this.checks.push(new ActionCallCheck(modelManager));
+		this.checks.push(new InfosetDeclarationCheck(modelManager));
+		this.checks.push(new ReferencedObjectExistsCheck(modelManager));
+		this.checks.push(new SymbolIsReferencedCheck(modelManager));
 	}
 
 	public checkAllFiles(options?: ModelCheckerOptions) {
@@ -83,19 +94,21 @@ export class ModelChecker {
 	private verifyNode(node: SymbolOrReference, options: ModelCheckerOptions) {
 		if (node.type == ModelElementTypes.Unknown) { return; }
 		if (objectsTypesWhichRequireContext.has(node.type)) { return; }
-		try{
-			switch (node.objectType) {
-				case ObjectIdentifierTypes.Symbol: {
-					this.verifySymbol(node as SymbolDeclaration, options);
-					break;
-				}
-				case ObjectIdentifierTypes.Reference: {
-					this.verifyReference(node as Reference, options);
-				}
-			}
+		try {
+			const applicableChecks = this.checks.filter(c=> c.isApplicable(node));
+			this.diagnostics.concat(applicableChecks.flatMap(c=> c.check(node, options)));
+			// switch (node.objectType) {
+			// 	case ObjectIdentifierTypes.Symbol: {
+			// 		this.verifySymbol(node as SymbolDeclaration, options);
+			// 		break;
+			// 	}
+			// 	case ObjectIdentifierTypes.Reference: {
+			// 		this.verifyReference(node as Reference, options);
+			// 	}
+			// }
 		}
-		catch (error:any){
-			this.addError(node.range,ModelChecker.messages.VALIDATION_ERROR(error.message, node));
+		catch (error: any) {
+			this.addError(node.range, ModelChecker.messages.VALIDATION_ERROR(error.message, node));
 		}
 	}
 
@@ -376,6 +389,6 @@ export class ModelChecker {
 		);
 	}
 
-	
+
 
 }
