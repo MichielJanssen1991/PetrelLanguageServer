@@ -214,7 +214,52 @@
 		"element": "decoration"
 	},
 	{
-		"element": "action"
+		"element": "action",
+		"description":"The action to perform.",
+		"attributes":[
+			{
+				"name": "name",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							"rule",
+							"infoset"							
+						]
+					},
+					{
+						"type": "relation",
+						"related-to": "backend-actions"
+					}
+
+				]
+			},
+			{
+				"name": "input-all"
+			},
+			{
+				"name": "output-all"
+			},
+			{
+				"name": "dataless",
+				"description": "If the standard added data argument should be left out. It is now left out by default for performance (unless input-all is set). (Currently, only applicable for frontend calls to server actions.)"
+			},
+			{
+				"name": "rulename"
+			},
+			{
+				"name": "user-created",
+				"description": "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
+				"conditions":[
+					{
+						"name": "name",
+						"condition": "==",
+						"value": "rule"
+					}
+				]
+			},
+		]	
+
 	},
 	{
 		"element": "include-blocks"

@@ -1,0 +1,42 @@
+{
+	"element": "",				// xml definition of the element
+	"description": "",			// documentation
+	"attributes":[				// possible element attributes
+		{
+			"name": "",
+			"description": "",	// documentation
+			"validation": {
+				"type": "",			// options: regex, ...
+				"value": "",		
+				"message": ""		// validation message
+			},
+			"type": "",				// options: enum, relation, ...
+			"types": [				// if multiple options are needed like enum & relation
+
+			],
+			"options": [			// options to specify type options
+				{
+					"name": "",
+					"description": "" // documentation
+				}
+			],
+			"required": true,
+			"conditions": [			// whether an attribute is visible or not
+				{
+					"attribute": "", // attribute name
+					"condition": "",
+					"value": ""
+				}
+			]
+		}		
+	],
+	"childs":[						// possible child elements
+		{
+			"element": "",
+			"occurence": "once"		// options: multiple, once. Default is multiple
+		}
+	],
+	"parents":[						// should we define parents too????
+
+	]
+} 
