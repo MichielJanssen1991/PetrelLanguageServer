@@ -1,29 +1,27 @@
-import { NAMES } from '../../model-definition/attributes';
-import { ModelDetailLevel, ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolOrReference } from '../../model-definition/symbolsAndReferences';
-import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
-import { ModelCheck } from '../modelCheck';
-import { ModelCheckerOptions } from '../modelChecker';
-import { CHECKS_MESSAGES } from './messages';
 
-export class RuleLoopActionCallCheck extends ModelCheck {
-	protected modelElementType = ModelElementTypes.Action
-	protected objectType = ObjectIdentifierTypes.Reference
+import { NAMES } from '../../../model-definition/attributes';
+import { ModelElementTypes, SymbolOrReference, Reference, ModelDetailLevel } from '../../../model-definition/symbolsAndReferences';
+import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
+import { CHECKS_MESSAGES } from '../../messages';
+import { ModelCheckerOptions } from '../../modelChecker';
+import { ActionCallCheck } from './actionCallCheck';
+
+export class RuleLoopActionCallCheck extends ActionCallCheck {
 	protected matchCondition = (node: SymbolOrReference) => node.name.toLowerCase() == "ruleloopaction";
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);
-
 	}
 
-	protected checkInternal(node: SymbolOrReference, options: ModelCheckerOptions) {
-		this.verifyRuleLoopActionCall(node as Reference, options);
-	}
-
-	private verifyRuleLoopActionCall(reference: Reference, options: ModelCheckerOptions) {
+	protected verifyActionCall(reference: Reference, options: ModelCheckerOptions) {
 		const ruleNameNotSpecified = this.verifyMandatoryAttributeProvided(reference, NAMES.ATTRIBUTE_RULE, true);
 		if (ruleNameNotSpecified) {
 			this.addError(reference.range, CHECKS_MESSAGES.RULELOOPACTIONCALL_WITHOUT_NAME());
 		}
+
+		this.verifyReferencedObjectsMandatoryInputsProvided(reference, reference);
+		this.verifyInputsAreKnownInReferencedObjects(reference);
+		this.verifyOutputsAreKnownInReferencedObjects(reference);
 
 		if (options.detailLevel >= ModelDetailLevel.ArgumentReferences) {
 			Object.values(reference.attributeReferences).forEach(subRef => {
@@ -32,16 +30,6 @@ export class RuleLoopActionCallCheck extends ModelCheck {
 		}
 
 		return !ruleNameNotSpecified;
-	}
-
-	private verifyMandatoryAttributeProvided(reference: Reference, attributeName: string, argumentAllowed: boolean) {
-		const attribute = reference.attributeReferences[attributeName];
-		let attributeMissing = !attribute || attribute?.name == "" || attribute?.name == undefined;
-		if (attributeMissing && argumentAllowed) {
-			const argumentNotPassed = reference.children.find(x => x.type == ModelElementTypes.Input && x.name == attributeName) == undefined;
-			attributeMissing = attributeMissing && argumentNotPassed;
-		}
-		return attributeMissing;
 	}
 
 	private verifyReferencedObjectsMandatoryInputsProvidedForRuleLoop(reference: Reference, subRef: Reference) {
@@ -73,4 +61,11 @@ export class RuleLoopActionCallCheck extends ModelCheck {
 		}
 	}
 
+	protected getAdditionalInputsForSpecificAction(reference: Reference) {
+		return [];
+	}
+
+	protected getAdditionalOutputsForSpecificAction(reference: Reference) {
+		return [];
+	}
 }

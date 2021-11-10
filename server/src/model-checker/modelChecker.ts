@@ -3,12 +3,15 @@ import { ModelElementTypes, SymbolDeclaration, ModelDetailLevel, ObjectIdentifie
 import { removeFilesFromDirectories } from '../util/fs';
 import { objectsTypesWhichRequireContext } from '../model-definition/declarations';
 import { ModelCheck } from './modelCheck';
-import { ActionCallCheck } from './checks/actionCallCheck';
 import { InfosetDeclarationCheck } from './checks/infosetDeclarationCheck';
 import { ReferencedObjectExistsCheck } from './checks/referencedObjectExistsCheck';
 import { SymbolIsReferencedCheck } from './checks/symbolIsReferencedCheck';
 import { ModelManager } from '../symbol-and-reference-manager/modelManager';
-import { CHECKS_MESSAGES } from './checks/messages';
+import { CHECKS_MESSAGES } from './messages';
+import { DataActionCallCheck } from './checks/actionCallChecks/dataActionCallCheck';
+import { InfosetCallCheck } from './checks/actionCallChecks/infosetCallCheck';
+import { RuleCallCheck } from './checks/actionCallChecks/ruleCallCheck';
+import { RuleLoopActionCallCheck } from './checks/actionCallChecks/ruleLoopActionCallCheck';
 
 export type ModelCheckerOptions = {
 	maxNumberOfProblems?: number,
@@ -27,7 +30,10 @@ export class ModelChecker {
 	constructor(modelManager: ModelManager) {
 		this.modelManager = modelManager;
 
-		this.checks.push(new ActionCallCheck(modelManager));
+		this.checks.push(new InfosetCallCheck(modelManager));
+		this.checks.push(new RuleCallCheck(modelManager));
+		this.checks.push(new DataActionCallCheck(modelManager));
+		this.checks.push(new RuleLoopActionCallCheck(modelManager));
 		this.checks.push(new InfosetDeclarationCheck(modelManager));
 		this.checks.push(new ReferencedObjectExistsCheck(modelManager));
 		this.checks.push(new SymbolIsReferencedCheck(modelManager));

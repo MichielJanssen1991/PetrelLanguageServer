@@ -1,4 +1,4 @@
-import { Reference, SymbolDeclaration } from '../../model-definition/symbolsAndReferences';
+import { Reference, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
 
 export const CHECKS_MESSAGES = {
 	RULECALL_WITHOUT_NAME: () => "Rule call without rule name specified.",
