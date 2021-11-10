@@ -2,7 +2,7 @@ import { ModelDetailLevel, ModelElementTypes, ObjectIdentifierTypes, Reference, 
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
-import { CHECKS_MESSAGES } from './messages';
+import { CHECKS_MESSAGES } from '../messages';
 
 export class ReferencedObjectExistsCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.All
