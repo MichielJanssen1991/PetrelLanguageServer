@@ -10,7 +10,7 @@ export abstract class FileParser {
 	constructor(uri: string, detailLevel: ModelDetailLevel) {
 		this.uri = uri;
 		this.detailLevel = detailLevel;
-		const rootNode = newSymbolDeclaration("root", ModelElementTypes.Unknown, LSP.Range.create({ character: 0, line: 0 }, { character: 0, line: 0 }), uri, false);
+		const rootNode = newSymbolDeclaration("root", "root", ModelElementTypes.Unknown, LSP.Range.create({ character: 0, line: 0 }, { character: 0, line: 0 }), uri, false);
 		this.results = { problems: [], tree: rootNode };
 	}
 

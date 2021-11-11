@@ -1,19 +1,29 @@
 import * as LSP from 'vscode-languageserver';
 import { symbolDeclarationDefinitions } from '../../model-definition/declarations';
 import { referenceDefinitions } from '../../model-definition/references';
-import { newReference, Reference, SymbolDeclaration, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference } from '../../model-definition/symbolsAndReferences';
+import { newReference, Reference, SymbolDeclaration, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, NewDefinition } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
-import { ISaxParserExtended, newSaxParserExtended } from './saxParserExtended';
+import { ISaxParserExtended, newSaxParserExtended, ProcessingInstruction } from './saxParserExtended';
 
-
+export enum ModelFileContext {
+	Backend,
+	Frontend,
+	Rules,
+	Infosets,
+	Unknown
+}
 export class ModelParser extends FileParser implements INodeContext {
 	private parser: ISaxParserExtended;
 	private parsedObjectStack: { depth: number, parsedObject: SymbolOrReference }[]
+	private context: ModelFileContext = ModelFileContext.Unknown
+	private contextModelDefinition: NewDefinition[] = [];
+	private contextModelDefinitions: Record<ModelFileContext, NewDefinition[]>;
 
-	constructor(uri: string, detailLevel: ModelDetailLevel) {
+	constructor(uri: string, detailLevel: ModelDetailLevel, definitions: Record<ModelFileContext, NewDefinition[]>) {
 		super(uri, detailLevel);
-		this.parser = newSaxParserExtended(this.onError.bind(this), this.onOpenTag.bind(this), this.onCloseTag.bind(this));
+		this.parser = newSaxParserExtended(this.onError.bind(this), this.onOpenTag.bind(this), this.onCloseTag.bind(this), this.onProcessingInstruction.bind(this));
 		this.parsedObjectStack = [];
+		this.contextModelDefinitions = definitions;
 
 		this.parsedObjectStack.push({ depth: -1, parsedObject: this.results.tree });
 	}
@@ -54,6 +64,7 @@ export class ModelParser extends FileParser implements INodeContext {
 
 	private onOpenTag(node: any) {
 		const tagName = node.name;
+		this.validateNode(node);
 		const definitions = symbolDeclarationDefinitions[tagName];
 		let symbol, reference;
 		if (definitions) {
@@ -82,6 +93,20 @@ export class ModelParser extends FileParser implements INodeContext {
 
 	private onCloseTag() {
 		this.processParsedObjectStack();
+	}
+
+	private onProcessingInstruction(instruction: ProcessingInstruction) {
+		if (instruction.name == "cp-edit") {
+			switch (instruction.body.split("/")[1]) {
+				case "rules": this.context = ModelFileContext.Rules; break;
+				case "backend": this.context = ModelFileContext.Backend; break;
+				case "frontend": this.context = ModelFileContext.Frontend; break;
+				case "infosets": this.context = ModelFileContext.Infosets; break;
+				default: break;
+			}
+		}
+		this.contextModelDefinition = this.contextModelDefinitions[this.context];
+		return;
 	}
 
 	private getNameSpace(): string {
@@ -137,12 +162,14 @@ export class ModelParser extends FileParser implements INodeContext {
 			const name = this.parseNodeForName(definition, node);
 			const isObsolete = node.attributes.obsolete == "yes";
 			const comment = node.attributes.comment;
-			const symbol: SymbolDeclaration = newSymbolDeclaration(name, definition.type, this.getRange(), this.uri, isObsolete, comment);
+			const symbol: SymbolDeclaration = newSymbolDeclaration(name, node.name, definition.type, this.getRange(), this.uri, isObsolete, comment);
 			symbol.otherAttributes = this.parseOtherAttributes(definition, node);
 			symbol.attributeReferences = this.parseAtributeRerences(definition, node);
 			symbol.contextQualifiers = this.parseContextQualifiers(definition, node);
 			return symbol;
 		}
+
+
 		return undefined;
 	}
 
@@ -150,7 +177,7 @@ export class ModelParser extends FileParser implements INodeContext {
 		const conditionMatches = this.conditionMatches(definition, node, this);
 		if (conditionMatches && this.detailLevel >= definition.detailLevel) {
 			const name = this.parseNodeForName(definition, node);
-			const reference = newReference(name, definition.type, this.getRange(), this.uri);
+			const reference = newReference(name, node.name, definition.type, this.getRange(), this.uri);
 
 			reference.otherAttributes = this.parseOtherAttributes(definition, node);
 			reference.attributeReferences = this.parseAtributeRerences(definition, node);
@@ -160,6 +187,32 @@ export class ModelParser extends FileParser implements INodeContext {
 		return undefined;
 	}
 
+	private validateNode(node: any) {
+		const tagNameParent = this.parser.getFirstParent()?.name;
+		const parentDefinition = this.contextModelDefinition?.find(x => x.element == tagNameParent);
+		const tagName = node.name;
+		if (parentDefinition?.childs) {
+			const childSelected = parentDefinition.childs.find(x => x.element == tagName);
+			if (!childSelected) {
+				const childNames = parentDefinition.childs.map(x=> x.element);
+				this.addError(`Invalid child: Tag ${tagName} not known for parent: '${tagNameParent}'. Valid children are: ${childNames}`);
+			}
+		}
+		
+		const definition = this.contextModelDefinition?.find(x => x.element == tagName);
+		if (!definition) {
+			this.addError(`No definition found for tag: '${tagName}'`);
+		}
+	}
+
+	private addError(message: string) {
+		this.results.problems.push(LSP.Diagnostic.create(
+			this.getRange(),
+			message,
+			LSP.DiagnosticSeverity.Error
+		));
+	}
+
 	private parseAtributeRerences(definition: Definition, node: any): Record<string, Reference> {
 		const attributeReferences: Record<string, Reference> = {};
 		if (definition.attributeReferences) {
@@ -167,7 +220,7 @@ export class ModelParser extends FileParser implements INodeContext {
 				const attributeName = attributeRefDefinition.attribute;
 				const attributeValue = node.attributes[attributeName];
 				if (attributeValue) {
-					const attributeReference = newReference(attributeValue, attributeRefDefinition.type, this.getRange(), this.uri);
+					const attributeReference = newReference(attributeValue, node.name, attributeRefDefinition.type, this.getRange(), this.uri);
 					attributeReference.contextQualifiers = this.getContextQualifiers();
 					attributeReferences[attributeName] = attributeReference;
 				}

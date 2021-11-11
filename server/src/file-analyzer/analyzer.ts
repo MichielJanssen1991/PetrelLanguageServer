@@ -4,13 +4,14 @@ import * as LSP from 'vscode-languageserver';
 import { Position, TextDocument } from 'vscode-languageserver-textdocument';
 
 import { filePathToFileURL, getFileExtension, getJavascriptFilePaths, getModelFilePaths } from '../util/fs';
-import { ModelDetailLevel } from '../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, NewDefinition } from '../model-definition/symbolsAndReferences';
 import { time, timeEnd } from 'console';
 import { getContextFromLine, wordAtPoint } from '../util/xml';
-import { ModelParser } from './parser/modelParser';
+import { ModelFileContext, ModelParser } from './parser/modelParser';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { JavascriptParser } from './parser/javascriptParser';
 import { FileParser } from './parser/fileParser';
+import { BACKEND_DEFINITION } from '../model-definition/backend';
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -20,9 +21,11 @@ const readFileAsync = promisify(fs.readFile);
 export class Analyzer {
 	private symbolAndReferenceManager: SymbolAndReferenceManager;
 	private uriToTextDocument: { [uri: string]: TextDocument } = {};
+	private modelDefinitions: Record<string, NewDefinition[]> = {};
 
 	constructor(symbolAndReferenceManager: SymbolAndReferenceManager) {
 		this.symbolAndReferenceManager = symbolAndReferenceManager;
+		this.modelDefinitions[ModelFileContext.Backend] = BACKEND_DEFINITION;
 	}
 
 	/**
@@ -86,9 +89,9 @@ export class Analyzer {
 		const extension = getFileExtension(uri);
 		let parser:FileParser;
 		switch (extension) {
-			case "xml": parser = new ModelParser(uri, detailLevel); break;
+			case "xml": parser = new ModelParser(uri, detailLevel, this.modelDefinitions as Record<ModelFileContext, NewDefinition[]>); break;
 			case "js": parser = new JavascriptParser(uri); break;
-			default: parser = new ModelParser(uri, detailLevel); break;
+			default: parser = new ModelParser(uri, detailLevel, this.modelDefinitions as Record<ModelFileContext, NewDefinition[]>); break;
 		}
 
 		const results = parser.parseFile(contents);

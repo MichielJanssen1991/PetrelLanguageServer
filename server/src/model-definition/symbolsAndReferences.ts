@@ -51,6 +51,7 @@ export enum ModelDetailLevel {
 
 export interface ObjectIdentifier {
 	name: string,
+	tag: string,
 	type: ModelElementTypes,
 	identifier: string,
 	range: LSP.Range,
@@ -76,9 +77,10 @@ export interface SymbolDeclaration extends ObjectIdentifier {
 
 export type SymbolOrReference = SymbolDeclaration | Reference;
 
-export function newReference(name: any, type: ModelElementTypes, range: LSP.Range, uri: string): Reference {
+export function newReference(name: string, tag:string, type: ModelElementTypes, range: LSP.Range, uri: string): Reference {
 	return {
 		name,
+		tag,
 		type,
 		identifier: objectIdentifier(name, type, range),
 		range,
@@ -94,10 +96,11 @@ export function newReference(name: any, type: ModelElementTypes, range: LSP.Rang
 	};
 }
 
-export function newSymbolDeclaration(name: any, type: ModelElementTypes, range: LSP.Range, uri: string, isObsolete: boolean, comment?: string): SymbolDeclaration {
+export function newSymbolDeclaration(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, isObsolete: boolean, comment?: string): SymbolDeclaration {
 	return {
 		name,
 		type,
+		tag,
 		identifier: objectIdentifier(name, type, range),
 		range,
 		get rangeExtended() {
@@ -143,3 +146,40 @@ function extendedRange(object: ObjectIdentifier): LSP.Range {
 	}, object.range.end);
 	return { start: startPosition, end: endPosition };
 }
+
+
+
+export type NewDefinition = {
+	element: string,
+	description?: string,
+	attributes?: ElementAttributes[],
+	childs?: ChildDefinition[],
+	parent?: any,
+	type?:string,
+	types?:string[]
+}
+
+export type ChildDefinition = {
+	element:string,
+	occurence?: "once",
+}
+
+export type ElementAttributes = {
+	name:string,
+	description?: string,
+	validation?: AttributeValidation,
+	required?: boolean,
+	type?:AttributeType,
+	types?:AttributeType[],
+	options?:any,
+	relatedto?:string,
+	conditions?:any
+}
+
+export type AttributeValidation = {
+	type:string,
+	value: string,
+	message: string
+}
+
+export type AttributeType = any

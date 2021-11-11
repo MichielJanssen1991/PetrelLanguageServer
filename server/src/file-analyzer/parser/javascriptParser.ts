@@ -78,7 +78,7 @@ export class JavascriptParser extends FileParser {
 
 	private addAction(actionName: any, range: LSP.Range) {
 		actionName = removeActionPostfix(actionName);
-		const symbol = newSymbolDeclaration(actionName, ModelElementTypes.Action, range, this.uri, false);
+		const symbol = newSymbolDeclaration(actionName, "", ModelElementTypes.Action, range, this.uri, false);
 		this.addSymbolDeclaration(symbol);
 
 		function removeActionPostfix(actionName: string): any {

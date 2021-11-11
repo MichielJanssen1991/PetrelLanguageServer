@@ -4,6 +4,7 @@ const sax = require("../../../node_modules/sax/lib/sax");
 
 // Define the interface for the parser from the sax module
 export interface ISaxParser {
+	onprocessinginstruction: any,
 	onerror: any,
 	ontext: any,
 	onend: any,
@@ -21,6 +22,11 @@ export interface ISaxParser {
 	tags: any,
 }
 
+export type ProcessingInstruction = {
+	name: string,
+	body: string
+}
+
 
 // Extend with own functionality used for parsing model xml
 export interface ISaxParserExtended extends ISaxParser {
@@ -35,7 +41,8 @@ export interface ISaxParserExtended extends ISaxParser {
 export function newSaxParserExtended(
 	onerror: ((e: any, parser: ISaxParserExtended) => void),
 	onopentag: ((node: any, parser: ISaxParserExtended) => void),
-	onclosetag: (() => void)
+	onclosetag: (() => void),
+	onprocessinginstruction: ((instruction: ProcessingInstruction) => void)
 ): ISaxParserExtended {
 	const parser = sax.parser(true) as ISaxParserExtended;
 
@@ -51,6 +58,10 @@ export function newSaxParserExtended(
 
 	parser.onclosetag = function () {
 		onclosetag();
+	};
+
+	parser.onprocessinginstruction = function (instruction: ProcessingInstruction) {
+		onprocessinginstruction(instruction);
 	};
 
 	parser.getFirstParent = function () {
