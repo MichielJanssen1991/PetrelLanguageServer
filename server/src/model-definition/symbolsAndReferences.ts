@@ -57,7 +57,7 @@ export interface ObjectIdentifier {
 	fullRange: LSP.Range,
 	uri: string,
 	objectType: ObjectIdentifierTypes,
-	children: (Reference|SymbolDeclaration)[]
+	children: (Reference | SymbolDeclaration)[]
 }
 
 export interface Reference extends ObjectIdentifier {
@@ -76,14 +76,14 @@ export interface SymbolDeclaration extends ObjectIdentifier {
 
 export type SymbolOrReference = SymbolDeclaration | Reference;
 
-export function newReference(name: string, tag:string, type: ModelElementTypes, range: LSP.Range, uri: string): Reference {
+export function newReference(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string): Reference {
 	return {
 		name,
 		tag,
 		type,
 		identifier: objectIdentifier(name, type, range),
 		range,
-		fullRange:range,
+		fullRange: LSP.Range.create(range.start, range.end),
 		children: [],
 		uri,
 		otherAttributes: {},
@@ -100,7 +100,7 @@ export function newSymbolDeclaration(name: string, tag: string, type: ModelEleme
 		tag,
 		identifier: objectIdentifier(name, type, range),
 		range,
-		fullRange:range,
+		fullRange: LSP.Range.create(range.start, range.end),
 		uri,
 		children: [],
 		otherAttributes: {},
@@ -138,29 +138,29 @@ export type NewDefinition = {
 	attributes?: ElementAttributes[],
 	childs?: ChildDefinition[],
 	parent?: any,
-	type?:string,
-	types?:string[]
+	type?: string,
+	types?: string[]
 }
 
 export type ChildDefinition = {
-	element:string,
+	element: string,
 	occurence?: "once",
 }
 
 export type ElementAttributes = {
-	name:string,
+	name: string,
 	description?: string,
 	validation?: AttributeValidation,
 	required?: boolean,
-	type?:AttributeType,
-	types?:AttributeType[],
-	options?:any,
-	relatedto?:string,
-	conditions?:any
+	type?: AttributeType,
+	types?: AttributeType[],
+	options?: any,
+	relatedto?: string,
+	conditions?: any
 }
 
 export type AttributeValidation = {
-	type:string,
+	type: string,
 	value: string,
 	message: string
 }

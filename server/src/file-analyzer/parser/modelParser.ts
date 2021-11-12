@@ -193,17 +193,19 @@ export class ModelParser extends FileParser implements INodeContext {
 
 	private validateNode(node: any) {
 		const tagName = node.name;
-		const definition = this.contextModelDefinition?.find(x => x.element == tagName);
-		if (!definition) {
-			this.addError(`No definition found for tag: '${tagName}'`);
-		} else {
-			const tagNameParent = this.parser.getFirstParent()?.name;
-			const parentDefinition = this.contextModelDefinition?.find(x => x.element == tagNameParent);
-			if (parentDefinition?.childs) {
-				const childSelected = parentDefinition.childs.find(x => x.element == tagName);
-				if (!childSelected) {
-					const childNames = parentDefinition.childs.map(x => x.element);
-					this.addError(`Invalid child: Tag ${tagName} not known for parent: '${tagNameParent}'. Valid children are: ${childNames}`);
+		if (this.contextModelDefinition.length > 0) {
+			const definition = this.contextModelDefinition.find(x => x.element == tagName);
+			if (!definition) {
+				this.addError(`No definition found for tag: '${tagName}'`);
+			} else {
+				const tagNameParent = this.parser.getFirstParent()?.name;
+				const parentDefinition = this.contextModelDefinition?.find(x => x.element == tagNameParent);
+				if (parentDefinition?.childs) {
+					const childSelected = parentDefinition.childs.find(x => x.element == tagName);
+					if (!childSelected) {
+						const childNames = parentDefinition.childs.map(x => x.element);
+						this.addError(`Invalid child: Tag ${tagName} not known for parent: '${tagNameParent}'. Valid children are: ${childNames}`);
+					}
 				}
 			}
 		}
