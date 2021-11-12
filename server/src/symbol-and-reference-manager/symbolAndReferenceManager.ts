@@ -1,6 +1,7 @@
 import FuzzySearch = require('fuzzy-search');
 import { Position } from 'vscode-languageserver-types';
 import { objectsTypesWhichRequireContext } from '../model-definition/declarations';
+import { ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { flattenNestedListObjects, flattenNestedObjectValues, flattenObjectValues } from '../util/array';
 import { pointIsInRange } from '../util/other';
@@ -10,11 +11,13 @@ type FileSymbols = { [uri: string]: Symbols }
 type References = { [name: string]: Reference[] }
 type FileReferences = { [uri: string]: References }
 type FileTrees = { [uri: string]: SymbolDeclaration }
+type FileContexts = { [uri: string]: ModelFileContext|undefined }
 
 export class SymbolAndReferenceManager {
 	private uriToSymbols: FileSymbols = {};
 	private uriToReferences: FileReferences = {};
 	private uriToTree: FileTrees = {};
+	private uriToModelFileContext: FileContexts = {};
 	private get symbolsByName(): Symbols {
 		if (!this.symbolsByNameCached) {
 			this.symbolsByNameCached = flattenNestedListObjects(this.uriToSymbols);
@@ -42,12 +45,13 @@ export class SymbolAndReferenceManager {
 	/**
 	 * Update the tree for a given file
 	 */
-	public updateTree(url: string, tree: SymbolDeclaration) {
+	public updateTree(url: string, tree: SymbolDeclaration, modelFileContext?:ModelFileContext) {
 		this.referencesByNameCached = undefined;
 		this.symbolsByNameCached = undefined;
 		this.uriToTree[url] = tree;
 		this.uriToSymbols[url] = {};
 		this.uriToReferences[url] = {};
+		this.uriToModelFileContext[url] = modelFileContext;
 		this.walkNodes(tree);
 	}
 
@@ -118,6 +122,14 @@ export class SymbolAndReferenceManager {
 	}
 
 	/**
+	 * Returns the references for a given file
+	 */
+	public getModelFileContextForFile(uri: string) {
+		const context = this.uriToModelFileContext[uri];
+		return (context!=undefined)?context:ModelFileContext.Unknown;
+	}
+
+	/**
 	 * Returns the symbols for a given file and popsition
 	 */
 	public getSymbolsForPosition(uri: string, pos: Position) {
@@ -132,7 +144,7 @@ export class SymbolAndReferenceManager {
 			return this.getReferencesForFile(uri).filter(ref => pointIsInRange(ref.range, pos));
 		}
 		else {
-			return this.getReferencesForFile(uri).filter(ref => pointIsInRange(ref.rangeExtended, pos));
+			return this.getReferencesForFile(uri).filter(ref => pointIsInRange(ref.fullRange, pos));
 		}
 	}
 
@@ -167,7 +179,6 @@ export class SymbolAndReferenceManager {
 		});
 		return symbols;
 	}
-
 
 	/**
 	 * Find all the symbols where something named 'name' of type 'type' has been defined.

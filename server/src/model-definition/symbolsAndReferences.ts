@@ -1,5 +1,4 @@
 import * as LSP from 'vscode-languageserver';
-import { Position } from 'vscode-languageserver';
 
 export enum ModelElementTypes {
 	Infoset = "Infoset",
@@ -55,9 +54,9 @@ export interface ObjectIdentifier {
 	type: ModelElementTypes,
 	identifier: string,
 	range: LSP.Range,
+	fullRange: LSP.Range,
 	uri: string,
 	objectType: ObjectIdentifierTypes,
-	rangeExtended: LSP.Range
 	children: (Reference|SymbolDeclaration)[]
 }
 
@@ -84,9 +83,7 @@ export function newReference(name: string, tag:string, type: ModelElementTypes, 
 		type,
 		identifier: objectIdentifier(name, type, range),
 		range,
-		get rangeExtended() {
-			return extendedRange(this) ;
-		},
+		fullRange:range,
 		children: [],
 		uri,
 		otherAttributes: {},
@@ -103,9 +100,7 @@ export function newSymbolDeclaration(name: string, tag: string, type: ModelEleme
 		tag,
 		identifier: objectIdentifier(name, type, range),
 		range,
-		get rangeExtended() {
-			return extendedRange(this) ;
-		},
+		fullRange:range,
 		uri,
 		children: [],
 		otherAttributes: {},
@@ -136,18 +131,6 @@ export interface ModelAttributeReferenceDefinition {
 	detailLevel: ModelDetailLevel,
 	attribute: string,
 }
-
-function extendedRange(object: ObjectIdentifier): LSP.Range {
-	const startPosition: Position = (object.range.start);
-	const endPosition: Position = object.children.reduce((currentEnd, child) => {
-		const childEnd = child.range.end;
-		const childEndIsAfterCurrentEnd = childEnd.line > currentEnd.line || (childEnd.line >= currentEnd.line && childEnd.character > currentEnd.character);
-		return childEndIsAfterCurrentEnd ? childEnd : currentEnd;
-	}, object.range.end);
-	return { start: startPosition, end: endPosition };
-}
-
-
 
 export type NewDefinition = {
 	element: string,

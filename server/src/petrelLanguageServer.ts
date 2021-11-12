@@ -16,6 +16,7 @@ import * as fs from 'fs';
 import path = require('path');
 import { pointIsInRange } from './util/other';
 import { ModelManager } from './symbol-and-reference-manager/modelManager';
+import { ModelDefinitionManager } from './model-definition/modelDefinitionManager';
 
 interface DocumentSettings {
 	maxNumberOfProblems: number;
@@ -27,6 +28,7 @@ export default class PetrelLanguageServer {
 	private analyzer: Analyzer;
 	private connection: LSP._Connection;
 	private modelManager: ModelManager;
+	private modelDefinitionManager: ModelDefinitionManager;
 	private completionProvider: CompletionProvider;
 	private modelChecker: ModelChecker;
 	private documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -35,10 +37,11 @@ export default class PetrelLanguageServer {
 	private settings: DocumentSettings = PetrelLanguageServer.defaultSettings;
 
 	constructor(connection: LSP._Connection) {
+		this.modelDefinitionManager = new ModelDefinitionManager();
 		this.modelManager = new ModelManager();
-		this.analyzer = new Analyzer(this.modelManager);
+		this.analyzer = new Analyzer(this.modelManager, this.modelDefinitionManager);
 		this.modelChecker = new ModelChecker(this.modelManager);
-		this.completionProvider = new CompletionProvider(this.modelManager);
+		this.completionProvider = new CompletionProvider(this.modelManager, this.modelDefinitionManager);
 		this.connection = connection;
 
 		// Make the text document manager listen on the connection
@@ -57,7 +60,7 @@ export default class PetrelLanguageServer {
 		const languageServer = new PetrelLanguageServer(connection);
 		languageServer.settings = PetrelLanguageServer.getConfigSettings(rootPath);
 
-		languageServer.analyzer = await Analyzer.fromRoot({ connection, rootPath }, languageServer.modelManager, languageServer.settings);
+		languageServer.analyzer = await Analyzer.fromRoot({ connection, rootPath }, languageServer.modelManager, languageServer.modelDefinitionManager, languageServer.settings);
 		return languageServer;
 	}
 
@@ -133,7 +136,7 @@ export default class PetrelLanguageServer {
 					pointIsInRange(ref.range, pos));
 			}
 		}
-		return { word, references: referencesAtPosition, declarations: declarationsAtPosition, parentReference: parentReferenceAtPoint, inAttribute, tag };
+		return { word, references: referencesAtPosition, declarations: declarationsAtPosition, parentReference: parentReferenceAtPoint, inAttribute, tag, uri };
 	}
 
 	public onCompletion(params: TextDocumentPositionParams): CompletionItem[] {

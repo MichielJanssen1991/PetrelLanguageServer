@@ -4,14 +4,14 @@ import * as LSP from 'vscode-languageserver';
 import { Position, TextDocument } from 'vscode-languageserver-textdocument';
 
 import { filePathToFileURL, getFileExtension, getJavascriptFilePaths, getModelFilePaths } from '../util/fs';
-import { ModelDetailLevel, NewDefinition } from '../model-definition/symbolsAndReferences';
+import { ModelDetailLevel } from '../model-definition/symbolsAndReferences';
 import { time, timeEnd } from 'console';
 import { getContextFromLine, wordAtPoint } from '../util/xml';
-import { ModelFileContext, ModelParser } from './parser/modelParser';
+import { ModelParser } from './parser/modelParser';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { JavascriptParser } from './parser/javascriptParser';
 import { FileParser } from './parser/fileParser';
-import { BACKEND_DEFINITION } from '../model-definition/backend';
+import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -20,20 +20,24 @@ const readFileAsync = promisify(fs.readFile);
  */
 export class Analyzer {
 	private symbolAndReferenceManager: SymbolAndReferenceManager;
+	private modelDefinitionManager: ModelDefinitionManager;
 	private uriToTextDocument: { [uri: string]: TextDocument } = {};
-	private modelDefinitions: Record<string, NewDefinition[]> = {};
 
-	constructor(symbolAndReferenceManager: SymbolAndReferenceManager) {
+	constructor(symbolAndReferenceManager: SymbolAndReferenceManager, modelDefinitionManager:ModelDefinitionManager) {
 		this.symbolAndReferenceManager = symbolAndReferenceManager;
-		this.modelDefinitions[ModelFileContext.Backend] = BACKEND_DEFINITION;
+		this.modelDefinitionManager =  modelDefinitionManager;
 	}
 
 	/**
 	 * Initialize the Analyzer based on a connection to the client and a root path.	 
 	 */
-	public static async fromRoot({ connection, rootPath }: { connection: LSP.Connection, rootPath: string }, symbolAndReferenceManager: SymbolAndReferenceManager, options?: { skipFolders: string[] })
+	public static async fromRoot(
+		{ connection, rootPath }: { connection: LSP.Connection, rootPath: string }, 
+		symbolAndReferenceManager: SymbolAndReferenceManager, 
+		modelDefinitionManager: ModelDefinitionManager, 
+		options?: { skipFolders: string[] })
 		: Promise<Analyzer> {
-		const analyzer = new Analyzer(symbolAndReferenceManager);
+		const analyzer = new Analyzer(symbolAndReferenceManager, modelDefinitionManager);
 
 		if (rootPath) {
 			connection.console.log(`Analyzing files inside ${rootPath}`);
@@ -89,13 +93,13 @@ export class Analyzer {
 		const extension = getFileExtension(uri);
 		let parser:FileParser;
 		switch (extension) {
-			case "xml": parser = new ModelParser(uri, detailLevel, this.modelDefinitions as Record<ModelFileContext, NewDefinition[]>); break;
+			case "xml": parser = new ModelParser(uri, detailLevel, this.modelDefinitionManager); break;
 			case "js": parser = new JavascriptParser(uri); break;
-			default: parser = new ModelParser(uri, detailLevel, this.modelDefinitions as Record<ModelFileContext, NewDefinition[]>); break;
+			default: parser = new ModelParser(uri, detailLevel, this.modelDefinitionManager); break;
 		}
 
 		const results = parser.parseFile(contents);
-		this.symbolAndReferenceManager.updateTree(uri, results.tree);
+		this.symbolAndReferenceManager.updateTree(uri, results.tree, results.modelFileContext);
 		problems = problems.concat(results.problems);
 		timeEnd("Analyzing file for declarations and references");
 		return problems;

@@ -1,29 +1,23 @@
 import * as LSP from 'vscode-languageserver';
 import { symbolDeclarationDefinitions } from '../../model-definition/declarations';
+import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
 import { referenceDefinitions } from '../../model-definition/references';
-import { newReference, Reference, SymbolDeclaration, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, NewDefinition } from '../../model-definition/symbolsAndReferences';
+import { newReference, Reference, SymbolDeclaration, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, NewDefinition, ModelElementTypes } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
 import { ISaxParserExtended, newSaxParserExtended, ProcessingInstruction } from './saxParserExtended';
 
-export enum ModelFileContext {
-	Backend,
-	Frontend,
-	Rules,
-	Infosets,
-	Unknown
-}
 export class ModelParser extends FileParser implements INodeContext {
 	private parser: ISaxParserExtended;
 	private parsedObjectStack: { depth: number, parsedObject: SymbolOrReference }[]
 	private context: ModelFileContext = ModelFileContext.Unknown
 	private contextModelDefinition: NewDefinition[] = [];
-	private contextModelDefinitions: Record<ModelFileContext, NewDefinition[]>;
+	private modelDefinitionManager: ModelDefinitionManager;
 
-	constructor(uri: string, detailLevel: ModelDetailLevel, definitions: Record<ModelFileContext, NewDefinition[]>) {
+	constructor(uri: string, detailLevel: ModelDetailLevel, modelDefinitionManager: ModelDefinitionManager) {
 		super(uri, detailLevel);
 		this.parser = newSaxParserExtended(this.onError.bind(this), this.onOpenTag.bind(this), this.onCloseTag.bind(this), this.onProcessingInstruction.bind(this));
 		this.parsedObjectStack = [];
-		this.contextModelDefinitions = definitions;
+		this.modelDefinitionManager = modelDefinitionManager;
 
 		this.parsedObjectStack.push({ depth: -1, parsedObject: this.results.tree });
 	}
@@ -89,6 +83,11 @@ export class ModelParser extends FileParser implements INodeContext {
 				});
 			}
 		}
+
+		if (!symbol && !reference) {
+			symbol = newSymbolDeclaration(node.name, node.name, ModelElementTypes.Unknown, this.getRange(), this.uri, false);
+			this.pushToParsedObjectStack(symbol);
+		}
 	}
 
 	private onCloseTag() {
@@ -98,15 +97,20 @@ export class ModelParser extends FileParser implements INodeContext {
 	private onProcessingInstruction(instruction: ProcessingInstruction) {
 		if (instruction.name == "cp-edit") {
 			switch (instruction.body.split("/")[1]) {
-				case "rules": this.context = ModelFileContext.Rules; break;
-				case "backend": this.context = ModelFileContext.Backend; break;
-				case "frontend": this.context = ModelFileContext.Frontend; break;
-				case "infosets": this.context = ModelFileContext.Infosets; break;
+				case "rules": this.setModelFileContext(ModelFileContext.Rules); break;
+				case "backend": this.setModelFileContext(ModelFileContext.Backend); break;
+				case "frontend": this.setModelFileContext(ModelFileContext.Frontend); break;
+				case "infosets": this.setModelFileContext(ModelFileContext.Infosets); break;
 				default: break;
 			}
 		}
-		this.contextModelDefinition = this.contextModelDefinitions[this.context];
 		return;
+	}
+
+	private setModelFileContext(context: ModelFileContext) {
+		this.context = context;
+		this.contextModelDefinition = this.modelDefinitionManager.getModelDefinition(context);
+		this.results.modelFileContext = this.context;
 	}
 
 	private getNameSpace(): string {
@@ -150,6 +154,7 @@ export class ModelParser extends FileParser implements INodeContext {
 	private processParsedObjectFromStack(item: { depth: number; parsedObject: SymbolOrReference; }, lastIndex: number) {
 		const { parsedObject } = item;
 		parsedObject.contextQualifiers = this.getContextQualifiers();
+		parsedObject.fullRange.end = this.getRange().end;
 		const firstParent = lastIndex >= 0 ? this.parsedObjectStack[lastIndex] : undefined;
 		if (firstParent) {
 			this.parsedObjectStack[lastIndex].parsedObject.children.push(parsedObject);
@@ -169,7 +174,6 @@ export class ModelParser extends FileParser implements INodeContext {
 			return symbol;
 		}
 
-
 		return undefined;
 	}
 
@@ -188,20 +192,20 @@ export class ModelParser extends FileParser implements INodeContext {
 	}
 
 	private validateNode(node: any) {
-		const tagNameParent = this.parser.getFirstParent()?.name;
-		const parentDefinition = this.contextModelDefinition?.find(x => x.element == tagNameParent);
 		const tagName = node.name;
-		if (parentDefinition?.childs) {
-			const childSelected = parentDefinition.childs.find(x => x.element == tagName);
-			if (!childSelected) {
-				const childNames = parentDefinition.childs.map(x=> x.element);
-				this.addError(`Invalid child: Tag ${tagName} not known for parent: '${tagNameParent}'. Valid children are: ${childNames}`);
-			}
-		}
-		
 		const definition = this.contextModelDefinition?.find(x => x.element == tagName);
 		if (!definition) {
 			this.addError(`No definition found for tag: '${tagName}'`);
+		} else {
+			const tagNameParent = this.parser.getFirstParent()?.name;
+			const parentDefinition = this.contextModelDefinition?.find(x => x.element == tagNameParent);
+			if (parentDefinition?.childs) {
+				const childSelected = parentDefinition.childs.find(x => x.element == tagName);
+				if (!childSelected) {
+					const childNames = parentDefinition.childs.map(x => x.element);
+					this.addError(`Invalid child: Tag ${tagName} not known for parent: '${tagNameParent}'. Valid children are: ${childNames}`);
+				}
+			}
 		}
 	}
 

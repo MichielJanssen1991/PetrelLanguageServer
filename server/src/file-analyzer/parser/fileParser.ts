@@ -1,11 +1,12 @@
 import * as LSP from 'vscode-languageserver';
 import { Diagnostic } from 'vscode-languageserver';
+import { ModelFileContext } from '../../model-definition/modelDefinitionManager';
 import { ModelDetailLevel, ModelElementTypes, newSymbolDeclaration, SymbolDeclaration } from '../../model-definition/symbolsAndReferences';
 
 export abstract class FileParser {
 	protected uri: string;
 	protected detailLevel: ModelDetailLevel;
-	protected results: { problems: Diagnostic[], tree: SymbolDeclaration };
+	protected results: FileParserResults;
 
 	constructor(uri: string, detailLevel: ModelDetailLevel) {
 		this.uri = uri;
@@ -17,9 +18,8 @@ export abstract class FileParser {
 	abstract parseFile(fileContent: string): FileParserResults
 }
 
-
-
 export type FileParserResults = {
 	problems: Diagnostic[],
-	tree: SymbolDeclaration
+	tree: SymbolDeclaration,
+	modelFileContext?: ModelFileContext,
 }
