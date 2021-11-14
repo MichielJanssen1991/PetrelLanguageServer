@@ -6,7 +6,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
 import { formatFileURL } from './util/fs';
-import { ModelDetailLevel, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ObjectIdentifierTypes, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
 import { CompletionContext, CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
 
@@ -53,7 +53,7 @@ export default class PetrelLanguageServer {
 		this.documents.onDidChangeContent(change => {
 			this.onDocumentChangeContent(change);
 		});
-		
+
 	}
 
 	public static async fromRoot(connection: LSP._Connection, rootPath: string): Promise<PetrelLanguageServer> {
@@ -100,7 +100,7 @@ export default class PetrelLanguageServer {
 	private async validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
 		const uri = formatFileURL(textDocument.uri);
 		const parsingDiagnostics = this.analyzer.analyze(uri, textDocument, ModelDetailLevel.ArgumentReferences);
-		
+
 		time("Verifying references");
 		const referenceChecksDiagnostics = this.modelChecker.checkFile(uri);
 		timeEnd("Verifying references");
@@ -119,24 +119,11 @@ export default class PetrelLanguageServer {
 		const word = this.getWordAtPoint(params);
 		const uri = params.textDocument.uri;
 		const pos = params.position;
-		const { inAttribute, tag } = this.analyzer.contextFromLine(uri, pos);
+		const inAttribute = this.analyzer.contextFromLine(uri, pos);
 
-		//Find main reference if any
-		let referencesAtPosition = this.modelManager.getReferencesForPosition(uri, pos);
-		//Find main declaration if any
-		const declarationsAtPosition = this.modelManager.getSymbolsForPosition(uri, pos);
+		const {nodes, inTag} = this.modelManager.getNodesForPosition(uri, pos);
 
-		//If no reference found possibly a child reference
-		let parentReferenceAtPoint;
-		if (referencesAtPosition.length == 0) {
-			const parentReferencesAtPoint = this.modelManager.getReferencesForPosition(uri, pos, true);
-			if (parentReferencesAtPoint.length > 0) {
-				const parentReferenceAtPoint = parentReferencesAtPoint[0];
-				referencesAtPosition = parentReferenceAtPoint.children.filter(ref =>
-					pointIsInRange(ref.range, pos));
-			}
-		}
-		return { word, references: referencesAtPosition, declarations: declarationsAtPosition, parentReference: parentReferenceAtPoint, inAttribute, tag, uri };
+		return { word, nodes, inTag, inAttribute, uri };
 	}
 
 	public onCompletion(params: TextDocumentPositionParams): CompletionItem[] {
@@ -151,30 +138,32 @@ export default class PetrelLanguageServer {
 
 	public onDefinition(params: TextDocumentPositionParams) {
 		const context = this.getContext(params);
-		const { references, word } = context;
+		const { nodes, word } = context;
 		this.logRequest({ request: 'onDefinition', params, context });
 		let symbols: SymbolDeclaration[] = [];
-		if (references.length > 0) {
-			const possibleReferencesSelected = references.filter(x => x.name == word || x.name.endsWith(`.${word}`));
+		if (nodes.length > 0) {
+			const lastNode = context.nodes[nodes.length - 1];
+			const possibleReferencesSelected = [lastNode, ...Object.values(lastNode.attributeReferences)].filter(x => x.objectType == ObjectIdentifierTypes.Reference && (x.name == word || x.name.endsWith(`.${word}`))) as Reference[];
 			symbols = possibleReferencesSelected
-			.map(ref => this.modelManager.getReferencedObject(ref))
-			.filter(x=> (x!=undefined)) as SymbolDeclaration[];
-		}else{
-			symbols = this.modelManager.findSymbolsMatchingWord({exactMatch:true,word});
+				.map(ref => this.modelManager.getReferencedObject(ref))
+				.filter(x => (x != undefined)) as SymbolDeclaration[];
+		} else {
+			symbols = this.modelManager.findSymbolsMatchingWord({ exactMatch: true, word });
 		}
 		return this.getSymbolDefinitionLocationLinks(symbols);
 	}
 
 	public onReference(params: TextDocumentPositionParams) {
 		const context = this.getContext(params);
-		const { declarations, word } = context;
+		const { nodes, word } = context;
 		this.logRequest({ request: 'onReference', params, context });
 		let references: Reference[] = [];
-		if (declarations.length > 0) {
-			const possibleDeclarationsSelected = declarations.filter(x => x.name == word || x.name.endsWith(`.${word}`));
+		if (nodes.length > 0) {
+			const lastNode = context.nodes[nodes.length - 1];
+			const possibleDeclarationsSelected = [lastNode].filter(x => x.objectType == ObjectIdentifierTypes.Symbol && (x.name == word || x.name.endsWith(`.${word}`))) as SymbolDeclaration[];
 			references = possibleDeclarationsSelected.flatMap(ref => this.modelManager.getReferencesForSymbol(ref));
-		}else{
-			references = this.modelManager.findSymbolsMatchingWord({exactMatch:true,word});
+		} else {
+			references = this.modelManager.findSymbolsMatchingWord({ exactMatch: true, word });
 		}
 
 		return this.getReferenceLocations(references);
@@ -204,11 +193,11 @@ export default class PetrelLanguageServer {
 		};
 		return locLink;
 	}
-	
+
 	private async getReferenceLocations(symbols: Reference[]): Promise<Location[]> {
 		return symbols.map((def) => this.referenceToLocation(def));
 	}
-	
+
 	private referenceToLocation(symbol: Reference): Location {
 		const locLink: Location = {
 			range: symbol.range,

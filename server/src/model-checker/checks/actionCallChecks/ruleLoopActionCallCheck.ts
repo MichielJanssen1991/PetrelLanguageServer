@@ -1,4 +1,3 @@
-
 import { NAMES } from '../../../model-definition/attributes';
 import { ModelElementTypes, SymbolOrReference, Reference, ModelDetailLevel } from '../../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';

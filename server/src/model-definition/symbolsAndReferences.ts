@@ -154,7 +154,7 @@ export type ElementAttributes = {
 	required?: boolean,
 	type?: AttributeType,
 	types?: AttributeType[],
-	options?: any,
+	options?: AttributeOption[],
 	relatedto?: string,
 	conditions?: any
 }
@@ -163,6 +163,11 @@ export type AttributeValidation = {
 	type: string,
 	value: string,
 	message: string
+}
+
+export type AttributeOption = {
+	name: string,
+	description: string,
 }
 
 export type AttributeType = any

@@ -11,7 +11,7 @@ type FileSymbols = { [uri: string]: Symbols }
 type References = { [name: string]: Reference[] }
 type FileReferences = { [uri: string]: References }
 type FileTrees = { [uri: string]: SymbolDeclaration }
-type FileContexts = { [uri: string]: ModelFileContext|undefined }
+type FileContexts = { [uri: string]: ModelFileContext | undefined }
 
 export class SymbolAndReferenceManager {
 	private uriToSymbols: FileSymbols = {};
@@ -45,7 +45,7 @@ export class SymbolAndReferenceManager {
 	/**
 	 * Update the tree for a given file
 	 */
-	public updateTree(url: string, tree: SymbolDeclaration, modelFileContext?:ModelFileContext) {
+	public updateTree(url: string, tree: SymbolDeclaration, modelFileContext?: ModelFileContext) {
 		this.referencesByNameCached = undefined;
 		this.symbolsByNameCached = undefined;
 		this.uriToTree[url] = tree;
@@ -126,7 +126,7 @@ export class SymbolAndReferenceManager {
 	 */
 	public getModelFileContextForFile(uri: string) {
 		const context = this.uriToModelFileContext[uri];
-		return (context!=undefined)?context:ModelFileContext.Unknown;
+		return (context != undefined) ? context : ModelFileContext.Unknown;
 	}
 
 	/**
@@ -220,4 +220,24 @@ export class SymbolAndReferenceManager {
 		const referencesToSymbol = (this.referencesByName[name] || []).filter(x => (x.type == symbol.type));
 		return referencesToSymbol;
 	}
+
+	/**
+	 * Get a list of nodes for the current position in the tree. Each node is a child of the previous node
+	 */
+	public getNodesForPosition(uri: string, position: Position) {
+		const nodes = [this.uriToTree[uri]]; 
+		this.addSubNodesForPosition(nodes, this.uriToTree[uri], position);
+		const inTag = pointIsInRange(nodes[nodes.length-1].range, position);
+		return {nodes, inTag};
+	}
+
+	private addSubNodesForPosition(nodes:SymbolOrReference[], node: SymbolOrReference, position: Position) {
+		const childNode = node.children.find(x=> pointIsInRange(x.fullRange, position));
+		if(childNode)
+		{
+			nodes.push(childNode);
+			this.addSubNodesForPosition(nodes, childNode, position);
+		}
+	}
+
 }

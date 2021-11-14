@@ -21,4 +21,9 @@ export class ModelDefinitionManager {
 		return this.contextToModelDefinition[context];
 	}
 
+	public getModelDefinitionForTag(context: ModelFileContext, tag:string)
+	{
+		return this.getModelDefinition(context).find(x => x.element == tag);
+	}
+
 }

@@ -1,21 +1,13 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
-import { ChildDefinition, ModelElementTypes, NewDefinition, Reference, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
+import { ChildDefinition, ModelElementTypes, NewDefinition, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import * as ReservedWords from '../model-definition/attributes';
-import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
-
-export enum CompletionItemDataType {
-	ReservedWord,
-	Symbol,
-	Snippet
-}
+import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 
 export type CompletionContext = {
 	inAttribute: boolean,
-	references: Reference[],
-	declarations: SymbolDeclaration[],
-	parentReference?: Reference,
-	tag: string,
+	inTag: boolean
+	nodes: SymbolOrReference[],
 	word: string,
 	uri: string
 }
@@ -23,27 +15,31 @@ export type CompletionContext = {
 export class CompletionProvider {
 	private symbolAndReferenceManager: SymbolAndReferenceManager;
 	private modelDefinitionManager: ModelDefinitionManager;
-	
-	constructor(symbolAndReferenceManager: SymbolAndReferenceManager, modelDefinitionManager:ModelDefinitionManager) {
+
+	constructor(symbolAndReferenceManager: SymbolAndReferenceManager, modelDefinitionManager: ModelDefinitionManager) {
 		this.symbolAndReferenceManager = symbolAndReferenceManager;
 		this.modelDefinitionManager = modelDefinitionManager;
 	}
 
 	public getCompletionItems(context: CompletionContext): CompletionItem[] {
-		const { word, inAttribute, tag } = context;
+		const { word, inTag, inAttribute, uri } = context;
+		const modelFileContext = this.symbolAndReferenceManager.getModelFileContextForFile(uri);
+		const numberOfNodes = context.nodes.length;
+		const lastNode = numberOfNodes > 0 ? context.nodes[numberOfNodes - 1] : undefined;
+
 		let symbolCompletions: CompletionItem[] = [];
-		if (inAttribute && word != null) {
-			symbolCompletions = this.getSymbolCompletions(context);
+		if (inAttribute && word != null && lastNode) {
+			symbolCompletions = this.getSymbolCompletions(lastNode, word);
 		}
 
 		let attributeCompletions: CompletionItem[] = [];
-		if (!inAttribute && tag != "") {
-			attributeCompletions = this.getAttributeCompletions(context);
+		if (!inAttribute && inTag && lastNode) {
+			attributeCompletions = this.getAttributeCompletions(lastNode, modelFileContext);
 		}
 
 		let childElementCompletions: CompletionItem[] = [];
-		if (tag == "") {
-			childElementCompletions = this.getChildElementCompletions(context);
+		if (!inTag && lastNode) {
+			childElementCompletions = this.getChildElementCompletions(lastNode, modelFileContext);
 		}
 
 		const allCompletions = [
@@ -60,25 +56,33 @@ export class CompletionProvider {
 		return allCompletions;
 	}
 
-	private getAttributeCompletions(context: CompletionContext) {
+	private getAttributeCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext) {
 		let attributeCompletions: CompletionItem[] = [];
-		const actionRef = context.references.find(x => x.type == ModelElementTypes.Action);
-		let attributesForAction: string[] = [];
-		if (actionRef) {
-			const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionRef);
-			attributesForAction = referencedAction?.children.filter(x => x.type == ModelElementTypes.Attribute).map(x => x.name) || [];
+		if (node) {
+			let attributesForAction: string[] = [];
+			if (node.type == ModelElementTypes.Action && node.objectType == ObjectIdentifierTypes.Reference) {
+				const actionRef = node as Reference;
+				const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionRef);
+				attributesForAction = referencedAction?.children.filter(x => x.type == ModelElementTypes.Attribute).map(x => x.name) || [];
+			}
+
+			//Using the old predefined attributes per tag (which will be removed later)
+			const attributesForTag: string[] = ReservedWords.ATTRIBUTES_PER_TAG[node.tag] || [];
+
+			//Using the new model definition
+			const modelDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, node.tag);
+			const attributesForTagNew = modelDefinition?.attributes?.map(x => x.name) || [];
+
+			const allAttributes = [...attributesForTag, ...attributesForAction, ...attributesForTagNew];
+			attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);
+			return attributeCompletions;
 		}
-		const attributesForTag = ReservedWords.ATTRIBUTES_PER_TAG[context.tag] || [];
-		const allAttributes = [...attributesForTag, ...attributesForAction];
-		attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);
-		return attributeCompletions;
+		return [];
 	}
 
-	private getSymbolCompletions(context: CompletionContext): CompletionItem[] {
-		const word = context.word;
+	private getSymbolCompletions(node: SymbolOrReference, word: string): CompletionItem[] {
 		let symbols = this.symbolAndReferenceManager.findSymbolsMatchingWord({ exactMatch: false, word });
-
-		const reference = context.references.find(x => x.name == word);
+		const reference = node.children.find(x => x.name == word);
 		if (reference) {
 			symbols = symbols.filter(x => x.type == reference.type);
 		}
@@ -86,19 +90,13 @@ export class CompletionProvider {
 		return symbolCompletions;
 	}
 
-	private getChildElementCompletions(context: CompletionContext): CompletionItem[] {
-		const modelFileContext = this.symbolAndReferenceManager.getModelFileContextForFile(context.uri);
-		const xmlDefinition = this.modelDefinitionManager.getModelDefinition(modelFileContext);
+	private getChildElementCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext): CompletionItem[] {
+		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, node.tag);
 		let childCompletions: CompletionItem[] = [];
-		if (xmlDefinition.length>0) {
-			const declarations = context.declarations;
-			const declaration = declarations.length > 0 ? declarations[declarations.length - 1] : undefined;
-			if (declaration) {
-				const elementDefintion = xmlDefinition.find(x => x.element == declaration.tag);
-				const children = elementDefintion?.childs;
-				if (children) {
-					childCompletions = this.mapChildrenToCompletionItems(children, xmlDefinition);
-				}
+		if (elementDefinition) {
+			const children = elementDefinition.childs;
+			if (children) {
+				childCompletions = this.mapChildrenToCompletionItems(children, modelFileContext);
 			}
 		}
 
@@ -110,8 +108,7 @@ export class CompletionProvider {
 			label: att,
 			kind: CompletionItemKind.Property,
 			data: {
-				name: att,
-				type: CompletionItemDataType.ReservedWord,
+				name: att
 			},
 			detail: "Attribute"
 		}));
@@ -123,8 +120,7 @@ export class CompletionProvider {
 				label: symbol.name,
 				kind: this.mapSymbolTypeToCompletionKind(symbol.type),
 				data: {
-					name: symbol.name,
-					type: CompletionItemDataType.Symbol
+					name: symbol.name
 				},
 				documentation: this.getDocumentationForSymbol(symbol),
 				detail: symbol.type
@@ -132,31 +128,42 @@ export class CompletionProvider {
 		);
 	}
 
-	private mapChildrenToCompletionItems(children: ChildDefinition[], xmlDefinition: NewDefinition[]): CompletionItem[] {
+	private mapChildrenToCompletionItems(children: ChildDefinition[], modelFileContext: ModelFileContext): CompletionItem[] {
 		return children.map(
 			(child: ChildDefinition) => {
-				const childsOwnDefinition = xmlDefinition.find(x => x.element == child.element);
-				const childsAttributes = childsOwnDefinition?.attributes;
-				let childPlaceHolders = childsAttributes?.map((x, i)=> `${x.name}="\${${i+1}}"`).join(" ");
-				childPlaceHolders = childPlaceHolders||""; 
-				const childChildren = childsOwnDefinition?.childs;
-				const snippet = childChildren != undefined && childChildren.length > 0
-					? `<${child.element} ${childPlaceHolders}> \n \${${(childsAttributes?.length||0)+1}} \n </${child.element}>`
-					: `<${child.element} ${childPlaceHolders} \${${(childsAttributes?.length||0)+1}}/>`;
+				const childsOwnDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, child.element);
+				const snippet = this.buildChildElementSnippet(child, childsOwnDefinition);
 				return {
 					label: child.element,
 					kind: CompletionItemKind.Snippet,
 					insertText: snippet,
 					insertTextFormat: InsertTextFormat.Snippet,
 					data: {
-						name: child.element,
-						type: CompletionItemDataType.Snippet
+						name: child.element
 					},
 					documentation: childsOwnDefinition?.description,
 					detail: childsOwnDefinition?.description
 				};
 			},
 		);
+	}
+
+	private buildChildElementSnippet(child: ChildDefinition, childsOwnDefinition?: NewDefinition) {
+		const elementName = child.element;
+		const childsAttributes = childsOwnDefinition?.attributes;
+		const attributes = childsAttributes?.map((x, i) => {
+			let attributeOptions = ""; 
+			if(x.options){
+				attributeOptions = `|${x.options.map(y=>y.name).join(',')}|`;
+			}
+			return `${x.name}="\${${i + 1}${attributeOptions}}"`;
+		}).join(" ") || "";
+		const childChildren = childsOwnDefinition?.childs;
+		const lastTab = `\${${(childsAttributes?.length || 0) + 1}}`;
+		const snippet = childChildren != undefined && childChildren.length > 0
+			? `<${elementName} ${attributes}> \n ${lastTab} \n </${elementName}>`
+			: `<${elementName} ${attributes} ${lastTab}/>`;
+		return snippet;
 	}
 
 	private getDocumentationForSymbol(symbol: SymbolDeclaration): string {

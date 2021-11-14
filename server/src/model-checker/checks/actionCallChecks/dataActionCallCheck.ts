@@ -1,5 +1,5 @@
 import { NAMES } from '../../../model-definition/attributes';
-import { ModelElementTypes, SymbolOrReference, Reference, ModelDetailLevel } from '../../../model-definition/symbolsAndReferences';
+import { SymbolOrReference, Reference, ModelDetailLevel } from '../../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
 import { ModelCheckerOptions } from '../../modelChecker';
 import { ActionCallCheck } from './actionCallCheck';

@@ -2,7 +2,7 @@ import * as LSP from 'vscode-languageserver';
 import { symbolDeclarationDefinitions } from '../../model-definition/declarations';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
 import { referenceDefinitions } from '../../model-definition/references';
-import { newReference, Reference, SymbolDeclaration, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, NewDefinition, ModelElementTypes } from '../../model-definition/symbolsAndReferences';
+import { newReference, Reference, SymbolDeclaration, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, NewDefinition, ModelElementTypes, ChildDefinition } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
 import { ISaxParserExtended, newSaxParserExtended, ProcessingInstruction } from './saxParserExtended';
 
@@ -12,6 +12,10 @@ export class ModelParser extends FileParser implements INodeContext {
 	private context: ModelFileContext = ModelFileContext.Unknown
 	private contextModelDefinition: NewDefinition[] = [];
 	private modelDefinitionManager: ModelDefinitionManager;
+	private static MESSAGES: any = {
+		NO_DEFINITION_FOUND_FOR_TAG: (tagName: string) => `No definition found for tag: '${tagName}'`,
+		INVALID_CHILD_TAG: (tagName: string, tagNameParent: string, validChildren: ChildDefinition[]) => `Invalid child: Tag ${tagName} not known for parent: '${tagNameParent}'. Valid children are: ${validChildren.map(x => x.element)}`,
+	}
 
 	constructor(uri: string, detailLevel: ModelDetailLevel, modelDefinitionManager: ModelDefinitionManager) {
 		super(uri, detailLevel);
@@ -49,11 +53,7 @@ export class ModelParser extends FileParser implements INodeContext {
 	}
 
 	private onError(e: any) {
-		this.results.problems.push(LSP.Diagnostic.create(
-			this.getRange(),
-			e.message,
-			LSP.DiagnosticSeverity.Error
-		));
+		this.addError(e.message);
 	}
 
 	private onOpenTag(node: any) {
@@ -196,15 +196,14 @@ export class ModelParser extends FileParser implements INodeContext {
 		if (this.contextModelDefinition.length > 0) {
 			const definition = this.contextModelDefinition.find(x => x.element == tagName);
 			if (!definition) {
-				this.addError(`No definition found for tag: '${tagName}'`);
+				this.addError(ModelParser.MESSAGES.NO_DEFINITION_FOUND_FOR_TAG(tagName));
 			} else {
 				const tagNameParent = this.parser.getFirstParent()?.name;
 				const parentDefinition = this.contextModelDefinition?.find(x => x.element == tagNameParent);
 				if (parentDefinition?.childs) {
 					const childSelected = parentDefinition.childs.find(x => x.element == tagName);
 					if (!childSelected) {
-						const childNames = parentDefinition.childs.map(x => x.element);
-						this.addError(`Invalid child: Tag ${tagName} not known for parent: '${tagNameParent}'. Valid children are: ${childNames}`);
+						this.addError(ModelParser.MESSAGES.INVALID_CHILD_TAG(tagName, tagNameParent, parentDefinition.childs));
 					}
 				}
 			}

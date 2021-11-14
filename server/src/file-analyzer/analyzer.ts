@@ -115,8 +115,8 @@ export class Analyzer {
 
 	public contextFromLine(uri: string, pos: Position) {
 		const textDocument = this.uriToTextDocument[uri];
-		const { inAttribute, tag } = getContextFromLine(textDocument, pos);
-		return { inAttribute, tag };
+		const inAttribute = getContextFromLine(textDocument, pos);
+		return inAttribute;
 	}
 
 }
