@@ -588,7 +588,105 @@
 				"element": "argument"
 			},
 			{
-				"element": "output"
+				"element": "output",
+				"validations":[
+					{
+						"identifier": "RULE00001",
+						"name": "action-outputs-missing",
+						"matches": [
+							{
+								"attribute": "remote-name",
+								"condition": "misses",
+								"value": "@backend-rules.outputs[name]"				
+							},
+							{
+								"operator": "OR",
+								"attribute": "local-name",
+								"condition": "misses",
+								"value": "@backend-rules.outputs[name]"					
+							}
+						],
+						"message": "Missing defined output ${@backend-rules.output[name]} for rule ${@parent[rulename]}",			
+						"level": "info",
+						"conditions":[
+							{
+								"attribute": "@parent[name]",
+								"condition": "==",
+								"value": "rule"
+							}
+						]
+					},
+					{
+						"identifier": "RULE00002",
+						"name": "rule-outputs-notdefined",
+						"matches": [
+							{
+								"attribute": "remote-name",
+								"condition": "not-in",
+								"value": "@backend-rules.outputs[name]"				
+							},
+							{
+								"attribute": "local-name",
+								"condition": "not-in",
+								"value": "@backend-rules.outputs[name]"					
+							}
+						],
+						"message": "Output ${@name} is not defined in rule ${@rulename}",			
+						"level": "error",
+						"conditions":[
+							{
+								"attribute": "@parent[name]",
+								"condition": "==",
+								"value": "rule"
+							}
+						]
+					},
+					{
+						"identifier": "RULE00003",
+						"name": "rule-outputs-not-used",
+						"matches": [
+							{
+								"attribute": "(local/remote)-name",
+								"condition": "not-in",
+								"value": "@parent-rule-definition.arguments"
+							},
+							{
+								"attribute": "(local/remote)-name",
+								"condition": "not-in",
+								"value": "@parent-rule-definition.condition[variable]"
+							},
+							{
+								"attribute": "(local/remote)-name",
+								"condition": "not-in-like",
+								"value": "@parent-rule-definition.condition[expression]"
+							},
+							{
+								"attribute": "(local/remote)-name",
+								"condition": "not-in-like",
+								"value": "@parent-rule-definition.set-var[expression]"
+							},
+							{
+								"attribute": "(local/remote)-name",
+								"condition": "not-in",
+								"value": "@parent-rule-definition.output[variable]"	
+							},
+							{
+								"attribute": "(local/remote)-name",
+								"condition": "not-in-like",
+								"value": "@parent-rule-definition.output[expression]"
+							}							
+						],
+						"message": "Output ${@name} is outputted, but not used in rule ${@parent-rule-definition[name]}",			
+						"level": "warning",
+						"conditions":[
+							{
+								"attribute": "@parent[name]",
+								"condition": "==",
+								"value": "rule"
+							}
+						]
+					}
+				]
 			},
 			{
 				"element": "graph-params"
