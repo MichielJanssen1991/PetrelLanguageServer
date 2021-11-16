@@ -15,7 +15,7 @@ export class ModelDefinitionManager {
 
 	constructor() {
 		this.contextToModelDefinition[ModelFileContext.Backend] = BACKEND_DEFINITION;
-		this.contextToModelDefinition[ModelFileContext.Backend] = RULE_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.Rules] = RULE_DEFINITION;
 	}
 
 	public getModelDefinition(context: ModelFileContext)
