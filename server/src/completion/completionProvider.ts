@@ -151,12 +151,16 @@ export class CompletionProvider {
 	private buildChildElementSnippet(child: ChildDefinition, childsOwnDefinition?: NewDefinition) {
 		const elementName = child.element;
 		const childsAttributes = childsOwnDefinition?.attributes;
-		const attributes = childsAttributes?.map((x, i) => {
+		const attributes = childsAttributes?.map((attribute, i) => {
 			let attributeOptions = ""; 
-			if(x.options){
-				attributeOptions = `|${x.options.map(y=>y.name).join(',')}|`;
+			if(attribute.types){
+				attribute.types.map((attributeType) => {
+					if (attributeType.type == 'enum' && attributeType.options){
+						attributeOptions += `|${attributeType.options.map(option=>option.name).join(',')}|`;
+					}
+				});				
 			}
-			return `${x.name}="\${${i + 1}${attributeOptions}}"`;
+			return `${attribute.name}="\${${i + 1}${attributeOptions}}"`;
 		}).join(" ") || "";
 		const childChildren = childsOwnDefinition?.childs;
 		const lastTab = `\${${(childsAttributes?.length || 0) + 1}}`;
