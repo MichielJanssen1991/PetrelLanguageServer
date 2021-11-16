@@ -126,10 +126,12 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 	}],
 	"include-block": [{
 		type: ModelElementTypes.IncludeBlock,
+		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
 	}],
 	"include-block1": [{
 		type: ModelElementTypes.IncludeBlock,
+		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
 	}],
 	"decorator": [{
@@ -187,5 +189,10 @@ export const objectsTypesWhichRequireContext = new Set([
 	ModelElementTypes.Output,
 	ModelElementTypes.SearchColumn,
 	ModelElementTypes.Search,
-	ModelElementTypes.Attribute
+	ModelElementTypes.Attribute,
+	ModelElementTypes.TypeFilter,
+	ModelElementTypes.Unknown,
+	ModelElementTypes.Aggregate,
+	ModelElementTypes.Count,
+	ModelElementTypes.Exists
 ]);
