@@ -1,4 +1,5 @@
-[
+import { NewDefinition } from './symbolsAndReferences';
+export const RULE_DEFINITION: NewDefinition[] = [
 	{ 
 		"element": "rules",		
 		"description": "",
@@ -193,7 +194,7 @@
 				"types": [
 					{
 						"type": "relation",
-						"related-to": "backend-rules"
+						"relatedTo": "backend-rules"
 					}
 				],
 				"conditions": [
@@ -358,7 +359,7 @@
 	{ 
 		"element": "action",		
 		"description": "An action.",
-		"check-obsolete": true,
+		"checkObsolete": true,
 		"attributes":[
 			{
 				"name": "name",
@@ -378,7 +379,7 @@
 					},
 					{
 						"type": "relation",
-						"related-to": "backend-actions"
+						"relatedTo": "backend-actions"
 					}
 				]
 			},
@@ -489,7 +490,7 @@
 						"options": [
 							{
 								"name": "@backend-actions.attribute.option[value]",
-								"documentation": "@backend-actions.attribute.option[comment]"
+								"description": "@backend-actions.attribute.option[comment]"
 							}
 						]
 					}
@@ -508,7 +509,7 @@
 				"types": [
 					{
 						"type": "relation",
-						"related-to": "backend-rules",
+						"relatedTo": "backend-rules",
 						"namespaced": true
 					}
 				],
@@ -526,7 +527,7 @@
 				"types": [
 					{
 						"type": "relation",
-						"related-to": "backend-types",
+						"relatedTo": "backend-types",
 						"namespaced": true
 					}
 				],
@@ -544,7 +545,7 @@
 				"types": [
 					{
 						"type": "relation",
-						"related-to": "backend-types",
+						"relatedTo": "backend-types",
 						"namespaced": true
 					}
 				],
@@ -562,7 +563,7 @@
 				"types": [
 					{
 						"type": "path",
-						"path-hints": [
+						"pathHints": [
 							{
 								"name": "{resources}",
 								"description": "path relative from resource folder"
@@ -749,4 +750,4 @@
 		"element": "elseif",		
 		"description": ""
 	}
-]
+];

@@ -1,9 +1,8 @@
 import { NewDefinition } from './symbolsAndReferences';
-
 export const BACKEND_DEFINITION: NewDefinition[] = [
 	{
 		"element": "root",
-		"attributes": [
+		"attributes" : [
 			{
 				"name": "documentlocation",
 				"description": "relative location for the documents which are included in the rules"
@@ -15,7 +14,7 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 				"occurence": "once"
 			}
 		]
-	},
+	}, 
 	{
 		"element": "application",
 		"attributes": [
@@ -54,7 +53,7 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 				"occurence": "once"
 			}
 		]
-	},
+	}, 
 	{
 		"element": "module",
 		"description": "Used for grouping model entities and model namespacing.",
@@ -66,11 +65,13 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 			{
 				"name": "target-namespace",
 				"description": "Target namespace of the contents of the module. A relative namespace may start with a +, e.g., \"+Preferences\" may result in, e.g., \"Platform.Preferences\". (The target namespace together with the module name makes the module unique.)",
-				"validation": {
-					"type": "regex",
-					"value": "(\\+?[A-Z][a-zA-Z]+(\\.[A-Z][a-zA-Z]+)*)?",
-					"message": "Only alphabetic, CamelCased words separated by dots are allowed."
-				}
+				"validations": [
+					{
+						"type": "regex",
+						"value": "(\\+?[A-Z][a-zA-Z]+(\\.[A-Z][a-zA-Z]+)*)?",
+						"message": "Only alphabetic, CamelCased words separated by dots are allowed."
+					}
+				]
 			},
 			{
 				"name": "description",
@@ -104,7 +105,7 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 				"occurence": "once"
 			}
 		]
-	},
+	}, 
 	{
 		"element": "type",
 		"description": "",
@@ -112,23 +113,31 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 			{
 				"name": "persistence",
 				"description": "The way the data for this type is retrieved and saved.",
-				"type": "enum",
-				"options": [
+				"types": [
 					{
-						"name": "Virtual",
-						"description": "This persistence saves and gets the data from a different type (specified with the attribute \"persistent-in-type\"). This is a technical solution that may be used for more purposes.</summary>One use is that subclasses of a type may be represented, such as PhlegmaticPatient as a subclass of Patients. A \"virtual filter\" may be added in this case to filter the Patients on the property \"suffers-from\" with the value \"Phlegmatism\". Another use is to provide different views on a type for performance reasons. You can e.g. provide a simple Patient type and a Patient type with also contains some relation fields."
-					},
-					{
-						"name": "CompanyInspecific",
-						"description": "A table multiple companies share."
+						"type": "enum",
+						"options": [
+							{
+								"name": "Virtual",
+								"description": "This persistence saves and gets the data from a different type (specified with the attribute \"persistent-in-type\"). This is a technical solution that may be used for more purposes.</summary>One use is that subclasses of a type may be represented, such as PhlegmaticPatient as a subclass of Patients. A \"virtual filter\" may be added in this case to filter the Patients on the property \"suffers-from\" with the value \"Phlegmatism\". Another use is to provide different views on a type for performance reasons. You can e.g. provide a simple Patient type and a Patient type with also contains some relation fields."
+							},
+							{	
+								"name": "CompanyInspecific",
+								"description": "A table multiple companies share."
+							}
+						]
 					}
 				]
 			},
 			{
 				"name": "persistent-in-type",
 				"description": "The type on which the virtual persistence is based.",
-				"type": "relation",
-				"relatedto": "type",
+				"types": [
+					{
+						"type": "relation",
+						"relatedTo": "backend-types"
+					}
+				],
 				"required": true,
 				"conditions": [
 					{
@@ -152,14 +161,19 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 			{
 				"name": "include-persistencetype-checks",
 				"description": "If the server events on the type that is used for persistence should be executed. This is only of technical use to provide a lightweight view of a type, e.g. skipping validation and other default loading actions.",
-				"type": "enum",
-				"options": [{
-					"name": "yes",
-					"description": "yes"
-				}, {
-					"name": "no",
-					"description": "no"
-				}],
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "yes"
+							},
+							{
+								"name": "no"
+							}
+						]
+					}
+				],
 				"conditions": [
 					{
 						"attribute": "persistence",
@@ -171,41 +185,43 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 			{
 				"name": "audit-trail",
 				"description": "Specifies if changes to the type instances should be logged in an audit log table.</summary>The audit log includes timestamp, user, and the change.",
-				"type": "enum",
-				"options":[{
-					"name": "yes",
-					"description": "yes"
-				}, {
-					"name": "no",
-					"description": "no"
-				}]
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "yes"
+							},
+							{
+								"name": "no"
+							}
+						]
+					}
+				]
 			}
-		],
-		"childs": [{
-			"element": "attribute"
-		}]
-	},
+		]
+	}, 
 	{
 		"element": "attribute"
-	},
+	}, 
 	{
 		"element": "option"
-	},
+	}, 
 	{
 		"element": "keys"
-	},
+	}, 
 	{
 		"element": "key"
-	},
+	}, 
 	{
 		"element": "keyfield"
-	},
+	}, 
 	{
 		"element": "format"
-	},
+	}, 
 	{
 		"element": "image"
-	},
+	}, 
 	{
 		"element": "text"
 	},
@@ -224,7 +240,7 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 	{
 		"element": "decoration"
 	},
-	{
+	{	
 		"element": "action",
 		"description": "The action to perform.",
 		"attributes": [
@@ -234,13 +250,18 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 					{
 						"type": "enum",
 						"options": [
-							"rule",
-							"infoset"
+							{
+								"name": "rule"
+							},
+							{
+								"name": "infoset"
+							}
+							
 						]
 					},
 					{
 						"type": "relation",
-						"relatedto": "backend-actions"
+						"relatedTo": "backend-actions"
 					}
 
 				]
@@ -261,7 +282,7 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 			{
 				"name": "user-created",
 				"description": "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
-				"conditions": [
+				"conditions":[
 					{
 						"name": "name",
 						"condition": "==",
@@ -269,15 +290,15 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 					}
 				]
 			}
-		]
+		]	
 
 	},
 	{
 		"element": "include-blocks"
-	},
+	}, 
 	{
 		"element": "include-block"
-	},
+	}, 
 	{
 		"element": "include"
 	},

@@ -135,26 +135,25 @@ export interface ModelAttributeReferenceDefinition {
 export type NewDefinition = {
 	element: string,
 	description?: string,
+	checkObsolete?: boolean,
 	attributes?: ElementAttributes[],
 	childs?: ChildDefinition[],
 	parent?: any,
-	type?: string,
 	types?: string[]
 }
 
 export type ChildDefinition = {
 	element: string,
 	occurence?: "once",
+	validations?:ChildValidation[]
 }
 
 export type ElementAttributes = {
 	name: string,
 	description?: string,
-	validation?: AttributeValidation,
-	required?: boolean,
-	type?: AttributeType,
+	validations?: AttributeValidation[],
+	required?: boolean|string,
 	types?: AttributeType[],
-	options?: AttributeOption[],
 	relatedto?: string,
 	conditions?: any
 }
@@ -162,12 +161,40 @@ export type ElementAttributes = {
 export type AttributeValidation = {
 	type: string,
 	value: string,
-	message: string
+	message: string,
+	name?: string,
+	identifier?: string,
+	matches?: ValidationMatches[],
+	level?: string // ["none", "info", "warning", "error", "fatal"]
+	conditions?: any
+}
+
+export type ChildValidation = {
+	identifier: string,
+	name: string,
+	message: string,
+	matches: ValidationMatches[],
+	level: string // ["none", "info", "warning", "error", "fatal"]
+	conditions?: ValidationMatches[]
 }
 
 export type AttributeOption = {
 	name: string,
-	description: string,
+	description?: string,
 }
 
-export type AttributeType = any
+export type ValidationMatches = {
+	operator?: string, //["and", "or"],
+	attribute: string,
+	condition: string, //["==", "!=", "misses", "not-in", "contains", "not-in-like"],
+	value: string
+}
+
+export type AttributeType = {
+	type: string,
+	namespaced?: boolean,
+	relatedTo?: string,
+	options?: AttributeOption[],
+	pathHints? : AttributeOption[]
+		
+}
