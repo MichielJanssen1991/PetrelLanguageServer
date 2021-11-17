@@ -1,4 +1,5 @@
 import * as LSP from 'vscode-languageserver';
+import { BACKEND_DEFINITION } from './backend';
 
 export enum ModelElementTypes {
 	Infoset = "Infoset",
@@ -152,10 +153,45 @@ export type ElementAttributes = {
 	name: string,
 	description?: string,
 	validations?: AttributeValidation[],
-	required?: boolean|string,
+	required?: boolean|JsonElementVariable,
 	types?: AttributeType[],
 	relatedto?: string,
 	conditions?: any
+}
+
+export class JsonElementVariable {
+	constructor(definitionReference:string, childs: string [], attribute?: string){
+		switch(definitionReference){
+			case "backend-actions":
+				// get backend.actions.xml file(s)
+				break;
+			case "frontend-actions":
+				// get backend.actions.xml file(s)
+				break;
+			case "rule-definitions":
+				// not yet implemnted
+				break;
+			case "type-definitions":
+				// not yet implemnted
+				break;
+		}
+
+
+	}
+
+	/**
+	 * get child element
+	 */
+	public getDecendants(element: JSON, childs: string[]) {
+		if (childs){
+			if (Object.keys(element).includes(childs[0])){
+				//var item = element[(childs[0]]
+			} else {
+				//throw "item does not exists";
+			}
+		} 
+		return element;
+	}
 }
 
 export type AttributeValidation = {

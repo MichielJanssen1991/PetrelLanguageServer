@@ -1,4 +1,4 @@
-import { NewDefinition } from './symbolsAndReferences';
+import { JsonElementVariable, NewDefinition } from './symbolsAndReferences';
 export const RULE_DEFINITION: NewDefinition[] = [
 	{ 
 		"element": "rules",		
@@ -483,7 +483,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			{
 				"name": "@backend-actions.attribute",
 				"description": "@backend-actions.annotation.documentation.summary",
-				"required": "@backend-actions.attribute[required]",
+				"required": new JsonElementVariable("backend-actions", ["attribute"], "required"),
 				"types": [
 					{
 						"type": "@backend-actions.attribute[type]",
