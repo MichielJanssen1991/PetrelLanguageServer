@@ -124,10 +124,10 @@ export interface Definition {
 	otherAttributes?: Record<string, (x: any, nodeContext: INodeContext) => string | boolean | number>,
 	contextQualifiers?: (x: any, nodeContext: INodeContext) => ContextQualifiers,
 	detailLevel: ModelDetailLevel
-	attributeReferences?: ModelAttributeReferenceDefinition[],
+	attributeReferences?: AttributeReferenceDefinition[],
 }
 
-export interface ModelAttributeReferenceDefinition {
+export interface AttributeReferenceDefinition {
 	type: ModelElementTypes,
 	detailLevel: ModelDetailLevel,
 	attribute: string,

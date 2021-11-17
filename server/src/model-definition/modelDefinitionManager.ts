@@ -1,4 +1,5 @@
 import { BACKEND_DEFINITION } from './backend';
+import { RULE_DEFINITION } from './rules';
 import { NewDefinition } from './symbolsAndReferences';
 
 export enum ModelFileContext {
@@ -14,6 +15,7 @@ export class ModelDefinitionManager {
 
 	constructor() {
 		this.contextToModelDefinition[ModelFileContext.Backend] = BACKEND_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.Rules] = RULE_DEFINITION;
 	}
 
 	public getModelDefinition(context: ModelFileContext)
