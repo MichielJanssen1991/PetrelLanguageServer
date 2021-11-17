@@ -481,16 +481,16 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "Developer's comment on this element."
 			},
 			{
-				"name": "@backend-actions.attribute",
-				"description": "@backend-actions.annotation.documentation.summary",
-				"required": new JsonElementVariable("backend-actions", ["attribute"], "required"),
+				"name": new JsonElementVariable("backend-actions", "/attribute"),
+				"description": new JsonElementVariable("backend-actions", "/annotation/documentation/summary"),
+				"required": new JsonElementVariable("backend-actions", "/attribute[@required]"),
 				"types": [
 					{
-						"type": "@backend-actions.attribute[type]",
+						"type": "enum",
 						"options": [
 							{
-								"name": "@backend-actions.attribute.option[value]",
-								"description": "@backend-actions.attribute.option[comment]"
+								"name": new JsonElementVariable("backend-actions", "/attribute/option[@value]"),
+								"description": new JsonElementVariable("backend-actions", "/attribute/option[@comment]")
 							}
 						]
 					}
@@ -499,7 +499,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 					{
 						"attribute": "action",
 						"condition": "contains",
-						"value": "@backend-actions.name"
+						"value": new JsonElementVariable("backend-actions", "[@name]")
 					}
 				]		
 			},
@@ -517,7 +517,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 					{
 						"attribute": "name",
 						"condition": "contains",
-						"value": "@backend-actions.attribute-rule"
+						"value": new JsonElementVariable("backend-actions", "[@rule]")
 					}
 				]		
 			},
@@ -535,7 +535,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 					{
 						"attribute": "name",
 						"condition": "contains",
-						"value": "@backend-actions.attribute-type"
+						"value": new JsonElementVariable("backend-actions", "[@name=$attr-name]/attribute[@name]")
 					}
 				]	
 			},
@@ -553,7 +553,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 					{
 						"attribute": "name",
 						"condition": "contains",
-						"value": "@backend-actions.attribute-typename"
+						"value": new JsonElementVariable("backend-actions", "[@name=$attr-name]/attribute[@name]")
 					}
 				]	
 			},
@@ -579,7 +579,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 					{
 						"attribute": "name",
 						"condition": "contains",
-						"value": "@backend-actions.attribute-folderpath"
+						"value": new JsonElementVariable("backend-actions", "[@name=$attr-name]/attribute[@name]")
 					}
 				]	
 			}
@@ -596,15 +596,15 @@ export const RULE_DEFINITION: NewDefinition[] = [
 						"name": "action-outputs-missing",
 						"matches": [
 							{
-								"attribute": "remote-name",
+								"attribute": "(remote/local)-name",
 								"condition": "misses",
-								"value": "@backend-rules.outputs[name]"				
+								"value": new JsonElementVariable("backend-rules", "outputs[@name]")
 							},
 							{
 								"operator": "OR",
 								"attribute": "local-name",
 								"condition": "misses",
-								"value": "@backend-rules.outputs[name]"					
+								"value": new JsonElementVariable("backend-rules", "outputs[@name]")			
 							}
 						],
 						"message": "Missing defined output ${@backend-rules.output[name]} for rule ${@parent[rulename]}",			
@@ -624,12 +624,12 @@ export const RULE_DEFINITION: NewDefinition[] = [
 							{
 								"attribute": "remote-name",
 								"condition": "not-in",
-								"value": "@backend-rules.outputs[name]"				
+								"value": new JsonElementVariable("backend-rules", "outputs[@name]")			
 							},
 							{
 								"attribute": "local-name",
 								"condition": "not-in",
-								"value": "@backend-rules.outputs[name]"					
+								"value": new JsonElementVariable("backend-rules", "outputs[@name]")		
 							}
 						],
 						"message": "Output ${@name} is not defined in rule ${@rulename}",			

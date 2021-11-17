@@ -150,48 +150,13 @@ export type ChildDefinition = {
 }
 
 export type ElementAttributes = {
-	name: string,
-	description?: string,
+	name: string|JsonElementVariable,
+	description?: string|JsonElementVariable,
 	validations?: AttributeValidation[],
 	required?: boolean|JsonElementVariable,
 	types?: AttributeType[],
 	relatedto?: string,
 	conditions?: any
-}
-
-export class JsonElementVariable {
-	constructor(definitionReference:string, childs: string [], attribute?: string){
-		switch(definitionReference){
-			case "backend-actions":
-				// get backend.actions.xml file(s)
-				break;
-			case "frontend-actions":
-				// get backend.actions.xml file(s)
-				break;
-			case "rule-definitions":
-				// not yet implemnted
-				break;
-			case "type-definitions":
-				// not yet implemnted
-				break;
-		}
-
-
-	}
-
-	/**
-	 * get child element
-	 */
-	public getDecendants(element: JSON, childs: string[]) {
-		if (childs){
-			if (Object.keys(element).includes(childs[0])){
-				//var item = element[(childs[0]]
-			} else {
-				//throw "item does not exists";
-			}
-		} 
-		return element;
-	}
 }
 
 export type AttributeValidation = {
@@ -215,22 +180,53 @@ export type ChildValidation = {
 }
 
 export type AttributeOption = {
-	name: string,
-	description?: string,
+	name: string|JsonElementVariable,
+	description?: string|JsonElementVariable,
 }
 
 export type ValidationMatches = {
 	operator?: string, //["and", "or"],
 	attribute: string,
 	condition: string, //["==", "!=", "misses", "not-in", "contains", "not-in-like"],
-	value: string
+	value: string|JsonElementVariable
 }
 
 export type AttributeType = {
-	type: string,
+	type: string|JsonElementVariable,
 	namespaced?: boolean,
 	relatedTo?: string,
 	options?: AttributeOption[],
 	pathHints? : AttributeOption[]
 		
+}
+
+/**
+ * This class handles the variable Json attributes from the definitions. 
+ * Based on the file-reference, child-reference and it's attribute (optional) it gets the proper data
+ * 
+ * NOTE I'm not sure if the definition data (in cache) is an XML object or JSON object.
+ */
+ export class JsonElementVariable {
+	constructor(definitionReference:string, xpathExpr: string){
+		var definition = "";
+		switch(definitionReference){
+			case "backend-actions":
+				// get backend.actions.xml definition(s)
+				definition = "<xml />"
+				break;
+			case "frontend-actions":
+				// get frontend.actions.xml definition(s)
+				definition = "<xml />"
+				break;
+			case "rule-definitions":
+				// not yet implemnted
+				break;
+			case "type-definitions":
+				// not yet implemnted
+				break;
+		}
+		xpathExpr = "//action"+xpathExpr;
+		//return definition.evaluate("/html/body//h2", definition, null, XPathResult.ANY_TYPE, null).toString();
+		return "";
+	}
 }
