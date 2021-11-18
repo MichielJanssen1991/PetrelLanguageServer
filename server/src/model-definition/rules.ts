@@ -724,7 +724,12 @@ export const RULE_DEFINITION: NewDefinition[] = [
 	},
 	{ 
 		"element": "argument",		
-		"description": ""
+		"description": "",
+		"attributes": [
+			{"name":"local-name"}, 
+			{"name":"remote-name"}, 
+			{"name":"value"}
+		]
 	},
 	{ 
 		"element": "set-var",		

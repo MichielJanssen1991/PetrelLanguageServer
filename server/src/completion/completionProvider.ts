@@ -1,7 +1,6 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
 import { ChildDefinition, ModelElementTypes, NewDefinition, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
-import * as ReservedWords from '../model-definition/attributes';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 
 export type CompletionContext = {
@@ -66,14 +65,10 @@ export class CompletionProvider {
 				attributesForAction = referencedAction?.children.filter(x => x.type == ModelElementTypes.Attribute).map(x => x.name) || [];
 			}
 
-			//Using the old predefined attributes per tag (which will be removed later)
-			const attributesForTag: string[] = ReservedWords.ATTRIBUTES_PER_TAG[node.tag] || [];
-
-			//Using the new model definition
 			const modelDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, node.tag);
-			const attributesForTagNew = modelDefinition?.attributes?.map(x => x.name) || [];
+			const attributesForTag = modelDefinition?.attributes?.map(x => x.name) || [];
 
-			const allAttributes = [...attributesForTag, ...attributesForAction, ...attributesForTagNew];
+			const allAttributes = [...attributesForAction, ...attributesForTag];
 			attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);
 			return attributeCompletions;
 		}

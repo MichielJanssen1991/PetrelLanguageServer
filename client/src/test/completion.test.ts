@@ -3,21 +3,22 @@ import * as vscode from 'vscode';
 import * as assert from 'assert';
 import { getDocUri, activate } from './helper';
 
-suite('Should do completion', () => {
+suite.only('Should do completion', () => {
 
 	test('Completes local-name/remote-name in argument', async () => {
 		const docUri = getDocUri('completion\\argument-attributes.xml');
-		await testCompletion(docUri, new vscode.Position(3, 14), {
+		await testCompletion(docUri, new vscode.Position(4, 14), {
 			items: [
 				{ label: 'local-name', kind: vscode.CompletionItemKind.Property },
-				{ label: 'remote-name', kind: vscode.CompletionItemKind.Property }
+				{ label: 'remote-name', kind: vscode.CompletionItemKind.Property },
+				{ label: 'value', kind: vscode.CompletionItemKind.Property },
 			]
 		});
 	});
 
 	test('Completes child elements for module', async () => {
 		const docUri = getDocUri('completion\\module-children-backend.xml');
-		await testCompletion(docUri, new vscode.Position(3, 0), {
+		await testCompletion(docUri, new vscode.Position(2, 0), {
 			items: [
 				{ label: 'decorations', kind: vscode.CompletionItemKind.Snippet },
 				{ label: 'include', kind: vscode.CompletionItemKind.Snippet },

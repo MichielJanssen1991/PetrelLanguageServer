@@ -1,5 +1,5 @@
 import { ModelDetailLevel, ModelElementTypes, Definition, INodeContext } from './symbolsAndReferences';
-import { NAMES } from './attributes';
+import { NAMES } from './constants';
 import { isActionDefinition, isOutputDeclaration, isProfileType, isViewArgument, isProfileRule, isProfileView } from './declarations';
 
 //Define what references are possible for each opening tag
