@@ -1,5 +1,5 @@
-import { BACKEND_DEFINITION } from './backend';
-import { RULE_DEFINITION } from './rules';
+import { BACKEND_DEFINITION } from './definitions/backend';
+import { RULE_DEFINITION } from './definitions/rules';
 import { NewDefinition } from './symbolsAndReferences';
 
 export enum ModelFileContext {

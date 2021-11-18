@@ -1,5 +1,5 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
-import { ChildDefinition, ModelElementTypes, NewDefinition, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { ChildDefinition, JsonElementVariable, ModelElementTypes, NewDefinition, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import * as ReservedWords from '../model-definition/attributes';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
@@ -26,6 +26,8 @@ export class CompletionProvider {
 		const modelFileContext = this.symbolAndReferenceManager.getModelFileContextForFile(uri);
 		const numberOfNodes = context.nodes.length;
 		const lastNode = numberOfNodes > 0 ? context.nodes[numberOfNodes - 1] : undefined;
+
+
 
 		let symbolCompletions: CompletionItem[] = [];
 		if (inAttribute && word != null && lastNode) {
@@ -113,7 +115,7 @@ export class CompletionProvider {
 			detail: "Attribute"
 		}));
 	}
-
+		
 	private mapSymbolsToCompletionItems(symbols: SymbolDeclaration[]): CompletionItem[] {
 		return symbols.map(
 			(symbol: SymbolDeclaration) => ({

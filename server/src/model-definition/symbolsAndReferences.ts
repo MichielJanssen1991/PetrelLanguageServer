@@ -1,5 +1,5 @@
 import * as LSP from 'vscode-languageserver';
-import { BACKEND_DEFINITION } from './backend';
+import { BACKEND_DEFINITION } from './definitions/backend';
 
 export enum ModelElementTypes {
 	Infoset = "Infoset",
@@ -150,10 +150,10 @@ export type ChildDefinition = {
 }
 
 export type ElementAttributes = {
-	name: string|JsonElementVariable,
-	description?: string|JsonElementVariable,
+	name: string,
+	description?: string,
 	validations?: AttributeValidation[],
-	required?: boolean|JsonElementVariable,
+	required?: boolean,
 	types?: AttributeType[],
 	relatedto?: string,
 	conditions?: any
@@ -180,8 +180,8 @@ export type ChildValidation = {
 }
 
 export type AttributeOption = {
-	name: string|JsonElementVariable,
-	description?: string|JsonElementVariable,
+	name: string,
+	description?: string,
 }
 
 export type ValidationMatches = {
@@ -192,7 +192,7 @@ export type ValidationMatches = {
 }
 
 export type AttributeType = {
-	type: string|JsonElementVariable,
+	type: string,
 	namespaced?: boolean,
 	relatedTo?: string,
 	options?: AttributeOption[],

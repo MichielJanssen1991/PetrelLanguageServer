@@ -1,4 +1,4 @@
-import { JsonElementVariable, NewDefinition } from './symbolsAndReferences';
+import { JsonElementVariable, NewDefinition } from '../symbolsAndReferences';
 export const RULE_DEFINITION: NewDefinition[] = [
 	{ 
 		"element": "rules",		
@@ -479,110 +479,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			{
 				"name": "comment",
 				"description": "Developer's comment on this element."
-			},
-			{
-				"name": new JsonElementVariable("backend-actions", "/attribute"),
-				"description": new JsonElementVariable("backend-actions", "/annotation/documentation/summary"),
-				"required": new JsonElementVariable("backend-actions", "/attribute[@required]"),
-				"types": [
-					{
-						"type": "enum",
-						"options": [
-							{
-								"name": new JsonElementVariable("backend-actions", "/attribute/option[@value]"),
-								"description": new JsonElementVariable("backend-actions", "/attribute/option[@comment]")
-							}
-						]
-					}
-				],
-				"conditions": [
-					{
-						"attribute": "action",
-						"condition": "contains",
-						"value": new JsonElementVariable("backend-actions", "[@name]")
-					}
-				]		
-			},
-			{
-				"name": "rulename",
-				"description": "The name of the rule to call.",
-				"types": [
-					{
-						"type": "relation",
-						"relatedTo": "backend-rules",
-						"namespaced": true
-					}
-				],
-				"conditions": [
-					{
-						"attribute": "name",
-						"condition": "contains",
-						"value": new JsonElementVariable("backend-actions", "[@rule]")
-					}
-				]		
-			},
-			{
-				"name": "type",
-				"description": "Reference to a Backend type.",
-				"types": [
-					{
-						"type": "relation",
-						"relatedTo": "backend-types",
-						"namespaced": true
-					}
-				],
-				"conditions": [
-					{
-						"attribute": "name",
-						"condition": "contains",
-						"value": new JsonElementVariable("backend-actions", "[@name=$attr-name]/attribute[@name]")
-					}
-				]	
-			},
-			{
-				"name": "typename",
-				"description": "Reference to a Backend type.",
-				"types": [
-					{
-						"type": "relation",
-						"relatedTo": "backend-types",
-						"namespaced": true
-					}
-				],
-				"conditions": [
-					{
-						"attribute": "name",
-						"condition": "contains",
-						"value": new JsonElementVariable("backend-actions", "[@name=$attr-name]/attribute[@name]")
-					}
-				]	
-			},
-			{
-				"name": "folderpath",
-				"description": "The folder path, relative to WWWRoot, of the target file(s).",
-				"types": [
-					{
-						"type": "path",
-						"pathHints": [
-							{
-								"name": "{resources}",
-								"description": "path relative from resource folder"
-							},
-							{
-								"name": "{{user}}",
-								"description": "path relative from user temp folder"
-							}
-						]						
-					}
-				],
-				"conditions": [
-					{
-						"attribute": "name",
-						"condition": "contains",
-						"value": new JsonElementVariable("backend-actions", "[@name=$attr-name]/attribute[@name]")
-					}
-				]	
-			}
+			}			
 		],
 		"childs": [
 			{
@@ -598,13 +495,13 @@ export const RULE_DEFINITION: NewDefinition[] = [
 							{
 								"attribute": "(remote/local)-name",
 								"condition": "misses",
-								"value": new JsonElementVariable("backend-rules", "outputs[@name]")
+								"value": new JsonElementVariable("backend-rules", "/output[@name]")
 							},
 							{
 								"operator": "OR",
 								"attribute": "local-name",
 								"condition": "misses",
-								"value": new JsonElementVariable("backend-rules", "outputs[@name]")			
+								"value": new JsonElementVariable("backend-rules", "/output[@name]")			
 							}
 						],
 						"message": "Missing defined output ${@backend-rules.output[name]} for rule ${@parent[rulename]}",			
@@ -624,12 +521,12 @@ export const RULE_DEFINITION: NewDefinition[] = [
 							{
 								"attribute": "remote-name",
 								"condition": "not-in",
-								"value": new JsonElementVariable("backend-rules", "outputs[@name]")			
+								"value": new JsonElementVariable("backend-rules", "/output[@name]")			
 							},
 							{
 								"attribute": "local-name",
 								"condition": "not-in",
-								"value": new JsonElementVariable("backend-rules", "outputs[@name]")		
+								"value": new JsonElementVariable("backend-rules", "/output[@name]")		
 							}
 						],
 						"message": "Output ${@name} is not defined in rule ${@rulename}",			

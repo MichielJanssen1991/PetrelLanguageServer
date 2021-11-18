@@ -1,4 +1,4 @@
-import { NewDefinition } from './symbolsAndReferences';
+import { NewDefinition } from '../symbolsAndReferences';
 export const BACKEND_DEFINITION: NewDefinition[] = [
 	{
 		"element": "root",
