@@ -1,4 +1,4 @@
-import { NAMES } from '../model-definition/attributes';
+import { NAMES } from '../model-definition/constants';
 import { ModelElementTypes, Reference, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from './symbolAndReferenceManager';
 

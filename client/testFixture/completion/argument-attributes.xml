@@ -1,3 +1,4 @@
+<?cp-edit petrel/rules?>
 <module>
   <rule>
     <action name="Infoset">

@@ -1,5 +1,5 @@
 import { ModelDetailLevel, ModelElementTypes, Definition, INodeContext } from './symbolsAndReferences';
-import { NAMES } from './attributes';
+import { NAMES } from './constants';
 
 //Define what declarations are possible for each opening tag
 export const symbolDeclarationDefinitions: Record<string, Definition[]> =

@@ -1,4 +1,4 @@
-import { NAMES } from '../../model-definition/attributes';
+import { NAMES } from '../../model-definition/constants';
 import { ModelElementTypes, ObjectIdentifierTypes, SymbolDeclaration, SymbolOrReference } from '../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';

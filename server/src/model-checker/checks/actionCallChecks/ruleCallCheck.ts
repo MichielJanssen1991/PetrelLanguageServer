@@ -1,4 +1,4 @@
-import { NAMES } from '../../../model-definition/attributes';
+import { NAMES } from '../../../model-definition/constants';
 import { SymbolOrReference, Reference, ModelDetailLevel } from '../../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
 import { CHECKS_MESSAGES } from '../../messages';
