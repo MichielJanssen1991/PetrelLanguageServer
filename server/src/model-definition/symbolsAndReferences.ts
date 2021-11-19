@@ -145,7 +145,7 @@ export type NewDefinition = {
 
 export type ChildDefinition = {
 	element: string,
-	occurence?: "once",
+	occurence?: "once"|"at-least-once",
 	validations?:ChildValidation[]
 }
 
@@ -166,7 +166,7 @@ export type AttributeValidation = {
 	name?: string,
 	identifier?: string,
 	matches?: ValidationMatches[],
-	level?: string // ["none", "info", "warning", "error", "fatal"]
+	level?: "none"|"info"|"warning"|"error"|"fatal",
 	conditions?: any
 }
 
@@ -175,7 +175,7 @@ export type ChildValidation = {
 	name: string,
 	message: string,
 	matches: ValidationMatches[],
-	level: string // ["none", "info", "warning", "error", "fatal"]
+	level: "none"|"info"|"warning"|"error"|"fatal",
 	conditions?: ValidationMatches[]
 }
 
@@ -185,9 +185,9 @@ export type AttributeOption = {
 }
 
 export type ValidationMatches = {
-	operator?: string, //["and", "or"],
+	operator?: "and"|"or",
 	attribute: string,
-	condition: string, //["==", "!=", "misses", "not-in", "contains", "not-in-like"],
+	condition: "=="|"!="|"misses"|"not-in"|"contains"|"not-in-like",
 	value: string|JsonElementVariable
 }
 
