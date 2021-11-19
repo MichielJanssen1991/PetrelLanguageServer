@@ -18,7 +18,7 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 	"searchcolumn": [{
 		type: ModelElementTypes.SearchColumn,
 		detailLevel: ModelDetailLevel.Declarations,
-		attributeReferences: [{
+		attributes: [{
 			attribute: "name",
 			type: ModelElementTypes.Attribute,
 			detailLevel: ModelDetailLevel.References,
@@ -38,7 +38,7 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 		type: ModelElementTypes.Type,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
-		attributeReferences: [
+		attributes: [
 			{
 				attribute: "type",
 				type: ModelElementTypes.Type,
@@ -52,7 +52,7 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		matchCondition: (x, nodeContext) => isViewDeclaration(x, nodeContext) && !isProfileView(nodeContext),
-		attributeReferences: [
+		attributes: [
 			{
 				attribute: "view",
 				type: ModelElementTypes.View,
@@ -68,9 +68,13 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 	}],
 	"input": [{
 		type: ModelElementTypes.Input,
-		otherAttributes: {
-			"required": (x, nodeContext) => (x.attributes[NAMES.ATTRIBUTE_REQUIRED] == 'yes')
-		},
+		attributes: [
+			{
+				attribute: "required",
+				type: ModelElementTypes.Value,
+				detailLevel: ModelDetailLevel.Declarations
+			}
+		],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"module": [{
@@ -80,10 +84,18 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 	}],
 	"attribute": [{
 		type: ModelElementTypes.Attribute,
-		otherAttributes: {
-			"required": (x, nodeContext) => (x.attributes[NAMES.ATTRIBUTE_REQUIRED] == 'yes'),
-			"readonly": (x, nodeContext) => x.attributes[NAMES.ATTRIBUTE_READONLY]
-		},
+		attributes: [
+			{
+				attribute: "required",
+				type: ModelElementTypes.Value,
+				detailLevel: ModelDetailLevel.Declarations
+			},
+			{
+				attribute: "readonly",
+				type: ModelElementTypes.Value,
+				detailLevel: ModelDetailLevel.Declarations
+			}
+		],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"output": [{
@@ -95,7 +107,7 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 		matchCondition: (x, nodeContext) => isInfosetOutput(nodeContext),
 		type: ModelElementTypes.Output,
 		detailLevel: ModelDetailLevel.Declarations,
-		attributeReferences: [
+		attributes: [
 			{
 				attribute: "attribute",
 				type: ModelElementTypes.Attribute,
@@ -118,7 +130,7 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 		type: ModelElementTypes.Search,
 		detailLevel: ModelDetailLevel.Declarations,
 		matchCondition: (x, nodeContext) => !isFilterDeclaration(nodeContext),
-		attributeReferences: [{
+		attributes: [{
 			attribute: NAMES.ATTRIBUTE_TYPE,
 			type: ModelElementTypes.Type,
 			detailLevel: ModelDetailLevel.Declarations

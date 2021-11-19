@@ -16,6 +16,22 @@ export abstract class FileParser {
 	}
 
 	abstract parseFile(fileContent: string): FileParserResults
+
+	protected addError(range: LSP.Range, message: string) {
+		this.results.problems.push(LSP.Diagnostic.create(
+			range,
+			message,
+			LSP.DiagnosticSeverity.Error
+		));
+	}
+
+	protected addWarning(range: LSP.Range, message: string) {
+		this.results.problems.push(LSP.Diagnostic.create(
+			range,
+			message,
+			LSP.DiagnosticSeverity.Warning
+		));
+	}
 }
 
 export type FileParserResults = {
