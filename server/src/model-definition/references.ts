@@ -9,7 +9,7 @@ export const referenceDefinitions: Record<string, Definition[]> =
 		type: ModelElementTypes.Action,
 		detailLevel: ModelDetailLevel.References,
 		matchCondition: (x: any, nodeContext: INodeContext) => !isActionDefinition(nodeContext),
-		attributeReferences: [{
+		attributes: [{
 			type: ModelElementTypes.Rule,
 			detailLevel: ModelDetailLevel.References,
 			attribute: NAMES.ATTRIBUTE_RULE
@@ -33,8 +33,12 @@ export const referenceDefinitions: Record<string, Definition[]> =
 			type: ModelElementTypes.Type,
 			detailLevel: ModelDetailLevel.References,
 			attribute: NAMES.ATTRIBUTE_TYPE
+		},
+		{
+			type: ModelElementTypes.Value,
+			detailLevel: ModelDetailLevel.References,
+			attribute: "FrontendBackend"
 		}],
-		otherAttributes: { "FrontendBackend": (x, nodeContext) => frontendOrBackendActionCall(nodeContext) }
 	}],
 	"argument": [{
 		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
@@ -93,7 +97,3 @@ export const referenceDefinitions: Record<string, Definition[]> =
 		detailLevel: ModelDetailLevel.References,
 	}]
 };
-
-function frontendOrBackendActionCall(nodeContext: INodeContext): string | number | boolean {
-	return nodeContext.hasParentTag("view") || nodeContext.hasParentTag("function") ? "Frontend" : "Backend";
-}

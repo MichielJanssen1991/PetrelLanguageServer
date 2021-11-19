@@ -20,7 +20,7 @@ suite('Should get diagnostics for rule call', () => {
 	test('Diagnoses rule call to unknown rule', async () => {
 		const docUri = getDocUri('diagnostics\\rule-call\\unknown-rule.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Rule with name 'UnknownRule' not found.", range: toRange(2, 5, 2, 47), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
+			{ message: "Rule with name 'UnknownRule' not found.", range: toRange(2, 24, 2, 46), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
 		]);
 	});
 
@@ -34,7 +34,7 @@ suite('Should get diagnostics for rule call', () => {
 	test('Diagnoses rule call with missing mandatory input', async () => {
 		const docUri = getDocUri('diagnostics\\rule-call\\missing-mandatory-input.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Mandatory input 'MandatoryRuleInput' for Rule with name 'KnownRuleWithMandatoryInput' not provided.", range: toRange(2, 5, 2, 63), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
+			{ message: "Mandatory input 'MandatoryRuleInput' for Rule with name 'KnownRuleWithMandatoryInput' not provided.", range: toRange(2, 24, 2, 62), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
 		]);
 	});
 

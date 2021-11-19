@@ -15,14 +15,14 @@ suite('Should get diagnostics for ruleloopaction call', () => {
 	test('Diagnoses RuleLoopAction call with unknown infoset', async () => {
 		const docUri = getDocUri('diagnostics\\ruleloopaction-call\\unknown-infoset.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Infoset with name 'UnknownInfoset' not found.", range: toRange(2, 5, 2, 75), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
+			{ message: "Infoset with name 'UnknownInfoset' not found.", range: toRange(2, 24, 2, 53), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
 		]);
 	});
 
 	test('Diagnoses RuleLoopAction call with unknown rule', async () => {
 		const docUri = getDocUri('diagnostics\\ruleloopaction-call\\unknown-rule.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Rule with name 'NotAKnownRule' not found.", range: toRange(2, 5, 2, 77), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
+			{ message: "Rule with name 'NotAKnownRule' not found.", range: toRange(2, 52, 2, 76), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
 		]);
 	});
 

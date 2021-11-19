@@ -9,6 +9,7 @@ export interface ISaxParser {
 	ontext: any,
 	onend: any,
 	onopentag: any,
+	onattribute: any,
 	onclosetag: any,
 	write: any,
 	close: any,
@@ -34,13 +35,15 @@ export interface ISaxParserExtended extends ISaxParser {
 	getFirstParent: () => any,
 	hasParentTag: (name: string) => boolean
 	findParent: (predicate: (n: any) => boolean) => any | null,
-	getRange: () => LSP.Range;
+	getTagRange: () => LSP.Range;
+	getAttributeRange: (attribute:{name:string, value:string}) => LSP.Range;
 }
 
 
 export function newSaxParserExtended(
 	onerror: ((e: any, parser: ISaxParserExtended) => void),
 	onopentag: ((node: any, parser: ISaxParserExtended) => void),
+	onattribute: ((node: any, parser: ISaxParserExtended) => void),
 	onclosetag: (() => void),
 	onprocessinginstruction: ((instruction: ProcessingInstruction) => void)
 ): ISaxParserExtended {
@@ -54,6 +57,10 @@ export function newSaxParserExtended(
 
 	parser.onopentag = function (node: any) {
 		onopentag(node, this);
+	};
+
+	parser.onattribute = function (node: any) {
+		onattribute(node, this);
 	};
 
 	parser.onclosetag = function () {
@@ -74,10 +81,19 @@ export function newSaxParserExtended(
 		return parentTagNames != undefined;
 	};
 
-	parser.getRange = function () {
+	parser.getTagRange = function () {
 		return LSP.Range.create(
 			this.line,
 			Math.max(this.column + this.startTagPosition - this.position, 0),
+			this.line,
+			this.column,
+		);
+	};
+
+	parser.getAttributeRange = function (attribute) {
+		return LSP.Range.create(
+			this.line,
+			Math.max(this.column - attribute.name.length - attribute.value.length-3, 0),
 			this.line,
 			this.column,
 		);

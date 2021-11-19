@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import * as assert from 'assert';
 import { getDocUri, activate } from './helper';
 
-suite.only('Should do completion', () => {
+suite('Should do completion', () => {
 
 	test('Completes local-name/remote-name in argument', async () => {
 		const docUri = getDocUri('completion\\argument-attributes.xml');

@@ -1,5 +1,4 @@
 import * as LSP from 'vscode-languageserver';
-import { BACKEND_DEFINITION } from './definitions/backend';
 
 export enum ModelElementTypes {
 	Infoset = "Infoset",
@@ -22,6 +21,7 @@ export enum ModelElementTypes {
 	Decorator = "Decorator",
 	Profile = "Profile",
 	Unknown = "Unknown",
+	Value = "Value",
 	All = "All",
 }
 
@@ -35,7 +35,7 @@ export interface INodeContext {
 	getFirstParent: () => any,
 	hasParentTag: (name: string) => boolean
 	findParent: (predicate: (n: any) => boolean) => any | null,
-	getRange: () => LSP.Range;
+	getTagRange: () => LSP.Range;
 }
 
 export enum ObjectIdentifierTypes {
@@ -121,16 +121,15 @@ export interface Definition {
 	matchCondition?: (x: any, nodeContext: INodeContext) => boolean,
 	type: ModelElementTypes,
 	prefixNameSpace?: boolean,
-	otherAttributes?: Record<string, (x: any, nodeContext: INodeContext) => string | boolean | number>,
 	contextQualifiers?: (x: any, nodeContext: INodeContext) => ContextQualifiers,
 	detailLevel: ModelDetailLevel
-	attributeReferences?: AttributeReferenceDefinition[],
+	attributes?: AttributeReferenceDefinition[],
 }
 
 export interface AttributeReferenceDefinition {
 	type: ModelElementTypes,
 	detailLevel: ModelDetailLevel,
-	attribute: string,
+	attribute: string
 }
 
 export type NewDefinition = {
@@ -208,15 +207,15 @@ export type AttributeType = {
  */
  export class JsonElementVariable {
 	constructor(definitionReference:string, xpathExpr: string){
-		var definition = "";
+		let definition = "";
 		switch(definitionReference){
 			case "backend-actions":
 				// get backend.actions.xml definition(s)
-				definition = "<xml />"
+				definition = "<xml />";
 				break;
 			case "frontend-actions":
 				// get frontend.actions.xml definition(s)
-				definition = "<xml />"
+				definition = "<xml />";
 				break;
 			case "rule-definitions":
 				// not yet implemnted

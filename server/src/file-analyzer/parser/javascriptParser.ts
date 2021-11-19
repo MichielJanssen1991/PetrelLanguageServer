@@ -68,14 +68,6 @@ export class JavascriptParser extends FileParser {
 		}
 	}
 
-	private addWarning(range: LSP.Range, message: string) {
-		this.results.problems.push(LSP.Diagnostic.create(
-			range,
-			message,
-			LSP.DiagnosticSeverity.Warning
-		));
-	}
-
 	private addAction(actionName: any, range: LSP.Range) {
 		actionName = removeActionPostfix(actionName);
 		const symbol = newSymbolDeclaration(actionName, "", ModelElementTypes.Action, range, this.uri, false);
