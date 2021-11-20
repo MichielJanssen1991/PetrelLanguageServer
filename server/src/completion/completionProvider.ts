@@ -1,8 +1,7 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
-import { ChildDefinition, JsonElementVariable, ModelElementTypes, NewDefinition, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { ChildDefinition, IsSymbolOrReference, ModelElementTypes, NewDefinition, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
-import { urlToHttpOptions } from 'url';
 
 export type CompletionContext = {
 	inAttribute: boolean,
@@ -72,9 +71,10 @@ export class CompletionProvider {
 
 			// get attributes based on the action called
 			let attributesForAction: string[] = [];
-			if (node.type == ModelElementTypes.Action) {
-				const actionDefinition = this.symbolAndReferenceManager.findDefinition(ModelElementTypes.Action, node.name.toLowerCase());
-				attributesForAction = actionDefinition[0]?.children.filter(child => child.type == ModelElementTypes.Attribute).map(child => child.name) || [];
+			if (node.type == ModelElementTypes.Action && node.objectType == IsSymbolOrReference.Reference) {
+				const actionReference = node as Reference;
+				const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionReference);
+				attributesForAction = referencedAction?.children.filter(x => x.type == ModelElementTypes.Attribute).map(x => x.name) || [];
 			}
 			
 			const allAttributes = [...attributesForAction, ...attributesForTag];

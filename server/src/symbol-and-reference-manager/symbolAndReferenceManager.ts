@@ -183,7 +183,7 @@ export class SymbolAndReferenceManager {
 	/**
 	 * Find all the symbols where something named 'name' of type 'type' has been defined.
 	  */
-	public findDefinition(type: string, name: string): SymbolDeclaration[] {
+	public findDefinition(type: ModelElementTypes, name: string): SymbolDeclaration[] {
 		let symbols: SymbolDeclaration[] = this.findSymbolsMatchingWord({ exactMatch: true, word: name });
 		if (type != ModelElementTypes.Unknown) {
 			symbols = symbols.filter(x => x.type == type);
