@@ -13,7 +13,7 @@ export class DataActionCallCheck extends ActionCallCheck {
 	}
 
 	protected verifyActionCall(reference: Reference, options: ModelCheckerOptions) {
-		if (options.detailLevel >= ModelDetailLevel.ArgumentReferences) {
+		if (options.detailLevel >= ModelDetailLevel.SubReferences) {
 			this.verifyReferencedObjectsMandatoryInputsProvided(reference, reference);
 			this.verifyInputsAreKnownInReferencedObjects(reference);
 			this.verifyOutputsAreKnownInReferencedObjects(reference);

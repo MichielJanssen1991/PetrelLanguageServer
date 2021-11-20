@@ -23,7 +23,7 @@ export class ReferencedObjectExistsCheck extends ModelCheck {
 		if (referenceNotFound) {
 			this.addError(reference.range, CHECKS_MESSAGES.REFERENCE_NOT_FOUND(reference));
 		}
-		if (referencedSymbol && name != referencedSymbol.name && name.toLowerCase() == referencedSymbol.name.toLowerCase() && options.detailLevel >= ModelDetailLevel.ArgumentReferences) {
+		if (referencedSymbol && name != referencedSymbol.name && name.toLowerCase() == referencedSymbol.name.toLowerCase() && options.detailLevel >= ModelDetailLevel.SubReferences) {
 			this.addInformation(reference.range, CHECKS_MESSAGES.REFERENCE_CAPITALIZATION(referencedSymbol, reference));
 		}
 		const symbolIsObsolete = referencedSymbol && referencedSymbol.contextQualifiers.isObsolete;

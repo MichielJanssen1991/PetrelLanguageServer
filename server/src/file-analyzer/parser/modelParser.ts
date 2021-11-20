@@ -92,22 +92,30 @@ export class ModelParser extends FileParser implements INodeContext {
 
 	private onOpenTag(node: any) {
 		const tagName = node.name;
-		this.validateNode(node);
 		const definitions = definitionsPerTag[tagName];
-		let symbol, reference;
+		let object;
+
+		// Validate node using new definition structure (might completely replace the old parsing)
+		this.validateNode(node);
+		
+		//Parse object for definition, first matching definition wins
 		if (definitions) {
 			definitions.some(def => {
-				symbol = this.parseNodeForDefinition(node, def);
-				if (symbol) {
-					this.pushToParsedObjectStack(symbol, def);
+				object = this.parseNodeForDefinition(node, def);
+				if (object) {
+					this.pushToParsedObjectStack(object, def);
 					return true;
 				}
 			});
 		}
 
-		if (!symbol && !reference) {
-			symbol = newSymbolDeclaration(node.name, node.name, ModelElementTypes.Unknown, this.getTagRange(), this.uri);
-			this.pushToParsedObjectStack(symbol);
+		//If no definition is found only add the parsed tag when detail level is All 
+		if(this.detailLevel == ModelDetailLevel.All)
+		{
+			if (!object) {
+				object = newSymbolDeclaration(node.name, node.name, ModelElementTypes.Unknown, this.getTagRange(), this.uri);
+				this.pushToParsedObjectStack(object);
+			}
 		}
 
 		this.attributeRanges = {};

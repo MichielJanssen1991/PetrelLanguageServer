@@ -16,7 +16,7 @@ export class RuleCallCheck extends ActionCallCheck {
 		let valid = true;
 		valid = this.verifyRuleCall(reference, options);
 
-		if (valid && options.detailLevel >= ModelDetailLevel.ArgumentReferences) {
+		if (valid && options.detailLevel >= ModelDetailLevel.SubReferences) {
 			this.verifyReferencedObjectsMandatoryInputsProvided(reference, reference);
 			this.verifyInputsAreKnownInReferencedObjects(reference);
 			this.verifyOutputsAreKnownInReferencedObjects(reference);

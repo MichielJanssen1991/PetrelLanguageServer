@@ -20,7 +20,7 @@ export class InfosetCallCheck extends ActionCallCheck {
 		let valid = true;
 		valid = this.verifyInfosetCall(reference, options);
 		
-		if (valid && options.detailLevel >= ModelDetailLevel.ArgumentReferences) {
+		if (valid && options.detailLevel >= ModelDetailLevel.SubReferences) {
 			this.verifyReferencedObjectsMandatoryInputsProvided(reference, reference);
 			this.verifyInputsAreKnownInReferencedObjects(reference);
 			this.verifyOutputsAreKnownInReferencedObjects(reference);
@@ -33,7 +33,7 @@ export class InfosetCallCheck extends ActionCallCheck {
 
 	private verifyInfosetCall(reference: Reference, options: ModelCheckerOptions) {
 		const infosetNameNotSpecified = this.verifyMandatoryAttributeProvided(reference, NAMES.ATTRIBUTE_INFOSET, true);
-		if (infosetNameNotSpecified && options.detailLevel >= ModelDetailLevel.ArgumentReferences) {
+		if (infosetNameNotSpecified && options.detailLevel >= ModelDetailLevel.SubReferences) {
 			this.addWarning(reference.range, CHECKS_MESSAGES.INFOSETCALL_WITHOUT_NAME());
 		}
 		return !infosetNameNotSpecified;

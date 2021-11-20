@@ -88,7 +88,7 @@ export const definitionsPerTag: Record<string, Definition[]> =
 		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 		type: ModelElementTypes.Input,
 		isReference: true,
-		detailLevel: ModelDetailLevel.ArgumentReferences,
+		detailLevel: ModelDetailLevel.SubReferences,
 		matchCondition: (x, nodeContext) => !isViewArgument(nodeContext)
 	}],
 	"input": [{
@@ -133,7 +133,7 @@ export const definitionsPerTag: Record<string, Definition[]> =
 		matchCondition: (x, nodeContext) => !isOutputDeclaration(nodeContext),
 		type: ModelElementTypes.Output,
 		isReference: true,
-		detailLevel: ModelDetailLevel.ArgumentReferences
+		detailLevel: ModelDetailLevel.SubReferences
 	}],
 	"variable": [{
 		matchCondition: (x, nodeContext) => isInfosetOutput(nodeContext),
@@ -143,7 +143,7 @@ export const definitionsPerTag: Record<string, Definition[]> =
 			{
 				attribute: "attribute",
 				type: ModelElementTypes.Attribute,
-				detailLevel: ModelDetailLevel.ArgumentReferences
+				detailLevel: ModelDetailLevel.SubReferences
 			}
 		],
 	}],

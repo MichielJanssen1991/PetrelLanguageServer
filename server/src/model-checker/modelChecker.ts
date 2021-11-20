@@ -24,7 +24,7 @@ export type ModelCheckerOptions = {
 export class ModelChecker {
 	private diagnostics: LSP.Diagnostic[] = [];
 	private modelManager: ModelManager;
-	private static defaultOptions: ModelCheckerOptions = { detailLevel: ModelDetailLevel.ArgumentReferences, skipFolders: [] };
+	private static defaultOptions: ModelCheckerOptions = { detailLevel: ModelDetailLevel.SubReferences, skipFolders: [] };
 	private checks: ModelCheck[] = [];
 
 	constructor(modelManager: ModelManager) {

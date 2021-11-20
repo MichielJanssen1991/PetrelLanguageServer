@@ -45,7 +45,8 @@ export enum IsSymbolOrReference {
 export enum ModelDetailLevel {
 	Declarations,
 	References,
-	ArgumentReferences
+	SubReferences,
+	All
 }
 
 export interface ObjectIdentifier {

@@ -22,7 +22,7 @@ export class RuleLoopActionCallCheck extends ActionCallCheck {
 		this.verifyInputsAreKnownInReferencedObjects(reference);
 		this.verifyOutputsAreKnownInReferencedObjects(reference);
 
-		if (options.detailLevel >= ModelDetailLevel.ArgumentReferences) {
+		if (options.detailLevel >= ModelDetailLevel.SubReferences) {
 			Object.values(reference.attributeReferences).forEach(subRef => {
 				this.verifyReferencedObjectsMandatoryInputsProvidedForRuleLoop(reference, subRef);
 			});

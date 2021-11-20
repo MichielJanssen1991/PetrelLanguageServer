@@ -19,7 +19,7 @@ export class SymbolIsReferencedCheck extends ModelCheck {
 		const symbol = node as SymbolDeclaration;
 		const references = this.modelManager.getReferencesForSymbol(symbol);
 		const noReferencesFound = references.length <= 0;
-		if (noReferencesFound && symbol.type != ModelElementTypes.NameSpace && options.detailLevel >= ModelDetailLevel.ArgumentReferences) {
+		if (noReferencesFound && symbol.type != ModelElementTypes.NameSpace && options.detailLevel >= ModelDetailLevel.SubReferences) {
 			this.addInformation(symbol.range, CHECKS_MESSAGES.NO_REFERENCES_FOUND(symbol));
 		}
 	}

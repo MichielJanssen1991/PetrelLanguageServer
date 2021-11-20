@@ -99,7 +99,7 @@ export default class PetrelLanguageServer {
 
 	private async validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
 		const uri = formatFileURL(textDocument.uri);
-		const parsingDiagnostics = this.analyzer.analyze(uri, textDocument, ModelDetailLevel.ArgumentReferences);
+		const parsingDiagnostics = this.analyzer.analyze(uri, textDocument, ModelDetailLevel.All);
 
 		time("Verifying references");
 		const referenceChecksDiagnostics = this.modelChecker.checkFile(uri);
