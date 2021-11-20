@@ -1,4 +1,4 @@
-import { ModelDetailLevel, ModelElementTypes, ObjectIdentifierTypes, SymbolDeclaration, SymbolOrReference } from '../../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes, IsSymbolOrReference, SymbolDeclaration, SymbolOrReference } from '../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
@@ -6,7 +6,7 @@ import { CHECKS_MESSAGES } from '../messages';
 
 export class SymbolIsReferencedCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.All
-	protected objectType = ObjectIdentifierTypes.Symbol
+	protected objectType = IsSymbolOrReference.Symbol
 	protected matchCondition = undefined;
 
 	constructor(modelManager: ModelManager) {

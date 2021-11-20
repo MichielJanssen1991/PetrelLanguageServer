@@ -1,5 +1,5 @@
 import { NAMES } from '../../model-definition/constants';
-import { ModelElementTypes, ObjectIdentifierTypes, SymbolDeclaration, SymbolOrReference } from '../../model-definition/symbolsAndReferences';
+import { ModelElementTypes, IsSymbolOrReference, SymbolDeclaration, SymbolOrReference, Reference } from '../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
@@ -7,7 +7,7 @@ import { CHECKS_MESSAGES } from '../messages';
 
 export class InfosetDeclarationCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.Infoset
-	protected objectType = ObjectIdentifierTypes.Symbol
+	protected objectType = IsSymbolOrReference.Symbol
 	protected matchCondition = undefined
 
 	constructor(modelManager: ModelManager) {
@@ -25,7 +25,7 @@ export class InfosetDeclarationCheck extends ModelCheck {
 	}
 
 	private verifySearch(search: SymbolDeclaration, options: ModelCheckerOptions) {
-		const searchColumns = this.modelManager.getChildrenOfType(search, ModelElementTypes.SearchColumn);
+		const searchColumns = this.modelManager.getChildrenOfType(search, ModelElementTypes.SearchColumn) as Reference[];
 		const typeRef = search.attributeReferences[NAMES.ATTRIBUTE_TYPE];
 		const typeAttributes = this.modelManager.getReferencedTypeAttributes(typeRef);
 		searchColumns.forEach(sc => {

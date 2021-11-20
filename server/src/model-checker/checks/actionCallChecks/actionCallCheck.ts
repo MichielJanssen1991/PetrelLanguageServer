@@ -1,4 +1,4 @@
-import { ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolOrReference } from '../../../model-definition/symbolsAndReferences';
+import { ModelElementTypes, IsSymbolOrReference, Reference, SymbolOrReference } from '../../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
 import { flattenArray } from '../../../util/array';
 import { ModelCheck } from '../../modelCheck';
@@ -7,7 +7,7 @@ import { ModelCheckerOptions } from '../../modelChecker';
 
 export abstract class ActionCallCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.Action
-	protected objectType = ObjectIdentifierTypes.Reference
+	protected objectType = IsSymbolOrReference.Reference
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);

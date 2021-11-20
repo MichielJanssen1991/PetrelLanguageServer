@@ -1,5 +1,5 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
-import { ChildDefinition, JsonElementVariable, ModelElementTypes, NewDefinition, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { ChildDefinition, JsonElementVariable, ModelElementTypes, NewDefinition, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { urlToHttpOptions } from 'url';
@@ -36,7 +36,7 @@ export class CompletionProvider {
 
 		let attributeCompletions: CompletionItem[] = [];
 		if (!inAttribute && inTag && lastNode) {
-			let attributeCompletionsTmp = this.getAttributeCompletions(lastNode, modelFileContext);
+			const attributeCompletionsTmp = this.getAttributeCompletions(lastNode, modelFileContext);
 
 			// remove already available attributes
 			// TODO use of attributeReferences is NOT correct because it only contains attributes used as reference, which is incorrect. 

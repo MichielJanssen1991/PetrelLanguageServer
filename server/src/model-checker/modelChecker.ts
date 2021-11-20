@@ -1,5 +1,5 @@
 import * as LSP from 'vscode-languageserver';
-import { ModelElementTypes, SymbolDeclaration, ModelDetailLevel, ObjectIdentifierTypes, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { ModelElementTypes, ModelDetailLevel, IsSymbolOrReference, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { removeFilesFromDirectories } from '../util/fs';
 import { objectsTypesWhichRequireContext } from '../model-definition/declarations';
 import { ModelCheck } from './modelCheck';
@@ -68,7 +68,7 @@ export class ModelChecker {
 
 	private walkNodes(node: SymbolOrReference, options: ModelCheckerOptions) {
 		this.verifyNode(node, options);
-		const isObsolete = (node.objectType == ObjectIdentifierTypes.Symbol && (node as SymbolDeclaration).isObsolete);
+		const isObsolete = (node.objectType == IsSymbolOrReference.Symbol && node.contextQualifiers.isObsolete);
 		if (!isObsolete) {
 			node.children.forEach(x => this.walkNodes(x, options));
 			Object.values(node.attributeReferences).forEach(x => this.verifyNode(x, options));

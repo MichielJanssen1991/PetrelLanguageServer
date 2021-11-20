@@ -1,4 +1,4 @@
-import { ModelDetailLevel, ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolOrReference } from '../../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes, IsSymbolOrReference, Reference, SymbolOrReference } from '../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
@@ -6,7 +6,7 @@ import { CHECKS_MESSAGES } from '../messages';
 
 export class ReferencedObjectExistsCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.All
-	protected objectType = ObjectIdentifierTypes.Reference
+	protected objectType = IsSymbolOrReference.Reference
 	protected matchCondition = undefined
 
 	constructor(modelManager: ModelManager) {
@@ -26,7 +26,7 @@ export class ReferencedObjectExistsCheck extends ModelCheck {
 		if (referencedSymbol && name != referencedSymbol.name && name.toLowerCase() == referencedSymbol.name.toLowerCase() && options.detailLevel >= ModelDetailLevel.ArgumentReferences) {
 			this.addInformation(reference.range, CHECKS_MESSAGES.REFERENCE_CAPITALIZATION(referencedSymbol, reference));
 		}
-		const symbolIsObsolete = referencedSymbol && referencedSymbol.isObsolete;
+		const symbolIsObsolete = referencedSymbol && referencedSymbol.contextQualifiers.isObsolete;
 		if (symbolIsObsolete) {
 			this.addError(reference.range, CHECKS_MESSAGES.REFERENCE_OBSOLETE(reference));
 		}

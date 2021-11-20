@@ -1,5 +1,5 @@
 import { NAMES } from '../model-definition/constants';
-import { ModelElementTypes, Reference, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
+import { IsSymbolOrReference, ModelElementTypes, Reference, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from './symbolAndReferenceManager';
 
 /**
@@ -11,7 +11,8 @@ export class ModelManager extends SymbolAndReferenceManager{
 		const decoratorsOrIncludeBlocks = object.children.filter(
 			x => x.type == ModelElementTypes.Decorator
 				|| x.type == ModelElementTypes.IncludeBlock
-		);
+				|| x.objectType == IsSymbolOrReference.Reference
+		) as Reference[];
 
 		const decoratedChildren: (Reference | SymbolDeclaration)[] = decoratorsOrIncludeBlocks.flatMap(decoratorOrIncludeBlockRef => {
 			const decoratorsOrIncludeBlocks = this.getReferencedObject(decoratorOrIncludeBlockRef);
