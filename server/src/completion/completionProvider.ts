@@ -35,12 +35,7 @@ export class CompletionProvider {
 
 		let attributeCompletions: CompletionItem[] = [];
 		if (!inAttribute && inTag && lastNode) {
-			const attributeCompletionsTmp = this.getAttributeCompletions(lastNode, modelFileContext);
-
-			// remove already available attributes
-			// TODO use of attributeReferences is NOT correct because it only contains attributes used as reference, which is incorrect. 
-			// There should be an list of filled attributes available.
-			attributeCompletions = attributeCompletionsTmp.filter(item => Object.keys(lastNode.attributeReferences).indexOf(item.label) == -1);
+			attributeCompletions = this.getAttributeCompletions(lastNode, modelFileContext);
 		}
 
 		let childElementCompletions: CompletionItem[] = [];
@@ -78,7 +73,12 @@ export class CompletionProvider {
 			}
 			
 			const allAttributes = [...attributesForAction, ...attributesForTag];
-			attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);
+			
+			// Remove already available attributes
+			const alreadyExistingAttributes = [...Object.keys(node.attributeReferences), Object.keys(node.otherAttributes)];
+			const attributesNotYetThere = allAttributes.filter(attribute => !alreadyExistingAttributes.includes(attribute));
+
+			attributeCompletions = this.mapAttributesToCompletionItem(attributesNotYetThere);
 			return attributeCompletions;
 		}
 		return [];

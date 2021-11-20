@@ -68,7 +68,7 @@ export class ModelChecker {
 
 	private walkNodes(node: SymbolOrReference, options: ModelCheckerOptions) {
 		this.verifyNode(node, options);
-		const isObsolete = (node.objectType == IsSymbolOrReference.Symbol && node.contextQualifiers.isObsolete);
+		const isObsolete = node.contextQualifiers.isObsolete;
 		if (!isObsolete) {
 			node.children.forEach(x => this.walkNodes(x, options));
 			Object.values(node.attributeReferences).forEach(x => this.verifyNode(x, options));
