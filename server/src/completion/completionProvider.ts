@@ -2,6 +2,7 @@ import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-lan
 import { ChildDefinition, JsonElementVariable, ModelElementTypes, NewDefinition, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
+import { urlToHttpOptions } from 'url';
 
 export type CompletionContext = {
 	inAttribute: boolean,
@@ -35,7 +36,12 @@ export class CompletionProvider {
 
 		let attributeCompletions: CompletionItem[] = [];
 		if (!inAttribute && inTag && lastNode) {
-			attributeCompletions = this.getAttributeCompletions(lastNode, modelFileContext);
+			let attributeCompletionsTmp = this.getAttributeCompletions(lastNode, modelFileContext);
+
+			// remove already available attributes
+			// TODO use of attributeReferences is NOT correct because it only contains attributes used as reference, which is incorrect. 
+			// There should be an list of filled attributes available.
+			attributeCompletions = attributeCompletionsTmp.filter(item => Object.keys(lastNode.attributeReferences).indexOf(item.label) == -1);
 		}
 
 		let childElementCompletions: CompletionItem[] = [];
@@ -60,16 +66,17 @@ export class CompletionProvider {
 	private getAttributeCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext) {
 		let attributeCompletions: CompletionItem[] = [];
 		if (node) {
-			let attributesForAction: string[] = [];
-			if (node.type == ModelElementTypes.Action && node.objectType == ObjectIdentifierTypes.Reference) {
-				const actionRef = node as Reference;
-				const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionRef);
-				attributesForAction = referencedAction?.children.filter(x => x.type == ModelElementTypes.Attribute).map(x => x.name) || [];
-			}
-
+			// get default attributes based on model definition
 			const modelDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, node.tag);
 			const attributesForTag = modelDefinition?.attributes?.map(x => x.name) || [];
 
+			// get attributes based on the action called
+			let attributesForAction: string[] = [];
+			if (node.type == ModelElementTypes.Action) {
+				const actionDefinition = this.symbolAndReferenceManager.findDefinition(ModelElementTypes.Action, node.name.toLowerCase());
+				attributesForAction = actionDefinition[0]?.children.filter(child => child.type == ModelElementTypes.Attribute).map(child => child.name) || [];
+			}
+			
 			const allAttributes = [...attributesForAction, ...attributesForTag];
 			attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);
 			return attributeCompletions;

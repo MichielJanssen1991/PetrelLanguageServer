@@ -251,25 +251,6 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				]
 			},
 			{
-				"name": "ignore-modelcheck",
-				"description": "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."				
-			},
-			{
-				"name": "ignore-modelcheck-justification",
-				"description": "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				"conditions": [
-					{
-						"attribute": "ignore-modelcheck",
-						"condition": "!=",
-						"value": ""
-					}
-				]		
-			},
-			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
-			},
-			{
 				"name": "override-rights",
 				"description": "May restrict which layers can override / extend this declaration.",
 				"types": [
@@ -318,6 +299,25 @@ export const RULE_DEFINITION: NewDefinition[] = [
 					}
 				]
 				
+			},
+			{
+				"name": "ignore-modelcheck",
+				"description": "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."				
+			},
+			{
+				"name": "ignore-modelcheck-justification",
+				"description": "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
+				"conditions": [
+					{
+						"attribute": "ignore-modelcheck",
+						"condition": "!=",
+						"value": ""
+					}
+				]		
+			},
+			{
+				"name": "comment",
+				"description": "Developer's comment on this element."
 			}
 		],
 		"childs": [
@@ -498,7 +498,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 								"value": new JsonElementVariable("backend-rules", "/output[@name]")
 							},
 							{
-								"operator": "OR",
+								"operator": "or",
 								"attribute": "local-name",
 								"condition": "misses",
 								"value": new JsonElementVariable("backend-rules", "/output[@name]")			
@@ -609,47 +609,884 @@ export const RULE_DEFINITION: NewDefinition[] = [
 	},
 	{ 
 		"element": "input",		
-		"description": ""
+		"description": "Specifies an input argument.",
+		"attributes": [
+			{
+				"name": "name",
+				"description": "Unique name for the input.",
+				"required": true
+			},
+			{
+				"name": "required",
+				"description": "If required is set to yes, an exception will be thrown if the input argument is not present."				
+			},
+			{
+				"name": "ignore-modelcheck",
+				"description": "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
+			},
+			{
+				"name": "ignore-modelcheck-justification",
+				"description": "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
+				"conditions": [
+					{
+						"attribute": "ignore-modelcheck",
+						"condition": "!=",
+						"value": ""
+					}
+				]		
+			},
+			{
+				"name": "comment",
+				"description": "Developer's comment on this element."
+			},
+		],		
 	},
 	{ 
 		"element": "output",		
-		"description": ""
-	},
-	{ 
-		"element": "action",		
-		"description": ""
+		"description": "Output of the rule. The rule will return (name, expression) as one of its value pairs. Any valid C# expression can be used; the syntax for parameters is {..}.",
+		"attributes": [
+			{
+				"name": "name",
+				"description": "Unique identifier for the output.",
+				"required": true
+			},
+			{
+				"name": "attribute",
+				"description": "A local variable name, a constant, or a data element (not supported in drop-down).",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "$rule/input/@name"		// TODO
+							},
+							{
+								"name": "$rule//set-var/@name"	// TODO
+							},	
+							{
+								"name": "$rule//action/output/@local-name" // TODO
+							}	
+						]
+					}
+				]
+			},
+			{
+				"name": "expression",
+				"description": "Expression value."
+			},
+			{
+				"name": "value",
+				"description": "Fixed value."
+			},
+			{
+				"name": "format",
+				"description": "Indicates how numeric values will be formatted; for example '0.00'."
+			},
+			{
+				"name": "postcondition",
+				"description": "A condition to check the value with."				
+			},
+			{
+				"name": "ignore-modelcheck",
+				"description": "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
+			},
+			{
+				"name": "ignore-modelcheck-justification",
+				"description": "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
+				"conditions": [
+					{
+						"attribute": "ignore-modelcheck",
+						"condition": "!=",
+						"value": ""
+					}
+				]		
+			},
+			{
+				"name": "comment",
+				"description": "Developer's comment on this element."
+			},
+		],		
 	},
 	{ 
 		"element": "argument",		
-		"description": "",
+		"description": "An argument to pass to the action.",
 		"attributes": [
-			{"name":"local-name"}, 
-			{"name":"remote-name"}, 
-			{"name":"value"}
+			{
+				"name":"local-name"
+			}, 
+			{
+				"name":"remote-name"
+			}, 
+			{
+				"name":"value"
+			},
+			{
+				"name":"parseType",
+				"description":"The type to which the argument value should be parsed.",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "Petrel.ModelPath"
+							}
+						]
+					}
+				]
+			},
+			{
+				"name":"precondition",
+				"description":"A condition to check the value with.",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "is not empty"
+							}
+						]
+					}
+				]
+			},
+			
 		]
 	},
 	{ 
 		"element": "set-var",		
-		"description": ""
+		"description": "A variable assignment.",
+		"attributes": [
+			{
+				"name": "name",
+				"description": "Name under which the output is stored locally.",
+				"required": true
+			},
+			{
+				"name": "expression",
+				"description": "A value expression."				
+			},
+			{
+				"name": "infoset",
+				"description": "An infoset which' contents to return.",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "document(infosets)//infoset" // TODO
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "infoset-variable",
+				"description": "A variable from an infoset to be returned. If the rule engine wants to use a variable that is defined in the infosets.xml file, first all {..} parameters in the search query are resolved. Then Petrel is called with this query. The records are returned, one by one: from each record, the attribute with the defined name is taken, and on all of these values, an aggregation like operator is used",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "$infoset/variable/@name" // TODO
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "value",
+				"description": "A fixed value."
+			},
+			{
+				"name": "ignore-modelcheck",
+				"description": "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
+			},
+			{
+				"name": "ignore-modelcheck-justification",
+				"description": "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
+				"conditions": [
+					{
+						"attribute": "ignore-modelcheck",
+						"condition": "!=",
+						"value": ""
+					}
+				]		
+			},
+			{
+				"name": "comment",
+				"description": "Developer's comment on this element."
+			}
+		]
+	},
+	{ 
+		"element": "clear-var",		
+		"description": "Clears the local variable.",
+		"attributes": [
+			{
+				"name": "name",
+				"description": "Name of the local variable to clear.",
+				"required": true
+			},
+			{
+				"name": "ignore-modelcheck",
+				"description": "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
+			},
+			{
+				"name": "ignore-modelcheck-justification",
+				"description": "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
+				"conditions": [
+					{
+						"attribute": "ignore-modelcheck",
+						"condition": "!=",
+						"value": ""
+					}
+				]		
+			},
+			{
+				"name": "comment",
+				"description": "Developer's comment on this element."
+			}
+		]
 	},
 	{ 
 		"element": "if",		
-		"description": ""
-	},
-	{ 
-		"element": "condition",		
-		"description": ""
-	},
-	{ 
-		"element": "then",		
-		"description": ""
-	},
-	{ 
-		"element": "else",		
-		"description": ""
+		"description": "Starts a condition.",
+		"attributes": [
+			{
+				"name": "description",
+				"description": "Developers' annotation."
+			},
+			{
+				"name": "comment",
+				"description": "Developer's comment on this element."
+			}
+		],
+		"childs": [
+			{
+				"element": "condition",
+				"occurence": "at-least-once"
+			},
+			{
+				"element": "then",
+				"occurence": "once"
+			},
+			{
+				"element": "else",
+				"occurence": "once"
+			},
+		]
 	},
 	{ 
 		"element": "elseif",		
-		"description": ""
-	}
+		"description": "Indicates a new if statement in case the conditions of the current if statement are not fulfilled. Else-if elements have to be placed as siblings next to if elements or else-if elements, which themselves have no else element defined.",
+		"attributes": [
+			{
+				"name": "description",
+				"description": "Developers' annotation."
+			},
+			{
+				"name": "comment",
+				"description": "Developer's comment on this element."
+			}
+		],
+		"childs": [
+			{
+				"element": "condition",
+				"occurence": "at-least-once"
+			},
+			{
+				"element": "then",
+				"occurence": "once"
+			},
+			{
+				"element": "else",
+				"occurence": "once"
+			},
+		]
+	},
+	{ 
+		"element": "condition",		
+		"description": "Condition item. One or more lines compose a condition.",
+		"attributes": [
+			{
+				"name": "prefix",
+				"description": "Used to group conditions.",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": ""
+							},
+							{
+								"name": "("
+							},
+							{
+								"name": "(("
+							},
+							{
+								"name": "((("
+							},
+							{
+								"name": "(((("
+							},							
+							{
+								"name": "NOT"
+							},
+							{
+								"name": "NOT("
+							},
+							{
+								"name": "NOT(("
+							},
+							{
+								"name": "NOT((("
+							},
+							{
+								"name": "NOT(((("
+							},
+							{
+								"name": "AND"
+							},
+							{
+								"name": "AND("
+							},
+							{
+								"name": "AND(("
+							},
+							{
+								"name": "AND((("
+							},
+							{
+								"name": "AND(((("
+							},							
+							{
+								"name": "AND NOT("
+							},
+							{
+								"name": "AND NOT(("
+							},
+							{
+								"name": "AND NOT((("
+							},
+							{
+								"name": "AND NOT(((("
+							},
+							{
+								"name": "OR"
+							},
+							{
+								"name": "OR("
+							},
+							{
+								"name": "OR(("
+							},
+							{
+								"name": "OR((("
+							},
+							{
+								"name": "OR(((("
+							},
+							{
+								"name": "OR NOT("
+							},
+							{
+								"name": "OR NOT(("
+							},
+							{
+								"name": "OR NOT((("
+							},
+							{
+								"name": "OR NOT(((("
+							},					
+						]
+					}
+				]
+			},
+			{
+				"name": "variable",
+				"description": "Left hand side of condition. Can be an expression as well (using {}).",
+				"required": true,
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "$rule/input/@name",
+							},												
+							{
+								"name": "$rule//set-var/@name",
+							},											
+							{
+								"name": "$rule//action/output/@local-name",
+							}												
+						]
+					}
+				]
+			},
+			{
+				"name": "operator",
+				"required": true,
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "Is",
+							},												
+							{
+								"name": "Like",
+							},												
+							{
+								"name": "Greater",
+							},												
+							{
+								"name": "Smaller",
+							},												
+							{
+								"name": "GreaterOrEqual",
+							},												
+							{
+								"name": "SmallerOrEqual",
+							},												
+							{
+								"name": "Not",
+							},												
+							{
+								"name": "StartsWith",
+							},												
+							{
+								"name": "WildCard",
+								"description": "Any wildcard search that is supported by the persistence, e.g., \"%[A-Z]_[0-9]\""
+							},												
+							{
+								"name": "in-range",
+								"description": "check whether variable is in the range mentioned in value or constant (includes lowerbound excludes upperbound)"
+							},												
+							{
+								"name": "below-range",
+								"description": "check whether variable is below the lower bound of the range mentioned in value or constant"
+							},											
+							{
+								"name": "above-range",
+								"description": "check whether variable is equal or larger than the higher bound of the range mentioned in value or constant"
+							},											
+							{
+								"name": "contains",
+								"description": "Checking multiple values is also supported (;-separated string as right hand side)."
+							},											
+							{
+								"name": "misses",
+								"description": "Checking multiple values is also supported (;-separated string as right hand side)."
+							},											
+																		
+						]
+					}
+				]
+			},
+			{
+				"name": "value",
+				"description": "A right hand side value."				
+			},
+			{
+				"name": "constant",
+				"description": "A constant as right hand side.",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "document(constants)/constants//variable/@name" // TODO
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "expression",
+				"description": "An expression as right hand side."
+			},
+			{
+				"name": "postfix",
+				"description": "Used to group conditions.",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": ")"
+							},
+							{
+								"name": "))"
+							},
+							{
+								"name": ")))"
+							},
+							{
+								"name": "))))"
+							},
+						]
+					}
+				]
+			},
+			{
+				"name": "comment",
+				"description": "Developer's comment on this element."
+			}
+		]
+	},
+	{ 
+		"element": "then",		
+		"description": "Indicates what should happen if the conditions are fulfilled.",
+		"attributes": [
+			{
+				"name": "comment",
+				"description": "Developer's comment on this element."
+			}
+		],
+		"childs": [
+			{
+				"element": "return"
+			},
+			{
+				"element": "break"
+			},
+			{
+				"element": "set-var"
+			},
+			{
+				"element": "action"
+			},
+			{
+				"element": "if"
+			},
+			{
+				"element": "elseif"
+			},
+			{
+				"element": "transaction"
+			},
+			{
+				"element": "clear-var"
+			},
+			{
+				"element": "rule"
+			},
+			{
+				"element": "forloop"
+			},
+			{
+				"element": "switch"
+			},
+		]
+	},
+	{ 
+		"element": "else",		
+		"description": "Else branch for the if 'statement'. What is below this element is executed if the condition of the if statement is not fulfilled.",
+		"attributes": [
+			{
+				"name": "comment",
+				"description": "Developer's comment on this element."
+			}
+		],
+		"childs": [
+			{
+				"element": "return"
+			},
+			{
+				"element": "break"
+			},
+			{
+				"element": "set-var"
+			},
+			{
+				"element": "action"
+			},
+			{
+				"element": "if"
+			},
+			{
+				"element": "elseif"
+			},
+			{
+				"element": "transaction"
+			},
+			{
+				"element": "clear-var"
+			},
+			{
+				"element": "rule"
+			},
+			{
+				"element": "forloop"
+			},
+			{
+				"element": "switch"
+			},
+		]
+	},
+	{ 
+		"element": "transaction",		
+		"description": "Combines the set of actions executed inside it into one transaction, that will succeed or fail as a whole. NOTE: Currently only data actions will be rolled back when a transaction fails.",
+		"attributes": [
+			{
+				"name": "scope-option",
+				"description": "The meaning of the transaction scope change.",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "",
+								"description": "Ensures the content to take part in a transaction. If there is already a transaction running, the content is added to that transaction and will roll back with that transaction."
+							},
+							{
+								"name": "Suppress",
+								"description": "Suppresses the content to take part in any outside transaction. This is useful for logging or audit, when you don't want to roll back the logging but only the data."
+							},
+							{
+								"name": "RequiresNew",
+								"description": "Starts a new transaction, even if there is already an outer transaction running. Effectively the same as suppress + required."
+							}
+						]
+					}
+				]
+			}
+		],
+		"childs": [
+			{
+				"element": "set-var"
+			},
+			{
+				"element": "action"
+			},
+			{
+				"element": "if"
+			},
+			{
+				"element": "elseif"
+			},
+			{
+				"element": "transaction"
+			},
+			{
+				"element": "clear-var"
+			},
+			{
+				"element": "rule"
+			},
+			{
+				"element": "forloop"
+			},
+			{
+				"element": "switch"
+			},
+		]
+	},
+	{ 
+		"element": "switch",		
+		"description": "",
+		"attributes": [
+			{
+				"name": "variable",
+				"description": "A local variable name, a constant, or a data element (not supported in drop-down).",
+				"types":[
+					{
+						"type": "enum",
+						"options" : [
+							{
+								"name": "$rule/input/@name"	// TODO
+							},
+							{
+								"name": "$rule//set-var/@name"	// TODO
+							},
+							{
+								"name": "$rule//action/output/@local-name"	// TODO
+							},
+						]
+					}
+				]
+			},
+			{
+				"name": "expression",
+				"description": "Expression value."
+			},
+			{
+				"name": "description",
+				"description": "Developers' annotation."
+			},
+			{
+				"name": "comment",
+				"description": "Developer's comment on this element."
+			}
+		],
+		"childs": [
+			{
+				"element": "case",
+				"occurence": "at-least-once"
+			},
+			{
+				"element": "default",
+				"occurence": "once"
+			}
+		]
+	},
+	{ 
+		"element": "case",		
+		"description": "",
+		"attributes": [
+			{
+				"name": "value",
+				"required": true
+			}
+		],
+		"childs": [
+			{
+				"element": "set-var"
+			},
+			{
+				"element": "action"
+			},
+			{
+				"element": "if"
+			},
+			{
+				"element": "elseif"
+			},
+			{
+				"element": "transaction"
+			},
+			{
+				"element": "clear-var"
+			},
+			{
+				"element": "rule"
+			},
+			{
+				"element": "forloop"
+			},
+			{
+				"element": "switch"
+			},
+		]
+	},
+	{ 
+		"element": "default",		
+		"description": "",
+		"childs": [
+			{
+				"element": "set-var"
+			},
+			{
+				"element": "action"
+			},
+			{
+				"element": "if"
+			},
+			{
+				"element": "elseif"
+			},
+			{
+				"element": "transaction"
+			},
+			{
+				"element": "clear-var"
+			},
+			{
+				"element": "rule"
+			},
+			{
+				"element": "forloop"
+			},
+			{
+				"element": "switch"
+			},
+		]
+	},
+	{ 
+		"element": "forloop",		
+		"description": "",
+		"attributes": [
+			{
+				"name": "loopvar",
+				"description": "The variable to increment during the loop. The variable is set to the start value at initialize."
+			},
+			{
+				"name": "start",
+				"description": "The start value for the loop variable. If not specified, the start value will be one."
+			},
+			{
+				"name": "end",
+				"description": "The last value of the loop variable before the loop ends. (The condition of ending the loop is: loop variable &lt;= end value.)"
+			},
+		],
+		"childs": [
+			{
+				"element": "break"
+			},
+			{
+				"element": "return"
+			},
+			{
+				"element": "set-var"
+			},
+			{
+				"element": "action"
+			},
+			{
+				"element": "if"
+			},
+			{
+				"element": "elseif"
+			},
+			{
+				"element": "transaction"
+			},
+			{
+				"element": "clear-var"
+			},
+			{
+				"element": "rule"
+			},
+			{
+				"element": "forloop"
+			},
+			{
+				"element": "switch"
+			},
+		]
+	},
+	{ 
+		"element": "break",		
+		"description": "Terminates the current loop.",
+	},
+	{ 
+		"element": "return",		
+		"description": "Terminates the current rule.",
+	},
+	{ 
+		"element": "include-blocks",		
+		"description": "Use to group include blocks.",
+		"attributes": [
+			{
+				"name": "name",
+				"description": "Unique identifier."
+			},
+			{
+				"name": "description",
+				"description": "Description of contents and purpose."
+			},
+			{
+				"name": "comment",
+				"description": "Developer's comment on this element."
+			}
+		],
+		"childs": [
+			{
+				"element": "include-blocks"
+			},
+			{
+				"element": "include-block"
+			}
+		]
+	},
 ];
