@@ -152,9 +152,11 @@ export type ElementAttributes = {
 	description?: string,
 	validations?: AttributeValidation[],
 	required?: boolean,
+	autoadd?: boolean,						// mark attribute to auto add when (parent) element is created
+	deprecated?: boolean,
 	types?: AttributeType[],
 	relatedto?: string,
-	conditions?: any
+	conditions?: ValidationMatches[]
 }
 
 export type AttributeValidation = {
@@ -165,7 +167,7 @@ export type AttributeValidation = {
 	identifier?: string,
 	matches?: ValidationMatches[],
 	level?: "none"|"info"|"warning"|"error"|"fatal",
-	conditions?: any
+	conditions?: ValidationMatches[]
 }
 
 export type ChildValidation = {
@@ -180,6 +182,7 @@ export type ChildValidation = {
 export type AttributeOption = {
 	name: string,
 	description?: string,
+	default?: boolean
 }
 
 export type ValidationMatches = {
