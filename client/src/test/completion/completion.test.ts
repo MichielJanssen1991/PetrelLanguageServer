@@ -9,6 +9,8 @@ suite('Should do completion', () => {
 		await testCompletionEquals(docUri, new vscode.Position(4, 14), {
 			items: [
 				{ label: 'local-name', kind: vscode.CompletionItemKind.Property },
+				{ label: 'parseType', kind: vscode.CompletionItemKind.Property },
+				{ label: 'precondition', kind: vscode.CompletionItemKind.Property },
 				{ label: 'remote-name', kind: vscode.CompletionItemKind.Property },
 				{ label: 'value', kind: vscode.CompletionItemKind.Property },
 			]
@@ -31,7 +33,7 @@ suite('Should do completion', () => {
 		});
 	});
 
-	test.only('Completes attributes for action call', async () => {
+	test('Completes attributes for action call', async () => {
 		const docUri = getDocUri('completion\\action-call-attributes.xml');
 		await testCompletionContains(docUri, new vscode.Position(3, 27), {
 			items: [
