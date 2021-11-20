@@ -1,14 +1,20 @@
 import { ModelDetailLevel, ModelElementTypes, Definition, INodeContext } from './symbolsAndReferences';
 import { NAMES } from './constants';
 
-//Define what declarations are possible for each opening tag
-export const symbolDeclarationDefinitions: Record<string, Definition[]> =
+//Defines a list of possible refrerences and declarations for each opening tag
+export const definitionsPerTag: Record<string, Definition[]> =
 {
 	"rule": [{
 		type: ModelElementTypes.Rule,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		matchCondition: (x, nodeContext) => !isProfileRule(nodeContext)
+	},
+	{
+		matchCondition: (x, nodeContext) => isProfileRule(nodeContext),
+		type: ModelElementTypes.Rule,
+		isReference: true,
+		detailLevel: ModelDetailLevel.References
 	}],
 	"infoset": [{
 		type: ModelElementTypes.Infoset,
@@ -46,6 +52,12 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 			}
 		],
 		matchCondition: (x, nodeContext) => !isProfileType(nodeContext)
+	},
+	{
+		matchCondition: (x, nodeContext) => isProfileType(nodeContext),
+		type: ModelElementTypes.Type,
+		isReference: true,
+		detailLevel: ModelDetailLevel.References
 	}],
 	"view": [{
 		type: ModelElementTypes.View,
@@ -59,12 +71,25 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 				detailLevel: ModelDetailLevel.References,
 			}
 		],
+	},
+	{
+		matchCondition: (x, nodeContext) => isProfileView(nodeContext),
+		type: ModelElementTypes.View,
+		isReference: true,
+		detailLevel: ModelDetailLevel.References
 	}],
 	"argument": [{
 		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 		type: ModelElementTypes.Input,
 		detailLevel: ModelDetailLevel.Declarations,
 		matchCondition: (x, nodeContext) => isViewArgument(nodeContext)
+	},
+	{
+		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
+		type: ModelElementTypes.Input,
+		isReference: true,
+		detailLevel: ModelDetailLevel.ArgumentReferences,
+		matchCondition: (x, nodeContext) => !isViewArgument(nodeContext)
 	}],
 	"input": [{
 		type: ModelElementTypes.Input,
@@ -102,6 +127,13 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 		matchCondition: (x, nodeContext) => isOutputDeclaration(nodeContext),
 		type: ModelElementTypes.Output,
 		detailLevel: ModelDetailLevel.Declarations
+	},
+	{
+		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
+		matchCondition: (x, nodeContext) => !isOutputDeclaration(nodeContext),
+		type: ModelElementTypes.Output,
+		isReference: true,
+		detailLevel: ModelDetailLevel.ArgumentReferences
 	}],
 	"variable": [{
 		matchCondition: (x, nodeContext) => isInfosetOutput(nodeContext),
@@ -120,6 +152,42 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 		type: ModelElementTypes.Action,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
+	},
+	{
+		type: ModelElementTypes.Action,
+		isReference: true,
+		detailLevel: ModelDetailLevel.References,
+		matchCondition: (x: any, nodeContext: INodeContext) => !isActionDefinition(nodeContext),
+		attributes: [{
+			type: ModelElementTypes.Rule,
+			detailLevel: ModelDetailLevel.References,
+			attribute: NAMES.ATTRIBUTE_RULE
+		},
+		{
+			type: ModelElementTypes.Rule,
+			detailLevel: ModelDetailLevel.References,
+			attribute: NAMES.ATTRIBUTE_ONERRORRULE
+		},
+		{
+			type: ModelElementTypes.Infoset,
+			detailLevel: ModelDetailLevel.References,
+			attribute: NAMES.ATTRIBUTE_INFOSET
+		},
+		{
+			type: ModelElementTypes.Function,
+			detailLevel: ModelDetailLevel.References,
+			attribute: NAMES.ATTRIBUTE_FUNCTION
+		},
+		{
+			type: ModelElementTypes.Type,
+			detailLevel: ModelDetailLevel.References,
+			attribute: NAMES.ATTRIBUTE_TYPE
+		},
+		{
+			type: ModelElementTypes.Value,
+			detailLevel: ModelDetailLevel.References,
+			attribute: "FrontendBackend"
+		}],
 	}],
 	"search": [{
 		type: ModelElementTypes.TypeFilter,
@@ -154,6 +222,41 @@ export const symbolDeclarationDefinitions: Record<string, Definition[]> =
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
 	}],
+	"ProfileType": [{
+		name: (x) => x.attributes.TypeName,
+		type: ModelElementTypes.Type,
+		isReference: true,
+		detailLevel: ModelDetailLevel.References
+	}],
+	"ProfileView": [{
+		name: (x) => x.attributes.ViewName,
+		type: ModelElementTypes.View,
+		isReference: true,
+		detailLevel: ModelDetailLevel.References
+	}],
+	"ProfileRule": [{
+		name: (x) => x.attributes.RuleName,
+		type: ModelElementTypes.Rule,
+		isReference: true,
+		detailLevel: ModelDetailLevel.References
+	}],
+	"DataConversion": [{
+		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_DATACONVERSION_RULENAME])),
+		type: ModelElementTypes.Rule,
+		isReference: true,
+		detailLevel: ModelDetailLevel.References
+	}],
+	"decoration": [{
+		type: ModelElementTypes.Decorator,
+		isReference: true,
+		detailLevel: ModelDetailLevel.References
+	}],
+	"include": [{
+		name: (x) => x.attributes.block,
+		type: ModelElementTypes.IncludeBlock,
+		isReference: true,
+		detailLevel: ModelDetailLevel.References,
+	}]
 };
 
 

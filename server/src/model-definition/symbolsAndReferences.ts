@@ -35,10 +35,9 @@ export interface INodeContext {
 	getFirstParent: () => any,
 	hasParentTag: (name: string) => boolean
 	findParent: (predicate: (n: any) => boolean) => any | null,
-	getTagRange: () => LSP.Range;
 }
 
-export enum ObjectIdentifierTypes {
+export enum IsSymbolOrReference {
 	Symbol,
 	Reference
 }
@@ -57,27 +56,25 @@ export interface ObjectIdentifier {
 	range: LSP.Range,
 	fullRange: LSP.Range,
 	uri: string,
-	objectType: ObjectIdentifierTypes,
-	children: (Reference | SymbolDeclaration)[]
+	objectType: IsSymbolOrReference,
+	children: (Reference | SymbolDeclaration)[],
+	otherAttributes: Record<string, string | boolean | number>,
+	attributeReferences: Record<string, Reference>,
+	comment?: string,
+	contextQualifiers: ContextQualifiers
 }
 
 export interface Reference extends ObjectIdentifier {
-	otherAttributes: Record<string, string | boolean | number>,
-	attributeReferences: Record<string, Reference>
-	contextQualifiers: ContextQualifiers
+	objectType: IsSymbolOrReference.Reference
 }
 
 export interface SymbolDeclaration extends ObjectIdentifier {
-	otherAttributes: Record<string, string | boolean | number>,
-	comment?: string,
-	isObsolete: boolean,
-	attributeReferences: Record<string, Reference>
-	contextQualifiers: ContextQualifiers
+	objectType: IsSymbolOrReference.Symbol
 }
 
 export type SymbolOrReference = SymbolDeclaration | Reference;
 
-export function newReference(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string): Reference {
+export function newReference(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, comment?: string): Reference {
 	return {
 		name,
 		tag,
@@ -90,11 +87,12 @@ export function newReference(name: string, tag: string, type: ModelElementTypes,
 		otherAttributes: {},
 		attributeReferences: {},
 		contextQualifiers: {},
-		objectType: ObjectIdentifierTypes.Reference
+		comment,
+		objectType: IsSymbolOrReference.Reference
 	};
 }
 
-export function newSymbolDeclaration(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, isObsolete: boolean, comment?: string): SymbolDeclaration {
+export function newSymbolDeclaration(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, comment?: string): SymbolDeclaration {
 	return {
 		name,
 		type,
@@ -106,10 +104,9 @@ export function newSymbolDeclaration(name: string, tag: string, type: ModelEleme
 		children: [],
 		otherAttributes: {},
 		contextQualifiers: {},
-		isObsolete,
 		comment,
 		attributeReferences: {},
-		objectType: ObjectIdentifierTypes.Symbol
+		objectType: IsSymbolOrReference.Symbol
 	};
 }
 export function objectIdentifier(name: string, type: ModelElementTypes, range: LSP.Range) {
@@ -124,6 +121,7 @@ export interface Definition {
 	contextQualifiers?: (x: any, nodeContext: INodeContext) => ContextQualifiers,
 	detailLevel: ModelDetailLevel
 	attributes?: AttributeReferenceDefinition[],
+	isReference?: boolean
 }
 
 export interface AttributeReferenceDefinition {

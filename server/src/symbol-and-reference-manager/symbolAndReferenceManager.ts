@@ -2,7 +2,7 @@ import FuzzySearch = require('fuzzy-search');
 import { Position } from 'vscode-languageserver-types';
 import { objectsTypesWhichRequireContext } from '../model-definition/declarations';
 import { ModelFileContext } from '../model-definition/modelDefinitionManager';
-import { ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { ModelElementTypes, IsSymbolOrReference, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { flattenNestedListObjects, flattenNestedObjectValues, flattenObjectValues } from '../util/array';
 import { pointIsInRange } from '../util/other';
 
@@ -64,8 +64,8 @@ export class SymbolAndReferenceManager {
 	private processNode(node: SymbolOrReference) {
 		if (!objectsTypesWhichRequireContext.has(node.type)) {
 			switch (node.objectType) {
-				case ObjectIdentifierTypes.Symbol: { this.addSymbolDeclaration(node as SymbolDeclaration); break; }
-				case ObjectIdentifierTypes.Reference: { this.addNamedReference(node as Reference); break; }
+				case IsSymbolOrReference.Symbol: { this.addSymbolDeclaration(node as SymbolDeclaration); break; }
+				case IsSymbolOrReference.Reference: { this.addNamedReference(node as Reference); break; }
 			}
 		}
 	}
@@ -222,19 +222,38 @@ export class SymbolAndReferenceManager {
 	}
 
 	/**
+	 * Find references matching the given word.
+	 */
+	public findReferencesMatchingWord({ exactMatch, word }: { exactMatch: boolean, word: string }): Reference[] {
+		const references: Reference[] = [];
+
+		Object.keys(this.uriToReferences).forEach(uri => {
+			const declarationsInFile = this.uriToReferences[uri] || {};
+			Object.keys(declarationsInFile).map(name => {
+				const match = exactMatch ? name === word : name.startsWith(word);
+				if (match) {
+					declarationsInFile[name].forEach(ref => references.push(ref));
+				}
+			});
+		});
+		return references;
+	}
+
+	/**
 	 * Get a list of nodes for the current position in the tree. Each node is a child of the previous node
 	 */
 	public getNodesForPosition(uri: string, position: Position) {
-		const nodes = [this.uriToTree[uri]]; 
+		const nodes = [this.uriToTree[uri]];
 		this.addSubNodesForPosition(nodes, this.uriToTree[uri], position);
-		const inTag = pointIsInRange(nodes[nodes.length-1].range, position);
-		return {nodes, inTag};
+		const lastNode = nodes[nodes.length - 1];
+		const inTag = pointIsInRange(lastNode.range, position);
+		const attribute = Object.values(lastNode.attributeReferences).find(x => pointIsInRange(x.fullRange, position));
+		return { nodes, inTag, attribute };
 	}
 
-	private addSubNodesForPosition(nodes:SymbolOrReference[], node: SymbolOrReference, position: Position) {
-		const childNode = node.children.find(x=> pointIsInRange(x.fullRange, position));
-		if(childNode)
-		{
+	private addSubNodesForPosition(nodes: SymbolOrReference[], node: SymbolOrReference, position: Position) {
+		const childNode = node.children.find(x => pointIsInRange(x.fullRange, position));
+		if (childNode) {
 			nodes.push(childNode);
 			this.addSubNodesForPosition(nodes, childNode, position);
 		}

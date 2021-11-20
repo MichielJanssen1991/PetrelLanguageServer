@@ -1,8 +1,7 @@
 import { Range } from 'vscode-languageserver-types';
-import { symbolDeclarationDefinitions } from '../../model-definition/declarations';
+import { definitionsPerTag } from '../../model-definition/declarations';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { referenceDefinitions } from '../../model-definition/references';
-import { newReference, Reference, SymbolDeclaration, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, NewDefinition, ModelElementTypes, ChildDefinition } from '../../model-definition/symbolsAndReferences';
+import { newReference, Reference, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, NewDefinition, ModelElementTypes, ChildDefinition } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
 import { ISaxParserExtended, newSaxParserExtended, ProcessingInstruction } from './saxParserExtended';
 
@@ -33,16 +32,14 @@ export class ModelParser extends FileParser implements INodeContext {
 		this.parsedObjectStack.push({ depth: -1, parsedObject: this.results.tree });
 	}
 
+	//FileParser methods
 	public parseFile(fileContent: string) {
 		this.parser.write(fileContent);
 		this.parser.close();
-		return this.getResults();
-	}
-
-	public getResults() {
 		return this.results;
 	}
 
+	//INodeContext implementation
 	public getFirstParent() {
 		return this.parser.getFirstParent();
 	}
@@ -55,6 +52,7 @@ export class ModelParser extends FileParser implements INodeContext {
 		return this.parser.hasParentTag(name);
 	}
 
+	//Methods related to range or depth 
 	public getTagRange() {
 		return this.parser.getTagRange();
 	}
@@ -63,6 +61,27 @@ export class ModelParser extends FileParser implements INodeContext {
 		return this.parser.getAttributeRange(attribute);
 	}
 
+	private getCurrentDepth() {
+		return this.parser.tags.length;
+	}
+
+	//Namespace and other context qualifiers
+	private getNameSpace(): string {
+		return this.getContextQualifiers().nameSpace || "";
+	}
+
+	private getContextQualifiers(): ContextQualifiers {
+		const context: any = {};
+		this.parsedObjectStack.forEach(item => {
+			const currentContext = item.parsedObject.contextQualifiers;
+			Object.keys(currentContext).forEach(key => {
+				context[key] = (currentContext as any)[key];
+			});
+		});
+		return context;
+	}
+
+	//Parser events
 	private onError(e: any) {
 		this.addError(this.getTagRange(), e.message);
 	}
@@ -74,7 +93,7 @@ export class ModelParser extends FileParser implements INodeContext {
 	private onOpenTag(node: any) {
 		const tagName = node.name;
 		this.validateNode(node);
-		const definitions = symbolDeclarationDefinitions[tagName];
+		const definitions = definitionsPerTag[tagName];
 		let symbol, reference;
 		if (definitions) {
 			definitions.some(def => {
@@ -86,21 +105,8 @@ export class ModelParser extends FileParser implements INodeContext {
 			});
 		}
 
-		if (!symbol) {
-			const refDefinitions = referenceDefinitions[tagName];
-			if (refDefinitions) {
-				refDefinitions.some(def => {
-					reference = this.parseNodeForReference(node, def);
-					if (reference) {
-						this.pushToParsedObjectStack(reference, def);
-						return true;
-					}
-				});
-			}
-		}
-
 		if (!symbol && !reference) {
-			symbol = newSymbolDeclaration(node.name, node.name, ModelElementTypes.Unknown, this.getTagRange(), this.uri, false);
+			symbol = newSymbolDeclaration(node.name, node.name, ModelElementTypes.Unknown, this.getTagRange(), this.uri);
 			this.pushToParsedObjectStack(symbol);
 		}
 
@@ -128,25 +134,6 @@ export class ModelParser extends FileParser implements INodeContext {
 		this.context = context;
 		this.contextModelDefinition = this.modelDefinitionManager.getModelDefinition(context);
 		this.results.modelFileContext = this.context;
-	}
-
-	private getNameSpace(): string {
-		return this.getContextQualifiers().nameSpace || "";
-	}
-
-	private getContextQualifiers(): ContextQualifiers {
-		const context: any = {};
-		this.parsedObjectStack.forEach(item => {
-			const currentContext = item.parsedObject.contextQualifiers;
-			Object.keys(currentContext).forEach(key => {
-				context[key] = (currentContext as any)[key];
-			});
-		});
-		return context;
-	}
-
-	private getCurrentDepth() {
-		return this.parser.tags.length;
 	}
 
 	// Push the ParsedObject to the parsedObjectStack
@@ -178,35 +165,26 @@ export class ModelParser extends FileParser implements INodeContext {
 		}
 	}
 
-	private parseNodeForDefinition(node: any, definition: Definition): SymbolDeclaration | undefined {
+	private parseNodeForDefinition(node: any, definition: Definition): SymbolOrReference | undefined {
 		const conditionMatches = this.conditionMatches(definition, node, this);
 		if (conditionMatches && this.detailLevel >= definition.detailLevel) {
 			const name = this.parseNodeForName(definition, node);
-			const isObsolete = node.attributes.obsolete == "yes";
+			let object: SymbolOrReference;
 			const comment = node.attributes.comment;
-			const symbol: SymbolDeclaration = newSymbolDeclaration(name, node.name, definition.type, this.getTagRange(), this.uri, isObsolete, comment);
-			const { attributeReferences, otherAttributes } = this.parseAttributes(definition, node);
-			symbol.otherAttributes = otherAttributes;
-			symbol.attributeReferences = attributeReferences;
-			symbol.contextQualifiers = this.parseContextQualifiers(definition, node);
-			return symbol;
-		}
-
-		return undefined;
-	}
-
-	private parseNodeForReference(node: any, definition: Definition): Reference | undefined {
-		const conditionMatches = this.conditionMatches(definition, node, this);
-		if (conditionMatches && this.detailLevel >= definition.detailLevel) {
-			const name = this.parseNodeForName(definition, node);
-			const reference = newReference(name, node.name, definition.type, this.getTagRange(), this.uri);
+			if (definition.isReference) {
+				object = newReference(name, node.name, definition.type, this.getTagRange(), this.uri, comment);
+			}
+			else {
+				object = newSymbolDeclaration(name, node.name, definition.type, this.getTagRange(), this.uri, comment);
+			}
 
 			const { attributeReferences, otherAttributes } = this.parseAttributes(definition, node);
-			reference.otherAttributes = otherAttributes;
-			reference.attributeReferences = attributeReferences;
-			reference.contextQualifiers = this.parseContextQualifiers(definition, node);
-			return reference;
+			object.otherAttributes = otherAttributes;
+			object.attributeReferences = attributeReferences;
+			object.contextQualifiers = this.parseContextQualifiers(definition, node);
+			return object;
 		}
+
 		return undefined;
 	}
 

@@ -6,7 +6,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
 import { formatFileURL } from './util/fs';
-import { ModelDetailLevel, ObjectIdentifierTypes, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
+import { ModelDetailLevel, IsSymbolOrReference, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
 import { CompletionContext, CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
 
@@ -121,7 +121,7 @@ export default class PetrelLanguageServer {
 		const pos = params.position;
 		const inAttribute = this.analyzer.contextFromLine(uri, pos);
 
-		const {nodes, inTag} = this.modelManager.getNodesForPosition(uri, pos);
+		const {nodes, inTag, attribute} = this.modelManager.getNodesForPosition(uri, pos);
 
 		return { word, nodes, inTag, inAttribute, uri };
 	}
@@ -143,7 +143,7 @@ export default class PetrelLanguageServer {
 		let symbols: SymbolDeclaration[] = [];
 		if (nodes.length > 0) {
 			const lastNode = context.nodes[nodes.length - 1];
-			const possibleReferencesSelected = [lastNode, ...Object.values(lastNode.attributeReferences)].filter(x => x.objectType == ObjectIdentifierTypes.Reference && (x.name == word || x.name.endsWith(`.${word}`))) as Reference[];
+			const possibleReferencesSelected = [lastNode, ...Object.values(lastNode.attributeReferences)].filter(x => x.objectType == IsSymbolOrReference.Reference && (x.name == word || x.name.endsWith(`.${word}`))) as Reference[];
 			symbols = possibleReferencesSelected
 				.map(ref => this.modelManager.getReferencedObject(ref))
 				.filter(x => (x != undefined)) as SymbolDeclaration[];
@@ -160,10 +160,10 @@ export default class PetrelLanguageServer {
 		let references: Reference[] = [];
 		if (nodes.length > 0) {
 			const lastNode = context.nodes[nodes.length - 1];
-			const possibleDeclarationsSelected = [lastNode].filter(x => x.objectType == ObjectIdentifierTypes.Symbol && (x.name == word || x.name.endsWith(`.${word}`))) as SymbolDeclaration[];
+			const possibleDeclarationsSelected = [lastNode].filter(x => x.objectType == IsSymbolOrReference.Symbol && (x.name == word || x.name.endsWith(`.${word}`))) as SymbolDeclaration[];
 			references = possibleDeclarationsSelected.flatMap(ref => this.modelManager.getReferencesForSymbol(ref));
 		} else {
-			references = this.modelManager.findSymbolsMatchingWord({ exactMatch: true, word });
+			references = this.modelManager.findReferencesMatchingWord({ exactMatch: true, word });
 		}
 
 		return this.getReferenceLocations(references);

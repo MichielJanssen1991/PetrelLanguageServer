@@ -1,12 +1,12 @@
 import * as LSP from 'vscode-languageserver';
-import { ModelElementTypes, ObjectIdentifierTypes, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { ModelElementTypes, IsSymbolOrReference, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 import { ModelCheckerOptions } from './modelChecker';
 
 export abstract class ModelCheck {
 	private diagnostics: LSP.Diagnostic[] = [];
 	protected modelManager: ModelManager;
-	protected abstract objectType: ObjectIdentifierTypes;
+	protected abstract objectType: IsSymbolOrReference;
 	protected abstract modelElementType: ModelElementTypes;
 	protected abstract matchCondition?: (node: SymbolOrReference) => boolean;
 
