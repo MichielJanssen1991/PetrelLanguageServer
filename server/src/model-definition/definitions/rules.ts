@@ -1,4 +1,5 @@
 import { JsonElementVariable, NewDefinition } from '../symbolsAndReferences';
+import { include_blocks_element, include_element, merge_instruction_element, model_condition_element } from './shared';
 export const RULE_DEFINITION: NewDefinition[] = [
 	{ 
 		"element": "rules",		
@@ -1463,30 +1464,43 @@ export const RULE_DEFINITION: NewDefinition[] = [
 		"element": "return",		
 		"description": "Terminates the current rule.",
 	},
+	include_blocks_element,
+	{
+		"element": "include-block"
+	}, 
+	include_element,
 	{ 
-		"element": "include-blocks",		
-		"description": "Use to group include blocks.",
-		"attributes": [
-			{
-				"name": "name",
-				"description": "Unique identifier."
-			},
-			{
-				"name": "description",
-				"description": "Description of contents and purpose."
-			},
-			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
-			}
-		],
-		"childs": [
-			{
-				"element": "include-blocks"
-			},
-			{
-				"element": "include-block"
-			}
-		]
+		"element": "decorations",		
+		"description": "",
 	},
+	{ 
+		"element": "decoration",		
+		"description": "",
+	},
+	{ 
+		"element": "decoration-argument",		
+		"description": "",
+	},
+	{ 
+		"element": "decorators",		
+		"description": "",
+	},
+	{ 
+		"element": "decorator",		
+		"description": "",
+	},
+	{ 
+		"element": "decorator-input",		
+		"description": "",
+	},
+	{ 
+		"element": "target",		
+		"description": "",
+	},
+	{ 
+		"element": "decorator-context-entity",		
+		"description": "",
+	},
+	merge_instruction_element,
+	model_condition_element
 ];

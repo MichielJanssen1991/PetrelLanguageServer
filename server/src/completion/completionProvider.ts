@@ -72,13 +72,13 @@ export class CompletionProvider {
 				attributesForAction = referencedAction?.children.filter(x => x.type == ModelElementTypes.Attribute).map(x => x.name) || [];
 			}
 			
-			const allAttributes = [...attributesForAction, ...attributesForTag];
+			let allAttributes = [...attributesForAction, ...attributesForTag];
+			// remove already available attributes
+			const allExistingAttributes = [...Object.keys(node.attributeReferences), ...Object.keys(node.otherAttributes)];
+			allAttributes = allAttributes.filter(item => !allExistingAttributes.includes(item));
 			
-			// Remove already available attributes
-			const alreadyExistingAttributes = [...Object.keys(node.attributeReferences), Object.keys(node.otherAttributes)];
-			const attributesNotYetThere = allAttributes.filter(attribute => !alreadyExistingAttributes.includes(attribute));
+			attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);
 
-			attributeCompletions = this.mapAttributesToCompletionItem(attributesNotYetThere);
 			return attributeCompletions;
 		}
 		return [];

@@ -1,4 +1,5 @@
 import { NewDefinition } from '../symbolsAndReferences';
+import { dev_comment_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element } from './shared';
 export const BACKEND_DEFINITION: NewDefinition[] = [
 	{
 		"element": "root",
@@ -284,7 +285,7 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 				"description": "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
 				"conditions":[
 					{
-						"name": "name",
+						"attribute": "name",
 						"condition": "==",
 						"value": "rule"
 					}
@@ -293,25 +294,17 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 		]	
 
 	},
-	{
-		"element": "include-blocks"
-	}, 
+	include_blocks_element,
 	{
 		"element": "include-block"
 	}, 
-	{
-		"element": "include"
-	},
-	{
-		"element": "model-condition"
-	},
+	include_element,
+	model_condition_element,
 	{
 		"element": "auto-key",
 		"parent": {
 			"element": "attribute"
 		}
 	},
-	{
-		"element": "merge-instruction"
-	}
+	merge_instruction_element
 ];
