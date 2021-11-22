@@ -297,10 +297,16 @@ export function isViewDeclaration(x: any, nodeContext: INodeContext): boolean {
 	return !(nodeContext.getFirstParent().name == "action") && (x.attributes.name != undefined);
 }
 
-export const objectsTypesWhichRequireContext = new Set([
-	ModelElementTypes.Input,
-	ModelElementTypes.Output,
-	ModelElementTypes.SearchColumn,
-	ModelElementTypes.Search,
-	ModelElementTypes.Attribute
+//Objects which can be referenced without requiring the context
+export const standaloneObjectTypes = new Set([
+	ModelElementTypes.View,
+	ModelElementTypes.Infoset,
+	ModelElementTypes.Type,
+	ModelElementTypes.Function,
+	ModelElementTypes.Rule,
+	ModelElementTypes.Decorator,
+	ModelElementTypes.IncludeBlock,
+	ModelElementTypes.Action,
+	ModelElementTypes.NameSpace,
+	ModelElementTypes.Profile
 ]);
