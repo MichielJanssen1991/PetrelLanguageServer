@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { getDocUri } from '../helper';
-import { testCompletionContains, testCompletionEquals } from './common';
+import { testCompletionContains, testCompletionDoesNotContain, testCompletionEquals } from './common';
 
 suite('Should do completion', () => {
 
@@ -41,6 +41,15 @@ suite('Should do completion', () => {
 			]
 		});
 		await testCompletionContains(docUri, new vscode.Position(4, 24), {
+			items: [
+				{ label: 'rulename', kind: vscode.CompletionItemKind.Property }
+			]
+		});
+	});
+
+	test('Does not completes attributes for action call which are already there', async () => {
+		const docUri = getDocUri('completion\\action-call-attributes.xml');
+		await testCompletionDoesNotContain(docUri, new vscode.Position(5, 45), {
 			items: [
 				{ label: 'rulename', kind: vscode.CompletionItemKind.Property }
 			]

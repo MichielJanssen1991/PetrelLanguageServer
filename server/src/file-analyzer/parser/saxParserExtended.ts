@@ -28,6 +28,11 @@ export type ProcessingInstruction = {
 	body: string
 }
 
+export type Node = {
+	name: string
+	attributes: Record<string, string>
+}
+
 
 // Extend with own functionality used for parsing model xml
 export interface ISaxParserExtended extends ISaxParser {
@@ -36,7 +41,7 @@ export interface ISaxParserExtended extends ISaxParser {
 	hasParentTag: (name: string) => boolean
 	findParent: (predicate: (n: any) => boolean) => any | null,
 	getTagRange: () => LSP.Range;
-	getAttributeRange: (attribute:{name:string, value:string}) => LSP.Range;
+	getAttributeRange: (attribute: { name: string, value: string }) => LSP.Range;
 }
 
 
@@ -93,7 +98,7 @@ export function newSaxParserExtended(
 	parser.getAttributeRange = function (attribute) {
 		return LSP.Range.create(
 			this.line,
-			Math.max(this.column - attribute.name.length - attribute.value.length-3, 0),
+			Math.max(this.column - attribute.name.length - attribute.value.length - 3, 0),
 			this.line,
 			this.column,
 		);

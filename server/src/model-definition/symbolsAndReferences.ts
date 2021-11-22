@@ -121,11 +121,11 @@ export interface Definition {
 	prefixNameSpace?: boolean,
 	contextQualifiers?: (x: any, nodeContext: INodeContext) => ContextQualifiers,
 	detailLevel: ModelDetailLevel
-	attributes?: AttributeReferenceDefinition[],
+	attributes?: AttributeDefinition[],
 	isReference?: boolean
 }
 
-export interface AttributeReferenceDefinition {
+export interface AttributeDefinition {
 	type: ModelElementTypes,
 	detailLevel: ModelDetailLevel,
 	attribute: string

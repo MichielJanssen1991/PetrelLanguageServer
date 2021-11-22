@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as assert from 'assert';
 import { activate } from '../helper';
 
-export async function testCompletionEquals(docUri: vscode.Uri, position: vscode.Position, expectedCompletionList: vscode.CompletionList) {
+async function activateAndGetCompletionItems(docUri: vscode.Uri, position: vscode.Position) {
 	await activate(docUri);
 
 	// Executing the command `vscode.executeCompletionItemProvider` to simulate triggering completion
@@ -11,6 +11,11 @@ export async function testCompletionEquals(docUri: vscode.Uri, position: vscode.
 		docUri,
 		position
 	)) as vscode.CompletionList;
+	return actualCompletionList;
+}
+
+export async function testCompletionEquals(docUri: vscode.Uri, position: vscode.Position, expectedCompletionList: vscode.CompletionList) {
+	const actualCompletionList = await activateAndGetCompletionItems(docUri, position);
 
 	assert.ok(actualCompletionList.items.length >= 2);
 	expectedCompletionList.items.forEach((expectedItem, i) => {
@@ -20,15 +25,10 @@ export async function testCompletionEquals(docUri: vscode.Uri, position: vscode.
 	});
 }
 
-export async function testCompletionContains(docUri: vscode.Uri, position: vscode.Position, expectedCompletionList: vscode.CompletionList) {
-	await activate(docUri);
 
-	// Executing the command `vscode.executeCompletionItemProvider` to simulate triggering completion
-	const actualCompletionList = (await vscode.commands.executeCommand(
-		'vscode.executeCompletionItemProvider',
-		docUri,
-		position
-	)) as vscode.CompletionList;
+
+export async function testCompletionContains(docUri: vscode.Uri, position: vscode.Position, expectedCompletionList: vscode.CompletionList) {
+	const actualCompletionList = await activateAndGetCompletionItems(docUri, position);
 
 	expectedCompletionList.items.forEach((expectedItem, i) => {
 		const actualItem = actualCompletionList.items.find(item => item.label == expectedItem.label);
@@ -36,3 +36,13 @@ export async function testCompletionContains(docUri: vscode.Uri, position: vscod
 		assert.strictEqual(actualItem.kind, expectedItem.kind, "Completion kind");
 	});
 }
+
+export async function testCompletionDoesNotContain(docUri: vscode.Uri, position: vscode.Position, doesNotContainList: vscode.CompletionList) {
+	const actualCompletionList = await activateAndGetCompletionItems(docUri, position);
+
+	doesNotContainList.items.forEach((expectedItem, i) => {
+		const actualItem = actualCompletionList.items.find(item => item.label == expectedItem.label);
+		assert.strictEqual(actualItem, undefined, "Missing completion actually is there");
+	});
+}
+

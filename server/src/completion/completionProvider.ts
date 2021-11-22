@@ -35,7 +35,7 @@ export class CompletionProvider {
 
 		let attributeCompletions: CompletionItem[] = [];
 		if (!inAttribute && inTag && lastNode) {
-			 attributeCompletions = this.getAttributeCompletions(lastNode, modelFileContext);
+			attributeCompletions = this.getAttributeCompletions(lastNode, modelFileContext);
 		}
 
 		let childElementCompletions: CompletionItem[] = [];

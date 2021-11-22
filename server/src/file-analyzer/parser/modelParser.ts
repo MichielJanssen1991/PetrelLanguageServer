@@ -3,7 +3,7 @@ import { definitionsPerTag } from '../../model-definition/declarations';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
 import { newReference, Reference, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, NewDefinition, ModelElementTypes, ChildDefinition } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
-import { ISaxParserExtended, newSaxParserExtended, ProcessingInstruction } from './saxParserExtended';
+import { ISaxParserExtended, newSaxParserExtended, Node, ProcessingInstruction } from './saxParserExtended';
 
 export class ModelParser extends FileParser implements INodeContext {
 	private parser: ISaxParserExtended;
@@ -90,14 +90,14 @@ export class ModelParser extends FileParser implements INodeContext {
 		this.attributeRanges[attribute.name] = this.getAttributeRange(attribute);
 	}
 
-	private onOpenTag(node: any) {
+	private onOpenTag(node: Node) {
 		const tagName = node.name;
 		const definitions = definitionsPerTag[tagName];
 		let object;
 
 		// Validate node using new definition structure (might completely replace the old parsing)
 		this.validateNode(node);
-		
+
 		//Parse object for definition, first matching definition wins
 		if (definitions) {
 			definitions.some(def => {
@@ -110,8 +110,7 @@ export class ModelParser extends FileParser implements INodeContext {
 		}
 
 		//If no definition is found only add the parsed tag when detail level is All 
-		if(this.detailLevel == ModelDetailLevel.All)
-		{
+		if (this.detailLevel == ModelDetailLevel.All) {
 			if (!object) {
 				object = newSymbolDeclaration(node.name, node.name, ModelElementTypes.Unknown, this.getTagRange(), this.uri);
 				this.pushToParsedObjectStack(object);
@@ -156,24 +155,26 @@ export class ModelParser extends FileParser implements INodeContext {
 		let lastIndex = this.parsedObjectStack.length - 1;
 		while (lastIndex >= 0 && this.parsedObjectStack[lastIndex].depth > depth) {
 			lastIndex--;
+			const context = this.getContextQualifiers();
 			const item = this.parsedObjectStack.pop();
 			if (item) {
-				this.processParsedObjectFromStack(item, lastIndex);
+				this.processParsedObjectFromStack(item, context);
 			}
 		}
 	}
 
-	private processParsedObjectFromStack(item: { depth: number; parsedObject: SymbolOrReference; }, lastIndex: number) {
+	private processParsedObjectFromStack(item: { depth: number; parsedObject: SymbolOrReference; }, context: ContextQualifiers) {
 		const { parsedObject } = item;
-		parsedObject.contextQualifiers = this.getContextQualifiers();
+		parsedObject.contextQualifiers = context;
 		parsedObject.fullRange.end = this.getTagRange().end;
-		const firstParent = lastIndex >= 0 ? this.parsedObjectStack[lastIndex] : undefined;
+		const parentIndex = this.parsedObjectStack.length - 1;
+		const firstParent = parentIndex >= 0 ? this.parsedObjectStack[parentIndex] : undefined;
 		if (firstParent) {
-			this.parsedObjectStack[lastIndex].parsedObject.children.push(parsedObject);
+			this.parsedObjectStack[parentIndex].parsedObject.children.push(parsedObject);
 		}
 	}
 
-	private parseNodeForDefinition(node: any, definition: Definition): SymbolOrReference | undefined {
+	private parseNodeForDefinition(node: Node, definition: Definition): SymbolOrReference | undefined {
 		const conditionMatches = this.conditionMatches(definition, node, this);
 		if (conditionMatches && this.detailLevel >= definition.detailLevel) {
 			const name = this.parseNodeForName(definition, node);
@@ -196,7 +197,7 @@ export class ModelParser extends FileParser implements INodeContext {
 		return undefined;
 	}
 
-	private validateNode(node: any) {
+	private validateNode(node: Node) {
 		const tagName = node.name;
 		if (this.contextModelDefinition.length > 0) {
 			const definition = this.contextModelDefinition.find(x => x.element == tagName);
@@ -215,9 +216,9 @@ export class ModelParser extends FileParser implements INodeContext {
 		}
 	}
 
-	private parseAttributes(definition: Definition, node: any): { attributeReferences: Record<string, Reference>, otherAttributes: Record<string, string | boolean | number> } {
+	private parseAttributes(definition: Definition, node: Node): { attributeReferences: Record<string, Reference>, otherAttributes: Record<string, string | boolean | number> } {
 		const attributeReferences: Record<string, Reference> = {};
-		const otherAttributes: Record<string, string | number | boolean> = {};
+		let otherAttributes: Record<string, string | number | boolean> = {};
 		if (definition.attributes) {
 			definition.attributes.forEach(attributeRefDefinition => {
 				const attributeName = attributeRefDefinition.attribute;
@@ -235,10 +236,19 @@ export class ModelParser extends FileParser implements INodeContext {
 				}
 			});
 		}
+		// When detail level is All add all attributes not yet recognized as otherattributes
+		if (this.detailLevel == ModelDetailLevel.All) {
+			const attributesRecognized = new Set([...Object.keys(otherAttributes), ...Object.keys(attributeReferences)]);
+			const attributesNotRecognized = Object.keys(node.attributes).filter(attributeName => attributesRecognized.has(attributeName)).reduce((obj: Record<string, string>, key) => {
+				obj[key] = node.attributes[key];
+				return obj;
+			}, {});
+			otherAttributes = {...otherAttributes, ...attributesNotRecognized};
+		}
 		return { attributeReferences, otherAttributes };
 	}
 
-	private parseContextQualifiers(definition: Definition, node: any) {
+	private parseContextQualifiers(definition: Definition, node: Node) {
 		const contextQualifierDefinition = definition.contextQualifiers;
 		const contextQualifiers = contextQualifierDefinition ? contextQualifierDefinition(node, this) : {};
 		if (node.attributes.obsolete == "yes") {
@@ -254,8 +264,8 @@ export class ModelParser extends FileParser implements INodeContext {
 		return contextQualifiers;
 	}
 
-	private parseNodeForName(definition: Definition, node: any) {
-		const nameFunction = definition.name || (function (node: any) { return node.attributes.name; });
+	private parseNodeForName(definition: Definition, node: Node) {
+		const nameFunction = definition.name || (function (node: Node) { return node.attributes.name; });
 		let name = nameFunction(node);
 		if (definition.prefixNameSpace) {
 			const nameSpace = this.getNameSpace();
@@ -264,7 +274,7 @@ export class ModelParser extends FileParser implements INodeContext {
 		return name;
 	}
 
-	private conditionMatches(definition: Definition, node: any, nodeContext: INodeContext) {
+	private conditionMatches(definition: Definition, node: Node, nodeContext: INodeContext) {
 		return (!definition.matchCondition) || (definition.matchCondition && definition.matchCondition(node, nodeContext));
 	}
 }

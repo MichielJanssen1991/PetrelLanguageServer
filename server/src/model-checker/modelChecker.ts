@@ -1,7 +1,7 @@
 import * as LSP from 'vscode-languageserver';
 import { ModelElementTypes, ModelDetailLevel, IsSymbolOrReference, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { removeFilesFromDirectories } from '../util/fs';
-import { objectsTypesWhichRequireContext } from '../model-definition/declarations';
+import { standaloneObjectTypes } from '../model-definition/declarations';
 import { ModelCheck } from './modelCheck';
 import { InfosetDeclarationCheck } from './checks/infosetDeclarationCheck';
 import { ReferencedObjectExistsCheck } from './checks/referencedObjectExistsCheck';
@@ -68,7 +68,7 @@ export class ModelChecker {
 
 	private walkNodes(node: SymbolOrReference, options: ModelCheckerOptions) {
 		this.verifyNode(node, options);
-		const isObsolete = (node.objectType == IsSymbolOrReference.Symbol && node.contextQualifiers.isObsolete);
+		const isObsolete = node.contextQualifiers.isObsolete;
 		if (!isObsolete) {
 			node.children.forEach(x => this.walkNodes(x, options));
 			Object.values(node.attributeReferences).forEach(x => this.verifyNode(x, options));
@@ -76,8 +76,7 @@ export class ModelChecker {
 	}
 
 	private verifyNode(node: SymbolOrReference, options: ModelCheckerOptions) {
-		if (node.type == ModelElementTypes.Unknown) { return; }
-		if (objectsTypesWhichRequireContext.has(node.type)) { return; }
+		if (!standaloneObjectTypes.has(node.type)) { return; } //Nodes which require context are checked as part of their parent
 		try {
 			const applicableChecks = this.checks.filter(c=> c.isApplicable(node));
 			this.diagnostics = this.diagnostics.concat(applicableChecks.flatMap(c=> c.check(node, options)));
