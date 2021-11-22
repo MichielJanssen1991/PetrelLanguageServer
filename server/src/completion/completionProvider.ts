@@ -74,7 +74,7 @@ export class CompletionProvider {
 			
 			let allAttributes = [...attributesForAction, ...attributesForTag];
 			// remove already available attributes
-			const allExistingAttributes = [...Object.keys(node.attributeReferences), ...Object.keys(node.otherAttributes)]
+			const allExistingAttributes = [...Object.keys(node.attributeReferences), ...Object.keys(node.otherAttributes)];
 			allAttributes = allAttributes.filter(item => !allExistingAttributes.includes(item));
 			
 			attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);

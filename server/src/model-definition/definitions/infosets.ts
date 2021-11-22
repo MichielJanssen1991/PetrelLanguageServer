@@ -69,7 +69,161 @@ export const INFOSET_DEFINITION: NewDefinition[] = [
 		]
 	}, 
 	{
-		"element": "search"
+		"element": "search",
+		"description": "Data query.",
+		"attributes": [
+			{
+				"name": "type",
+				"description": "The data type of the query."
+			},
+			{
+				"name": "sort",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "yes"
+							},
+							{
+								"name": "no"
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sort-column",
+				"description": "A single column on which the result is sorted.",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "$type/attribute/@name"	// TODO
+							}
+						]
+					}
+				],
+				"conditions": [
+					{
+						"attribute": "sort",
+						"condition": "!=",
+						"value": "no"
+					}
+				] 
+
+			},
+			{
+				"name": "sort-order",
+				"description": "The order how the sort-column is ordered.",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "",
+								"description": "use platform default",
+								"default": true
+							},
+							{
+								"name": "ASC",
+								"description": "sort order ascending"
+							},
+							{
+								"name": "DESC",
+								"description": "sort order descending"
+							},
+						]
+					}
+				],
+				"conditions": [
+					{
+						"attribute": "sort-column",
+						"condition": "!=",
+						"value": ""
+					}
+				]
+			},
+			{
+				"name": "add-count",
+				"description": "Use add-count=\"no\" on infosets to gain performance if the count is not used. By default (when the setting default-add-count-in-search' is not defined), the count of the records is included when the infoset XML list is calculated, setting the attribute \"total-records\" on the XML list. However, this comes with a performance cost: the query to compute the total amount of records is heavy. (Notice this does not apply to a computed piped list of IIDs.) If the infoset is used in the frontend, the count is necessary if the total number of records has to be shown; this will be computed automatically. (Notice it is also possible to use the \"More\" button in a list view to avoid computing the total number of records.)",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "",
+								"description": "default"
+							},
+							{
+								"name": "yes"
+							},
+							{
+								"name": "no",
+								"default": true
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "add-relations",
+				"description": "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
+				"autoadd": true,
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "yes"
+							},
+							{
+								"name": "no",
+								"default": true
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "filter",
+				"description": "The type filter to apply for search.",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "$type/filters/search/@name"	// TODO
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "all-when-empty-filter",
+				"description": "If 'no' the search returns nothing (matches no record) when the filter is empty or if all the parameter based search columns are left out; if 'yes' it returns all records (matches all records).",
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "yes",
+								"default": true
+							},
+							{
+								"name": "no"
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "alias",
+				"description": "An internal name for the search query which is available to use for 'match search field' purposes."
+			},
+			dev_comment_attribute
+		]
 	},
 	{
 		"element": "searchcolumn"
