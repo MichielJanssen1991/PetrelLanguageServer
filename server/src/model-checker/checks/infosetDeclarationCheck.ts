@@ -4,6 +4,7 @@ import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
 import { CHECKS_MESSAGES } from '../messages';
+import { attributeValueIsAVariable } from '../../util/other';
 
 export class InfosetDeclarationCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.Infoset
@@ -27,13 +28,14 @@ export class InfosetDeclarationCheck extends ModelCheck {
 	private verifySearch(search: SymbolDeclaration, options: ModelCheckerOptions) {
 		const searchColumns = this.modelManager.getChildrenOfType(search, ModelElementTypes.SearchColumn) as Reference[];
 		const typeRef = search.attributeReferences[NAMES.ATTRIBUTE_TYPE];
-		const typeAttributes = this.modelManager.getReferencedTypeAttributes(typeRef);
-		searchColumns.forEach(sc => {
-			const attributeRef = sc.attributeReferences.name;
-			if (!typeAttributes.includes(attributeRef.name)) {
-				this.addError(attributeRef.range, CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND(sc, typeRef));
-			}
-		});
+		if(!attributeValueIsAVariable(typeRef.name)){ //Do not check when type name is a variable
+			const typeAttributes = this.modelManager.getReferencedTypeAttributes(typeRef);
+			searchColumns.forEach(sc => {
+				const attributeRef = sc.attributeReferences.name;
+				if (!typeAttributes.includes(attributeRef.name)) {
+					this.addError(attributeRef.range, CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND(sc, typeRef));
+				}
+			});
+		}
 	}
-
 }

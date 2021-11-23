@@ -204,6 +204,10 @@ export const definitionsPerTag: Record<string, Definition[]> =
 			detailLevel: ModelDetailLevel.Declarations
 		}]
 	}],
+	"set-aggregate-query": [{
+		type: ModelElementTypes.Aggregate,
+		detailLevel: ModelDetailLevel.Declarations
+	}],
 	"include-block": [{
 		type: ModelElementTypes.IncludeBlock,
 		detailLevel: ModelDetailLevel.Declarations,
