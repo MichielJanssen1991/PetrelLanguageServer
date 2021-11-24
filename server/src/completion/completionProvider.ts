@@ -30,6 +30,7 @@ export class CompletionProvider {
 
 		let symbolCompletions: CompletionItem[] = [];
 		if (inAttribute && word != null && lastNode) {
+			// @Michiel: kan jij hier een context aan meegeven? Ik zou willen weten welk attribute er een symbol completion doet. In dat geval kunnen we de model-definitie raadplegen
 			symbolCompletions = this.getSymbolCompletions(lastNode, word);
 		}
 
@@ -155,12 +156,12 @@ export class CompletionProvider {
 	private buildChildElementSnippet(child: ChildDefinition, childsOwnDefinition?: NewDefinition) {
 		const elementName = child.element;
 		const childsAttributes = childsOwnDefinition?.attributes;
-		const attributes = childsAttributes?.map((attribute, i) => {
+		const attributes = childsAttributes?.filter(attribute=>(attribute.autoadd || attribute.required)).map((attribute, i) => {
 			let attributeOptions = ""; 
 			if(attribute.types){
 				attribute.types.map((attributeType) => {
-					if (attributeType.type == 'enum' && attributeType.options){
-						attributeOptions += `|${attributeType.options.map(option=>option.name).join(',')}|`;
+					if (attributeType.type == 'enum' && attributeType.options && attributeType.options.find(option=>option.default)){
+						attributeOptions += `|${attributeType.options.find(option=>option.default)?.name}|`;
 					}
 				});				
 			}
@@ -169,7 +170,7 @@ export class CompletionProvider {
 		const childChildren = childsOwnDefinition?.childs;
 		const lastTab = `\${${(childsAttributes?.length || 0) + 1}}`;
 		const snippet = childChildren != undefined && childChildren.length > 0
-			? `<${elementName} ${attributes}> \n ${lastTab} \n </${elementName}>`
+			? `<${elementName} ${attributes}> \n ${lastTab} \n</${elementName}>`
 			: `<${elementName} ${attributes} ${lastTab}/>`;
 		return snippet;
 	}

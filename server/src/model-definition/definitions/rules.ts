@@ -44,11 +44,13 @@ export const RULE_DEFINITION: NewDefinition[] = [
 		"attributes" : [
 			{
 				"name": "name",
-				"description": "The module name."
+				"description": "The module name.",
+				"autoadd": true
 			},
 			{
 				"name": "target-namespace",
 				"description": "Target namespace of the contents of the module. A relative namespace may start with a +, e.g., \"+Preferences\" may result in, e.g., \"Platform.Preferences\". (The target namespace together with the module name makes the module unique.)",
+				"autoadd": true,
 				"validations": [
 					{
 						"type": "regex",
@@ -102,6 +104,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			{
 				"name": "name",
 				"description": "Unique identifier for the rule.",
+				"autoadd": true,
 				"validations": [
 					{
 						"type": "regex",
@@ -365,22 +368,16 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			{
 				"name": "name",
 				"description": "The action to perform.",
+				"autoadd": true,
 				"required": true,
 				"types": [
 					{
 						"type": "enum",
 						"options": [
 							{
-								"name": "rule"
-							},
-							{
-								"name": "infoset"
-							}	
+								"name": "@backend-actions/action/@name"
+							}							
 						]
-					},
-					{
-						"type": "relation",
-						"relatedTo": "backend-actions"
 					}
 				]
 			},
@@ -759,7 +756,8 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			{
 				"name": "name",
 				"description": "Name under which the output is stored locally.",
-				"required": true
+				"required": true,
+				"autoadd": true
 			},
 			{
 				"name": "expression",
@@ -1012,13 +1010,13 @@ export const RULE_DEFINITION: NewDefinition[] = [
 						"type": "enum",
 						"options": [
 							{
-								"name": "$rule/input/@name",
+								"name": "@current-rule/input/@name",
 							},												
 							{
-								"name": "$rule//set-var/@name",
+								"name": "@current-rule/set-var/@name",
 							},											
 							{
-								"name": "$rule//action/output/@local-name",
+								"name": "@current-rule/action/output/@local-name",
 							}												
 						]
 					}
@@ -1033,6 +1031,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 						"options": [
 							{
 								"name": "Is",
+								"default": true
 							},												
 							{
 								"name": "Like",
