@@ -25,6 +25,14 @@ export enum ModelElementTypes {
 	All = "All",
 }
 
+export enum ValidationLevels {
+	None = "none",
+	Info = "info",
+	Warning = "warning",
+	Error = "error",
+	Fatal = "fatal"
+}
+
 export type ContextQualifiers = {
 	isObsolete?: boolean,
 	frontendOrBackend?: "Frontend" | "Backend",
@@ -144,6 +152,7 @@ export type NewDefinition = {
 export type ChildDefinition = {
 	element: string,
 	occurence?: "once"|"at-least-once",
+	required?: boolean,
 	validations?:ChildValidation[]
 }
 
@@ -166,7 +175,7 @@ export type AttributeValidation = {
 	name?: string,
 	identifier?: string,
 	matches?: ValidationMatches[],
-	level?: "none"|"info"|"warning"|"error"|"fatal",
+	level?: ValidationLevels,
 	conditions?: ValidationMatches[]
 }
 
@@ -175,7 +184,7 @@ export type ChildValidation = {
 	name: string,
 	message: string,
 	matches: ValidationMatches[],
-	level: "none"|"info"|"warning"|"error"|"fatal",
+	level: ValidationLevels,
 	conditions?: ValidationMatches[]
 }
 

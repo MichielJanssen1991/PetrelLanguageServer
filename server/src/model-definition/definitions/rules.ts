@@ -1,5 +1,5 @@
-import { JsonElementVariable, NewDefinition } from '../symbolsAndReferences';
-import { include_blocks_element, include_element, merge_instruction_element, model_condition_element } from './shared';
+import { JsonElementVariable, NewDefinition, ValidationLevels } from '../symbolsAndReferences';
+import { dev_comment_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element } from './shared';
 export const RULE_DEFINITION: NewDefinition[] = [
 	{ 
 		"element": "rules",		
@@ -31,15 +31,11 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			},
 			{
 				"element": "merge-instruction"
-			},
-			{
-				"element": "decorations",
-				"occurence": "once"
 			}
 		]
 	},
 	{ 
-		"element": "module",		
+		"element": "module",
 		"description": "Used for grouping model entities and model namespacing.",
 		"attributes" : [
 			{
@@ -56,7 +52,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 						"type": "regex",
 						"value": "(\\+?[A-Z][a-zA-Z]+(\\.[A-Z][a-zA-Z]+)*)?",		
 						"message": "Only alphabetic, CamelCased words separated by dots are allowed.",
-						"level": "fatal"
+						"level": ValidationLevels.Fatal
 					}
 				]
 			},
@@ -90,10 +86,6 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			},
 			{
 				"element": "merge-instruction"
-			},
-			{
-				"element": "decorations",
-				"occurence": "once"
 			}
 		]
 	},
@@ -110,7 +102,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 						"type": "regex",
 						"value": "[\\w_]+",		
 						"message": "The name should only contain letters or underscore",
-						"level": "fatal"
+						"level": ValidationLevels.Fatal
 					}
 				],
 				"conditions": [
@@ -503,7 +495,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 							}
 						],
 						"message": "Missing defined output ${@backend-rules.output[name]} for rule ${@parent[rulename]}",			
-						"level": "info",
+						"level": ValidationLevels.Info,
 						"conditions":[
 							{
 								"attribute": "@parent[name]",
@@ -528,7 +520,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 							}
 						],
 						"message": "Output ${@name} is not defined in rule ${@rulename}",			
-						"level": "error",
+						"level": ValidationLevels.Error,
 						"conditions":[
 							{
 								"attribute": "@parent[name]",
@@ -573,7 +565,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 							}							
 						],
 						"message": "Output ${@name} is outputted, but not used in rule ${@parent-rule-definition[name]}",			
-						"level": "warning",
+						"level": ValidationLevels.Warning,
 						"conditions":[
 							{
 								"attribute": "@parent[name]",
@@ -612,11 +604,27 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			{
 				"name": "name",
 				"description": "Unique name for the input.",
-				"required": true
+				"required": true,
+				"autoadd": true
 			},
 			{
 				"name": "required",
-				"description": "If required is set to yes, an exception will be thrown if the input argument is not present."				
+				"description": "If required is set to yes, an exception will be thrown if the input argument is not present.",
+				"autoadd": true,
+				"types": [
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "yes",
+								"default": true
+							},
+							{
+								"name": "no"
+							}
+						]
+					}
+				]			
 			},
 			{
 				"name": "ignore-modelcheck",
@@ -646,11 +654,14 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			{
 				"name": "name",
 				"description": "Unique identifier for the output.",
-				"required": true
+				"required": true,
+				"autoadd": true
 			},
 			{
 				"name": "attribute",
 				"description": "A local variable name, a constant, or a data element (not supported in drop-down).",
+				"required": true,
+				"autoadd": true,
 				"types": [
 					{
 						"type": "enum",
@@ -710,13 +721,16 @@ export const RULE_DEFINITION: NewDefinition[] = [
 		"description": "An argument to pass to the action.",
 		"attributes": [
 			{
-				"name":"local-name"
+				"name":"local-name",
+				"autoadd": true
 			}, 
 			{
-				"name":"remote-name"
+				"name":"remote-name",
+				"autoadd": true
 			}, 
 			{
-				"name":"value"
+				"name":"value",
+				"autoadd": true
 			},
 			{
 				"name":"parseType",
@@ -761,7 +775,8 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			},
 			{
 				"name": "expression",
-				"description": "A value expression."				
+				"description": "A value expression.",
+				"autoadd": true			
 			},
 			{
 				"name": "infoset",
@@ -823,7 +838,8 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			{
 				"name": "name",
 				"description": "Name of the local variable to clear.",
-				"required": true
+				"required": true,
+				"autoadd": true
 			},
 			{
 				"name": "ignore-modelcheck",
@@ -852,7 +868,8 @@ export const RULE_DEFINITION: NewDefinition[] = [
 		"attributes": [
 			{
 				"name": "description",
-				"description": "Developers' annotation."
+				"description": "Developers' annotation.",
+				"autoadd": true
 			},
 			{
 				"name": "comment",
@@ -862,11 +879,13 @@ export const RULE_DEFINITION: NewDefinition[] = [
 		"childs": [
 			{
 				"element": "condition",
-				"occurence": "at-least-once"
+				"occurence": "at-least-once",
+				"required": true
 			},
 			{
 				"element": "then",
-				"occurence": "once"
+				"occurence": "once",
+				"required": true
 			},
 			{
 				"element": "else",
@@ -880,7 +899,8 @@ export const RULE_DEFINITION: NewDefinition[] = [
 		"attributes": [
 			{
 				"name": "description",
-				"description": "Developers' annotation."
+				"description": "Developers' annotation.",
+				"autoadd": true
 			},
 			{
 				"name": "comment",
@@ -890,11 +910,13 @@ export const RULE_DEFINITION: NewDefinition[] = [
 		"childs": [
 			{
 				"element": "condition",
-				"occurence": "at-least-once"
+				"occurence": "at-least-once",
+				"required": true
 			},
 			{
 				"element": "then",
-				"occurence": "once"
+				"occurence": "once",
+				"required": true
 			},
 			{
 				"element": "else",
@@ -1005,6 +1027,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"name": "variable",
 				"description": "Left hand side of condition. Can be an expression as well (using {}).",
 				"required": true,
+				"autoadd": true,
 				"types": [
 					{
 						"type": "enum",
@@ -1025,6 +1048,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			{
 				"name": "operator",
 				"required": true,
+				"autoadd": true,
 				"types": [
 					{
 						"type": "enum",
@@ -1085,7 +1109,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			},
 			{
 				"name": "value",
-				"description": "A right hand side value."				
+				"description": "A right hand side value."			
 			},
 			{
 				"name": "constant",
@@ -1289,6 +1313,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 			{
 				"name": "variable",
 				"description": "A local variable name, a constant, or a data element (not supported in drop-down).",
+				"autoadd": true,
 				"types":[
 					{
 						"type": "enum",
@@ -1336,7 +1361,8 @@ export const RULE_DEFINITION: NewDefinition[] = [
 		"attributes": [
 			{
 				"name": "value",
-				"required": true
+				"required": true,
+				"autoadd": true
 			}
 		],
 		"childs": [
@@ -1408,15 +1434,21 @@ export const RULE_DEFINITION: NewDefinition[] = [
 		"attributes": [
 			{
 				"name": "loopvar",
-				"description": "The variable to increment during the loop. The variable is set to the start value at initialize."
+				"description": "The variable to increment during the loop. The variable is set to the start value at initialize.",
+				"autoadd": true,
+				"required": true
 			},
 			{
 				"name": "start",
-				"description": "The start value for the loop variable. If not specified, the start value will be one."
+				"description": "The start value for the loop variable. If not specified, the start value will be one.",
+				"required": true,
+				"autoadd": true
 			},
 			{
 				"name": "end",
-				"description": "The last value of the loop variable before the loop ends. (The condition of ending the loop is: loop variable &lt;= end value.)"
+				"description": "The last value of the loop variable before the loop ends. (The condition of ending the loop is: loop variable &lt;= end value.)",
+				"required": true,
+				"autoadd": true
 			},
 		],
 		"childs": [
@@ -1465,41 +1497,42 @@ export const RULE_DEFINITION: NewDefinition[] = [
 	},
 	include_blocks_element,
 	{
-		"element": "include-block"
+		"element": "include-block",
+		"description": "A model fragment that is included by includes.",
+		"attributes": [
+			{
+				"name": "name",
+				"description": "Unique identifier",
+				"required": true,
+				"autoadd": true,
+			},
+			{
+				"name": "meta-name",
+				"description": "For which element to apply rules.",
+				"required": true,
+				"autoadd": true,
+				"types":[
+					{
+						"type": "enum",
+						"options": [
+							{
+								"name": "@backend-definition/element/@element"
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "meta-index",
+				"description": "For which element to apply rules."
+			},
+			dev_comment_attribute
+		],
+		"childs": [
+			// depends on meta-name attribute
+		]
 	}, 
 	include_element,
-	{ 
-		"element": "decorations",		
-		"description": "",
-	},
-	{ 
-		"element": "decoration",		
-		"description": "",
-	},
-	{ 
-		"element": "decoration-argument",		
-		"description": "",
-	},
-	{ 
-		"element": "decorators",		
-		"description": "",
-	},
-	{ 
-		"element": "decorator",		
-		"description": "",
-	},
-	{ 
-		"element": "decorator-input",		
-		"description": "",
-	},
-	{ 
-		"element": "target",		
-		"description": "",
-	},
-	{ 
-		"element": "decorator-context-entity",		
-		"description": "",
-	},
 	merge_instruction_element,
 	model_condition_element
 ];

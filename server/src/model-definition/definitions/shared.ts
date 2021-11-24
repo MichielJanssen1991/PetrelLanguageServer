@@ -131,6 +131,7 @@ export const include_element =
 		{
 			"name": "block",
 			"description": "A block to include.",
+			"autoadd": true,
 			"types": [
 				{
 					"type": "enum",
@@ -277,7 +278,6 @@ export const include_element =
 		{
 			"name": "application",
 			"description": "To select an application within the included file.",
-			"autoadd": true,
 			"conditions": [
 				{
 					"attribute": "file",
