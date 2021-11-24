@@ -137,7 +137,7 @@ export class CompletionProvider {
 		return children.map(
 			(child: ChildDefinition) => {
 				const childsOwnDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, child.element);
-				const snippet = this.buildChildElementSnippet(child, childsOwnDefinition);
+				const snippet = this.buildChildElementSnippet(modelFileContext, child, childsOwnDefinition);
 				return {
 					label: child.element,
 					kind: CompletionItemKind.Snippet,
@@ -153,25 +153,41 @@ export class CompletionProvider {
 		);
 	}
 
-	private buildChildElementSnippet(child: ChildDefinition, childsOwnDefinition?: NewDefinition) {
+	private buildChildElementSnippet(modelFileContext: ModelFileContext, child: ChildDefinition, childsOwnDefinition?: NewDefinition, tabIndent: string="") {
 		const elementName = child.element;
 		const childsAttributes = childsOwnDefinition?.attributes;
 		const attributes = childsAttributes?.filter(attribute=>(attribute.autoadd || attribute.required)).map((attribute, i) => {
 			let attributeOptions = ""; 
 			if(attribute.types){
 				attribute.types.map((attributeType) => {
-					if (attributeType.type == 'enum' && attributeType.options && attributeType.options.find(option=>option.default)){
-						attributeOptions += `|${attributeType.options.find(option=>option.default)?.name}|`;
+					if (attributeType.type == 'enum' && attributeType.options){
+						if (attributeType.options.find(option=>option.default)){
+							attributeOptions = `|${attributeType.options.find(option=>option.default)?.name}|`;
+						} else if (tabIndent == ""){
+							attributeOptions += `|${attributeType.options.map(option=>option.name).join(',')}|`;
+						}						
 					}
 				});				
-			}
-			return `${attribute.name}="\${${i + 1}${attributeOptions}}"`;
+			}			
+			// only parent node can use tabs...
+			const attrValue = (tabIndent == "") ? `\${${i + 1}${attributeOptions}}` : `${attributeOptions.replace(/\|/g, "")}`;
+
+			return `${attribute.name}="${attrValue}"`;
 		}).join(" ") || "";
 		const childChildren = childsOwnDefinition?.childs;
-		const lastTab = `\${${(childsAttributes?.length || 0) + 1}}`;
+		
+		// get the required child nodes and add them to the snippet
+		let childSnippets : string[] = [];
+		childChildren?.filter(childNode=>childNode.required).forEach(item=>{
+			const childDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, item.element);
+			childSnippets.push(this.buildChildElementSnippet(modelFileContext, item, childDefinition, tabIndent + `\t`));
+		});
+
+		const lastTab = (tabIndent == "") ? `\${${(childsAttributes?.length || 0) + 1}}` : "";
+		
 		const snippet = childChildren != undefined && childChildren.length > 0
-			? `<${elementName} ${attributes}> \n ${lastTab} \n</${elementName}>`
-			: `<${elementName} ${attributes} ${lastTab}/>`;
+			? `${tabIndent}<${elementName} ${attributes}> \n${childSnippets.join(`\n`)} ${lastTab} \n${tabIndent}</${elementName}>`
+			: `${tabIndent}<${elementName} ${attributes} ${lastTab}/>`;
 		return snippet;
 	}
 
