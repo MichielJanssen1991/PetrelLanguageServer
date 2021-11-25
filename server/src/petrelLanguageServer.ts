@@ -121,7 +121,7 @@ export default class PetrelLanguageServer {
 		const pos = params.position;
 		const inAttribute = this.analyzer.contextFromLine(uri, pos);
 
-		const {nodes, inTag, attribute} = this.modelManager.getNodesForPosition(uri, pos);
+		const { nodes, inTag, attribute } = this.modelManager.getNodesForPosition(uri, pos);
 
 		return { word, nodes, inTag, inAttribute, uri };
 	}
@@ -173,15 +173,28 @@ export default class PetrelLanguageServer {
 		return symbols.map((def) => this.symbolDefinitionToLocationLink(def));
 	}
 
-	private logRequest({ request, params, word, context }: {
+	private logRequest({ request, params, context }: {
 		request: string
 		params: LSP.TextDocumentPositionParams
-		word?: string | null
-		context?: any
+		context?: CompletionContext
 	}) {
-		const wordLog = word ? `"${word}"` : 'null';
+		const nodesSimplified = context?.nodes.map(node => {
+			return {
+				name: node.name,
+				type: node.type,
+				objectType: node.objectType,
+				tag: node.tag,
+				otherAttributes: node.otherAttributes,
+				attributeReferences: node.attributeReferences				
+			};
+		}); // Only log essentials to avoid very large log messages (especially caused by chidren)
 		this.connection.console.log(
-			`${request} ${params.position.line}:${params.position.character} word=${wordLog} context=${JSON.stringify(context)}`,
+			`${request} ${params.position.line}:${params.position.character} 
+			inAttribute=${JSON.stringify(context?.inAttribute)},
+			inTag=${JSON.stringify(context?.inTag)},
+			uri=${JSON.stringify(context?.uri)},
+			word=${JSON.stringify(context?.word)},
+			nodes (simplified)=${JSON.stringify(nodesSimplified)}`
 		);
 	}
 
