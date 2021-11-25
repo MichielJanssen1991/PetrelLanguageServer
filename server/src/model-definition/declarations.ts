@@ -157,7 +157,7 @@ export const definitionsPerTag: Record<string, Definition[]> =
 		type: ModelElementTypes.Action,
 		isReference: true,
 		detailLevel: ModelDetailLevel.References,
-		matchCondition: (x: any, nodeContext: INodeContext) => !isActionDefinition(nodeContext),
+		matchCondition: (x: any, nodeContext: INodeContext) => !isActionDefinition(nodeContext) && !isModelCheckRuleAction(nodeContext),
 		attributes: [{
 			type: ModelElementTypes.Rule,
 			detailLevel: ModelDetailLevel.References,
@@ -221,11 +221,23 @@ export const definitionsPerTag: Record<string, Definition[]> =
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
 	}],
+	"decoration": [{
+		type: ModelElementTypes.Decorator,
+		isReference: true,
+		detailLevel: ModelDetailLevel.References
+	}],
+	"include": [{
+		name: (x) => x.attributes.block,
+		type: ModelElementTypes.IncludeBlock,
+		isReference: true,
+		detailLevel: ModelDetailLevel.References,
+	}],
 	"profile": [{
 		type: ModelElementTypes.Profile,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
 	}],
+	// ---------- Premium tags ----------
 	"ProfileType": [{
 		name: (x) => x.attributes.TypeName,
 		type: ModelElementTypes.Type,
@@ -250,16 +262,49 @@ export const definitionsPerTag: Record<string, Definition[]> =
 		isReference: true,
 		detailLevel: ModelDetailLevel.References
 	}],
-	"decoration": [{
-		type: ModelElementTypes.Decorator,
-		isReference: true,
-		detailLevel: ModelDetailLevel.References
+	"Types": [{
+		type: ModelElementTypes.Unknown,
+		detailLevel: ModelDetailLevel.Declarations
 	}],
-	"include": [{
-		name: (x) => x.attributes.block,
-		type: ModelElementTypes.IncludeBlock,
-		isReference: true,
-		detailLevel: ModelDetailLevel.References,
+	"CForms": [{
+		type: ModelElementTypes.Unknown,
+		detailLevel: ModelDetailLevel.Declarations
+	}],
+	"Views": [{
+		type: ModelElementTypes.Unknown,
+		detailLevel: ModelDetailLevel.Declarations
+	}],
+	"ControllerEvents": [{
+		type: ModelElementTypes.Unknown,
+		detailLevel: ModelDetailLevel.Declarations
+	}],
+	"Functions": [{
+		type: ModelElementTypes.Unknown,
+		detailLevel: ModelDetailLevel.Declarations
+	}],
+	"Function": [{
+		type: ModelElementTypes.Unknown,
+		detailLevel: ModelDetailLevel.Declarations
+	}],
+	"Rules": [{
+		type: ModelElementTypes.Unknown,
+		detailLevel: ModelDetailLevel.Declarations
+	}],
+	"Rule": [{
+		type: ModelElementTypes.Unknown,
+		detailLevel: ModelDetailLevel.Declarations
+	}],
+	"CQueries": [{
+		type: ModelElementTypes.Unknown,
+		detailLevel: ModelDetailLevel.Declarations
+	}],
+	"Infosets": [{
+		type: ModelElementTypes.Unknown,
+		detailLevel: ModelDetailLevel.Declarations
+	}],
+	"Infoset": [{
+		type: ModelElementTypes.Unknown,
+		detailLevel: ModelDetailLevel.Declarations
 	}]
 };
 
@@ -295,6 +340,10 @@ export function isProfileRule(nodeContext: INodeContext): boolean {
 
 export function isProfileView(nodeContext: INodeContext): boolean {
 	return nodeContext.hasParentTag("profile") || nodeContext.hasParentTag("include-block") || nodeContext.hasParentTag("include-block2");
+}
+
+export function isModelCheckRuleAction(nodeContext: INodeContext): boolean {
+	return nodeContext.hasParentTag("xml-rules");
 }
 
 export function isViewDeclaration(x: any, nodeContext: INodeContext): boolean {
