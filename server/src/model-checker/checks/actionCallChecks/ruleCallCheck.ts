@@ -29,17 +29,12 @@ export class RuleCallCheck extends ActionCallCheck {
 
 	private verifyRuleCall(reference: Reference, options: ModelCheckerOptions) {
 		const ruleNameNotSpecified = this.verifyMandatoryAttributeProvided(reference, NAMES.ATTRIBUTE_RULE, true);
-		if (ruleNameNotSpecified) {
+		if (ruleNameNotSpecified && options.detailLevel >= ModelDetailLevel.SubReferences) { //Subreferences need to exists to avoid false positivies when rulename is provided as an argument
 			this.addError(reference.range, CHECKS_MESSAGES.RULECALL_WITHOUT_NAME());
 		}
 		return !ruleNameNotSpecified;
 	}
 
-	protected getAdditionalInputsForSpecificAction(reference: Reference) {
-		return [];
-	}
-
-	protected getAdditionalOutputsForSpecificAction(reference: Reference) {
-		return [];
-	}
+	protected getAdditionalInputsForSpecificAction(reference: Reference) { return []; }
+	protected getAdditionalOutputsForSpecificAction(reference: Reference) { return []; }
 }

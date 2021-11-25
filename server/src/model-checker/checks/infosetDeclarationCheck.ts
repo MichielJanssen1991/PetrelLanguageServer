@@ -10,6 +10,7 @@ export class InfosetDeclarationCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.Infoset
 	protected objectType = IsSymbolOrReference.Symbol
 	protected matchCondition = undefined
+	private infosetInputs:string[] = [];
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);
@@ -17,10 +18,13 @@ export class InfosetDeclarationCheck extends ModelCheck {
 	}
 
 	protected checkInternal(node: SymbolOrReference, options: ModelCheckerOptions) {
+		this.infosetInputs = [];
 		this.verifyInfosetDeclaration(node as SymbolDeclaration, options);
 	}
 
 	private verifyInfosetDeclaration(symbol: SymbolDeclaration, options: ModelCheckerOptions) {
+		this.infosetInputs = this.modelManager.getChildrenOfType(symbol, ModelElementTypes.Input).map(input => input.name);
+
 		const searches = this.modelManager.getChildrenOfType(symbol, ModelElementTypes.Search) as SymbolDeclaration[];
 		searches.forEach(s => this.verifySearch(s, options));
 	}
@@ -28,12 +32,21 @@ export class InfosetDeclarationCheck extends ModelCheck {
 	private verifySearch(search: SymbolDeclaration, options: ModelCheckerOptions) {
 		const searchColumns = this.modelManager.getChildrenOfType(search, ModelElementTypes.SearchColumn) as Reference[];
 		const typeRef = search.attributeReferences[NAMES.ATTRIBUTE_TYPE];
-		if(!attributeValueIsAVariable(typeRef.name)){ //Do not check when type name is a variable
+		if (!attributeValueIsAVariable(typeRef.name)) { //Do not check when type name is a variable
 			const typeAttributes = this.modelManager.getReferencedTypeAttributes(typeRef);
 			searchColumns.forEach(sc => {
 				const attributeRef = sc.attributeReferences.name;
-				if (!typeAttributes.includes(attributeRef.name)) {
-					this.addError(attributeRef.range, CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND(sc, typeRef));
+				const attributeName = attributeRef.name;
+				if (!attributeValueIsAVariable(attributeName)) {
+					if (!typeAttributes.includes(attributeName)) {
+						this.addError(attributeRef.range, CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND(sc, typeRef));
+					}
+				}
+				else{
+					const attributeVariableName = attributeName.replace("{","").replace("}","");
+					if (!this.infosetInputs.includes(attributeVariableName)) {
+						this.addError(attributeRef.range, CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_VARIABLE_NOT_FOUND(attributeVariableName));
+					}
 				}
 			});
 		}
