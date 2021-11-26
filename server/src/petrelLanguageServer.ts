@@ -5,7 +5,6 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
-import { formatFileURL } from './util/fs';
 import { ModelDetailLevel, IsSymbolOrReference, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
 import { CompletionContext, CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
@@ -14,7 +13,6 @@ import { ModelChecker } from './model-checker/modelChecker';
 import { time, timeEnd } from 'console';
 import * as fs from 'fs';
 import path = require('path');
-import { pointIsInRange } from './util/other';
 import { ModelManager } from './symbol-and-reference-manager/modelManager';
 import { ModelDefinitionManager } from './model-definition/modelDefinitionManager';
 
@@ -89,7 +87,7 @@ export default class PetrelLanguageServer {
 
 	public async onDocumentChangeContent(change: any) {
 		const document = change.document;
-		this.analyzer.updateDocument(formatFileURL(document.uri), document);
+		this.analyzer.updateDocument(document.uri, document);
 		const diagnostics = await this.validateTextDocument(document);
 		this.connection.sendDiagnostics({
 			uri: document.uri,
@@ -98,7 +96,7 @@ export default class PetrelLanguageServer {
 	}
 
 	private async validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
-		const uri = formatFileURL(textDocument.uri);
+		const uri = textDocument.uri;
 		const parsingDiagnostics = this.analyzer.analyze(uri, textDocument, ModelDetailLevel.All);
 
 		time("Verifying references");

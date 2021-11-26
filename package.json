@@ -12,7 +12,7 @@
 	"engines": {
 		"vscode": "^1.43.0"
 	},
-	"activationEvents":  [
+	"activationEvents": [
 		"workspaceContains:**/petrel-language-server.config.json",
 		"onCommand:petrelLanguageServer.activate"
 	],
@@ -43,10 +43,10 @@
 		},
 		"commands": [
 			{
-			  "command": "petrelLanguageServer.activate",
-			  "title": "Activate Petrel Language Server"
+				"command": "petrelLanguageServer.activate",
+				"title": "Activate Petrel Language Server"
 			}
-		  ]
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
