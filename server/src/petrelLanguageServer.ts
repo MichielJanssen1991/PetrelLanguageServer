@@ -111,19 +111,25 @@ export default class PetrelLanguageServer {
 	private getWordAtPoint(params: LSP.TextDocumentPositionParams): string {
 		return this.analyzer.wordAtPoint(params.textDocument.uri, params.position);
 	}
+	
+	private getAttributeAtPoint(params: LSP.TextDocumentPositionParams): string {
+		return this.analyzer.attributeAtPoint(params.textDocument.uri, params.position);
+	}
 
 	/**	
 	 * Get the context for a given DocumentPosition.
 	 */
 	public getContext(params: LSP.TextDocumentPositionParams): CompletionContext {
 		const word = this.getWordAtPoint(params);
+		const attribute = this.getAttributeAtPoint(params);
+		
 		const uri = params.textDocument.uri;
 		const pos = params.position;
 		const inAttribute = this.analyzer.contextFromLine(uri, pos);
 
-		const { nodes, inTag, attribute } = this.modelManager.getNodesForPosition(uri, pos);
+		const { nodes, inTag } = this.modelManager.getNodesForPosition(uri, pos);
 
-		return { word, nodes, inTag, inAttribute, uri, attribute };
+		return { word, nodes, inTag, inAttribute, uri, attribute};
 	}
 
 	public onCompletion(params: TextDocumentPositionParams): CompletionItem[] {

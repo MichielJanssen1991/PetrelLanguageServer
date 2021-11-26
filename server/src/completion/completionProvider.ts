@@ -9,7 +9,7 @@ export type CompletionContext = {
 	nodes: SymbolOrReference[],
 	word: string,
 	uri: string,
-	attribute?: Reference
+	attribute?: string
 }
 
 export class CompletionProvider {
@@ -31,7 +31,7 @@ export class CompletionProvider {
 
 		let symbolCompletions: CompletionItem[] = [];
 		if (inAttribute && word != null && lastNode) {
-			symbolCompletions = this.getSymbolCompletions(lastNode, word, attribute);
+			symbolCompletions = this.getSymbolCompletions(lastNode, modelFileContext, word, attribute);
 		}
 
 		let attributeCompletions: CompletionItem[] = [];
@@ -85,14 +85,23 @@ export class CompletionProvider {
 		return [];
 	}
 
-	private getSymbolCompletions(node: SymbolOrReference, word: string, attribute? : Reference): CompletionItem[] {
-		let symbols = this.symbolAndReferenceManager.findSymbolsMatchingWord({ exactMatch: false, word });
-		const reference = node.children.find(x => x.name == word);
-		if (reference) {
-			symbols = symbols.filter(x => x.type == reference.type);
+	private getSymbolCompletions(node: SymbolOrReference, modelFileContext : ModelFileContext, word: string, attribute? : string): CompletionItem[] {
+		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, node.tag);
+		let symbols = [{label : "no posibilities found"}];
+		if (attribute && elementDefinition && elementDefinition.attributes){
+			const attrDefinition = elementDefinition.attributes.find(attr=>attr.name==attribute);
+			if (attrDefinition && attrDefinition.types) {
+				attrDefinition.types.forEach(type => {
+					if (type.type == AttributeTypes.Reference) {
+						symbols = [{label : "not implemented yet"}]
+					} else if (type.type == AttributeTypes.Enum && type.options) {
+						symbols = type.options.map(option => ({label: option.name}));
+					} 				
+				});
+			}
 		}
-		const symbolCompletions: CompletionItem[] = this.mapSymbolsToCompletionItems(symbols);
-		return symbolCompletions;
+		
+		return symbols;
 	}
 
 	private getChildElementCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext): CompletionItem[] {
@@ -119,20 +128,6 @@ export class CompletionProvider {
 		}));
 	}
 		
-	private mapSymbolsToCompletionItems(symbols: SymbolDeclaration[]): CompletionItem[] {
-		return symbols.map(
-			(symbol: SymbolDeclaration) => ({
-				label: symbol.name,
-				kind: this.mapSymbolTypeToCompletionKind(symbol.type),
-				data: {
-					name: symbol.name
-				},
-				documentation: this.getDocumentationForSymbol(symbol),
-				detail: symbol.type
-			}),
-		);
-	}
-
 	private mapChildrenToCompletionItems(children: ChildDefinition[], modelFileContext: ModelFileContext): CompletionItem[] {
 		return children.map(
 			(child: ChildDefinition) => {

@@ -1,5 +1,5 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { Position } from 'vscode-languageserver-types';
+import { integer, Position } from 'vscode-languageserver-types';
 const MAXLINESIZE = 500;
 
 export function getContextFromLine(textDocument: TextDocument, pos: Position) {
@@ -29,4 +29,33 @@ export function wordAtPoint(textDocument: TextDocument, pos: Position):string {
 		return result;
 	}, { pos: 0, word: "" }).word;
 	return word;
+}
+
+export function attributesAtPoint(textDocument: TextDocument, pos: Position) : attributeLocation[] {
+	const lineText = textDocument.getText({
+		start: { line: pos.line, character: 0 },
+		end: { line: pos.line, character: MAXLINESIZE }
+	});
+
+	const regEx = new RegExp(/(\S+)=["']+([\w\.]*)["']+/g);
+
+	let attributes = [];
+	let res;
+	while (null !== (res = regEx.exec(lineText))) {
+		const start : integer = lineText.indexOf(res[0]);
+		const length : integer = res[0].length;
+		const name : string = res[1];
+		const value : string = res[2];
+		const match : boolean = (start < pos.character && (start+length) > pos.character);
+		attributes.push({start, length, name, value, match});
+	}
+	return attributes;
+}
+
+export type attributeLocation = {
+	name : string,
+	value? : string,
+	start : integer,
+	length : integer,
+	match : boolean
 }

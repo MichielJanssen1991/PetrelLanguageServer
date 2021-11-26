@@ -364,7 +364,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"required": true,
 				"types": [
 					{
-						"type": AttributeTypes.Enum,
+						"type": AttributeTypes.Reference,
 						"options": [
 							{
 								"name": "@backend-actions/action/@name"
@@ -664,7 +664,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"autoadd": true,
 				"types": [
 					{
-						"type": AttributeTypes.Enum,
+						"type": AttributeTypes.Reference,
 						"options": [
 							{
 								"name": "$rule/input/@name"		// TODO
@@ -797,7 +797,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "A variable from an infoset to be returned. If the rule engine wants to use a variable that is defined in the infosets.xml file, first all {..} parameters in the search query are resolved. Then Petrel is called with this query. The records are returned, one by one: from each record, the attribute with the defined name is taken, and on all of these values, an aggregation like operator is used",
 				"types": [
 					{
-						"type": AttributeTypes.Enum,
+						"type": AttributeTypes.Reference,
 						"options": [
 							{
 								"name": "$infoset/variable/@name" // TODO
@@ -1030,7 +1030,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"autoadd": true,
 				"types": [
 					{
-						"type": AttributeTypes.Enum,
+						"type": AttributeTypes.Reference,
 						"options": [
 							{
 								"name": "@current-rule/input/@name",
@@ -1116,7 +1116,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "A constant as right hand side.",
 				"types": [
 					{
-						"type": AttributeTypes.Enum,
+						"type": AttributeTypes.Reference,
 						"options": [
 							{
 								"name": "document(constants)/constants//variable/@name" // TODO
@@ -1316,7 +1316,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"autoadd": true,
 				"types":[
 					{
-						"type": AttributeTypes.Enum,
+						"type": AttributeTypes.Reference,
 						"options" : [
 							{
 								"name": "$rule/input/@name"	// TODO
@@ -1513,7 +1513,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"autoadd": true,
 				"types":[
 					{
-						"type": AttributeTypes.Enum,
+						"type": AttributeTypes.Reference,
 						"options": [
 							{
 								"name": "@backend-definition/element/@element"

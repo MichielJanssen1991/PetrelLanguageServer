@@ -6,7 +6,7 @@ import { Position, TextDocument } from 'vscode-languageserver-textdocument';
 import { filePathToFileURL, getFileExtension, getJavascriptFilePaths, getModelFilePaths } from '../util/fs';
 import { ModelDetailLevel } from '../model-definition/symbolsAndReferences';
 import { time, timeEnd } from 'console';
-import { getContextFromLine, wordAtPoint } from '../util/xml';
+import { attributesAtPoint, getContextFromLine, wordAtPoint } from '../util/xml';
 import { ModelParser } from './parser/modelParser';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { JavascriptParser } from './parser/javascriptParser';
@@ -111,6 +111,14 @@ export class Analyzer {
 	public wordAtPoint(uri: string, pos: Position): string {
 		const textDocument = this.uriToTextDocument[uri];
 		return wordAtPoint(textDocument, pos);
+	}
+	
+	/**
+	 * Find the attribute at the given point.
+	 */
+	public attributeAtPoint(uri: string, pos: Position): string {
+		const textDocument = this.uriToTextDocument[uri];
+		return attributesAtPoint(textDocument, pos).find(attr=>attr.match)?.name || "";
 	}
 
 	public contextFromLine(uri: string, pos: Position) {
