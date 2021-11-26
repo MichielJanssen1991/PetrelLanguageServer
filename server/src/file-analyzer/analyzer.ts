@@ -6,7 +6,7 @@ import { Position, TextDocument } from 'vscode-languageserver-textdocument';
 import { filePathToFileURL, getFileExtension, getJavascriptFilePaths, getModelFilePaths } from '../util/fs';
 import { ModelDetailLevel } from '../model-definition/symbolsAndReferences';
 import { time, timeEnd } from 'console';
-import { attributesAtPoint, getContextFromLine, wordAtPoint } from '../util/xml';
+import { attributesAtPoint, getContextFromLine, getRuleContextAtPoint, RuleContext, wordAtPoint } from '../util/xml';
 import { ModelParser } from './parser/modelParser';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { JavascriptParser } from './parser/javascriptParser';
@@ -125,6 +125,10 @@ export class Analyzer {
 		const textDocument = this.uriToTextDocument[uri];
 		const inAttribute = getContextFromLine(textDocument, pos);
 		return inAttribute;
+	}
+
+	public ruleContextFromLine(uri: string, pos: Position): RuleContext {
+		return getRuleContextAtPoint(this.uriToTextDocument[uri], pos);
 	}
 
 }

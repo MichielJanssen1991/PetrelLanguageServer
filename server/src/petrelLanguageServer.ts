@@ -15,6 +15,7 @@ import * as fs from 'fs';
 import path = require('path');
 import { ModelManager } from './symbol-and-reference-manager/modelManager';
 import { ModelDefinitionManager } from './model-definition/modelDefinitionManager';
+import { RuleContext } from './util/xml';
 
 interface DocumentSettings {
 	maxNumberOfProblems: number;
@@ -114,12 +115,23 @@ export default class PetrelLanguageServer {
 		return this.analyzer.attributeAtPoint(params.textDocument.uri, params.position);
 	}
 
+	private getRuleContextAtPoint(params: LSP.TextDocumentPositionParams): RuleContext {
+		return this.analyzer.ruleContextFromLine(params.textDocument.uri, params.position);
+	}
+
 	/**	
 	 * Get the context for a given DocumentPosition.
 	 */
 	public getContext(params: LSP.TextDocumentPositionParams): CompletionContext {
-		const word = this.getWordAtPoint(params);
-		const attribute = this.getAttributeAtPoint(params);
+		let word = "";
+		let attribute = "";
+		let ruleContext = {} as RuleContext;
+		
+		if (params.position && params.position.line){
+			word = this.getWordAtPoint(params);
+			attribute = this.getAttributeAtPoint(params);
+			ruleContext = this.getRuleContextAtPoint(params);
+		}
 		
 		const uri = params.textDocument.uri;
 		const pos = params.position;
@@ -127,7 +139,7 @@ export default class PetrelLanguageServer {
 
 		const { nodes, inTag } = this.modelManager.getNodesForPosition(uri, pos);
 
-		return { word, nodes, inTag, inAttribute, uri, attribute};
+		return { word, nodes, inTag, inAttribute, uri, attribute, ruleContext};
 	}
 
 	public onCompletion(params: TextDocumentPositionParams): CompletionItem[] {

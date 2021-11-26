@@ -22,6 +22,7 @@ export enum ModelElementTypes {
 	Profile = "Profile",
 	Unknown = "Unknown",
 	Value = "Value",
+	SetVar = "Set-Var",
 	All = "All",
 }
 
