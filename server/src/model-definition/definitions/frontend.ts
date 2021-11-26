@@ -1,4 +1,4 @@
-import { NewDefinition } from '../symbolsAndReferences';
+import { AttributeTypes, NewDefinition } from '../symbolsAndReferences';
 import { dev_comment_attribute, include_blocks_element, include_element } from './shared';
 
 export const FRONTEND_DEFINITION: NewDefinition[] = [
@@ -294,7 +294,7 @@ export const FRONTEND_DEFINITION: NewDefinition[] = [
 				"autoadd": true,
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "yes",
@@ -318,7 +318,7 @@ export const FRONTEND_DEFINITION: NewDefinition[] = [
 				"description": "For which element to apply rules.",
 				"types":[
 					{
-						"type": "enum",
+						"type": AttributeTypes.Reference,
 						"options": [
 							{
 								"name": "@backend-definition/element/@element"
@@ -341,7 +341,7 @@ export const FRONTEND_DEFINITION: NewDefinition[] = [
 				"description": "For which element to apply rules.",
 				"types":[
 					{
-						"type": "enum",
+						"type": AttributeTypes.Reference,
 						"options": [
 							{
 								"name": "@backend-definition/element/@element"

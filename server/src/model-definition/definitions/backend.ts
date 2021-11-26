@@ -1,4 +1,4 @@
-import { NewDefinition } from '../symbolsAndReferences';
+import { AttributeTypes, NewDefinition } from '../symbolsAndReferences';
 import { dev_comment_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element } from './shared';
 export const BACKEND_DEFINITION: NewDefinition[] = [
 	{
@@ -116,7 +116,7 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 				"description": "The way the data for this type is retrieved and saved.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "Virtual",
@@ -135,7 +135,7 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 				"description": "The type on which the virtual persistence is based.",
 				"types": [
 					{
-						"type": "relation",
+						"type": AttributeTypes.Reference,
 						"relatedTo": "backend-types"
 					}
 				],
@@ -164,7 +164,7 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 				"description": "If the server events on the type that is used for persistence should be executed. This is only of technical use to provide a lightweight view of a type, e.g. skipping validation and other default loading actions.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "yes"
@@ -188,7 +188,7 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 				"description": "Specifies if changes to the type instances should be logged in an audit log table.</summary>The audit log includes timestamp, user, and the change.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "yes"
@@ -249,7 +249,7 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 				"name": "name",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "rule"
@@ -261,7 +261,7 @@ export const BACKEND_DEFINITION: NewDefinition[] = [
 						]
 					},
 					{
-						"type": "relation",
+						"type": AttributeTypes.Reference,
 						"relatedTo": "backend-actions"
 					}
 

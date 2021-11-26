@@ -123,7 +123,7 @@ export default class PetrelLanguageServer {
 
 		const {nodes, inTag, attribute} = this.modelManager.getNodesForPosition(uri, pos);
 
-		return { word, nodes, inTag, inAttribute, uri };
+		return { word, nodes, inTag, inAttribute, uri, attribute };
 	}
 
 	public onCompletion(params: TextDocumentPositionParams): CompletionItem[] {

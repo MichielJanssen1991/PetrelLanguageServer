@@ -1,4 +1,4 @@
-import { AttributeType, ElementAttributes, NewDefinition } from '../symbolsAndReferences';
+import { AttributeType, AttributeTypes, ElementAttributes, NewDefinition } from '../symbolsAndReferences';
 
 export const dev_comment_attribute = 
 {
@@ -42,7 +42,7 @@ export const merge_instruction_element =
 			"required": true,
 			"types": [
 				{
-					"type": "enum",
+					"type": AttributeTypes.Enum,
 					"options": [
 						{
 							"name": "extension-insertion-point"
@@ -77,7 +77,7 @@ export const model_condition_element =
 			"autoadd": true,
 			"types": [
 				{
-					"type": "enum",
+					"type": AttributeTypes.Enum,
 					"options": [
 						{
 							"name": "",
@@ -134,7 +134,7 @@ export const include_element =
 			"autoadd": true,
 			"types": [
 				{
-					"type": "enum",
+					"type": AttributeTypes.Enum,
 					"options": [
 						{
 							"name": "$reachable-include-blocks[not(@meta-name) or @meta-name = name(current()/../.)]/@name" // TODO
@@ -166,7 +166,7 @@ export const include_element =
 			"description": "If the include is a fragment such that there is no overlap with other parts: the code is included without looking for identical entities to merge.",
 			"types": [
 				{
-					"type": "enum",
+					"type": AttributeTypes.Enum,
 					"options": [
 						{
 							"name": "yes"
@@ -183,7 +183,7 @@ export const include_element =
 			"description": "If the value from this attribute is no, the include file is not loaded in the modeler as include.",
 			"types": [
 				{
-					"type": "enum",
+					"type": AttributeTypes.Enum,
 					"options": [
 						{
 							"name": "yes"
@@ -201,7 +201,7 @@ export const include_element =
 			"deprecated": true,
 			"types": [
 				{
-					"type": "enum",
+					"type": AttributeTypes.Enum,
 					"options": [
 						{
 							"name": "yes"
@@ -225,7 +225,7 @@ export const include_element =
 			"description": "If the included block moves childs that the included block and the current context have in common up to the include point. Default, merged childs are moved.",
 			"types": [
 				{
-					"type": "enum",
+					"type": AttributeTypes.Enum,
 					"options": [
 						{
 							"name": "yes"
@@ -250,7 +250,7 @@ export const include_element =
 			"autoadd": true,
 			"types": [
 				{
-					"type": "enum",
+					"type": AttributeTypes.Enum,
 					"options": [
 						{
 							"name": "yes",

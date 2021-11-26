@@ -33,6 +33,11 @@ export enum ValidationLevels {
 	Fatal = "fatal"
 }
 
+export enum AttributeTypes {
+	Enum = "enum",
+	Reference = "reference"
+}
+
 export type ContextQualifiers = {
 	isObsolete?: boolean,
 	frontendOrBackend?: "Frontend" | "Backend",
@@ -202,7 +207,7 @@ export type ValidationMatches = {
 }
 
 export type AttributeType = {
-	type: string,
+	type: AttributeTypes,
 	namespaced?: boolean,
 	relatedTo?: string,
 	options?: AttributeOption[],

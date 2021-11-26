@@ -1,4 +1,4 @@
-import { JsonElementVariable, NewDefinition, ValidationLevels } from '../symbolsAndReferences';
+import { AttributeTypes, JsonElementVariable, NewDefinition, ValidationLevels } from '../symbolsAndReferences';
 import { dev_comment_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element } from './shared';
 export const RULE_DEFINITION: NewDefinition[] = [
 	{ 
@@ -118,7 +118,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "cache-level could be set to increase performance. If the cache-level is User, it will cache the output value based on the rule name, the project/application/company/user and the inputs that were passed to the rule. Setting the cache-level is only valid if this combined key always returns the same output. See [Caching rule invocations].",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "None",
@@ -163,7 +163,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "Whether to ignore empty action outputs when used for variable assignments, or allow them to overwrite filled variables. By default these empty action outputs are ignored, i.e. not allowed to overwrite a filled variable.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "yes",
@@ -189,7 +189,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "Refers to a different rule.",
 				"types": [
 					{
-						"type": "relation",
+						"type": AttributeTypes.Reference,
 						"relatedTo": "backend-rules"
 					}
 				],
@@ -206,7 +206,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "Set to yes if this model entity is obsolete. This means another way of modeling is prefered and this old functionality may be removed in the next version.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "yes",
@@ -225,7 +225,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "Indicate what to use as an alternative.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "yes",
@@ -251,7 +251,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "May restrict which layers can override / extend this declaration.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "All",
@@ -283,7 +283,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "May be used to have a metadata item which only specifies override rights and not specifies an instance.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "yes"
@@ -364,7 +364,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"required": true,
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "@backend-actions/action/@name"
@@ -378,7 +378,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "If yes, all available local variables (in the frontend, the non-data bound as well as the data bound variables) will be passed to the action. Default is no.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "yes"
@@ -395,7 +395,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "If yes, all outputs returned by the action will be made available locally (in the frontend as non-data bound variables). Default is no.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "yes"
@@ -412,7 +412,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "If the standard added data argument should be left out. It is now left out by default for performance (unless input-all is set). (Currently, only applicable for frontend calls to server actions.)",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "default"
@@ -432,7 +432,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "yes"
@@ -613,7 +613,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"autoadd": true,
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "yes",
@@ -664,7 +664,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"autoadd": true,
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "$rule/input/@name"		// TODO
@@ -737,7 +737,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description":"The type to which the argument value should be parsed.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "Petrel.ModelPath"
@@ -751,7 +751,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description":"A condition to check the value with.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "is not empty"
@@ -783,7 +783,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "An infoset which' contents to return.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Reference,
 						"options": [
 							{
 								"name": "document(infosets)//infoset" // TODO
@@ -797,7 +797,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "A variable from an infoset to be returned. If the rule engine wants to use a variable that is defined in the infosets.xml file, first all {..} parameters in the search query are resolved. Then Petrel is called with this query. The records are returned, one by one: from each record, the attribute with the defined name is taken, and on all of these values, an aggregation like operator is used",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "$infoset/variable/@name" // TODO
@@ -933,7 +933,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "Used to group conditions.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": ""
@@ -1030,7 +1030,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"autoadd": true,
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "@current-rule/input/@name",
@@ -1051,7 +1051,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"autoadd": true,
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "Is",
@@ -1116,7 +1116,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "A constant as right hand side.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "document(constants)/constants//variable/@name" // TODO
@@ -1134,7 +1134,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "Used to group conditions.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": ")"
@@ -1257,7 +1257,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"description": "The meaning of the transaction scope change.",
 				"types": [
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "",
@@ -1316,7 +1316,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"autoadd": true,
 				"types":[
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options" : [
 							{
 								"name": "$rule/input/@name"	// TODO
@@ -1513,7 +1513,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				"autoadd": true,
 				"types":[
 					{
-						"type": "enum",
+						"type": AttributeTypes.Enum,
 						"options": [
 							{
 								"name": "@backend-definition/element/@element"

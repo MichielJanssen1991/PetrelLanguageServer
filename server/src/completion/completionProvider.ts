@@ -1,5 +1,5 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
-import { ChildDefinition, IsSymbolOrReference, ModelElementTypes, NewDefinition, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { AttributeTypes, ChildDefinition, IsSymbolOrReference, ModelElementTypes, NewDefinition, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 
@@ -8,7 +8,8 @@ export type CompletionContext = {
 	inTag: boolean
 	nodes: SymbolOrReference[],
 	word: string,
-	uri: string
+	uri: string,
+	attribute?: Reference
 }
 
 export class CompletionProvider {
@@ -21,7 +22,7 @@ export class CompletionProvider {
 	}
 
 	public getCompletionItems(context: CompletionContext): CompletionItem[] {
-		const { word, inTag, inAttribute, uri } = context;
+		const { word, inTag, inAttribute, uri, attribute } = context;
 		const modelFileContext = this.symbolAndReferenceManager.getModelFileContextForFile(uri);
 		const numberOfNodes = context.nodes.length;
 		const lastNode = numberOfNodes > 0 ? context.nodes[numberOfNodes - 1] : undefined;
@@ -30,8 +31,7 @@ export class CompletionProvider {
 
 		let symbolCompletions: CompletionItem[] = [];
 		if (inAttribute && word != null && lastNode) {
-			// @Michiel: kan jij hier een context aan meegeven? Ik zou willen weten welk attribute er een symbol completion doet. In dat geval kunnen we de model-definitie raadplegen
-			symbolCompletions = this.getSymbolCompletions(lastNode, word);
+			symbolCompletions = this.getSymbolCompletions(lastNode, word, attribute);
 		}
 
 		let attributeCompletions: CompletionItem[] = [];
@@ -85,7 +85,7 @@ export class CompletionProvider {
 		return [];
 	}
 
-	private getSymbolCompletions(node: SymbolOrReference, word: string): CompletionItem[] {
+	private getSymbolCompletions(node: SymbolOrReference, word: string, attribute? : Reference): CompletionItem[] {
 		let symbols = this.symbolAndReferenceManager.findSymbolsMatchingWord({ exactMatch: false, word });
 		const reference = node.children.find(x => x.name == word);
 		if (reference) {
@@ -153,14 +153,26 @@ export class CompletionProvider {
 		);
 	}
 
+	/**
+	 * Construct a snippet of xml-model based on the requested definition. Following things will be handled:
+	 * - If one or more childs of the definition is required it will be auto added as a child element (recursive)
+	 * - Required Attributes and Attributes marked as 'autoadd' in the definition will be added to the snippet
+	 * - vscode 'tabs' will be active on the attributes of the first element layer.
+	 * @param modelFileContext 
+	 * @param child 
+	 * @param childsOwnDefinition 
+	 * @param tabIndent the indent of the child element
+	 * @returns string of the generated snippet
+	 */
 	private buildChildElementSnippet(modelFileContext: ModelFileContext, child: ChildDefinition, childsOwnDefinition?: NewDefinition, tabIndent: string="") {
 		const elementName = child.element;
 		const childsAttributes = childsOwnDefinition?.attributes;
 		const attributes = childsAttributes?.filter(attribute=>(attribute.autoadd || attribute.required)).map((attribute, i) => {
+			// get element attributes. When element is not a child element (because of the recursive call) then the 'tabs' are applied
 			let attributeOptions = ""; 
 			if(attribute.types){
 				attribute.types.map((attributeType) => {
-					if (attributeType.type == 'enum' && attributeType.options){
+					if (attributeType.type == AttributeTypes.Enum && attributeType.options){
 						if (attributeType.options.find(option=>option.default)){
 							attributeOptions = `|${attributeType.options.find(option=>option.default)?.name}|`;
 						} else if (tabIndent == ""){
@@ -169,7 +181,7 @@ export class CompletionProvider {
 					}
 				});				
 			}			
-			// only parent node can use tabs...
+			// only parent node can use tabs... (tabIndent empty is only on the top element level. Recursive childs gets a \t in the tabIndent)
 			const attrValue = (tabIndent == "") ? `\${${i + 1}${attributeOptions}}` : `${attributeOptions.replace(/\|/g, "")}`;
 
 			return `${attribute.name}="${attrValue}"`;
@@ -183,8 +195,8 @@ export class CompletionProvider {
 			childSnippets.push(this.buildChildElementSnippet(modelFileContext, item, childDefinition, tabIndent + `\t`));
 		});
 
+		// construct snipped. Put element sting, attribute string and child string together.
 		const lastTab = (tabIndent == "") ? `\${${(childsAttributes?.length || 0) + 1}}` : "";
-		
 		const snippet = childChildren != undefined && childChildren.length > 0
 			? `${tabIndent}<${elementName} ${attributes}> \n${childSnippets.join(`\n`)} ${lastTab} \n${tabIndent}</${elementName}>`
 			: `${tabIndent}<${elementName} ${attributes} ${lastTab}/>`;
