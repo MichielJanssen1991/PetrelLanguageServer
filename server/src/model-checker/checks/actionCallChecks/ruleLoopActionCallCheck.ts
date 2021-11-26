@@ -60,11 +60,6 @@ export class RuleLoopActionCallCheck extends ActionCallCheck {
 		}
 	}
 
-	protected getAdditionalInputsForSpecificAction(reference: Reference) {
-		return [];
-	}
-
-	protected getAdditionalOutputsForSpecificAction(reference: Reference) {
-		return [];
-	}
+	protected getAdditionalInputsForSpecificAction(reference: Reference) { return []; }
+	protected getAdditionalOutputsForSpecificAction(reference: Reference) { return []; }
 }

@@ -12,6 +12,7 @@ export const CHECKS_MESSAGES = {
 	REFERENCE_CAPITALIZATION: (symbol: SymbolDeclaration, reference: Reference) => `Preferred capitalization for ${reference.type} with name '${reference.name}' is '${symbol.name}'.`,
 	NO_REFERENCES_FOUND: (symbol: SymbolDeclaration) => `No references found to ${symbol.type} with name '${symbol.name}'.`,
 	SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND: (attribute: Reference, typeRef: Reference) => `Attribute '${attribute.name}' not found in ${typeRef.type} with name '${typeRef.name}'.`,
+	SEARCHCOLUMN_ATTRIBUTE_VARIABLE_NOT_FOUND: (attributeName: string) => `Attribute variable '${attributeName}' not found in infoset.`,
 	VALIDATION_ERROR: (error: string, node: Reference | SymbolDeclaration) => `Error occured when trying to validate ${node.type} with name '${node.name}':${error}.`
 };
 

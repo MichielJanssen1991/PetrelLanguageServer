@@ -5,21 +5,17 @@ import { CHECKS_MESSAGES } from '../../messages';
 import { ModelCheckerOptions } from '../../modelChecker';
 import { ActionCallCheck } from './actionCallCheck';
 
-export class InfosetCallCheck extends ActionCallCheck {
-	protected matchCondition = (node: SymbolOrReference) => node.name.toLowerCase() == "infoset";
+export class FunctionCallCheck extends ActionCallCheck {
+	protected matchCondition = (node: SymbolOrReference) => node.name.toLowerCase() == "function";
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);
 	}
 
-	protected checkInternal(node: SymbolOrReference, options: ModelCheckerOptions) {
-		this.verifyActionCall(node as Reference, options);
-	}
-
 	protected verifyActionCall(reference: Reference, options: ModelCheckerOptions) {
 		let valid = true;
-		valid = this.verifyInfosetCall(reference, options);
-		
+		valid = this.verifyFunctionCall(reference, options);
+
 		if (valid && options.detailLevel >= ModelDetailLevel.SubReferences) {
 			this.verifyReferencedObjectsMandatoryInputsProvided(reference, reference);
 			this.verifyInputsAreKnownInReferencedObjects(reference);
@@ -31,18 +27,14 @@ export class InfosetCallCheck extends ActionCallCheck {
 		}
 	}
 
-	private verifyInfosetCall(reference: Reference, options: ModelCheckerOptions) {
-		const infosetNameNotSpecified = this.verifyMandatoryAttributeProvided(reference, NAMES.ATTRIBUTE_INFOSET, true);
-		if (infosetNameNotSpecified && options.detailLevel >= ModelDetailLevel.SubReferences) {
-			this.addWarning(reference.range, CHECKS_MESSAGES.INFOSETCALL_WITHOUT_NAME());
+	private verifyFunctionCall(reference: Reference, options: ModelCheckerOptions) {
+		const functionNameNotSpecified = this.verifyMandatoryAttributeProvided(reference, NAMES.ATTRIBUTE_FUNCTION, false);
+		if (functionNameNotSpecified) {
+			this.addError(reference.range, CHECKS_MESSAGES.RULECALL_WITHOUT_NAME());
 		}
-		return !infosetNameNotSpecified;
+		return !functionNameNotSpecified;
 	}
 
 	protected getAdditionalInputsForSpecificAction(reference: Reference) { return []; }
-
-	protected getAdditionalOutputsForSpecificAction(reference: Reference) {
-		const infosetRef = reference.attributeReferences[NAMES.ATTRIBUTE_INFOSET];
-		return [infosetRef.name];
-	}
+	protected getAdditionalOutputsForSpecificAction(reference: Reference) { return []; }
 }

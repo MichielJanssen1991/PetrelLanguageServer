@@ -12,6 +12,7 @@ import { DataActionCallCheck } from './checks/actionCallChecks/dataActionCallChe
 import { InfosetCallCheck } from './checks/actionCallChecks/infosetCallCheck';
 import { RuleCallCheck } from './checks/actionCallChecks/ruleCallCheck';
 import { RuleLoopActionCallCheck } from './checks/actionCallChecks/ruleLoopActionCallCheck';
+import { FunctionCallCheck } from './checks/actionCallChecks/functionCallCheck';
 
 export type ModelCheckerOptions = {
 	maxNumberOfProblems?: number,
@@ -32,6 +33,7 @@ export class ModelChecker {
 
 		this.checks.push(new InfosetCallCheck(modelManager));
 		this.checks.push(new RuleCallCheck(modelManager));
+		this.checks.push(new FunctionCallCheck(modelManager));
 		this.checks.push(new DataActionCallCheck(modelManager));
 		this.checks.push(new RuleLoopActionCallCheck(modelManager));
 		this.checks.push(new InfosetDeclarationCheck(modelManager));
