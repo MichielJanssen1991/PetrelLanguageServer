@@ -31,9 +31,9 @@ export class CompletionProvider {
 
 
 
-		let symbolCompletions: CompletionItem[] = [];
+		let attributeValueCompletions: CompletionItem[] = [];
 		if (inAttribute && word != null && lastNode) {
-			symbolCompletions = this.getSymbolCompletions(lastNode, modelFileContext, word, context);
+			attributeValueCompletions = this.getAttributeValueCompletions(lastNode, modelFileContext, word, context);
 		}
 
 		let attributeCompletions: CompletionItem[] = [];
@@ -48,7 +48,7 @@ export class CompletionProvider {
 
 		const allCompletions = [
 			...attributeCompletions,
-			...symbolCompletions,
+			...attributeValueCompletions,
 			...childElementCompletions
 		];
 
@@ -87,7 +87,7 @@ export class CompletionProvider {
 		return [];
 	}
 
-	private getSymbolCompletions(node: SymbolOrReference, modelFileContext : ModelFileContext, word: string, context : CompletionContext): CompletionItem[] {
+	private getAttributeValueCompletions(node: SymbolOrReference, modelFileContext : ModelFileContext, word: string, context : CompletionContext): CompletionItem[] {
 		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, node.tag);
 		let symbols = [{label : "no posibilities found"}];
 		if (context.attribute && elementDefinition && elementDefinition.attributes){
@@ -124,9 +124,6 @@ export class CompletionProvider {
 		return attributes.map(att => ({
 			label: att,
 			kind: CompletionItemKind.Property,
-			data: {
-				name: att
-			},
 			detail: "Attribute"
 		}));
 	}
@@ -141,9 +138,6 @@ export class CompletionProvider {
 					kind: CompletionItemKind.Snippet,
 					insertText: snippet,
 					insertTextFormat: InsertTextFormat.Snippet,
-					data: {
-						name: child.element
-					},
 					documentation: childsOwnDefinition?.description,
 					detail: childsOwnDefinition?.description
 				};
@@ -187,7 +181,7 @@ export class CompletionProvider {
 		const childChildren = childsOwnDefinition?.childs;
 		
 		// get the required child nodes and add them to the snippet
-		let childSnippets : string[] = [];
+		const childSnippets : string[] = [];
 		childChildren?.filter(childNode=>childNode.required).forEach(item=>{
 			const childDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, item.element);
 			childSnippets.push(this.buildChildElementSnippet(modelFileContext, item, childDefinition, tabIndent + `\t`));
