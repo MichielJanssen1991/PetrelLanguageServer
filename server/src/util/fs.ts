@@ -1,5 +1,4 @@
 import * as glob from 'glob';
-import * as URL from 'url';
 import { URI } from 'vscode-uri';
 
 const excludedDirectories: string[] = ["dist", "Themes", "node_modules", "packages", "no-version", "Content", "bin", "_svnSources", "ui-tests", "api-tests"];

@@ -73,13 +73,16 @@ export function getRuleContextAtPoint(textDocument: TextDocument, pos: Position,
 		end: { line: end, character: MAXLINESIZE }
 	});
 
-	const number = textDocument.offsetAt(pos);
+	const currentLineString = textDocument.getText({ start: { line: pos.line, character: 0}, end: { line: pos.line, character: MAXLINESIZE}}).replace(/[\t\n]/, "");
+	const currentLinePosition = selectedText.indexOf(currentLineString);
+	
+
 
 	//const regExFullRule = new RegExp(/(<rule\s)+[\w\t\s=\"></\-\.,]*?(<\/rule>)+/);
 	let res;
 	let posStart = 0;
 	const regexOpeningTag = new RegExp(/<rule\s.*?>/g);
-	while (null !== (res = regexOpeningTag.exec(selectedText.substr(0, number)))){
+	while (null !== (res = regexOpeningTag.exec(selectedText.substr(0, currentLinePosition)))){
 		if (res.index !== 0){
 			posStart = res.index;
 			// continue until last rule tag is found
@@ -88,9 +91,9 @@ export function getRuleContextAtPoint(textDocument: TextDocument, pos: Position,
 	}
 	let posEnd = 0;
 	const regexClosingTag = new RegExp(/<\/rule[\s\t]*?>/g);
-	while (null !== (res = regexClosingTag.exec(selectedText.substr(number)))){
+	while (null !== (res = regexClosingTag.exec(selectedText.substr(currentLinePosition)))){
 		if (res.index !== 0){
-			posEnd = number+res.index+res[0].length;
+			posEnd = currentLinePosition+res.index+res[0].length;
 			break;
 			// first match only 
 		}	
