@@ -2,6 +2,7 @@ import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-lan
 import { AttributeTypes, ChildDefinition, IsSymbolOrReference, ModelElementTypes, NewDefinition, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
+import { RuleContext } from '../util/xml';
 
 export type CompletionContext = {
 	inAttribute: boolean,
@@ -9,7 +10,8 @@ export type CompletionContext = {
 	nodes: SymbolOrReference[],
 	word: string,
 	uri: string,
-	attribute?: string
+	attribute?: string,
+	ruleContext?: RuleContext
 }
 
 export class CompletionProvider {
@@ -31,7 +33,7 @@ export class CompletionProvider {
 
 		let symbolCompletions: CompletionItem[] = [];
 		if (inAttribute && word != null && lastNode) {
-			symbolCompletions = this.getSymbolCompletions(lastNode, modelFileContext, word, attribute);
+			symbolCompletions = this.getSymbolCompletions(lastNode, modelFileContext, word, context);
 		}
 
 		let attributeCompletions: CompletionItem[] = [];
@@ -85,15 +87,16 @@ export class CompletionProvider {
 		return [];
 	}
 
-	private getSymbolCompletions(node: SymbolOrReference, modelFileContext : ModelFileContext, word: string, attribute? : string): CompletionItem[] {
+	private getSymbolCompletions(node: SymbolOrReference, modelFileContext : ModelFileContext, word: string, context : CompletionContext): CompletionItem[] {
 		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, node.tag);
 		let symbols = [{label : "no posibilities found"}];
-		if (attribute && elementDefinition && elementDefinition.attributes){
-			const attrDefinition = elementDefinition.attributes.find(attr=>attr.name==attribute);
+		if (context.attribute && elementDefinition && elementDefinition.attributes){
+			const attrDefinition = elementDefinition.attributes.find(attr=>attr.name==context.attribute);
 			if (attrDefinition && attrDefinition.types) {
 				attrDefinition.types.forEach(type => {
 					if (type.type == AttributeTypes.Reference) {
-						symbols = [{label : "not implemented yet"}]
+						// concept ............ need 'some' work :)
+						symbols = context.ruleContext?.availableParams.map(param=>({label: param})) || [{ label: "no parames found" }];
 					} else if (type.type == AttributeTypes.Enum && type.options) {
 						symbols = type.options.map(option => ({label: option.name}));
 					} 				
@@ -213,4 +216,8 @@ export class CompletionProvider {
 		}
 		return CompletionItemKind.Variable;
 	}
+}
+
+function ruleContextFromLine() {
+	throw new Error('Function not implemented.');
 }
