@@ -3,7 +3,6 @@ import { integer, Position } from 'vscode-languageserver-types';
 import { ModelParser } from '../file-analyzer/parser/modelParser';
 import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
 import { ModelDetailLevel, ModelElementTypes } from '../model-definition/symbolsAndReferences';
-import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 const MAXLINESIZE = 500;
 
 export type attributeLocation = {
@@ -12,6 +11,21 @@ export type attributeLocation = {
 	start : integer,
 	length : integer,
 	match : boolean
+}
+
+export type RuleContext = {
+	name : string,
+	availableParams: string[],//ParamRuleContext[]
+	start : integer,
+	length : integer
+}
+
+export type ParamRuleContext = {
+	type: [ModelElementTypes.Input, ModelElementTypes.Output, ModelElementTypes.SetVar],
+	name?: string,
+	localName?: string,
+	remoteName?: string,
+	value?: string
 }
 
 export function getContextFromLine(textDocument: TextDocument, pos: Position) {
@@ -75,10 +89,7 @@ export function getRuleContextAtPoint(textDocument: TextDocument, pos: Position,
 
 	const currentLineString = textDocument.getText({ start: { line: pos.line, character: 0}, end: { line: pos.line, character: MAXLINESIZE}}).replace(/[\t\n]/, "");
 	const currentLinePosition = selectedText.indexOf(currentLineString);
-	
 
-
-	//const regExFullRule = new RegExp(/(<rule\s)+[\w\t\s=\"></\-\.,]*?(<\/rule>)+/);
 	let res;
 	let posStart = 0;
 	const regexOpeningTag = new RegExp(/<rule\s.*?>/g);
@@ -99,19 +110,24 @@ export function getRuleContextAtPoint(textDocument: TextDocument, pos: Position,
 		}	
 	}
 
-	if (posStart == 0 || posEnd == 0){
+	if ((posStart == 0 || posEnd == 0) && (textDocument.lineCount > end || start > 0)){
 		offsetStart = posStart == 0 ? offsetStart + 20 : offsetStart;
 		offsetEnd = posEnd == 0 ? offsetEnd + 20 : offsetEnd;
 		return getRuleContextAtPoint(textDocument, pos, offsetStart, offsetEnd);
 	}
 
-	const mp = new ModelParser("", ModelDetailLevel.All, new ModelDefinitionManager());
-	const parsedRule = mp.parseFile(selectedText.substr(posStart, (posEnd - posStart)));
-	
-	const ruleDefinition = parsedRule.tree.children[0];
-	const params = findNames(ruleDefinition.children, [ModelElementTypes.Output, ModelElementTypes.Input, ModelElementTypes.SetVar]);
+	let params : string [] = [];
+	let rulename = "";
+	if (posStart > 0 && posEnd > 0){
+		const mp = new ModelParser("", ModelDetailLevel.All, new ModelDefinitionManager());
+		const parsedRule = mp.parseFile(selectedText.substr(posStart, (posEnd - posStart)));
+		
+		const ruleDefinition = parsedRule.tree.children[0];
+		rulename = ruleDefinition.name;
+		params = findNames(ruleDefinition.children, [ModelElementTypes.Output, ModelElementTypes.Input, ModelElementTypes.SetVar] );
+	}
 
-	return { name: ruleDefinition.name, availableParams: params, start: posStart, length: posEnd-posStart };
+	return { name: rulename, availableParams: params, start: posStart, length: posEnd-posStart };
 }
 
 export function findNames(children : any[], matchTags : ModelElementTypes[]) : string[]{
@@ -129,17 +145,3 @@ export function findNames(children : any[], matchTags : ModelElementTypes[]) : s
 
 
 
-export type RuleContext = {
-	name : string,
-	availableParams: string[],//ParamRuleContext[]
-	start : integer,
-	length : integer
-}
-
-export type ParamRuleContext = {
-	type: [ModelElementTypes.Input, ModelElementTypes.Output, ModelElementTypes.SetVar],
-	name?: string,
-	localName?: string,
-	remoteName?: string,
-	value?: string
-}
