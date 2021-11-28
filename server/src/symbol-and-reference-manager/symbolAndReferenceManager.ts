@@ -2,7 +2,7 @@ import FuzzySearch = require('fuzzy-search');
 import { Position } from 'vscode-languageserver-types';
 import { standaloneObjectTypes } from '../model-definition/declarations';
 import { ModelFileContext } from '../model-definition/modelDefinitionManager';
-import { ModelElementTypes, IsSymbolOrReference, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { ModelElementTypes, IsSymbolOrReference, Reference, SymbolDeclaration, SymbolOrReference, Attribute } from '../model-definition/symbolsAndReferences';
 import { flattenNestedListObjects, flattenNestedObjectValues, flattenObjectValues } from '../util/array';
 import { pointIsInRange } from '../util/other';
 
@@ -247,7 +247,10 @@ export class SymbolAndReferenceManager {
 		this.addSubNodesForPosition(nodes, this.uriToTree[uri], position);
 		const lastNode = nodes[nodes.length - 1];
 		const inTag = pointIsInRange(lastNode.range, position);
-		const attribute = Object.values(lastNode.attributeReferences).find(x => pointIsInRange(x.fullRange, position));
+		let attribute:Reference|Attribute|undefined = Object.values(lastNode.attributeReferences).find(x => pointIsInRange(x.fullRange, position));
+		if(!attribute){
+			attribute = Object.values(lastNode.otherAttributes).find(x => pointIsInRange(x.fullRange, position));
+		}
 		return { nodes, inTag, attribute };
 	}
 

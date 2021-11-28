@@ -42,6 +42,7 @@ export interface ISaxParserExtended extends ISaxParser {
 	findParent: (predicate: (n: any) => boolean) => any | null,
 	getTagRange: () => LSP.Range;
 	getAttributeRange: (attribute: { name: string, value: string }) => LSP.Range;
+	getAttributeValueRange: (attribute: { name: string, value: string }) => LSP.Range;
 }
 
 
@@ -96,9 +97,23 @@ export function newSaxParserExtended(
 	};
 
 	parser.getAttributeRange = function (attribute) {
+		//Assumes there are no spaces between attribute name, the '=' sign and the value
+		const equalSignAndTwoQuotesLength = 3;
+		const attributeLength = attribute.name.length + attribute.value.length + equalSignAndTwoQuotesLength;
 		return LSP.Range.create(
 			this.line,
-			Math.max(this.column - attribute.name.length - attribute.value.length - 3, 0),
+			Math.max(this.column - attributeLength, 0),
+			this.line,
+			this.column,
+		);
+	};
+
+	parser.getAttributeValueRange = function (attribute) {
+		const twoQuotesLength = 2;
+		const attributeValueLength = attribute.value.length + twoQuotesLength;
+		return LSP.Range.create(
+			this.line,
+			Math.max(this.column - attributeValueLength, 0),
 			this.line,
 			this.column,
 		);

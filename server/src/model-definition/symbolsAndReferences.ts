@@ -73,7 +73,7 @@ export interface ObjectIdentifier {
 	uri: string,
 	objectType: IsSymbolOrReference,
 	children: (Reference | SymbolDeclaration)[],
-	otherAttributes: Record<string, string | boolean | number>,
+	otherAttributes: Record<string, Attribute>,
 	attributeReferences: Record<string, Reference>,
 	comment?: string,
 	contextQualifiers: ContextQualifiers
@@ -85,6 +85,13 @@ export interface Reference extends ObjectIdentifier {
 
 export interface SymbolDeclaration extends ObjectIdentifier {
 	objectType: IsSymbolOrReference.Symbol
+}
+
+export interface Attribute {
+	name: string,
+	range: LSP.Range,
+	fullRange: LSP.Range,
+	value:string|number|boolean
 }
 
 export type SymbolOrReference = SymbolDeclaration | Reference;

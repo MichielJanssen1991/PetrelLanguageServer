@@ -1,5 +1,5 @@
 import * as LSP from 'vscode-languageserver';
-import { ModelElementTypes, ModelDetailLevel, IsSymbolOrReference, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { removeFilesFromDirectories } from '../util/fs';
 import { standaloneObjectTypes } from '../model-definition/declarations';
 import { ModelCheck } from './modelCheck';

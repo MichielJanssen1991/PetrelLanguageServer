@@ -1,17 +1,17 @@
 import { Range } from 'vscode-languageserver-types';
 import { definitionsPerTag } from '../../model-definition/declarations';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { newReference, Reference, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, NewDefinition, ModelElementTypes, ChildDefinition } from '../../model-definition/symbolsAndReferences';
+import { newReference, Reference, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, NewDefinition, ModelElementTypes, ChildDefinition, Attribute } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
 import { ISaxParserExtended, newSaxParserExtended, Node, ProcessingInstruction } from './saxParserExtended';
 
 export class ModelParser extends FileParser implements INodeContext {
 	private parser: ISaxParserExtended;
-	private parsedObjectStack: { depth: number, parsedObject: SymbolOrReference, definition?: Definition }[]
+	private parsedObjectStack: { depth: number, parsedObject: SymbolOrReference, definition?: Definition }[] = [];
 	private context: ModelFileContext = ModelFileContext.Unknown
 	private contextModelDefinition: NewDefinition[] = [];
 	private modelDefinitionManager: ModelDefinitionManager;
-	private attributeRanges: Record<string, Range> = {};
+	private attributeRanges: Record<string, { range: Range, fullRange: Range }> = {};
 	private static MESSAGES: any = {
 		NO_DEFINITION_FOUND_FOR_TAG: (tagName: string) => `No definition found for tag: '${tagName}'`,
 		INVALID_CHILD_TAG: (tagName: string, tagNameParent: string, validChildren: ChildDefinition[]) => `Invalid child: Tag ${tagName} not known for parent: '${tagNameParent}'. Valid children are: ${validChildren.map(x => x.element)}`,
@@ -26,7 +26,6 @@ export class ModelParser extends FileParser implements INodeContext {
 			this.onCloseTag.bind(this),
 			this.onProcessingInstruction.bind(this)
 		);
-		this.parsedObjectStack = [];
 		this.modelDefinitionManager = modelDefinitionManager;
 
 		this.parsedObjectStack.push({ depth: -1, parsedObject: this.results.tree });
@@ -57,8 +56,8 @@ export class ModelParser extends FileParser implements INodeContext {
 		return this.parser.getTagRange();
 	}
 
-	public getAttributeRange(attribute: { name: string; value: string; }) {
-		return this.parser.getAttributeRange(attribute);
+	public getAttributeRanges(attribute: { name: string; value: string; }) {
+		return { range: this.parser.getAttributeValueRange(attribute), fullRange: this.parser.getAttributeRange(attribute) };
 	}
 
 	private getCurrentDepth() {
@@ -87,7 +86,8 @@ export class ModelParser extends FileParser implements INodeContext {
 	}
 
 	private onAttribute(attribute: any) {
-		this.attributeRanges[attribute.name] = this.getAttributeRange(attribute);
+		//Store the attributes ranges when the parser emits the onAttribute event. Attributes are further parsed in onOpenTag
+		this.attributeRanges[attribute.name] = this.getAttributeRanges(attribute);
 	}
 
 	private onOpenTag(node: Node) {
@@ -110,11 +110,9 @@ export class ModelParser extends FileParser implements INodeContext {
 		}
 
 		//If no definition is found only add the parsed tag when detail level is All 
-		if (this.detailLevel == ModelDetailLevel.All) {
-			if (!object) {
-				object = newSymbolDeclaration(node.name, node.name, ModelElementTypes.Unknown, this.getTagRange(), this.uri);
-				this.pushToParsedObjectStack(object);
-			}
+		if (this.detailLevel == ModelDetailLevel.All && !object) {
+			object = newSymbolDeclaration(node.name, node.name, ModelElementTypes.Unknown, this.getTagRange(), this.uri);
+			this.pushToParsedObjectStack(object);
 		}
 
 		this.attributeRanges = {};
@@ -216,22 +214,24 @@ export class ModelParser extends FileParser implements INodeContext {
 		}
 	}
 
-	private parseAttributes(definition: Definition, node: Node): { attributeReferences: Record<string, Reference>, otherAttributes: Record<string, string | boolean | number> } {
+	private parseAttributes(definition: Definition, node: Node): { attributeReferences: Record<string, Reference>, otherAttributes: Record<string, Attribute> } {
 		const attributeReferences: Record<string, Reference> = {};
-		let otherAttributes: Record<string, string | number | boolean> = {};
+		let otherAttributes: Record<string, Attribute> = {};
 		if (definition.attributes) {
 			definition.attributes.forEach(attributeRefDefinition => {
 				const attributeName = attributeRefDefinition.attribute;
 				const attributeValue = node.attributes[attributeName];
 				if (attributeValue) {
+					const { range, fullRange } = this.attributeRanges[attributeName];
 					if (attributeRefDefinition.type != ModelElementTypes.Value) {
-						const range = this.attributeRanges[attributeName];
 						const attributeReference = newReference(attributeValue, node.name, attributeRefDefinition.type, range, this.uri);
+						attributeReference.fullRange = fullRange;
 						attributeReference.contextQualifiers = this.getContextQualifiers();
 						attributeReferences[attributeName] = attributeReference;
 					}
 					else {
-						otherAttributes[attributeName] = attributeValue;
+						const attribute = { name: attributeName, value: attributeValue, range, fullRange };
+						otherAttributes[attributeName] = attribute;
 					}
 				}
 			});
@@ -239,11 +239,14 @@ export class ModelParser extends FileParser implements INodeContext {
 		// When detail level is All add all attributes not yet recognized as otherattributes
 		if (this.detailLevel == ModelDetailLevel.All) {
 			const attributesRecognized = new Set([...Object.keys(otherAttributes), ...Object.keys(attributeReferences)]);
-			const attributesNotRecognized = Object.keys(node.attributes).filter(attributeName => attributesRecognized.has(attributeName)).reduce((obj: Record<string, string>, key) => {
-				obj[key] = node.attributes[key];
+			const attributesNotRecognized = Object.keys(node.attributes).filter(attributeName => !attributesRecognized.has(attributeName)).reduce((obj: Record<string, Attribute>, attributeName) => {
+				const attributeValue = node.attributes[attributeName];
+				const { range, fullRange } = this.attributeRanges[attributeName];
+				const attribute = { name: attributeName, value: attributeValue, range, fullRange };
+				obj[attributeName] = attribute;
 				return obj;
 			}, {});
-			otherAttributes = {...otherAttributes, ...attributesNotRecognized};
+			otherAttributes = { ...otherAttributes, ...attributesNotRecognized };
 		}
 		return { attributeReferences, otherAttributes };
 	}
