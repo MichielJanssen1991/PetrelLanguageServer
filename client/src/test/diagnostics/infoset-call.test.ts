@@ -14,7 +14,7 @@ suite('Should get diagnostics for infoset call', () => {
 	test('Diagnoses infoset call to unknown infoset', async () => {
 		const docUri = getDocUri('diagnostics\\infoset-call\\unknown-infoset.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Infoset with name 'NotAKnownInfoset' not found.", range: toRange(2, 27, 2, 58), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
+			{ message: "Infoset with name 'NotAKnownInfoset' not found.", range: toRange(2, 40, 2, 58), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
 		]);
 	});
 
@@ -28,7 +28,7 @@ suite('Should get diagnostics for infoset call', () => {
 	test('Diagnoses infoset call with missing mandatory input', async () => {
 		const docUri = getDocUri('diagnostics\\infoset-call\\missing-mandatory-input.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Mandatory input 'MandatoryInfosetInput' for Infoset with name 'KnownInfosetWithMandatoryInput' not provided.", range: toRange(2, 27, 2, 72), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
+			{ message: "Mandatory input 'MandatoryInfosetInput' for Infoset with name 'KnownInfosetWithMandatoryInput' not provided.", range: toRange(2, 40, 2, 72), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
 		]);
 	});
 

@@ -7,14 +7,14 @@ suite('Should get diagnostics for infoset declaration', () => {
 	test('Diagnoses infoset declarations with search on unknown type', async () => {
 		const docUri = getDocUri('diagnostics\\infoset-definition\\search-unknown-type.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Type with name 'UnknownType' not found.", range: toRange(2, 31, 2, 49), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
+			{ message: "Type with name 'UnknownType' not found.", range: toRange(2, 36, 2, 49), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
 		]);
 	});
 
 	test('Diagnoses infoset declaration with unknown search-column attribute', async () => {
 		const docUri = getDocUri('diagnostics\\infoset-definition\\searchcolumn-unknown-attribute.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Attribute 'UnknownAttribute' not found in Type with name 'Type_Test_SearchColumnUnknownAttribute'.", range: toRange(5, 35, 5, 58), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
+			{ message: "Attribute 'UnknownAttribute' not found in Type with name 'Type_Test_SearchColumnUnknownAttribute'.", range: toRange(5, 40, 5, 58), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
 		]);
 	});
 
@@ -28,7 +28,7 @@ suite('Should get diagnostics for infoset declaration', () => {
 	test('Diagnoses infoset declaration with unknown search-column rule', async () => {
 		const docUri = getDocUri('diagnostics\\infoset-definition\\searchcolumn-unknown-rule.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Rule with name 'Rule_Test_SearchColumnUnknownRule' not found.", range: toRange(6, 56, 6, 96), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
+			{ message: "Rule with name 'Rule_Test_SearchColumnUnknownRule' not found.", range: toRange(6, 61, 6, 96), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
 		]);
 	});
 
