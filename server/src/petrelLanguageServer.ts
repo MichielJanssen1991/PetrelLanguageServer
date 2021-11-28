@@ -6,7 +6,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
 import { ModelDetailLevel, IsSymbolOrReference, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
-import { CompletionContext, CompletionProvider } from './completion/completionProvider';
+import { CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
 
 //Other
@@ -15,7 +15,7 @@ import * as fs from 'fs';
 import path = require('path');
 import { ModelManager } from './symbol-and-reference-manager/modelManager';
 import { ModelDefinitionManager } from './model-definition/modelDefinitionManager';
-import { RuleContext } from './util/xml';
+import { CompletionContext } from './completion/completionContext';
 
 interface DocumentSettings {
 	maxNumberOfProblems: number;
@@ -110,36 +110,25 @@ export default class PetrelLanguageServer {
 	private getWordAtPoint(params: LSP.TextDocumentPositionParams): string {
 		return this.analyzer.wordAtPoint(params.textDocument.uri, params.position);
 	}
-	
-	private getAttributeAtPoint(params: LSP.TextDocumentPositionParams): string {
-		return this.analyzer.attributeAtPoint(params.textDocument.uri, params.position);
-	}
-
-	private getRuleContextAtPoint(params: LSP.TextDocumentPositionParams): RuleContext {
-		return this.analyzer.ruleContextFromLine(params.textDocument.uri, params.position);
-	}
 
 	/**	
 	 * Get the context for a given DocumentPosition.
 	 */
 	public getContext(params: LSP.TextDocumentPositionParams): CompletionContext {
 		let word = "";
-		let attribute = "";
-		let ruleContext = {} as RuleContext;
-		
-		if (params.position && params.position.line){
+
+		if (params.position && params.position.line) {
 			word = this.getWordAtPoint(params);
-			attribute = this.getAttributeAtPoint(params);
-			ruleContext = this.getRuleContextAtPoint(params);
 		}
-		
+
 		const uri = params.textDocument.uri;
 		const pos = params.position;
 		const inAttribute = this.analyzer.contextFromLine(uri, pos);
 
-		const { nodes, inTag } = this.modelManager.getNodesForPosition(uri, pos);
+		const { nodes, inTag, attribute } = this.modelManager.getNodesForPosition(uri, pos);
+		const context = new CompletionContext(inAttribute, inTag, nodes, word, uri, attribute);
 
-		return { word, nodes, inTag, inAttribute, uri, attribute, ruleContext};
+		return context;
 	}
 
 	public onCompletion(params: TextDocumentPositionParams): CompletionItem[] {
@@ -201,7 +190,7 @@ export default class PetrelLanguageServer {
 				objectType: node.objectType,
 				tag: node.tag,
 				otherAttributes: node.otherAttributes,
-				attributeReferences: node.attributeReferences				
+				attributeReferences: node.attributeReferences
 			};
 		}); // Only log essentials to avoid very large log messages (especially caused by chidren)
 		this.connection.console.log(

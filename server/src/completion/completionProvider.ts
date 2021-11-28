@@ -2,17 +2,7 @@ import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-lan
 import { AttributeTypes, ChildDefinition, IsSymbolOrReference, ModelElementTypes, NewDefinition, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
-import { RuleContext } from '../util/xml';
-
-export type CompletionContext = {
-	inAttribute: boolean,
-	inTag: boolean
-	nodes: SymbolOrReference[],
-	word: string,
-	uri: string,
-	attribute?: string,
-	ruleContext?: RuleContext
-}
+import { CompletionContext } from './completionContext';
 
 export class CompletionProvider {
 	private symbolAndReferenceManager: SymbolAndReferenceManager;
@@ -33,7 +23,7 @@ export class CompletionProvider {
 
 		let attributeValueCompletions: CompletionItem[] = [];
 		if (inAttribute && word != null && lastNode) {
-			attributeValueCompletions = this.getAttributeValueCompletions(lastNode, modelFileContext, word, context);
+			attributeValueCompletions = this.getAttributeValueCompletions(lastNode, modelFileContext, context);
 		}
 
 		let attributeCompletions: CompletionItem[] = [];
@@ -74,12 +64,12 @@ export class CompletionProvider {
 				const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionReference);
 				attributesForAction = referencedAction?.children.filter(x => x.type == ModelElementTypes.Attribute).map(x => x.name) || [];
 			}
-			
+
 			let allAttributes = [...attributesForAction, ...attributesForTag];
 			// remove already available attributes
 			const allExistingAttributes = [...Object.keys(node.attributeReferences), ...Object.keys(node.otherAttributes)];
 			allAttributes = allAttributes.filter(item => !allExistingAttributes.includes(item));
-			
+
 			attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);
 
 			return attributeCompletions;
@@ -87,23 +77,26 @@ export class CompletionProvider {
 		return [];
 	}
 
-	private getAttributeValueCompletions(node: SymbolOrReference, modelFileContext : ModelFileContext, word: string, context : CompletionContext): CompletionItem[] {
+	private getAttributeValueCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
 		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, node.tag);
-		let symbols = [{label : "no posibilities found"}];
-		if (context.attribute && elementDefinition && elementDefinition.attributes){
-			const attrDefinition = elementDefinition.attributes.find(attr=>attr.name==context.attribute);
+		const attribute = context.attribute;
+		let symbols = [{ label: "no posibilities found" }];
+		if (attribute && elementDefinition && elementDefinition.attributes) {
+			const attrName = typeof (attribute) == 'string' ? attribute : (attribute as Reference).name;
+			const attrDefinition = elementDefinition.attributes.find(attr => attr.name == attrName);
 			if (attrDefinition && attrDefinition.types) {
 				attrDefinition.types.forEach(type => {
 					if (type.type == AttributeTypes.Reference) {
 						// concept ............ need 'some' work :)
-						symbols = context.ruleContext?.availableParams.map(param=>({label: param})) || [{ label: "no parames found" }];
+						const ruleContext = context.getRuleContext();
+						symbols = ruleContext?.availableParams.map(param => ({ label: param })) || [{ label: "no parames found" }];
 					} else if (type.type == AttributeTypes.Enum && type.options) {
-						symbols = type.options.map(option => ({label: option.name}));
-					} 				
+						symbols = type.options.map(option => ({ label: option.name }));
+					}
 				});
 			}
 		}
-		
+
 		return symbols;
 	}
 
@@ -127,7 +120,7 @@ export class CompletionProvider {
 			detail: "Attribute"
 		}));
 	}
-		
+
 	private mapChildrenToCompletionItems(children: ChildDefinition[], modelFileContext: ModelFileContext): CompletionItem[] {
 		return children.map(
 			(child: ChildDefinition) => {
@@ -156,33 +149,33 @@ export class CompletionProvider {
 	 * @param tabIndent the indent of the child element
 	 * @returns string of the generated snippet
 	 */
-	private buildChildElementSnippet(modelFileContext: ModelFileContext, child: ChildDefinition, childsOwnDefinition?: NewDefinition, tabIndent="") {
+	private buildChildElementSnippet(modelFileContext: ModelFileContext, child: ChildDefinition, childsOwnDefinition?: NewDefinition, tabIndent = "") {
 		const elementName = child.element;
 		const childsAttributes = childsOwnDefinition?.attributes;
-		const attributes = childsAttributes?.filter(attribute=>(attribute.autoadd || attribute.required)).map((attribute, i) => {
+		const attributes = childsAttributes?.filter(attribute => (attribute.autoadd || attribute.required)).map((attribute, i) => {
 			// get element attributes. When element is not a child element (because of the recursive call) then the 'tabs' are applied
-			let attributeOptions = ""; 
-			if(attribute.types){
+			let attributeOptions = "";
+			if (attribute.types) {
 				attribute.types.map((attributeType) => {
-					if (attributeType.type == AttributeTypes.Enum && attributeType.options){
-						if (attributeType.options.find(option=>option.default)){
-							attributeOptions = `|${attributeType.options.find(option=>option.default)?.name}|`;
-						} else if (tabIndent == ""){
-							attributeOptions += `|${attributeType.options.map(option=>option.name).join(',')}|`;
-						}						
+					if (attributeType.type == AttributeTypes.Enum && attributeType.options) {
+						if (attributeType.options.find(option => option.default)) {
+							attributeOptions = `|${attributeType.options.find(option => option.default)?.name}|`;
+						} else if (tabIndent == "") {
+							attributeOptions += `|${attributeType.options.map(option => option.name).join(',')}|`;
+						}
 					}
-				});				
-			}			
+				});
+			}
 			// only parent node can use tabs... (tabIndent empty is only on the top element level. Recursive childs gets a \t in the tabIndent)
 			const attrValue = (tabIndent == "") ? `\${${i + 1}${attributeOptions}}` : `${attributeOptions.replace(/\|/g, "")}`;
 
 			return `${attribute.name}="${attrValue}"`;
 		}).join(" ") || "";
 		const childChildren = childsOwnDefinition?.childs;
-		
+
 		// get the required child nodes and add them to the snippet
-		const childSnippets : string[] = [];
-		childChildren?.filter(childNode=>childNode.required).forEach(item=>{
+		const childSnippets: string[] = [];
+		childChildren?.filter(childNode => childNode.required).forEach(item => {
 			const childDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, item.element);
 			childSnippets.push(this.buildChildElementSnippet(modelFileContext, item, childDefinition, tabIndent + `\t`));
 		});

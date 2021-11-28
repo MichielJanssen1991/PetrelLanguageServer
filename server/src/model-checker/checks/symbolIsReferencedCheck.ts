@@ -11,7 +11,6 @@ export class SymbolIsReferencedCheck extends ModelCheck {
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);
-
 	}
 
 	protected checkInternal(node: SymbolOrReference, options: ModelCheckerOptions)
