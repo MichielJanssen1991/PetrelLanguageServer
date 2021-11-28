@@ -156,7 +156,7 @@ export class CompletionProvider {
 	 * @param tabIndent the indent of the child element
 	 * @returns string of the generated snippet
 	 */
-	private buildChildElementSnippet(modelFileContext: ModelFileContext, child: ChildDefinition, childsOwnDefinition?: NewDefinition, tabIndent: string="") {
+	private buildChildElementSnippet(modelFileContext: ModelFileContext, child: ChildDefinition, childsOwnDefinition?: NewDefinition, tabIndent="") {
 		const elementName = child.element;
 		const childsAttributes = childsOwnDefinition?.attributes;
 		const attributes = childsAttributes?.filter(attribute=>(attribute.autoadd || attribute.required)).map((attribute, i) => {

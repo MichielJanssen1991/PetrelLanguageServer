@@ -63,9 +63,9 @@ export function attributesAtPoint(textDocument: TextDocument, pos: Position) : a
 		end: { line: pos.line, character: MAXLINESIZE }
 	});
 
-	const regEx = new RegExp(/(\S+)=["']+([\w\.]*)["']+/g);
+	const regEx = new RegExp(/(\S+)=["']+([\w.]*)["']+/g);
 
-	let attributes = [];
+	const attributes = [];
 	let res;
 	while (null !== (res = regEx.exec(lineText))) {
 		const start : integer = lineText.indexOf(res[0]);
