@@ -28,7 +28,7 @@ export type ProcessingInstruction = {
 	body: string
 }
 
-export type Node = {
+export type XmlNode = {
 	name: string
 	attributes: Record<string, string>
 }
@@ -37,9 +37,9 @@ export type Node = {
 // Extend with own functionality used for parsing model xml
 export interface ISaxParserExtended extends ISaxParser {
 	uri: string,
-	getFirstParent: () => any,
-	hasParentTag: (name: string) => boolean
-	findParent: (predicate: (n: any) => boolean) => any | null,
+	getFirstParent: () => XmlNode,
+	hasParentTag: (name: string) => boolean,
+	getCurrentNode: () => XmlNode,
 	getTagRange: () => LSP.Range;
 	getAttributeRange: (attribute: { name: string, value: string }) => LSP.Range;
 	getAttributeValueRange: (attribute: { name: string, value: string }) => LSP.Range;
@@ -81,6 +81,9 @@ export function newSaxParserExtended(
 		const parentNodeStack = this.tags;
 		return parentNodeStack[parentNodeStack.length - 2];
 	};
+	parser.getCurrentNode = function () {
+		return this.tag;
+	};
 
 	parser.hasParentTag = function (name: string) {
 		const parentTagNames = this.tags.find((x: { name: string; }) => x.name == name);
@@ -117,19 +120,6 @@ export function newSaxParserExtended(
 			this.line,
 			this.column,
 		);
-	};
-
-	parser.findParent = function (predicate) {
-		const parentNodeStack = this.tags;
-		let index = parentNodeStack.length - 1;
-		while (index >= 0) {
-			const node = parentNodeStack[index];
-			if (predicate(node)) {
-				return node;
-			}
-			index = index - 1;
-		}
-		return null;
 	};
 
 	return parser;

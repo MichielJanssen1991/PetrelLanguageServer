@@ -1,54 +1,52 @@
-import { AttributeType, AttributeTypes, ElementAttributes, NewDefinition } from '../symbolsAndReferences';
+import { AttributeTypes, ElementAttributes, ModelElementTypes, Definition, ModelDetailLevel } from '../symbolsAndReferences';
 
 export const dev_comment_attribute = 
 {
-	"name": "comment", 
-	"description": "Developer's comment on this element."
+	name: "comment", 
+	description: "Developer's comment on this element."
 } as ElementAttributes;
 
 export const include_blocks_element = 
 { 
-	"element": "include-blocks",		
-	"description": "Use to group include blocks.",
-	"attributes": [
+	description: "Use to group include blocks.",
+	attributes: [
 		{
-			"name": "name",
-			"description": "Unique identifier."
+			name: "name",
+			description: "Unique identifier."
 		},
 		{
-			"name": "description",
-			"description": "Description of contents and purpose."
+			name: "description",
+			description: "Description of contents and purpose."
 		},
 		dev_comment_attribute
 	],
-	"childs": [
+	childs: [
 		{
-			"element": "include-blocks"
+			element: "include-blocks"
 		},
 		{
-			"element": "include-block"
+			element: "include-block"
 		}
 	]
-} as NewDefinition;
+} as Definition;
 
 export const merge_instruction_element =
 {
-	"element": "merge-instruction",
-	"description": "",
-	"attributes": [
+	description: "",
+	attributes: [
 		{
-			"name": "value",
-			"description": "",
-			"required": true,
-			"types": [
+			name: "value",
+			description: "",
+			required: true,
+			types: [
 				{
-					"type": AttributeTypes.Enum,
-					"options": [
+					type: AttributeTypes.Enum,
+					options: [
 						{
-							"name": "extension-insertion-point"
+							name: "extension-insertion-point"
 						},
 						{
-							"name": "inheritance-insertion-point"
+							name: "inheritance-insertion-point"
 						},
 					]
 				}
@@ -58,91 +56,91 @@ export const merge_instruction_element =
 		dev_comment_attribute
 	]
 
-} as NewDefinition;
+} as Definition;
 
 export const model_condition_element = 
 {
-	"element": "model-condition",
-	"description": "A model part that will be included when the mentioned setting has the specified value.",
-	"attributes": [
+	description: "A model part that will be included when the mentioned setting has the specified value.",
+	attributes: [
 		{
-			"name": "name",
-			"description": "The name of the setting.",
-			"required": true,
-			"autoadd": true
+			name: "name",
+			description: "The name of the setting.",
+			required: true,
+			autoadd: true
 		},
 		{
-			"name": "operator",
-			"description": "The operator to compare the setting value and the specified value.",
-			"autoadd": true,
-			"types": [
+			name: "operator",
+			description: "The operator to compare the setting value and the specified value.",
+			autoadd: true,
+			types: [
 				{
-					"type": AttributeTypes.Enum,
-					"options": [
+					type: AttributeTypes.Enum,
+					options: [
 						{
-							"name": "",
-							"description": "Equals",
+							name: "",
+							description: "Equals",
 							"default": true
 						},
 						{
-							"name": "Unequal",
-							"description": "Unequal"
+							name: "Unequal",
+							description: "Unequal"
 						},
 						{
-							"name": "StartsWith",
-							"description": "starts with"
+							name: "StartsWith",
+							description: "starts with"
 						},
 						{
-							"name": "&gt;",
-							"description": "greater than (string compare)"
+							name: "&gt;",
+							description: "greater than (string compare)"
 						},
 						{
-							"name": "&gt;=",
-							"description": "greater than or equal to (string compare)"
+							name: "&gt;=",
+							description: "greater than or equal to (string compare)"
 						},
 						{
-							"name": "&lt;=",
-							"description": "less than or equal to (string compare)"
+							name: "&lt;=",
+							description: "less than or equal to (string compare)"
 						},
 						{
-							"name": "&lt;",
-							"description": "less than (string compare)"
+							name: "&lt;",
+							description: "less than (string compare)"
 						},
 					]
 				}
 			]
 		},
 		{
-			"name": "value",
-			"description": "The operator to compare the setting value and the specified value.",
-			"autoadd": true
+			name: "value",
+			description: "The operator to compare the setting value and the specified value.",
+			autoadd: true
 		},
 	],
-	"childs": [
+	childs: [
 		// TODO context specific child nodes!!
 	]
-} as NewDefinition;
+} as Definition;
 
 export const include_element = 
 {
-	"element": "include",
-	"description": "Includes a file or an include block. The included model fragment is merged with the contents of the parent node of the include.",
-	"attributes": [
+	description: "Includes a file or an include block. The included model fragment is merged with the contents of the parent node of the include.",
+	type:ModelElementTypes.IncludeBlock,
+	"isReference":true,
+	attributes: [
 		{
-			"name": "block",
-			"description": "A block to include.",
-			"autoadd": true,
-			"types": [
+			name: "block",
+			description: "A block to include.",
+			autoadd: true,
+			types: [
 				{
-					"type": AttributeTypes.Enum,
-					"options": [
+					type: AttributeTypes.Enum,
+					options: [
 						{
-							"name": "$reachable-include-blocks[not(@meta-name) or @meta-name = name(current()/../.)]/@name" // TODO
+							name: "$reachable-include-blocks[not(@meta-name) or @meta-name = name(current()/../.)]/@name" // TODO
 						}
 					]
 				}
 			], 
-			"conditions": [
+			conditions: [
 				{
 					"attribute": "file",
 					"condition": "==",
@@ -151,9 +149,9 @@ export const include_element =
 			]
 		},
 		{
-			"name": "file",
-			"description": "A file to include. Model paths can be used.",
-			"conditions": [
+			name: "file",
+			description: "A file to include. Model paths can be used.",
+			conditions: [
 				{
 					"attribute": "block",
 					"condition": "==",
@@ -162,57 +160,57 @@ export const include_element =
 			]
 		},
 		{
-			"name": "is-fragment",
-			"description": "If the include is a fragment such that there is no overlap with other parts: the code is included without looking for identical entities to merge.",
-			"types": [
+			name: "is-fragment",
+			description: "If the include is a fragment such that there is no overlap with other parts: the code is included without looking for identical entities to merge.",
+			types: [
 				{
-					"type": AttributeTypes.Enum,
-					"options": [
+					type: AttributeTypes.Enum,
+					options: [
 						{
-							"name": "yes"
+							name: "yes"
 						},
 						{
-							"name": "no"
+							name: "no"
 						}
 					]
 				}
 			]				
 		},
 		{
-			"name": "in-modeler",
-			"description": "If the value from this attribute is no, the include file is not loaded in the modeler as include.",
-			"types": [
+			name: "in-modeler",
+			description: "If the value from this attribute is no, the include file is not loaded in the modeler as include.",
+			types: [
 				{
-					"type": AttributeTypes.Enum,
-					"options": [
+					type: AttributeTypes.Enum,
+					options: [
 						{
-							"name": "yes"
+							name: "yes"
 						},
 						{
-							"name": "no"
+							name: "no"
 						}
 					]
 				}
 			]				
 		},
 		{
-			"name": "precedence",
-			"description": "If the included block has import precedence. Default, included XML has no import precedence (thus the included XML can be overridden by the includer). When setting precedence to an include, the present XML is overridden by the included.",
+			name: "precedence",
+			description: "If the included block has import precedence. Default, included XML has no import precedence (thus the included XML can be overridden by the includer). When setting precedence to an include, the present XML is overridden by the included.",
 			"deprecated": true,
-			"types": [
+			types: [
 				{
-					"type": AttributeTypes.Enum,
-					"options": [
+					type: AttributeTypes.Enum,
+					options: [
 						{
-							"name": "yes"
+							name: "yes"
 						},
 						{
-							"name": "no"
+							name: "no"
 						}
 					]
 				}
 			],
-			"conditions": [
+			conditions: [
 				{
 					"attribute": "is-fragment",
 					"condition": "==",
@@ -221,22 +219,22 @@ export const include_element =
 			]			
 		},
 		{
-			"name": "move-merged-childs",
-			"description": "If the included block moves childs that the included block and the current context have in common up to the include point. Default, merged childs are moved.",
-			"types": [
+			name: "move-merged-childs",
+			description: "If the included block moves childs that the included block and the current context have in common up to the include point. Default, merged childs are moved.",
+			types: [
 				{
-					"type": AttributeTypes.Enum,
-					"options": [
+					type: AttributeTypes.Enum,
+					options: [
 						{
-							"name": "yes"
+							name: "yes"
 						},
 						{
-							"name": "no"
+							name: "no"
 						}
 					]
 				}
 			],
-			"conditions": [
+			conditions: [
 				{
 					"attribute": "is-fragment",
 					"condition": "==",
@@ -245,24 +243,24 @@ export const include_element =
 			]			
 		},
 		{
-			"name": "include-once",
-			"description": "If this include should be skipped if the file was already included before. (Notice that this only looks to includes specified *before* this include, not to possible includes coming *after* this include. This is also inevitable for preserving 'precendence' behaviour.) (Due to the look-behind behaviour, 'precedence' does not work together with this attribute.)",
-			"autoadd": true,
-			"types": [
+			name: "include-once",
+			description: "If this include should be skipped if the file was already included before. (Notice that this only looks to includes specified *before* this include, not to possible includes coming *after* this include. This is also inevitable for preserving 'precendence' behaviour.) (Due to the look-behind behaviour, 'precedence' does not work together with this attribute.)",
+			autoadd: true,
+			types: [
 				{
-					"type": AttributeTypes.Enum,
-					"options": [
+					type: AttributeTypes.Enum,
+					options: [
 						{
-							"name": "yes",
+							name: "yes",
 							"default": true
 						},
 						{
-							"name": "no"
+							name: "no"
 						}
 					]
 				}
 			],
-			"conditions": [
+			conditions: [
 				{
 					"attribute": "presedence",
 					"condition": "==",
@@ -276,9 +274,9 @@ export const include_element =
 			]			
 		},
 		{
-			"name": "application",
-			"description": "To select an application within the included file.",
-			"conditions": [
+			name: "application",
+			description: "To select an application within the included file.",
+			conditions: [
 				{
 					"attribute": "file",
 					"condition": "!=",
@@ -288,4 +286,4 @@ export const include_element =
 		},
 		dev_comment_attribute
 	]
-} as NewDefinition;
+} as Definition;

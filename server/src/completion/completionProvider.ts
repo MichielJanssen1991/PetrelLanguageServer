@@ -1,5 +1,5 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
-import { AttributeTypes, ChildDefinition, IsSymbolOrReference, ModelElementTypes, NewDefinition, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { AttributeTypes, ChildDefinition, IsSymbolOrReference, ModelElementTypes, Definition, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { CompletionContext } from './completionContext';
@@ -16,24 +16,21 @@ export class CompletionProvider {
 	public getCompletionItems(context: CompletionContext): CompletionItem[] {
 		const { word, inTag, inAttribute, uri, attribute } = context;
 		const modelFileContext = this.symbolAndReferenceManager.getModelFileContextForFile(uri);
-		const numberOfNodes = context.nodes.length;
-		const lastNode = numberOfNodes > 0 ? context.nodes[numberOfNodes - 1] : undefined;
-
-
+		const currentNode = context.currentNode;
 
 		let attributeValueCompletions: CompletionItem[] = [];
-		if (inAttribute && word != null && lastNode) {
-			attributeValueCompletions = this.getAttributeValueCompletions(lastNode, modelFileContext, context);
+		if (inAttribute && word != null && currentNode) {
+			attributeValueCompletions = this.getAttributeValueCompletions(currentNode, modelFileContext, context);
 		}
 
 		let attributeCompletions: CompletionItem[] = [];
-		if (!inAttribute && inTag && lastNode) {
-			attributeCompletions = this.getAttributeCompletions(lastNode, modelFileContext);
+		if (!inAttribute && inTag && currentNode) {
+			attributeCompletions = this.getAttributeCompletions(currentNode, modelFileContext, context);
 		}
 
 		let childElementCompletions: CompletionItem[] = [];
-		if (!inTag && lastNode) {
-			childElementCompletions = this.getChildElementCompletions(lastNode, modelFileContext);
+		if (!inTag && currentNode) {
+			childElementCompletions = this.getChildElementCompletions(currentNode, modelFileContext, context);
 		}
 
 		const allCompletions = [
@@ -50,11 +47,11 @@ export class CompletionProvider {
 		return allCompletions;
 	}
 
-	private getAttributeCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext) {
+	private getAttributeCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext, context: CompletionContext) {
 		let attributeCompletions: CompletionItem[] = [];
 		if (node) {
 			// get default attributes based on model definition
-			const modelDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, node.tag);
+			const modelDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, context);
 			const attributesForTag = modelDefinition?.attributes?.map(x => x.name) || [];
 
 			// get attributes based on the action called
@@ -78,30 +75,29 @@ export class CompletionProvider {
 	}
 
 	private getAttributeValueCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
-		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, node.tag);
+		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, context);
 		const attribute = context.attribute;
 		let symbols = [{ label: "no posibilities found" }];
 		if (attribute && elementDefinition && elementDefinition.attributes) {
 			const attrName = typeof (attribute) == 'string' ? attribute : (attribute as Reference).name;
 			const attrDefinition = elementDefinition.attributes.find(attr => attr.name == attrName);
-			if (attrDefinition && attrDefinition.types) {
-				attrDefinition.types.forEach(type => {
-					if (type.type == AttributeTypes.Reference) {
-						// concept ............ need 'some' work :)
-						const ruleContext = context.getRuleContext();
-						symbols = ruleContext?.availableParams.map(param => ({ label: param })) || [{ label: "no parames found" }];
-					} else if (type.type == AttributeTypes.Enum && type.options) {
-						symbols = type.options.map(option => ({ label: option.name }));
-					}
-				});
+			const type = attrDefinition?.type;
+			if (attrDefinition && type) {
+				if (type.type == AttributeTypes.Reference) {
+					// concept ............ need 'some' work :)
+					const ruleContext = context.getRuleContext();
+					symbols = ruleContext?.availableParams.map(param => ({ label: param })) || [{ label: "no parames found" }];
+				} else if (type.type == AttributeTypes.Enum && type.options) {
+					symbols = type.options.map(option => ({ label: option.name }));
+				}
 			}
 		}
 
 		return symbols;
 	}
 
-	private getChildElementCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext): CompletionItem[] {
-		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, node.tag);
+	private getChildElementCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
+		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, context);
 		let childCompletions: CompletionItem[] = [];
 		if (elementDefinition) {
 			const children = elementDefinition.childs;
@@ -124,7 +120,7 @@ export class CompletionProvider {
 	private mapChildrenToCompletionItems(children: ChildDefinition[], modelFileContext: ModelFileContext): CompletionItem[] {
 		return children.map(
 			(child: ChildDefinition) => {
-				const childsOwnDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, child.element);
+				const childsOwnDefinition = this.modelDefinitionManager.getModelDefinitionForTagWitouthContext(modelFileContext, child.element);//TODO: should pass node and context of child
 				const snippet = this.buildChildElementSnippet(modelFileContext, child, childsOwnDefinition);
 				return {
 					label: child.element,
@@ -149,22 +145,21 @@ export class CompletionProvider {
 	 * @param tabIndent the indent of the child element
 	 * @returns string of the generated snippet
 	 */
-	private buildChildElementSnippet(modelFileContext: ModelFileContext, child: ChildDefinition, childsOwnDefinition?: NewDefinition, tabIndent = "") {
+	private buildChildElementSnippet(modelFileContext: ModelFileContext, child: ChildDefinition, childsOwnDefinition?: Definition, tabIndent = "") {
 		const elementName = child.element;
 		const childsAttributes = childsOwnDefinition?.attributes;
 		const attributes = childsAttributes?.filter(attribute => (attribute.autoadd || attribute.required)).map((attribute, i) => {
 			// get element attributes. When element is not a child element (because of the recursive call) then the 'tabs' are applied
 			let attributeOptions = "";
-			if (attribute.types) {
-				attribute.types.map((attributeType) => {
-					if (attributeType.type == AttributeTypes.Enum && attributeType.options) {
-						if (attributeType.options.find(option => option.default)) {
-							attributeOptions = `|${attributeType.options.find(option => option.default)?.name}|`;
-						} else if (tabIndent == "") {
-							attributeOptions += `|${attributeType.options.map(option => option.name).join(',')}|`;
-						}
+			const attributeType = attribute.type;
+			if (attributeType) {
+				if (attributeType.type == AttributeTypes.Enum && attributeType.options) {
+					if (attributeType.options.find(option => option.default)) {
+						attributeOptions = `|${attributeType.options.find(option => option.default)?.name}|`;
+					} else if (tabIndent == "") {
+						attributeOptions += `|${attributeType.options.map(option => option.name).join(',')}|`;
 					}
-				});
+				}
 			}
 			// only parent node can use tabs... (tabIndent empty is only on the top element level. Recursive childs gets a \t in the tabIndent)
 			const attrValue = (tabIndent == "") ? `\${${i + 1}${attributeOptions}}` : `${attributeOptions.replace(/\|/g, "")}`;
@@ -176,7 +171,7 @@ export class CompletionProvider {
 		// get the required child nodes and add them to the snippet
 		const childSnippets: string[] = [];
 		childChildren?.filter(childNode => childNode.required).forEach(item => {
-			const childDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, item.element);
+			const childDefinition = this.modelDefinitionManager.getModelDefinitionForTagWitouthContext(modelFileContext, item.element);
 			childSnippets.push(this.buildChildElementSnippet(modelFileContext, item, childDefinition, tabIndent + `\t`));
 		});
 
@@ -187,24 +182,4 @@ export class CompletionProvider {
 			: `${tabIndent}<${elementName} ${attributes} ${lastTab}/>`;
 		return snippet;
 	}
-
-	private getDocumentationForSymbol(symbol: SymbolDeclaration): string {
-		return symbol.comment || "";
-	}
-
-	private mapSymbolTypeToCompletionKind(type: ModelElementTypes): CompletionItemKind {
-		switch (type) {
-			case ModelElementTypes.Action: return CompletionItemKind.Function;
-			case ModelElementTypes.Infoset: return CompletionItemKind.Function;
-			case ModelElementTypes.Rule: return CompletionItemKind.Function;
-			case ModelElementTypes.NameSpace: return CompletionItemKind.Module;
-			case ModelElementTypes.Input: return CompletionItemKind.TypeParameter;
-			case ModelElementTypes.Function: return CompletionItemKind.Function;
-		}
-		return CompletionItemKind.Variable;
-	}
-}
-
-function ruleContextFromLine() {
-	throw new Error('Function not implemented.');
 }

@@ -1,7 +1,7 @@
 import * as LSP from 'vscode-languageserver';
 import { ModelDetailLevel, SymbolOrReference } from '../model-definition/symbolsAndReferences';
 import { removeFilesFromDirectories } from '../util/fs';
-import { standaloneObjectTypes } from '../model-definition/declarations';
+import { standaloneObjectTypes } from '../model-definition/definitions/other';
 import { ModelCheck } from './modelCheck';
 import { InfosetDeclarationCheck } from './checks/infosetDeclarationCheck';
 import { ReferencedObjectExistsCheck } from './checks/referencedObjectExistsCheck';

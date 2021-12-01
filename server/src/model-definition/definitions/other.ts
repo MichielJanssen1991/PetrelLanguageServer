@@ -1,17 +1,17 @@
-import { ModelDetailLevel, ModelElementTypes, Definition, INodeContext } from './symbolsAndReferences';
-import { NAMES } from './constants';
+import { ModelDetailLevel, ModelElementTypes, INodeContext, Definitions, AttributeTypes } from '../symbolsAndReferences';
+import { NAMES } from '../constants';
 
 //Defines a list of possible refrerences and declarations for each opening tag
-export const definitionsPerTag: Record<string, Definition[]> =
+export const OTHER_DEFINITION: Definitions =
 {
 	"rule": [{
 		type: ModelElementTypes.Rule,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
-		matchCondition: (x, nodeContext) => !isProfileRule(nodeContext)
+		matchCondition: (nodeContext) => !isProfileRule(nodeContext)
 	},
 	{
-		matchCondition: (x, nodeContext) => isProfileRule(nodeContext),
+		matchCondition: (nodeContext) => isProfileRule(nodeContext),
 		type: ModelElementTypes.Rule,
 		isReference: true,
 		detailLevel: ModelDetailLevel.References
@@ -25,14 +25,20 @@ export const definitionsPerTag: Record<string, Definition[]> =
 		type: ModelElementTypes.SearchColumn,
 		detailLevel: ModelDetailLevel.Declarations,
 		attributes: [{
-			attribute: "name",
-			type: ModelElementTypes.Attribute,
+			name: "name",
 			detailLevel: ModelDetailLevel.References,
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Attribute,
+			},
 		},
 		{
-			attribute: "rule",
-			type: ModelElementTypes.Rule,
+			name: "rule",
 			detailLevel: ModelDetailLevel.References,
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Rule,
+			},
 		}]
 	}],
 	"function": [{
@@ -46,15 +52,18 @@ export const definitionsPerTag: Record<string, Definition[]> =
 		detailLevel: ModelDetailLevel.Declarations,
 		attributes: [
 			{
-				attribute: "type",
-				type: ModelElementTypes.Type,
+				name: "type",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Type,
+				},
 				detailLevel: ModelDetailLevel.References
 			}
 		],
-		matchCondition: (x, nodeContext) => !isProfileType(nodeContext)
+		matchCondition: (nodeContext) => !isProfileType(nodeContext)
 	},
 	{
-		matchCondition: (x, nodeContext) => isProfileType(nodeContext),
+		matchCondition: (nodeContext) => isProfileType(nodeContext),
 		type: ModelElementTypes.Type,
 		isReference: true,
 		detailLevel: ModelDetailLevel.References
@@ -63,17 +72,20 @@ export const definitionsPerTag: Record<string, Definition[]> =
 		type: ModelElementTypes.View,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
-		matchCondition: (x, nodeContext) => isViewDeclaration(x, nodeContext) && !isProfileView(nodeContext),
+		matchCondition: (nodeContext) => isViewDeclaration(nodeContext) && !isProfileView(nodeContext),
 		attributes: [
 			{
-				attribute: "view",
-				type: ModelElementTypes.View,
+				name: "view",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.View,
+				},
 				detailLevel: ModelDetailLevel.References,
 			}
 		],
 	},
 	{
-		matchCondition: (x, nodeContext) => isProfileView(nodeContext),
+		matchCondition: (nodeContext) => isProfileView(nodeContext),
 		type: ModelElementTypes.View,
 		isReference: true,
 		detailLevel: ModelDetailLevel.References
@@ -82,28 +94,26 @@ export const definitionsPerTag: Record<string, Definition[]> =
 		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 		type: ModelElementTypes.Input,
 		detailLevel: ModelDetailLevel.Declarations,
-		matchCondition: (x, nodeContext) => isViewArgument(nodeContext)
+		matchCondition: (nodeContext) => isViewArgument(nodeContext)
 	},
 	{
 		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 		type: ModelElementTypes.Input,
 		isReference: true,
 		detailLevel: ModelDetailLevel.SubReferences,
-		matchCondition: (x, nodeContext) => !isViewArgument(nodeContext)
+		matchCondition: (nodeContext) => !isViewArgument(nodeContext)
 	}],
 	"input": [{
 		type: ModelElementTypes.Input,
 		attributes: [
 			{
-				attribute: "required",
-				type: ModelElementTypes.Value,
+				name: "required",
 				detailLevel: ModelDetailLevel.Declarations
 			}
 		],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"module": [{
-		name: ((x: any) => x.attributes["target-namespace"]),
 		type: ModelElementTypes.NameSpace,
 		detailLevel: ModelDetailLevel.Declarations,
 	}],
@@ -111,44 +121,45 @@ export const definitionsPerTag: Record<string, Definition[]> =
 		type: ModelElementTypes.Attribute,
 		attributes: [
 			{
-				attribute: "required",
-				type: ModelElementTypes.Value,
+				name: "required",
 				detailLevel: ModelDetailLevel.Declarations
 			},
 			{
-				attribute: "readonly",
-				type: ModelElementTypes.Value,
+				name: "readonly",
 				detailLevel: ModelDetailLevel.Declarations
 			}
 		],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"output": [{
-		matchCondition: (x, nodeContext) => isOutputDeclaration(nodeContext),
+		matchCondition: (nodeContext) => isOutputDeclaration(nodeContext),
 		type: ModelElementTypes.Output,
 		detailLevel: ModelDetailLevel.Declarations
 	},
 	{
 		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
-		matchCondition: (x, nodeContext) => !isOutputDeclaration(nodeContext),
+		matchCondition: (nodeContext) => !isOutputDeclaration(nodeContext),
 		type: ModelElementTypes.Output,
 		isReference: true,
 		detailLevel: ModelDetailLevel.SubReferences
 	}],
 	"variable": [{
-		matchCondition: (x, nodeContext) => isInfosetOutput(nodeContext),
+		matchCondition: (nodeContext) => isInfosetOutput(nodeContext),
 		type: ModelElementTypes.Output,
 		detailLevel: ModelDetailLevel.Declarations,
 		attributes: [
 			{
-				attribute: "attribute",
-				type: ModelElementTypes.Attribute,
+				name: "attribute",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute,
+				},
 				detailLevel: ModelDetailLevel.SubReferences
 			}
 		],
 	}],
 	"action": [{
-		matchCondition: (x: any, nodeContext: INodeContext) => isActionDefinition(nodeContext),
+		matchCondition: (nodeContext: INodeContext) => isActionDefinition(nodeContext),
 		type: ModelElementTypes.Action,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
@@ -157,50 +168,63 @@ export const definitionsPerTag: Record<string, Definition[]> =
 		type: ModelElementTypes.Action,
 		isReference: true,
 		detailLevel: ModelDetailLevel.References,
-		matchCondition: (x: any, nodeContext: INodeContext) => !isActionDefinition(nodeContext) && !isModelCheckRuleAction(nodeContext),
+		matchCondition: (nodeContext: INodeContext) => !isActionDefinition(nodeContext) && !isModelCheckRuleAction(nodeContext),
 		attributes: [{
-			type: ModelElementTypes.Rule,
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Rule,
+			},
 			detailLevel: ModelDetailLevel.References,
-			attribute: NAMES.ATTRIBUTE_RULE
+			name: NAMES.ATTRIBUTE_RULE
 		},
 		{
-			type: ModelElementTypes.Rule,
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Rule,
+			},
 			detailLevel: ModelDetailLevel.References,
-			attribute: NAMES.ATTRIBUTE_ONERRORRULE
+			name: NAMES.ATTRIBUTE_ONERRORRULE
 		},
 		{
-			type: ModelElementTypes.Infoset,
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Infoset,
+			},
 			detailLevel: ModelDetailLevel.References,
-			attribute: NAMES.ATTRIBUTE_INFOSET
+			name: NAMES.ATTRIBUTE_INFOSET
 		},
 		{
-			type: ModelElementTypes.Function,
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Function,
+			},
 			detailLevel: ModelDetailLevel.References,
-			attribute: NAMES.ATTRIBUTE_FUNCTION
+			name: NAMES.ATTRIBUTE_FUNCTION
 		},
 		{
-			type: ModelElementTypes.Type,
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Type,
+			},
 			detailLevel: ModelDetailLevel.References,
-			attribute: NAMES.ATTRIBUTE_TYPE
-		},
-		{
-			type: ModelElementTypes.Value,
-			detailLevel: ModelDetailLevel.References,
-			attribute: "FrontendBackend"
+			name: NAMES.ATTRIBUTE_TYPE
 		}],
 	}],
 	"search": [{
 		type: ModelElementTypes.TypeFilter,
 		detailLevel: ModelDetailLevel.Declarations,
-		matchCondition: (x, nodeContext) => isFilterDeclaration(nodeContext)
+		matchCondition: (nodeContext) => isFilterDeclaration(nodeContext)
 	},
 	{
 		type: ModelElementTypes.Search,
 		detailLevel: ModelDetailLevel.Declarations,
-		matchCondition: (x, nodeContext) => !isFilterDeclaration(nodeContext),
+		matchCondition: (nodeContext) => !isFilterDeclaration(nodeContext),
 		attributes: [{
-			attribute: NAMES.ATTRIBUTE_TYPE,
-			type: ModelElementTypes.Type,
+			name: NAMES.ATTRIBUTE_TYPE,
+			type:{
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Type,
+			},
 			detailLevel: ModelDetailLevel.Declarations
 		}]
 	}],
@@ -308,6 +332,15 @@ export const definitionsPerTag: Record<string, Definition[]> =
 	}]
 };
 
+const nonPetrelModelTags = new Set(
+	["ProfileType", "ProfileView", "ProfileRule", "DataConversion",
+		"Types", "CForms", "Views", "ControllerEvents", "Functions",
+		"Function", "Rules", "Rule", "CQueries", "Infosets", "Infoset"]
+);
+export function isNonPetrelModelTag(tagName: string) {
+	return nonPetrelModelTags.has(tagName);
+}
+
 
 export function isViewArgument(nodeContext: INodeContext): boolean {
 	return nodeContext.getFirstParent().name == "view";
@@ -346,8 +379,8 @@ export function isModelCheckRuleAction(nodeContext: INodeContext): boolean {
 	return nodeContext.hasParentTag("xml-rules");
 }
 
-export function isViewDeclaration(x: any, nodeContext: INodeContext): boolean {
-	return !(nodeContext.getFirstParent().name == "action") && (x.attributes.name != undefined);
+export function isViewDeclaration(nodeContext: INodeContext): boolean {
+	return !(nodeContext.getFirstParent().name == "action") && (nodeContext.getCurrentNode().attributes.name != undefined);
 }
 
 //Objects which can be referenced without requiring the context

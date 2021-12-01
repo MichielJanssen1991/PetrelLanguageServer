@@ -1,7 +1,9 @@
 import * as LSP from 'vscode-languageserver';
+import { XmlNode } from '../file-analyzer/parser/saxParserExtended';
 
 export enum ModelElementTypes {
 	Infoset = "Infoset",
+	Condition = "Condition",
 	Rule = "Rule",
 	NameSpace = "NameSpace",
 	Input = "Input",
@@ -19,11 +21,17 @@ export enum ModelElementTypes {
 	TypeFilter = "TypeFilter",
 	IncludeBlock = "IncludeBlock",
 	Decorator = "Decorator",
+	Argument = "Argument",
 	Profile = "Profile",
 	Unknown = "Unknown",
-	Value = "Value",
-	SetVar = "Set-Var",
+	SetVar = "SetVar",
+	ClearVar = "ClearVar",
+	If = "If",
+	ElseIf = "ElseIf",
+	Group = "Group",
 	All = "All",
+	Module = "Module",
+	Decorators = "Decorators",
 }
 
 export enum ValidationLevels {
@@ -46,9 +54,9 @@ export type ContextQualifiers = {
 }
 
 export interface INodeContext {
+	getCurrentNode: () => XmlNode
 	getFirstParent: () => any,
 	hasParentTag: (name: string) => boolean
-	findParent: (predicate: (n: any) => boolean) => any | null,
 }
 
 export enum IsSymbolOrReference {
@@ -91,7 +99,7 @@ export interface Attribute {
 	name: string,
 	range: LSP.Range,
 	fullRange: LSP.Range,
-	value:string|number|boolean
+	value: string | number | boolean
 }
 
 export type SymbolOrReference = SymbolDeclaration | Reference;
@@ -135,38 +143,30 @@ export function objectIdentifier(name: string, type: ModelElementTypes, range: L
 	return `${type}:${name}:${range.start.line}`;
 }
 
-export interface Definition {
+
+export type Definitions = Record<string, Definition[]>
+
+export type Definition = {
 	name?: (x: any) => string,
-	matchCondition?: (x: any, nodeContext: INodeContext) => boolean,
-	type: ModelElementTypes,
-	prefixNameSpace?: boolean,
-	contextQualifiers?: (x: any, nodeContext: INodeContext) => ContextQualifiers,
-	detailLevel: ModelDetailLevel
-	attributes?: AttributeDefinition[],
-	isReference?: boolean
-}
-
-export interface AttributeDefinition {
-	type: ModelElementTypes,
-	detailLevel: ModelDetailLevel,
-	attribute: string
-}
-
-export type NewDefinition = {
-	element: string,
 	description?: string,
 	checkObsolete?: boolean,
 	attributes?: ElementAttributes[],
 	childs?: ChildDefinition[],
 	parent?: any,
-	types?: string[]
+	matchCondition?: (nodeContext: INodeContext) => boolean,
+	type?: ModelElementTypes,
+	prefixNameSpace?: boolean,
+	isReference?: boolean,
+	detailLevel?: ModelDetailLevel,
+	contextQualifiers?: (nodeContext: INodeContext) => ContextQualifiers
+
 }
 
 export type ChildDefinition = {
 	element: string,
-	occurence?: "once"|"at-least-once",
+	occurence?: "once" | "at-least-once",
 	required?: boolean,
-	validations?:ChildValidation[]
+	validations?: ChildValidation[]
 }
 
 export type ElementAttributes = {
@@ -176,9 +176,9 @@ export type ElementAttributes = {
 	required?: boolean,
 	autoadd?: boolean,						// mark attribute to auto add when (parent) element is created
 	deprecated?: boolean,
-	types?: AttributeType[],
-	relatedto?: string,
-	conditions?: ValidationMatches[]
+	conditions?: ValidationMatches[],
+	type?: AttributeType,
+	detailLevel?: ModelDetailLevel
 }
 
 export type AttributeValidation = {
@@ -208,19 +208,18 @@ export type AttributeOption = {
 }
 
 export type ValidationMatches = {
-	operator?: "and"|"or",
+	operator?: "and" | "or",
 	attribute: string,
-	condition: "=="|"!="|"misses"|"not-in"|"contains"|"not-in-like",
-	value: string|JsonElementVariable
+	condition: "==" | "!=" | "misses" | "not-in" | "contains" | "not-in-like",
+	value: string | JsonElementVariable
 }
 
 export type AttributeType = {
 	type: AttributeTypes,
-	namespaced?: boolean,
-	relatedTo?: string,
+	relatedTo?: ModelElementTypes,
 	options?: AttributeOption[],
-	pathHints? : AttributeOption[]
-		
+	pathHints?: AttributeOption[]
+
 }
 
 /**
@@ -229,10 +228,10 @@ export type AttributeType = {
  * 
  * NOTE I'm not sure if the definition data (in cache) is an XML object or JSON object.
  */
- export class JsonElementVariable {
-	constructor(definitionReference:string, xpathExpr: string){
+export class JsonElementVariable {
+	constructor(definitionReference: string, xpathExpr: string) {
 		let definition = "";
-		switch(definitionReference){
+		switch (definitionReference) {
 			case "backend-actions":
 				// get backend.actions.xml definition(s)
 				definition = "<xml />";
@@ -248,7 +247,7 @@ export type AttributeType = {
 				// not yet implemnted
 				break;
 		}
-		xpathExpr = "//action"+xpathExpr;
+		xpathExpr = "//action" + xpathExpr;
 		//return definition.evaluate("/html/body//h2", definition, null, XPathResult.ANY_TYPE, null).toString();
 		return "";
 	}

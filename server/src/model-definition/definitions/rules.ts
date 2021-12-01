@@ -1,111 +1,114 @@
-import { AttributeTypes, JsonElementVariable, NewDefinition, ValidationLevels } from '../symbolsAndReferences';
+import { NAMES } from '../constants';
+import { AttributeTypes, JsonElementVariable, ModelElementTypes, Definition, Definitions, ValidationLevels, ModelDetailLevel } from '../symbolsAndReferences';
+import { isOutputDeclaration } from './other';
 import { dev_comment_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element } from './shared';
-export const RULE_DEFINITION: NewDefinition[] = [
-	{ 
-		"element": "rules",		
-		"description": "",
-		"attributes" : [
+export const RULE_DEFINITION: Definitions = {
+	"rules": [{
+		type: ModelElementTypes.Rule,
+		description: "",
+		attributes: [
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element"
+				name: "comment",
+				description: "Developer's comment on this element"
 			}
 		],
-		"childs": [
+		childs: [
 			{
-				"element": "module"
+				element: "module"
 			},
 			{
-				"element": "rule"
+				element: "rule"
 			},
 			{
-				"element": "include-blocks"
+				element: "include-blocks"
 			},
 			{
-				"element": "include-block"
+				element: "include-block"
 			},
 			{
-				"element": "include"
+				element: "include"
 			},
 			{
-				"element": "model-condition"
+				element: "model-condition"
 			},
 			{
-				"element": "merge-instruction"
+				element: "merge-instruction"
 			}
 		]
-	},
-	{ 
-		"element": "module",
-		"description": "Used for grouping model entities and model namespacing.",
-		"attributes" : [
+	}],
+	"module": [{
+		type: ModelElementTypes.Module,
+		description: "Used for grouping model entities and model namespacing.",
+		attributes: [
 			{
-				"name": "name",
-				"description": "The module name.",
-				"autoadd": true
+				name: "name",
+				description: "The module name.",
+				autoadd: true
 			},
 			{
-				"name": "target-namespace",
-				"description": "Target namespace of the contents of the module. A relative namespace may start with a +, e.g., \"+Preferences\" may result in, e.g., \"Platform.Preferences\". (The target namespace together with the module name makes the module unique.)",
-				"autoadd": true,
-				"validations": [
+				name: "target-namespace",
+				description: "Target namespace of the contents of the module. A relative namespace may start with a +, e.g., \"+Preferences\" may result in, e.g., \"Platform.Preferences\". (The target namespace together with the module name makes the module unique.)",
+				autoadd: true,
+				validations: [
 					{
-						"type": "regex",
-						"value": "(\\+?[A-Z][a-zA-Z]+(\\.[A-Z][a-zA-Z]+)*)?",		
+						type: "regex",
+						"value": "(\\+?[A-Z][a-zA-Z]+(\\.[A-Z][a-zA-Z]+)*)?",
 						"message": "Only alphabetic, CamelCased words separated by dots are allowed.",
 						"level": ValidationLevels.Fatal
 					}
 				]
 			},
 			{
-				"name": "description",
-				"description": "Description of contents and purpose."
+				name: "description",
+				description: "Description of contents and purpose."
 			},
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element"
+				name: "comment",
+				description: "Developer's comment on this element"
 			}
 		],
-		"childs": [
+		childs: [
 			{
-				"element": "module"
+				element: "module"
 			},
 			{
-				"element": "rule"
+				element: "rule"
 			},
 			{
-				"element": "include-blocks"
+				element: "include-blocks"
 			},
 			{
-				"element": "include-block"
+				element: "include-block"
 			},
 			{
-				"element": "include"
+				element: "include"
 			},
 			{
-				"element": "model-condition"
+				element: "model-condition"
 			},
 			{
-				"element": "merge-instruction"
+				element: "merge-instruction"
 			}
 		]
-	},
-	{ 
-		"element": "rule",		
-		"description": "You call a rule (from the client side) by using this name. A rule answers by returning several (name, value) - pairs.",
-		"attributes":[
+	}],
+	"rule": [{
+		type: ModelElementTypes.Rule,
+		detailLevel: ModelDetailLevel.Declarations,
+		prefixNameSpace: true,
+		description: "You call a rule (from the client side) by using this name. A rule answers by returning several (name, value) - pairs.",
+		attributes: [
 			{
-				"name": "name",
-				"description": "Unique identifier for the rule.",
-				"autoadd": true,
-				"validations": [
+				name: "name",
+				description: "Unique identifier for the rule.",
+				autoadd: true,
+				validations: [
 					{
-						"type": "regex",
-						"value": "[\\w_]+",		
+						type: "regex",
+						"value": "[\\w_]+",
 						"message": "The name should only contain letters or underscore",
 						"level": ValidationLevels.Fatal
-					}
-				],
-				"conditions": [
+					}],
+				conditions: [
 					{
 						"attribute": "import",
 						"condition": "==",
@@ -114,43 +117,31 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				]
 			},
 			{
-				"name": "cache-level",
-				"description": "cache-level could be set to increase performance. If the cache-level is User, it will cache the output value based on the rule name, the project/application/company/user and the inputs that were passed to the rule. Setting the cache-level is only valid if this combined key always returns the same output. See [Caching rule invocations].",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "None",
-								"description": ""
-							},
-							{
-								"name": "User",
-								"description": ""
-							},
-							{
-								"name": "Company",
-								"description": ""
-							},
-							{
-								"name": "Application",
-								"description": ""
-							}							
-						]
-					}
-				],
-				"conditions": [
-					{
-						"attribute": "import",
-						"condition": "==",
-						"value": ""
-					}
-				]
-			},
-			{
-				"name": "max-cache-duration-minutes",
-				"description": "The maximum duration that the invocations will be cached. Only valid in case the cache-level has been set. By default it will be 1 to 5 minutes, depending on how often the rule is invoked with that input.",
-				"conditions": [
+				name: "cache-level",
+				description: "cache-level could be set to increase performance. If the cache-level is User, it will cache the output value based on the rule name, the project/application/company/user and the inputs that were passed to the rule. Setting the cache-level is only valid if this combined key always returns the same output. See [Caching rule invocations].",
+				type:
+				{
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "None",
+							description: ""
+						},
+						{
+							name: "User",
+							description: ""
+						},
+						{
+							name: "Company",
+							description: ""
+						},
+						{
+							name: "Application",
+							description: ""
+						}
+					]
+				},
+				conditions: [
 					{
 						"attribute": "import",
 						"condition": "==",
@@ -159,24 +150,9 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				]
 			},
 			{
-				"name": "ignore-empty-action-outputs",
-				"description": "Whether to ignore empty action outputs when used for variable assignments, or allow them to overwrite filled variables. By default these empty action outputs are ignored, i.e. not allowed to overwrite a filled variable.",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "yes",
-								"description": ""
-							},
-							{
-								"name": "no",
-								"description": ""
-							}						
-						]
-					}
-				],
-				"conditions": [
+				name: "max-cache-duration-minutes",
+				description: "The maximum duration that the invocations will be cached. Only valid in case the cache-level has been set. By default it will be 1 to 5 minutes, depending on how often the rule is invoked with that input.",
+				conditions: [
 					{
 						"attribute": "import",
 						"condition": "==",
@@ -185,15 +161,37 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				]
 			},
 			{
-				"name": "import",
-				"description": "Refers to a different rule.",
-				"types": [
+				name: "ignore-empty-action-outputs",
+				description: "Whether to ignore empty action outputs when used for variable assignments, or allow them to overwrite filled variables. By default these empty action outputs are ignored, i.e. not allowed to overwrite a filled variable.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "yes",
+							description: ""
+						},
+						{
+							name: "no",
+							description: ""
+						}
+					]
+				},
+				conditions: [
 					{
-						"type": AttributeTypes.Reference,
-						"relatedTo": "backend-rules"
+						"attribute": "import",
+						"condition": "==",
+						"value": ""
 					}
-				],
-				"conditions": [
+				]
+			},
+			{
+				name: "import",
+				description: "Refers to a different rule.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Rule
+				},
+				conditions: [
 					{
 						"attribute": "name",
 						"condition": "==",
@@ -202,43 +200,39 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				]
 			},
 			{
-				"name": "obsolete",
-				"description": "Set to yes if this model entity is obsolete. This means another way of modeling is prefered and this old functionality may be removed in the next version.",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "yes",
-								"description": ""
-							},
-							{
-								"name": "no",
-								"description": ""
-							}						
-						]
-					}
-				]
+				name: "obsolete",
+				description: "Set to yes if this model entity is obsolete. This means another way of modeling is prefered and this old functionality may be removed in the next version.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "yes",
+							description: ""
+						},
+						{
+							name: "no",
+							description: ""
+						}
+					]
+				}
 			},
 			{
-				"name": "obsolete-message",
-				"description": "Indicate what to use as an alternative.",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "yes",
-								"description": ""
-							},
-							{
-								"name": "no",
-								"description": ""
-							}						
-						]
-					}
-				],
-				"conditions": [
+				name: "obsolete-message",
+				description: "Indicate what to use as an alternative.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "yes",
+							description: ""
+						},
+						{
+							name: "no",
+							description: ""
+						}
+					]
+				},
+				conditions: [
 					{
 						"attribute": "obsolete",
 						"condition": "==",
@@ -247,240 +241,226 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				]
 			},
 			{
-				"name": "override-rights",
-				"description": "May restrict which layers can override / extend this declaration.",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "All",
-								"description": "Full"
-							},
-							{
-								"name": "User",
-								"description": "Allowed until User layer"
-							},
-							{
-								"name": "Company",
-								"description": "Allowed until Company layer"
-							},
-							{
-								"name": "General",
-								"description": "Allowed until General layer"
-							},				
-							{
-								"name": "None",
-								"description": "No override allowed, not even on the same level"
-							}		
-						]
-					}
-				]
-				
+				name: "override-rights",
+				description: "May restrict which layers can override / extend this declaration.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "All",
+							description: "Full"
+						},
+						{
+							name: "User",
+							description: "Allowed until User layer"
+						},
+						{
+							name: "Company",
+							description: "Allowed until Company layer"
+						},
+						{
+							name: "General",
+							description: "Allowed until General layer"
+						},
+						{
+							name: "None",
+							description: "No override allowed, not even on the same level"
+						}
+					]
+				}
 			},
 			{
-				"name": "is-declaration",
-				"description": "May be used to have a metadata item which only specifies override rights and not specifies an instance.",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "yes"
-							},
-							{
-								"name": "no"
-							}	
-						]
-					}
-				]
-				
+				name: "is-declaration",
+				description: "May be used to have a metadata item which only specifies override rights and not specifies an instance.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "yes"
+						},
+						{
+							name: "no"
+						}
+					]
+				}
 			},
 			{
-				"name": "ignore-modelcheck",
-				"description": "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."				
+				name: "ignore-modelcheck",
+				description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
 			},
 			{
-				"name": "ignore-modelcheck-justification",
-				"description": "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				"conditions": [
+				name: "ignore-modelcheck-justification",
+				description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
+				conditions: [
 					{
 						"attribute": "ignore-modelcheck",
 						"condition": "!=",
 						"value": ""
 					}
-				]		
+				]
 			},
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
+				name: "comment",
+				description: "Developer's comment on this element."
 			}
 		],
-		"childs": [
+		childs: [
 			{
-				"element": "input"
+				element: "input"
 			},
 			{
-				"element": "output"
+				element: "output"
 			},
 			{
-				"element": "action"
+				element: "action"
 			},
 			{
-				"element": "forloop"
+				element: "forloop"
 			},
 			{
-				"element": "set-var"
+				element: "set-var"
 			},
 			{
-				"element": "if"
+				element: "if"
 			},
 			{
-				"element": "elseif"
+				element: "elseif"
 			},
 			{
-				"element": "transaction"
+				element: "transaction"
 			},
 			{
-				"element": "clear-var"
+				element: "clear-var"
 			},
 			{
-				"element": "rule"
+				element: "rule"
 			},
 			{
-				"element": "switch"
+				element: "switch"
 			}
 		]
-	},
-	{ 
-		"element": "action",		
-		"description": "An action.",
-		"checkObsolete": true,
-		"attributes":[
+	}],
+	"action": [{
+		type: ModelElementTypes.Action,
+		detailLevel: ModelDetailLevel.References,
+		isReference: true,
+		description: "An action.",
+		checkObsolete: true,
+		attributes: [
 			{
-				"name": "name",
-				"description": "The action to perform.",
-				"autoadd": true,
-				"required": true,
-				"types": [
-					{
-						"type": AttributeTypes.Reference,
-						"options": [
-							{
-								"name": "@backend-actions/action/@name"
-							}							
-						]
-					}
-				]
+				name: "name",
+				description: "The action to perform.",
+				autoadd: true,
+				required: true,
+				type: {
+					type: AttributeTypes.Reference,
+					options: [
+						{
+							name: "@backend-actions/action/@name"
+						}
+					]
+				}
 			},
 			{
-				"name": "input-all",
-				"description": "If yes, all available local variables (in the frontend, the non-data bound as well as the data bound variables) will be passed to the action. Default is no.",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "yes"
-							},
-							{
-								"name": "no"
-							}	
-						]
-					}
-				]
+				name: "input-all",
+				description: "If yes, all available local variables (in the frontend, the non-data bound as well as the data bound variables) will be passed to the action. Default is no.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "yes"
+						},
+						{
+							name: "no"
+						}
+					]
+				}
 			},
 			{
-				"name": "output-all",
-				"description": "If yes, all outputs returned by the action will be made available locally (in the frontend as non-data bound variables). Default is no.",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "yes"
-							},
-							{
-								"name": "no"
-							}	
-						]
-					}
-				]
+				name: "output-all",
+				description: "If yes, all outputs returned by the action will be made available locally (in the frontend as non-data bound variables). Default is no.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "yes"
+						},
+						{
+							name: "no"
+						}
+					]
+				}
 			},
 			{
-				"name": "dataless",
-				"description": "If the standard added data argument should be left out. It is now left out by default for performance (unless input-all is set). (Currently, only applicable for frontend calls to server actions.)",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "default"
-							},
-							{
-								"name": "yes"
-							},
-							{
-								"name": "no"
-							}	
-						]
-					}
-				]
+				name: "dataless",
+				description: "If the standard added data argument should be left out. It is now left out by default for performance (unless input-all is set). (Currently, only applicable for frontend calls to server actions.)",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "default"
+						},
+						{
+							name: "yes"
+						},
+						{
+							name: "no"
+						}
+					]
+				}
 			},
 			{
-				"name": "user-created",
-				"description": "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "yes"
-							},
-							{
-								"name": "no"
-							}	
-						]
-					}
-				],
-				"conditions": [
+				name: "user-created",
+				description: "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "yes"
+						},
+						{
+							name: "no"
+						}
+					]
+				},
+				conditions: [
 					{
 						"attribute": "name",
 						"condition": "==",
 						"value": "rule"
 					}
-				]		
+				]
 			},
 			{
-				"name": "ignore-modelcheck",
-				"description": "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
+				name: "ignore-modelcheck",
+				description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
 			},
 			{
-				"name": "ignore-modelcheck-justification",
-				"description": "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				"conditions": [
+				name: "ignore-modelcheck-justification",
+				description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
+				conditions: [
 					{
 						"attribute": "ignore-modelcheck",
 						"condition": "!=",
 						"value": ""
 					}
-				]		
+				]
 			},
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
-			}			
+				name: "comment",
+				description: "Developer's comment on this element."
+			}
 		],
-		"childs": [
+		childs: [
 			{
-				"element": "argument"
+				element: "argument"
 			},
 			{
-				"element": "output",
-				"validations":[
+				element: "output",
+				validations: [
 					{
 						"identifier": "RULE00001",
-						"name": "action-outputs-missing",
+						name: "action-outputs-missing",
 						"matches": [
 							{
 								"attribute": "(remote/local)-name",
@@ -491,12 +471,12 @@ export const RULE_DEFINITION: NewDefinition[] = [
 								"operator": "or",
 								"attribute": "local-name",
 								"condition": "misses",
-								"value": new JsonElementVariable("backend-rules", "/output[@name]")			
+								"value": new JsonElementVariable("backend-rules", "/output[@name]")
 							}
 						],
-						"message": "Missing defined output ${@backend-rules.output[name]} for rule ${@parent[rulename]}",			
+						"message": "Missing defined output ${@backend-rules.output[name]} for rule ${@parent[rulename]}",
 						"level": ValidationLevels.Info,
-						"conditions":[
+						conditions: [
 							{
 								"attribute": "@parent[name]",
 								"condition": "==",
@@ -506,22 +486,22 @@ export const RULE_DEFINITION: NewDefinition[] = [
 					},
 					{
 						"identifier": "RULE00002",
-						"name": "rule-outputs-notdefined",
+						name: "rule-outputs-notdefined",
 						"matches": [
 							{
 								"attribute": "remote-name",
 								"condition": "not-in",
-								"value": new JsonElementVariable("backend-rules", "/output[@name]")			
+								"value": new JsonElementVariable("backend-rules", "/output[@name]")
 							},
 							{
 								"attribute": "local-name",
 								"condition": "not-in",
-								"value": new JsonElementVariable("backend-rules", "/output[@name]")		
+								"value": new JsonElementVariable("backend-rules", "/output[@name]")
 							}
 						],
-						"message": "Output ${@name} is not defined in rule ${@rulename}",			
+						"message": "Output ${@name} is not defined in rule ${@rulename}",
 						"level": ValidationLevels.Error,
-						"conditions":[
+						conditions: [
 							{
 								"attribute": "@parent[name]",
 								"condition": "==",
@@ -531,7 +511,7 @@ export const RULE_DEFINITION: NewDefinition[] = [
 					},
 					{
 						"identifier": "RULE00003",
-						"name": "rule-outputs-not-used",
+						name: "rule-outputs-not-used",
 						"matches": [
 							{
 								"attribute": "(local/remote)-name",
@@ -556,17 +536,17 @@ export const RULE_DEFINITION: NewDefinition[] = [
 							{
 								"attribute": "(local/remote)-name",
 								"condition": "not-in",
-								"value": "@parent-rule-definition.output[variable]"	
+								"value": "@parent-rule-definition.output[variable]"
 							},
 							{
 								"attribute": "(local/remote)-name",
 								"condition": "not-in-like",
 								"value": "@parent-rule-definition.output[expression]"
-							}							
+							}
 						],
-						"message": "Output ${@name} is outputted, but not used in rule ${@parent-rule-definition[name]}",			
+						"message": "Output ${@name} is outputted, but not used in rule ${@parent-rule-definition[name]}",
 						"level": ValidationLevels.Warning,
-						"conditions":[
+						conditions: [
 							{
 								"attribute": "@parent[name]",
 								"condition": "==",
@@ -577,962 +557,944 @@ export const RULE_DEFINITION: NewDefinition[] = [
 				]
 			},
 			{
-				"element": "graph-params"
+				element: "graph-params"
 			},
 			{
-				"element": "include-blocks"
+				element: "include-blocks"
 			},
 			{
-				"element": "include-block"
+				element: "include-block"
 			},
 			{
-				"element": "include"
+				element: "include"
 			},
 			{
-				"element": "model-condition"
+				element: "model-condition"
 			},
 			{
-				"element": "merge-instruction"
+				element: "merge-instruction"
 			}
-			
+
 		]
-	},
-	{ 
-		"element": "input",		
-		"description": "Specifies an input argument.",
-		"attributes": [
+	}],
+	"input": [{
+		type: ModelElementTypes.Input,
+		description: "Specifies an input argument.",
+		attributes: [
 			{
-				"name": "name",
-				"description": "Unique name for the input.",
-				"required": true,
-				"autoadd": true
+				name: "name",
+				description: "Unique name for the input.",
+				required: true,
+				autoadd: true
 			},
 			{
-				"name": "required",
-				"description": "If required is set to yes, an exception will be thrown if the input argument is not present.",
-				"autoadd": true,
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "yes",
-								"default": true
-							},
-							{
-								"name": "no"
-							}
-						]
-					}
-				]			
+				name: "required",
+				description: "If required is set to yes, an exception will be thrown if the input argument is not present.",
+				autoadd: true,
+				detailLevel: ModelDetailLevel.Declarations,
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "yes",
+							"default": true
+						},
+						{
+							name: "no"
+						}
+					]
+				}
 			},
 			{
-				"name": "ignore-modelcheck",
-				"description": "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
+				name: "ignore-modelcheck",
+				description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
 			},
 			{
-				"name": "ignore-modelcheck-justification",
-				"description": "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				"conditions": [
-					{
-						"attribute": "ignore-modelcheck",
-						"condition": "!=",
-						"value": ""
-					}
-				]		
-			},
-			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
-			},
-		],		
-	},
-	{ 
-		"element": "output",		
-		"description": "Output of the rule. The rule will return (name, expression) as one of its value pairs. Any valid C# expression can be used; the syntax for parameters is {..}.",
-		"attributes": [
-			{
-				"name": "name",
-				"description": "Unique identifier for the output.",
-				"required": true,
-				"autoadd": true
-			},
-			{
-				"name": "attribute",
-				"description": "A local variable name, a constant, or a data element (not supported in drop-down).",
-				"required": true,
-				"autoadd": true,
-				"types": [
-					{
-						"type": AttributeTypes.Reference,
-						"options": [
-							{
-								"name": "$rule/input/@name"		// TODO
-							},
-							{
-								"name": "$rule//set-var/@name"	// TODO
-							},	
-							{
-								"name": "$rule//action/output/@local-name" // TODO
-							}	
-						]
-					}
-				]
-			},
-			{
-				"name": "expression",
-				"description": "Expression value."
-			},
-			{
-				"name": "value",
-				"description": "Fixed value."
-			},
-			{
-				"name": "format",
-				"description": "Indicates how numeric values will be formatted; for example '0.00'."
-			},
-			{
-				"name": "postcondition",
-				"description": "A condition to check the value with."				
-			},
-			{
-				"name": "ignore-modelcheck",
-				"description": "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
-			},
-			{
-				"name": "ignore-modelcheck-justification",
-				"description": "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				"conditions": [
+				name: "ignore-modelcheck-justification",
+				description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
+				conditions: [
 					{
 						"attribute": "ignore-modelcheck",
 						"condition": "!=",
 						"value": ""
 					}
-				]		
+				]
 			},
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
+				name: "comment",
+				description: "Developer's comment on this element."
 			},
-		],		
+		],
+	}],
+	"output": [{
+		type: ModelElementTypes.Output,
+		matchCondition: (nodeContext) => isOutputDeclaration(nodeContext),
+		detailLevel: ModelDetailLevel.Declarations,
+		description: "Output of the rule. The rule will return (name, expression) as one of its value pairs. Any valid C# expression can be used; the syntax for parameters is {..}.",
+		attributes: [
+			{
+				name: "name",
+				description: "Unique identifier for the output.",
+				required: true,
+				autoadd: true
+			},
+			{
+				name: "attribute",
+				description: "A local variable name, a constant, or a data element (not supported in drop-down).",
+				required: true,
+				autoadd: true,
+				type: {
+					type: AttributeTypes.Reference,
+					options: [
+						{
+							name: "$rule/input/@name"		// TODO
+						},
+						{
+							name: "$rule//set-var/@name"	// TODO
+						},
+						{
+							name: "$rule//action/output/@local-name" // TODO
+						}
+					]
+				}
+			},
+			{
+				name: "expression",
+				description: "Expression value."
+			},
+			{
+				name: "value",
+				description: "Fixed value."
+			},
+			{
+				name: "format",
+				description: "Indicates how numeric values will be formatted; for example '0.00'."
+			},
+			{
+				name: "postcondition",
+				description: "A condition to check the value with."
+			},
+			{
+				name: "ignore-modelcheck",
+				description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
+			},
+			{
+				name: "ignore-modelcheck-justification",
+				description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
+				conditions: [
+					{
+						"attribute": "ignore-modelcheck",
+						"condition": "!=",
+						"value": ""
+					}
+				]
+			},
+			{
+				name: "comment",
+				description: "Developer's comment on this element."
+			},
+		],
 	},
-	{ 
-		"element": "argument",		
-		"description": "An argument to pass to the action.",
-		"attributes": [
+	{
+		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
+		matchCondition: (nodeContext) => !isOutputDeclaration(nodeContext),
+		type: ModelElementTypes.Output,
+		isReference: true,
+		detailLevel: ModelDetailLevel.SubReferences
+	}],
+	"argument": [{
+		type: ModelElementTypes.Argument,
+		description: "An argument to pass to the action.",
+		attributes: [
 			{
-				"name":"local-name",
-				"autoadd": true
-			}, 
-			{
-				"name":"remote-name",
-				"autoadd": true
-			}, 
-			{
-				"name":"value",
-				"autoadd": true
+				name: "local-name",
+				autoadd: true
 			},
 			{
-				"name":"parseType",
-				"description":"The type to which the argument value should be parsed.",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "Petrel.ModelPath"
-							}
-						]
-					}
-				]
+				name: "remote-name",
+				autoadd: true
 			},
 			{
-				"name":"precondition",
-				"description":"A condition to check the value with.",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "is not empty"
-							}
-						]
-					}
-				]
+				name: "value",
+				autoadd: true
 			},
-			
+			{
+				name: "parseType",
+				description: "The type to which the argument value should be parsed.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "Petrel.ModelPath"
+						}
+					]
+				}
+			},
+			{
+				name: "precondition",
+				description: "A condition to check the value with.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "is not empty"
+						}
+					]
+				}
+			},
 		]
-	},
-	{ 
-		"element": "set-var",		
-		"description": "A variable assignment.",
-		"attributes": [
+	}],
+	"set-var": [{
+		type: ModelElementTypes.SetVar,
+		description: "A variable assignment.",
+		attributes: [
 			{
-				"name": "name",
-				"description": "Name under which the output is stored locally.",
-				"required": true,
-				"autoadd": true
+				name: "name",
+				description: "Name under which the output is stored locally.",
+				required: true,
+				autoadd: true
 			},
 			{
-				"name": "expression",
-				"description": "A value expression.",
-				"autoadd": true			
+				name: "expression",
+				description: "A value expression.",
+				autoadd: true
 			},
 			{
-				"name": "infoset",
-				"description": "An infoset which' contents to return.",
-				"types": [
-					{
-						"type": AttributeTypes.Reference,
-						"options": [
-							{
-								"name": "document(infosets)//infoset" // TODO
-							}
-						]
-					}
-				]
+				name: "infoset",
+				description: "An infoset which' contents to return.",
+				type: {
+					type: AttributeTypes.Reference,
+					options: [
+						{
+							name: "document(infosets)//infoset" // TODO
+						}
+					]
+				}
 			},
 			{
-				"name": "infoset-variable",
-				"description": "A variable from an infoset to be returned. If the rule engine wants to use a variable that is defined in the infosets.xml file, first all {..} parameters in the search query are resolved. Then Petrel is called with this query. The records are returned, one by one: from each record, the attribute with the defined name is taken, and on all of these values, an aggregation like operator is used",
-				"types": [
-					{
-						"type": AttributeTypes.Reference,
-						"options": [
-							{
-								"name": "$infoset/variable/@name" // TODO
-							}
-						]
-					}
-				]
+				name: "infoset-variable",
+				description: "A variable from an infoset to be returned. If the rule engine wants to use a variable that is defined in the infosets.xml file, first all {..} parameters in the search query are resolved. Then Petrel is called with this query. The records are returned, one by one: from each record, the attribute with the defined name is taken, and on all of these values, an aggregation like operator is used",
+				type: {
+					type: AttributeTypes.Reference,
+					options: [
+						{
+							name: "$infoset/variable/@name" // TODO
+						}
+					]
+				}
 			},
 			{
-				"name": "value",
-				"description": "A fixed value."
+				name: "value",
+				description: "A fixed value."
 			},
 			{
-				"name": "ignore-modelcheck",
-				"description": "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
+				name: "ignore-modelcheck",
+				description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
 			},
 			{
-				"name": "ignore-modelcheck-justification",
-				"description": "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				"conditions": [
+				name: "ignore-modelcheck-justification",
+				description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
+				conditions: [
 					{
 						"attribute": "ignore-modelcheck",
 						"condition": "!=",
 						"value": ""
 					}
-				]		
+				]
 			},
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
+				name: "comment",
+				description: "Developer's comment on this element."
 			}
 		]
-	},
-	{ 
-		"element": "clear-var",		
-		"description": "Clears the local variable.",
-		"attributes": [
+	}],
+	"clear-var": [{
+		type: ModelElementTypes.SetVar,
+		description: "Clears the local variable.",
+		attributes: [
 			{
-				"name": "name",
-				"description": "Name of the local variable to clear.",
-				"required": true,
-				"autoadd": true
+				name: "name",
+				description: "Name of the local variable to clear.",
+				required: true,
+				autoadd: true
 			},
 			{
-				"name": "ignore-modelcheck",
-				"description": "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
+				name: "ignore-modelcheck",
+				description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
 			},
 			{
-				"name": "ignore-modelcheck-justification",
-				"description": "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				"conditions": [
+				name: "ignore-modelcheck-justification",
+				description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
+				conditions: [
 					{
 						"attribute": "ignore-modelcheck",
 						"condition": "!=",
 						"value": ""
 					}
-				]		
+				]
 			},
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
+				name: "comment",
+				description: "Developer's comment on this element."
 			}
 		]
-	},
-	{ 
-		"element": "if",		
-		"description": "Starts a condition.",
-		"attributes": [
+	}],
+	"if": [{
+		type: ModelElementTypes.If,
+		description: "Starts a condition.",
+		attributes: [
 			{
-				"name": "description",
-				"description": "Developers' annotation.",
-				"autoadd": true
+				name: "description",
+				description: "Developers' annotation.",
+				autoadd: true
 			},
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
+				name: "comment",
+				description: "Developer's comment on this element."
 			}
 		],
-		"childs": [
+		childs: [
 			{
-				"element": "condition",
+				element: "condition",
 				"occurence": "at-least-once",
-				"required": true
+				required: true
 			},
 			{
-				"element": "then",
+				element: "then",
 				"occurence": "once",
-				"required": true
+				required: true
 			},
 			{
-				"element": "else",
+				element: "else",
 				"occurence": "once"
 			},
 		]
-	},
-	{ 
-		"element": "elseif",		
-		"description": "Indicates a new if statement in case the conditions of the current if statement are not fulfilled. Else-if elements have to be placed as siblings next to if elements or else-if elements, which themselves have no else element defined.",
-		"attributes": [
+	}],
+	"elseif": [{
+		type: ModelElementTypes.ElseIf,
+		description: "Indicates a new if statement in case the conditions of the current if statement are not fulfilled. Else-if elements have to be placed as siblings next to if elements or else-if elements, which themselves have no else element defined.",
+		attributes: [
 			{
-				"name": "description",
-				"description": "Developers' annotation.",
-				"autoadd": true
+				name: "description",
+				description: "Developers' annotation.",
+				autoadd: true
 			},
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
+				name: "comment",
+				description: "Developer's comment on this element."
 			}
 		],
-		"childs": [
+		childs: [
 			{
-				"element": "condition",
+				element: "condition",
 				"occurence": "at-least-once",
-				"required": true
+				required: true
 			},
 			{
-				"element": "then",
+				element: "then",
 				"occurence": "once",
-				"required": true
+				required: true
 			},
 			{
-				"element": "else",
+				element: "else",
 				"occurence": "once"
 			},
 		]
-	},
-	{ 
-		"element": "condition",		
-		"description": "Condition item. One or more lines compose a condition.",
-		"attributes": [
+	}],
+	"condition": [{
+		type: ModelElementTypes.Condition,
+		description: "Condition item. One or more lines compose a condition.",
+		attributes: [
 			{
-				"name": "prefix",
-				"description": "Used to group conditions.",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": ""
-							},
-							{
-								"name": "("
-							},
-							{
-								"name": "(("
-							},
-							{
-								"name": "((("
-							},
-							{
-								"name": "(((("
-							},							
-							{
-								"name": "NOT"
-							},
-							{
-								"name": "NOT("
-							},
-							{
-								"name": "NOT(("
-							},
-							{
-								"name": "NOT((("
-							},
-							{
-								"name": "NOT(((("
-							},
-							{
-								"name": "AND"
-							},
-							{
-								"name": "AND("
-							},
-							{
-								"name": "AND(("
-							},
-							{
-								"name": "AND((("
-							},
-							{
-								"name": "AND(((("
-							},							
-							{
-								"name": "AND NOT("
-							},
-							{
-								"name": "AND NOT(("
-							},
-							{
-								"name": "AND NOT((("
-							},
-							{
-								"name": "AND NOT(((("
-							},
-							{
-								"name": "OR"
-							},
-							{
-								"name": "OR("
-							},
-							{
-								"name": "OR(("
-							},
-							{
-								"name": "OR((("
-							},
-							{
-								"name": "OR(((("
-							},
-							{
-								"name": "OR NOT("
-							},
-							{
-								"name": "OR NOT(("
-							},
-							{
-								"name": "OR NOT((("
-							},
-							{
-								"name": "OR NOT(((("
-							},					
-						]
-					}
-				]
+				name: "prefix",
+				description: "Used to group conditions.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: ""
+						},
+						{
+							name: "("
+						},
+						{
+							name: "(("
+						},
+						{
+							name: "((("
+						},
+						{
+							name: "(((("
+						},
+						{
+							name: "NOT"
+						},
+						{
+							name: "NOT("
+						},
+						{
+							name: "NOT(("
+						},
+						{
+							name: "NOT((("
+						},
+						{
+							name: "NOT(((("
+						},
+						{
+							name: "AND"
+						},
+						{
+							name: "AND("
+						},
+						{
+							name: "AND(("
+						},
+						{
+							name: "AND((("
+						},
+						{
+							name: "AND(((("
+						},
+						{
+							name: "AND NOT("
+						},
+						{
+							name: "AND NOT(("
+						},
+						{
+							name: "AND NOT((("
+						},
+						{
+							name: "AND NOT(((("
+						},
+						{
+							name: "OR"
+						},
+						{
+							name: "OR("
+						},
+						{
+							name: "OR(("
+						},
+						{
+							name: "OR((("
+						},
+						{
+							name: "OR(((("
+						},
+						{
+							name: "OR NOT("
+						},
+						{
+							name: "OR NOT(("
+						},
+						{
+							name: "OR NOT((("
+						},
+						{
+							name: "OR NOT(((("
+						},
+					]
+				}
 			},
 			{
-				"name": "variable",
-				"description": "Left hand side of condition. Can be an expression as well (using {}).",
-				"required": true,
-				"autoadd": true,
-				"types": [
-					{
-						"type": AttributeTypes.Reference,
-						"options": [
-							{
-								"name": "@current-rule/input/@name",
-							},												
-							{
-								"name": "@current-rule/set-var/@name",
-							},											
-							{
-								"name": "@current-rule/action/output/@local-name",
-							}												
-						]
-					}
-				]
+				name: "variable",
+				description: "Left hand side of condition. Can be an expression as well (using {}).",
+				required: true,
+				autoadd: true,
+				type: {
+					type: AttributeTypes.Reference,
+					options: [
+						{
+							name: "@current-rule/input/@name",
+						},
+						{
+							name: "@current-rule/set-var/@name",
+						},
+						{
+							name: "@current-rule/action/output/@local-name",
+						}
+					]
+				}
 			},
 			{
-				"name": "operator",
-				"required": true,
-				"autoadd": true,
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "Is",
-								"default": true
-							},												
-							{
-								"name": "Like",
-							},												
-							{
-								"name": "Greater",
-							},												
-							{
-								"name": "Smaller",
-							},												
-							{
-								"name": "GreaterOrEqual",
-							},												
-							{
-								"name": "SmallerOrEqual",
-							},												
-							{
-								"name": "Not",
-							},												
-							{
-								"name": "StartsWith",
-							},												
-							{
-								"name": "WildCard",
-								"description": "Any wildcard search that is supported by the persistence, e.g., \"%[A-Z]_[0-9]\""
-							},												
-							{
-								"name": "in-range",
-								"description": "check whether variable is in the range mentioned in value or constant (includes lowerbound excludes upperbound)"
-							},												
-							{
-								"name": "below-range",
-								"description": "check whether variable is below the lower bound of the range mentioned in value or constant"
-							},											
-							{
-								"name": "above-range",
-								"description": "check whether variable is equal or larger than the higher bound of the range mentioned in value or constant"
-							},											
-							{
-								"name": "contains",
-								"description": "Checking multiple values is also supported (;-separated string as right hand side)."
-							},											
-							{
-								"name": "misses",
-								"description": "Checking multiple values is also supported (;-separated string as right hand side)."
-							},											
-																		
-						]
-					}
-				]
+				name: "operator",
+				required: true,
+				autoadd: true,
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "Is",
+							"default": true
+						},
+						{
+							name: "Like",
+						},
+						{
+							name: "Greater",
+						},
+						{
+							name: "Smaller",
+						},
+						{
+							name: "GreaterOrEqual",
+						},
+						{
+							name: "SmallerOrEqual",
+						},
+						{
+							name: "Not",
+						},
+						{
+							name: "StartsWith",
+						},
+						{
+							name: "WildCard",
+							description: "Any wildcard search that is supported by the persistence, e.g., \"%[A-Z]_[0-9]\""
+						},
+						{
+							name: "in-range",
+							description: "check whether variable is in the range mentioned in value or constant (includes lowerbound excludes upperbound)"
+						},
+						{
+							name: "below-range",
+							description: "check whether variable is below the lower bound of the range mentioned in value or constant"
+						},
+						{
+							name: "above-range",
+							description: "check whether variable is equal or larger than the higher bound of the range mentioned in value or constant"
+						},
+						{
+							name: "contains",
+							description: "Checking multiple values is also supported (;-separated string as right hand side)."
+						},
+						{
+							name: "misses",
+							description: "Checking multiple values is also supported (;-separated string as right hand side)."
+						},
+
+					]
+				}
 			},
 			{
-				"name": "value",
-				"description": "A right hand side value."			
+				name: "value",
+				description: "A right hand side value."
 			},
 			{
-				"name": "constant",
-				"description": "A constant as right hand side.",
-				"types": [
-					{
-						"type": AttributeTypes.Reference,
-						"options": [
-							{
-								"name": "document(constants)/constants//variable/@name" // TODO
-							}
-						]
-					}
-				]
+				name: "constant",
+				description: "A constant as right hand side.",
+				type: {
+					type: AttributeTypes.Reference,
+					options: [
+						{
+							name: "document(constants)/constants//variable/@name" // TODO
+						}
+					]
+				}
 			},
 			{
-				"name": "expression",
-				"description": "An expression as right hand side."
+				name: "expression",
+				description: "An expression as right hand side."
 			},
 			{
-				"name": "postfix",
-				"description": "Used to group conditions.",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": ")"
-							},
-							{
-								"name": "))"
-							},
-							{
-								"name": ")))"
-							},
-							{
-								"name": "))))"
-							},
-						]
-					}
-				]
+				name: "postfix",
+				description: "Used to group conditions.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: ")"
+						},
+						{
+							name: "))"
+						},
+						{
+							name: ")))"
+						},
+						{
+							name: "))))"
+						},
+					]
+				}
 			},
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
+				name: "comment",
+				description: "Developer's comment on this element."
 			}
 		]
-	},
-	{ 
-		"element": "then",		
-		"description": "Indicates what should happen if the conditions are fulfilled.",
-		"attributes": [
+	}],
+	"then": [{
+		type: ModelElementTypes.Unknown,
+		description: "Indicates what should happen if the conditions are fulfilled.",
+		attributes: [
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
+				name: "comment",
+				description: "Developer's comment on this element."
 			}
 		],
-		"childs": [
+		childs: [
 			{
-				"element": "return"
+				element: "return"
 			},
 			{
-				"element": "break"
+				element: "break"
 			},
 			{
-				"element": "set-var"
+				element: "set-var"
 			},
 			{
-				"element": "action"
+				element: "action"
 			},
 			{
-				"element": "if"
+				element: "if"
 			},
 			{
-				"element": "elseif"
+				element: "elseif"
 			},
 			{
-				"element": "transaction"
+				element: "transaction"
 			},
 			{
-				"element": "clear-var"
+				element: "clear-var"
 			},
 			{
-				"element": "rule"
+				element: "rule"
 			},
 			{
-				"element": "forloop"
+				element: "forloop"
 			},
 			{
-				"element": "switch"
+				element: "switch"
 			},
 		]
-	},
-	{ 
-		"element": "else",		
-		"description": "Else branch for the if 'statement'. What is below this element is executed if the condition of the if statement is not fulfilled.",
-		"attributes": [
+	}],
+	"else": [{
+		type: ModelElementTypes.Unknown,
+		description: "Else branch for the if 'statement'. What is below this element is executed if the condition of the if statement is not fulfilled.",
+		attributes: [
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
+				name: "comment",
+				description: "Developer's comment on this element."
 			}
 		],
-		"childs": [
+		childs: [
 			{
-				"element": "return"
+				element: "return"
 			},
 			{
-				"element": "break"
+				element: "break"
 			},
 			{
-				"element": "set-var"
+				element: "set-var"
 			},
 			{
-				"element": "action"
+				element: "action"
 			},
 			{
-				"element": "if"
+				element: "if"
 			},
 			{
-				"element": "elseif"
+				element: "elseif"
 			},
 			{
-				"element": "transaction"
+				element: "transaction"
 			},
 			{
-				"element": "clear-var"
+				element: "clear-var"
 			},
 			{
-				"element": "rule"
+				element: "rule"
 			},
 			{
-				"element": "forloop"
+				element: "forloop"
 			},
 			{
-				"element": "switch"
+				element: "switch"
 			},
 		]
-	},
-	{ 
-		"element": "transaction",		
-		"description": "Combines the set of actions executed inside it into one transaction, that will succeed or fail as a whole. NOTE: Currently only data actions will be rolled back when a transaction fails.",
-		"attributes": [
+	}],
+	"transaction": [{
+		type: ModelElementTypes.Unknown,
+		description: "Combines the set of actions executed inside it into one transaction, that will succeed or fail as a whole. NOTE: Currently only data actions will be rolled back when a transaction fails.",
+		attributes: [
 			{
-				"name": "scope-option",
-				"description": "The meaning of the transaction scope change.",
-				"types": [
-					{
-						"type": AttributeTypes.Enum,
-						"options": [
-							{
-								"name": "",
-								"description": "Ensures the content to take part in a transaction. If there is already a transaction running, the content is added to that transaction and will roll back with that transaction."
-							},
-							{
-								"name": "Suppress",
-								"description": "Suppresses the content to take part in any outside transaction. This is useful for logging or audit, when you don't want to roll back the logging but only the data."
-							},
-							{
-								"name": "RequiresNew",
-								"description": "Starts a new transaction, even if there is already an outer transaction running. Effectively the same as suppress + required."
-							}
-						]
-					}
-				]
+				name: "scope-option",
+				description: "The meaning of the transaction scope change.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "",
+							description: "Ensures the content to take part in a transaction. If there is already a transaction running, the content is added to that transaction and will roll back with that transaction."
+						},
+						{
+							name: "Suppress",
+							description: "Suppresses the content to take part in any outside transaction. This is useful for logging or audit, when you don't want to roll back the logging but only the data."
+						},
+						{
+							name: "RequiresNew",
+							description: "Starts a new transaction, even if there is already an outer transaction running. Effectively the same as suppress + required."
+						}
+					]
+				}
 			}
 		],
-		"childs": [
+		childs: [
 			{
-				"element": "set-var"
+				element: "set-var"
 			},
 			{
-				"element": "action"
+				element: "action"
 			},
 			{
-				"element": "if"
+				element: "if"
 			},
 			{
-				"element": "elseif"
+				element: "elseif"
 			},
 			{
-				"element": "transaction"
+				element: "transaction"
 			},
 			{
-				"element": "clear-var"
+				element: "clear-var"
 			},
 			{
-				"element": "rule"
+				element: "rule"
 			},
 			{
-				"element": "forloop"
+				element: "forloop"
 			},
 			{
-				"element": "switch"
+				element: "switch"
 			},
 		]
-	},
-	{ 
-		"element": "switch",		
-		"description": "",
-		"attributes": [
+	}],
+	"switch": [{
+		type: ModelElementTypes.Unknown,
+		description: "",
+		attributes: [
 			{
-				"name": "variable",
-				"description": "A local variable name, a constant, or a data element (not supported in drop-down).",
-				"autoadd": true,
-				"types":[
-					{
-						"type": AttributeTypes.Reference,
-						"options" : [
-							{
-								"name": "$rule/input/@name"	// TODO
-							},
-							{
-								"name": "$rule//set-var/@name"	// TODO
-							},
-							{
-								"name": "$rule//action/output/@local-name"	// TODO
-							},
-						]
-					}
-				]
+				name: "variable",
+				description: "A local variable name, a constant, or a data element (not supported in drop-down).",
+				autoadd: true,
+				type: {
+					type: AttributeTypes.Reference,
+					options: [
+						{
+							name: "$rule/input/@name"	// TODO
+						},
+						{
+							name: "$rule//set-var/@name"	// TODO
+						},
+						{
+							name: "$rule//action/output/@local-name"	// TODO
+						},
+					]
+				}
 			},
 			{
-				"name": "expression",
-				"description": "Expression value."
+				name: "expression",
+				description: "Expression value."
 			},
 			{
-				"name": "description",
-				"description": "Developers' annotation."
+				name: "description",
+				description: "Developers' annotation."
 			},
 			{
-				"name": "comment",
-				"description": "Developer's comment on this element."
+				name: "comment",
+				description: "Developer's comment on this element."
 			}
 		],
-		"childs": [
+		childs: [
 			{
-				"element": "case",
+				element: "case",
 				"occurence": "at-least-once"
 			},
 			{
-				"element": "default",
+				element: "default",
 				"occurence": "once"
 			}
 		]
-	},
-	{ 
-		"element": "case",		
-		"description": "",
-		"attributes": [
+	}],
+	"case": [{
+		type: ModelElementTypes.Unknown,
+		description: "",
+		attributes: [
 			{
-				"name": "value",
-				"required": true,
-				"autoadd": true
+				name: "value",
+				required: true,
+				autoadd: true
 			}
 		],
-		"childs": [
+		childs: [
 			{
-				"element": "set-var"
+				element: "set-var"
 			},
 			{
-				"element": "action"
+				element: "action"
 			},
 			{
-				"element": "if"
+				element: "if"
 			},
 			{
-				"element": "elseif"
+				element: "elseif"
 			},
 			{
-				"element": "transaction"
+				element: "transaction"
 			},
 			{
-				"element": "clear-var"
+				element: "clear-var"
 			},
 			{
-				"element": "rule"
+				element: "rule"
 			},
 			{
-				"element": "forloop"
+				element: "forloop"
 			},
 			{
-				"element": "switch"
-			},
-		]
-	},
-	{ 
-		"element": "default",		
-		"description": "",
-		"childs": [
-			{
-				"element": "set-var"
-			},
-			{
-				"element": "action"
-			},
-			{
-				"element": "if"
-			},
-			{
-				"element": "elseif"
-			},
-			{
-				"element": "transaction"
-			},
-			{
-				"element": "clear-var"
-			},
-			{
-				"element": "rule"
-			},
-			{
-				"element": "forloop"
-			},
-			{
-				"element": "switch"
+				element: "switch"
 			},
 		]
-	},
-	{ 
-		"element": "forloop",		
-		"description": "",
-		"attributes": [
+	}],
+	"default": [{
+		type: ModelElementTypes.Unknown,
+		description: "",
+		childs: [
 			{
-				"name": "loopvar",
-				"description": "The variable to increment during the loop. The variable is set to the start value at initialize.",
-				"autoadd": true,
-				"required": true
+				element: "set-var"
 			},
 			{
-				"name": "start",
-				"description": "The start value for the loop variable. If not specified, the start value will be one.",
-				"required": true,
-				"autoadd": true
+				element: "action"
 			},
 			{
-				"name": "end",
-				"description": "The last value of the loop variable before the loop ends. (The condition of ending the loop is: loop variable &lt;= end value.)",
-				"required": true,
-				"autoadd": true
+				element: "if"
+			},
+			{
+				element: "elseif"
+			},
+			{
+				element: "transaction"
+			},
+			{
+				element: "clear-var"
+			},
+			{
+				element: "rule"
+			},
+			{
+				element: "forloop"
+			},
+			{
+				element: "switch"
+			},
+		]
+	}],
+	"forloop": [{
+		type: ModelElementTypes.Unknown,
+		description: "",
+		attributes: [
+			{
+				name: "loopvar",
+				description: "The variable to increment during the loop. The variable is set to the start value at initialize.",
+				autoadd: true,
+				required: true
+			},
+			{
+				name: "start",
+				description: "The start value for the loop variable. If not specified, the start value will be one.",
+				required: true,
+				autoadd: true
+			},
+			{
+				name: "end",
+				description: "The last value of the loop variable before the loop ends. (The condition of ending the loop is: loop variable &lt;= end value.)",
+				required: true,
+				autoadd: true
 			},
 		],
-		"childs": [
+		childs: [
 			{
-				"element": "break"
+				element: "break"
 			},
 			{
-				"element": "return"
+				element: "return"
 			},
 			{
-				"element": "set-var"
+				element: "set-var"
 			},
 			{
-				"element": "action"
+				element: "action"
 			},
 			{
-				"element": "if"
+				element: "if"
 			},
 			{
-				"element": "elseif"
+				element: "elseif"
 			},
 			{
-				"element": "transaction"
+				element: "transaction"
 			},
 			{
-				"element": "clear-var"
+				element: "clear-var"
 			},
 			{
-				"element": "rule"
+				element: "rule"
 			},
 			{
-				"element": "forloop"
+				element: "forloop"
 			},
 			{
-				"element": "switch"
+				element: "switch"
 			},
 		]
-	},
-	{ 
-		"element": "break",		
-		"description": "Terminates the current loop.",
-	},
-	{ 
-		"element": "return",		
-		"description": "Terminates the current rule.",
-	},
-	include_blocks_element,
-	{
-		"element": "include-block",
-		"description": "A model fragment that is included by includes.",
-		"attributes": [
+	}],
+	"break": [{
+		type: ModelElementTypes.Unknown,
+		description: "Terminates the current loop.",
+	}],
+	"return": [{
+		type: ModelElementTypes.Unknown,
+		description: "Terminates the current rule.",
+	}],
+	"include_blocks": [include_blocks_element],
+	"include-block": [{
+		type: ModelElementTypes.IncludeBlock,
+		detailLevel: ModelDetailLevel.Declarations,
+		description: "A model fragment that is included by includes.",
+		attributes: [
 			{
-				"name": "name",
-				"description": "Unique identifier",
-				"required": true,
-				"autoadd": true,
+				name: "name",
+				description: "Unique identifier",
+				required: true,
+				autoadd: true,
 			},
 			{
-				"name": "meta-name",
-				"description": "For which element to apply rules.",
-				"required": true,
-				"autoadd": true,
-				"types":[
-					{
-						"type": AttributeTypes.Reference,
-						"options": [
-							{
-								"name": "@backend-definition/element/@element"
-							}
-						]
-					}
-				]
+				name: "meta-name",
+				description: "For which element to apply rules.",
+				required: true,
+				autoadd: true,
+				type: {
+					type: AttributeTypes.Reference,
+					options: [
+						{
+							name: "@backend-definition/element/@element"
+						}
+					]
+				}
 			},
 			{
-				"name": "meta-index",
-				"description": "For which element to apply rules."
+				name: "meta-index",
+				description: "For which element to apply rules."
 			},
 			dev_comment_attribute
 		],
-		"childs": [
+		childs: [
 			// depends on meta-name attribute
 		]
-	}, 
-	include_element,
-	merge_instruction_element,
-	model_condition_element
-];
+	}],
+	"include": [include_element],
+	"merge-instruction": [merge_instruction_element],
+	"model-condition": [model_condition_element]
+};

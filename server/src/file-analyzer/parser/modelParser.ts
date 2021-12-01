@@ -1,15 +1,14 @@
 import { Range } from 'vscode-languageserver-types';
-import { definitionsPerTag } from '../../model-definition/declarations';
+import { isNonPetrelModelTag } from '../../model-definition/definitions/other';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { newReference, Reference, Definition, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, NewDefinition, ModelElementTypes, ChildDefinition, Attribute } from '../../model-definition/symbolsAndReferences';
+import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, Definition, ModelElementTypes, ChildDefinition, Attribute, Definitions, ElementAttributes } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
-import { ISaxParserExtended, newSaxParserExtended, Node, ProcessingInstruction } from './saxParserExtended';
+import { ISaxParserExtended, newSaxParserExtended, XmlNode, ProcessingInstruction } from './saxParserExtended';
 
 export class ModelParser extends FileParser implements INodeContext {
 	private parser: ISaxParserExtended;
 	private parsedObjectStack: { depth: number, parsedObject: SymbolOrReference, definition?: Definition }[] = [];
-	private context: ModelFileContext = ModelFileContext.Unknown
-	private contextModelDefinition: NewDefinition[] = [];
+	private context: ModelFileContext = ModelFileContext.Unknown;
 	private modelDefinitionManager: ModelDefinitionManager;
 	private attributeRanges: Record<string, { range: Range, fullRange: Range }> = {};
 	private static MESSAGES: any = {
@@ -19,6 +18,7 @@ export class ModelParser extends FileParser implements INodeContext {
 
 	constructor(uri: string, detailLevel: ModelDetailLevel, modelDefinitionManager: ModelDefinitionManager) {
 		super(uri, detailLevel);
+		this.setModelFileContext(ModelFileContext.Unknown);
 		this.parser = newSaxParserExtended(
 			this.onError.bind(this),
 			this.onOpenTag.bind(this),
@@ -43,12 +43,12 @@ export class ModelParser extends FileParser implements INodeContext {
 		return this.parser.getFirstParent();
 	}
 
-	public findParent(predicate: (n: any) => boolean) {
-		return this.parser.findParent(predicate);
-	}
-
 	public hasParentTag(name: string) {
 		return this.parser.hasParentTag(name);
+	}
+
+	public getCurrentNode() {
+		return this.parser.getCurrentNode();
 	}
 
 	//Methods related to range or depth 
@@ -90,23 +90,24 @@ export class ModelParser extends FileParser implements INodeContext {
 		this.attributeRanges[attribute.name] = this.getAttributeRanges(attribute);
 	}
 
-	private onOpenTag(node: Node) {
+	private onOpenTag(node: XmlNode) {
 		const tagName = node.name;
-		const definitions = definitionsPerTag[tagName];
+		this.deduceContextFromTag(tagName);
+		const definition = this.getModelDefinitionForNode(node);
 		let object;
 
 		// Validate node using new definition structure (might completely replace the old parsing)
-		this.validateNode(node);
+		if(this.context!=ModelFileContext.Unknown)
+		{
+			this.validateNode(node, definition);
+		}
 
-		//Parse object for definition, first matching definition wins
-		if (definitions) {
-			definitions.some(def => {
-				object = this.parseNodeForDefinition(node, def);
-				if (object) {
-					this.pushToParsedObjectStack(object, def);
-					return true;
-				}
-			});
+		//Parse object for definition
+		if (definition) {
+			object = this.parseNodeForDefinition(node, definition);
+			if (object) {
+				this.pushToParsedObjectStack(object, definition);
+			}
 		}
 
 		//If no definition is found only add the parsed tag when detail level is All 
@@ -129,15 +130,23 @@ export class ModelParser extends FileParser implements INodeContext {
 				case "backend": this.setModelFileContext(ModelFileContext.Backend); break;
 				case "frontend": this.setModelFileContext(ModelFileContext.Frontend); break;
 				case "infosets": this.setModelFileContext(ModelFileContext.Infosets); break;
+				case "actions.backend": this.setModelFileContext(ModelFileContext.BackendActions); break;
 				default: break;
 			}
 		}
 		return;
 	}
 
+	private deduceContextFromTag(tagName: string) {
+		//To be compatible with premium files the modelFileContext is swithed to Other when premium specific tags are found
+		if (isNonPetrelModelTag(tagName)) {
+			this.setModelFileContext(ModelFileContext.Unknown);
+		}
+		return;
+	}
+
 	private setModelFileContext(context: ModelFileContext) {
 		this.context = context;
-		this.contextModelDefinition = this.modelDefinitionManager.getModelDefinition(context);
 		this.results.modelFileContext = this.context;
 	}
 
@@ -172,17 +181,17 @@ export class ModelParser extends FileParser implements INodeContext {
 		}
 	}
 
-	private parseNodeForDefinition(node: Node, definition: Definition): SymbolOrReference | undefined {
-		const conditionMatches = this.conditionMatches(definition, node, this);
-		if (conditionMatches && this.detailLevel >= definition.detailLevel) {
+	private parseNodeForDefinition(node: XmlNode, definition: Definition): SymbolOrReference | undefined {
+		if (this.detailLevel >= (definition.detailLevel != undefined ? definition.detailLevel : ModelDetailLevel.All)) {
 			const name = this.parseNodeForName(definition, node);
 			let object: SymbolOrReference;
 			const comment = node.attributes.comment;
+			const type = definition.type || ModelElementTypes.Unknown;
 			if (definition.isReference) {
-				object = newReference(name, node.name, definition.type, this.getTagRange(), this.uri, comment);
+				object = newReference(name, node.name, type, this.getTagRange(), this.uri, comment);
 			}
 			else {
-				object = newSymbolDeclaration(name, node.name, definition.type, this.getTagRange(), this.uri, comment);
+				object = newSymbolDeclaration(name, node.name, type, this.getTagRange(), this.uri, comment);
 			}
 
 			const { attributeReferences, otherAttributes } = this.parseAttributes(definition, node);
@@ -195,16 +204,16 @@ export class ModelParser extends FileParser implements INodeContext {
 		return undefined;
 	}
 
-	private validateNode(node: Node) {
+	private validateNode(node: XmlNode, definition?: Definition) {
 		const tagName = node.name;
-		if (this.contextModelDefinition.length > 0) {
-			const definition = this.contextModelDefinition.find(x => x.element == tagName);
-			if (!definition) {
-				this.addError(this.getTagRange(), ModelParser.MESSAGES.NO_DEFINITION_FOUND_FOR_TAG(tagName));
-			} else {
-				const tagNameParent = this.parser.getFirstParent()?.name;
-				const parentDefinition = this.contextModelDefinition?.find(x => x.element == tagNameParent);
+		if (!definition) {
+			this.addError(this.getTagRange(), ModelParser.MESSAGES.NO_DEFINITION_FOUND_FOR_TAG(tagName, node));
+		} else {
+			const parentNode = this.parser.getFirstParent();
+			if (parentNode) {
+				const parentDefinition = this.getModelDefinitionForNode(parentNode);
 				if (parentDefinition?.childs) {
+					const tagNameParent = parentNode.name;
 					const childSelected = parentDefinition.childs.find(x => x.element == tagName);
 					if (!childSelected) {
 						this.addError(this.getTagRange(), ModelParser.MESSAGES.INVALID_CHILD_TAG(tagName, tagNameParent, parentDefinition.childs));
@@ -214,28 +223,29 @@ export class ModelParser extends FileParser implements INodeContext {
 		}
 	}
 
-	private parseAttributes(definition: Definition, node: Node): { attributeReferences: Record<string, Reference>, otherAttributes: Record<string, Attribute> } {
+	private parseAttributes(definition: Definition, node: XmlNode): { attributeReferences: Record<string, Reference>, otherAttributes: Record<string, Attribute> } {
 		const attributeReferences: Record<string, Reference> = {};
 		let otherAttributes: Record<string, Attribute> = {};
 		if (definition.attributes) {
-			definition.attributes.forEach(attributeRefDefinition => {
-				const attributeName = attributeRefDefinition.attribute;
-				const attributeValue = node.attributes[attributeName];
-				if (attributeValue) {
-					const { range, fullRange } = this.attributeRanges[attributeName];
-					if (attributeRefDefinition.type != ModelElementTypes.Value) {
-						const attributeReference = newReference(attributeValue, node.name, attributeRefDefinition.type, range, this.uri);
-						attributeReference.fullRange = fullRange;
-						attributeReference.contextQualifiers = this.getContextQualifiers();
-						attributeReferences[attributeName] = attributeReference;
-					}
-					else {
-						const attribute = { name: attributeName, value: attributeValue, range, fullRange };
-						otherAttributes[attributeName] = attribute;
-					}
-				}
+			definition.attributes.forEach(attributeDefinition => {
+				const { attributeReference, otherAttribute } = this.parseAttributeForDefinition(attributeDefinition, node);
+				const attributeName = attributeDefinition.name;
+				if (attributeReference) { attributeReferences[attributeName] = attributeReference; }
+				if (otherAttribute) { otherAttributes[attributeName] = otherAttribute; }
 			});
 		}
+		// For now add fixed attributes for action calls (e.g. reference to rule / infoset or type) based on the old definition, should use action defintions 
+		const otherDefinition = this.modelDefinitionManager.getModelDefinition(ModelFileContext.Unknown);
+		const actionCallDefinition = otherDefinition["action"].find(x => x.isReference);
+		if (actionCallDefinition && actionCallDefinition.attributes) {
+			actionCallDefinition.attributes.forEach(attributeDefinition => {
+				const { attributeReference, otherAttribute } = this.parseAttributeForDefinition(attributeDefinition, node);
+				const attributeName = attributeDefinition.name;
+				if (attributeReference) { attributeReferences[attributeName] = attributeReference; }
+				if (otherAttribute) { otherAttributes[attributeName] = otherAttribute; }
+			});
+		}
+
 		// When detail level is All add all attributes not yet recognized as otherattributes
 		if (this.detailLevel == ModelDetailLevel.All) {
 			const attributesRecognized = new Set([...Object.keys(otherAttributes), ...Object.keys(attributeReferences)]);
@@ -251,9 +261,28 @@ export class ModelParser extends FileParser implements INodeContext {
 		return { attributeReferences, otherAttributes };
 	}
 
-	private parseContextQualifiers(definition: Definition, node: Node) {
+	private parseAttributeForDefinition(attributeDefinition: ElementAttributes, node: XmlNode) {
+		let attributeReference, otherAttribute;
+		const attributeName = attributeDefinition.name;
+		const attributeValue = node.attributes[attributeName];
+		if (attributeValue) {
+			const { range, fullRange } = this.attributeRanges[attributeName];
+			const relatedto = attributeDefinition.type?.relatedTo;
+			if (relatedto) {
+				attributeReference = newReference(attributeValue, node.name, relatedto, range, this.uri);
+				attributeReference.fullRange = fullRange;
+				attributeReference.contextQualifiers = this.getContextQualifiers();
+			}
+			else {
+				otherAttribute = { name: attributeName, value: attributeValue, range, fullRange };
+			}
+		}
+		return { attributeReference, otherAttribute };
+	}
+
+	private parseContextQualifiers(definition: Definition, node: XmlNode) {
 		const contextQualifierDefinition = definition.contextQualifiers;
-		const contextQualifiers = contextQualifierDefinition ? contextQualifierDefinition(node, this) : {};
+		const contextQualifiers = contextQualifierDefinition ? contextQualifierDefinition(this) : {};
 		if (node.attributes.obsolete == "yes") {
 			contextQualifiers.isObsolete = true;
 		}
@@ -267,8 +296,8 @@ export class ModelParser extends FileParser implements INodeContext {
 		return contextQualifiers;
 	}
 
-	private parseNodeForName(definition: Definition, node: Node) {
-		const nameFunction = definition.name || (function (node: Node) { return node.attributes.name; });
+	private parseNodeForName(definition: Definition, node: XmlNode) {
+		const nameFunction = definition.name || (function (node: XmlNode) { return node.attributes.name; });
 		let name = nameFunction(node);
 		if (definition.prefixNameSpace) {
 			const nameSpace = this.getNameSpace();
@@ -277,7 +306,7 @@ export class ModelParser extends FileParser implements INodeContext {
 		return name;
 	}
 
-	private conditionMatches(definition: Definition, node: Node, nodeContext: INodeContext) {
-		return (!definition.matchCondition) || (definition.matchCondition && definition.matchCondition(node, nodeContext));
+	private getModelDefinitionForNode(node: XmlNode) {
+		return this.modelDefinitionManager.getModelDefinitionForTag(this.context, this);
 	}
 }
