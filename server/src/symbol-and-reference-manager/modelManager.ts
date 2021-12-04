@@ -5,20 +5,19 @@ import { SymbolAndReferenceManager } from './symbolAndReferenceManager';
 /**
  * The ModelManager extends the SymbolAndReferenceManager with knowledge about the petrel model. It provides more advanced querying on the model.
  */
-export class ModelManager extends SymbolAndReferenceManager{
+export class ModelManager extends SymbolAndReferenceManager {
 	public getChildrenOfType(object: Reference | SymbolDeclaration, type: ModelElementTypes): (Reference | SymbolDeclaration)[] {
 		const directChilren = object.children.filter(x => (x.type == type));
 		const decoratorsOrIncludeBlocks = object.children.filter(
-			x => x.type == ModelElementTypes.Decorator
-				|| x.type == ModelElementTypes.IncludeBlock
-				|| x.objectType == IsSymbolOrReference.Reference
+			x => (x.type == ModelElementTypes.Decorator
+				|| x.type == ModelElementTypes.IncludeBlock)
+				&& x.objectType == IsSymbolOrReference.Reference
 		) as Reference[];
 
 		const decoratedChildren: (Reference | SymbolDeclaration)[] = decoratorsOrIncludeBlocks.flatMap(decoratorOrIncludeBlockRef => {
 			const decoratorsOrIncludeBlocks = this.getReferencedObject(decoratorOrIncludeBlockRef);
-			return decoratorsOrIncludeBlocks?this.getChildrenOfType(decoratorsOrIncludeBlocks, type):[];
-			}
-		);
+			return decoratorsOrIncludeBlocks ? this.getChildrenOfType(decoratorsOrIncludeBlocks, type) : [];
+		});
 		return [...directChilren, ...decoratedChildren];
 	}
 
