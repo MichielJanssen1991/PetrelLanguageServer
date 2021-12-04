@@ -1,11 +1,11 @@
 import { Range } from 'vscode-languageserver-types';
 import { isNonPetrelModelTag } from '../../model-definition/definitions/other';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, INodeContext, SymbolOrReference, Definition, ModelElementTypes, ChildDefinition, Attribute, Definitions, ElementAttributes } from '../../model-definition/symbolsAndReferences';
+import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, IXmlNodeContext, SymbolOrReference, Definition, ModelElementTypes, ChildDefinition, Attribute, Definitions, ElementAttributes } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
 import { ISaxParserExtended, newSaxParserExtended, XmlNode, ProcessingInstruction } from './saxParserExtended';
 
-export class ModelParser extends FileParser implements INodeContext {
+export class ModelParser extends FileParser implements IXmlNodeContext {
 	private parser: ISaxParserExtended;
 	private parsedObjectStack: { depth: number, parsedObject: SymbolOrReference, definition?: Definition }[] = [];
 	private context: ModelFileContext = ModelFileContext.Unknown;
@@ -47,8 +47,8 @@ export class ModelParser extends FileParser implements INodeContext {
 		return this.parser.hasParentTag(name);
 	}
 
-	public getCurrentNode() {
-		return this.parser.getCurrentNode();
+	public getCurrentXmlNode() {
+		return this.parser.getCurrentXmlNode();
 	}
 
 	//Methods related to range or depth 
@@ -93,7 +93,7 @@ export class ModelParser extends FileParser implements INodeContext {
 	private onOpenTag(node: XmlNode) {
 		const tagName = node.name;
 		this.deduceContextFromTag(tagName);
-		const definition = this.getModelDefinitionForNode(node);
+		const definition = this.getModelDefinitionForCurrentNode();
 		let object;
 
 		// Validate node using new definition structure (might completely replace the old parsing)
@@ -210,8 +210,8 @@ export class ModelParser extends FileParser implements INodeContext {
 			this.addError(this.getTagRange(), ModelParser.MESSAGES.NO_DEFINITION_FOUND_FOR_TAG(tagName, node));
 		} else {
 			const parentNode = this.parser.getFirstParent();
-			if (parentNode) {
-				const parentDefinition = this.getModelDefinitionForNode(parentNode);
+			const parentDefinition = this.getModelDefinitionForParentNode();
+			if (parentNode && parentDefinition) {
 				if (parentDefinition?.childs) {
 					const tagNameParent = parentNode.name;
 					const childSelected = parentDefinition.childs.find(x => x.element == tagName);
@@ -306,7 +306,15 @@ export class ModelParser extends FileParser implements INodeContext {
 		return name;
 	}
 
-	private getModelDefinitionForNode(node: XmlNode) {
-		return this.modelDefinitionManager.getModelDefinitionForTag(this.context, this);
+	private getModelDefinitionForCurrentNode() {
+		return this.modelDefinitionManager.getModelDefinitionForCurrentNode(this.context, this);
+	}
+
+	private getModelDefinitionForParentNode() {
+		const numberOfParsedParents = this.parsedObjectStack.length;
+		if(numberOfParsedParents>0)
+		{
+			return this.parsedObjectStack[numberOfParsedParents-1].definition;
+		}
 	}
 }

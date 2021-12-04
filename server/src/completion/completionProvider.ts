@@ -1,5 +1,5 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
-import { AttributeTypes, ChildDefinition, IsSymbolOrReference, ModelElementTypes, Definition, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { AttributeTypes, ChildDefinition, IsSymbolOrReference, ModelElementTypes, Definition, Reference, SymbolDeclaration, SymbolOrReference, IXmlNodeContext } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { CompletionContext } from './completionContext';
@@ -20,17 +20,17 @@ export class CompletionProvider {
 
 		let attributeValueCompletions: CompletionItem[] = [];
 		if (inAttribute && word != null && currentNode) {
-			attributeValueCompletions = this.getAttributeValueCompletions(currentNode, modelFileContext, context);
+			attributeValueCompletions = this.getAttributeValueCompletions(modelFileContext, context);
 		}
 
 		let attributeCompletions: CompletionItem[] = [];
 		if (!inAttribute && inTag && currentNode) {
-			attributeCompletions = this.getAttributeCompletions(currentNode, modelFileContext, context);
+			attributeCompletions = this.getAttributeCompletions(modelFileContext, context);
 		}
 
 		let childElementCompletions: CompletionItem[] = [];
 		if (!inTag && currentNode) {
-			childElementCompletions = this.getChildElementCompletions(currentNode, modelFileContext, context);
+			childElementCompletions = this.getChildElementCompletions(modelFileContext, context);
 		}
 
 		const allCompletions = [
@@ -47,11 +47,12 @@ export class CompletionProvider {
 		return allCompletions;
 	}
 
-	private getAttributeCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext, context: CompletionContext) {
+	private getAttributeCompletions(modelFileContext: ModelFileContext, context: CompletionContext) {
 		let attributeCompletions: CompletionItem[] = [];
+		const node = context.currentNode;
 		if (node) {
 			// get default attributes based on model definition
-			const modelDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, context);
+			const modelDefinition = this.modelDefinitionManager.getModelDefinitionForCurrentNode(modelFileContext, context);
 			const attributesForTag = modelDefinition?.attributes?.map(x => x.name) || [];
 
 			// get attributes based on the action called
@@ -74,8 +75,8 @@ export class CompletionProvider {
 		return [];
 	}
 
-	private getAttributeValueCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
-		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, context);
+	private getAttributeValueCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
+		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForCurrentNode(modelFileContext, context);
 		const attribute = context.attribute;
 		let symbols = [{ label: "no posibilities found" }];
 		if (attribute && elementDefinition && elementDefinition.attributes) {
@@ -96,8 +97,8 @@ export class CompletionProvider {
 		return symbols;
 	}
 
-	private getChildElementCompletions(node: SymbolOrReference, modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
-		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTag(modelFileContext, context);
+	private getChildElementCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
+		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForCurrentNode(modelFileContext, context);
 		let childCompletions: CompletionItem[] = [];
 		if (elementDefinition) {
 			const children = elementDefinition.childs;

@@ -1,4 +1,4 @@
-import { ModelDetailLevel, ModelElementTypes, INodeContext, Definitions, AttributeTypes } from '../symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes, IXmlNodeContext, Definitions, AttributeTypes } from '../symbolsAndReferences';
 import { NAMES } from '../constants';
 
 //Defines a list of possible refrerences and declarations for each opening tag
@@ -159,7 +159,7 @@ export const OTHER_DEFINITION: Definitions =
 		],
 	}],
 	"action": [{
-		matchCondition: (nodeContext: INodeContext) => isActionDefinition(nodeContext),
+		matchCondition: (nodeContext: IXmlNodeContext) => isActionDefinition(nodeContext),
 		type: ModelElementTypes.Action,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
@@ -168,7 +168,7 @@ export const OTHER_DEFINITION: Definitions =
 		type: ModelElementTypes.Action,
 		isReference: true,
 		detailLevel: ModelDetailLevel.References,
-		matchCondition: (nodeContext: INodeContext) => !isActionDefinition(nodeContext) && !isModelCheckRuleAction(nodeContext),
+		matchCondition: (nodeContext: IXmlNodeContext) => !isActionDefinition(nodeContext) && !isModelCheckRuleAction(nodeContext),
 		attributes: [{
 			type: {
 				type: AttributeTypes.Reference,
@@ -342,45 +342,45 @@ export function isNonPetrelModelTag(tagName: string) {
 }
 
 
-export function isViewArgument(nodeContext: INodeContext): boolean {
+export function isViewArgument(nodeContext: IXmlNodeContext): boolean {
 	return nodeContext.getFirstParent().name == "view";
 }
 
-export function isOutputDeclaration(nodeContext: INodeContext): boolean {
+export function isOutputDeclaration(nodeContext: IXmlNodeContext): boolean {
 	return (["rule", "infoset", "function"].includes(nodeContext.getFirstParent().name))
 		|| (nodeContext.getFirstParent().name == "action" && nodeContext.hasParentTag("actions"));
 }
 
-export function isInfosetOutput(nodeContext: INodeContext): boolean {
+export function isInfosetOutput(nodeContext: IXmlNodeContext): boolean {
 	return ("infoset" == nodeContext.getFirstParent().name);
 }
 
-export function isActionDefinition(nodeContext: INodeContext): boolean {
+export function isActionDefinition(nodeContext: IXmlNodeContext): boolean {
 	return nodeContext.hasParentTag("actions");
 }
 
-export function isFilterDeclaration(nodeContext: INodeContext): boolean {
+export function isFilterDeclaration(nodeContext: IXmlNodeContext): boolean {
 	return nodeContext.hasParentTag("filters") || nodeContext.hasParentTag("virtual-filter");
 }
 
-export function isProfileType(nodeContext: INodeContext): boolean {
+export function isProfileType(nodeContext: IXmlNodeContext): boolean {
 	return nodeContext.hasParentTag("profile") || nodeContext.hasParentTag("include-block") || nodeContext.hasParentTag("include-block2");
 }
 
-export function isProfileRule(nodeContext: INodeContext): boolean {
+export function isProfileRule(nodeContext: IXmlNodeContext): boolean {
 	return nodeContext.hasParentTag("profile") || nodeContext.hasParentTag("include-block") || nodeContext.hasParentTag("include-block2");
 }
 
-export function isProfileView(nodeContext: INodeContext): boolean {
+export function isProfileView(nodeContext: IXmlNodeContext): boolean {
 	return nodeContext.hasParentTag("profile") || nodeContext.hasParentTag("include-block") || nodeContext.hasParentTag("include-block2");
 }
 
-export function isModelCheckRuleAction(nodeContext: INodeContext): boolean {
+export function isModelCheckRuleAction(nodeContext: IXmlNodeContext): boolean {
 	return nodeContext.hasParentTag("xml-rules");
 }
 
-export function isViewDeclaration(nodeContext: INodeContext): boolean {
-	return !(nodeContext.getFirstParent().name == "action") && (nodeContext.getCurrentNode().attributes.name != undefined);
+export function isViewDeclaration(nodeContext: IXmlNodeContext): boolean {
+	return !(nodeContext.getFirstParent().name == "action") && (nodeContext.getCurrentXmlNode().attributes.name != undefined);
 }
 
 //Objects which can be referenced without requiring the context

@@ -1,5 +1,6 @@
+import { Range } from 'vscode-languageserver-types';
 import { XmlNode } from '../file-analyzer/parser/saxParserExtended';
-import { Attribute, INodeContext, IsSymbolOrReference, ModelElementTypes, Reference, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { Attribute, IXmlNodeContext, IsSymbolOrReference, ModelElementTypes, Reference, SymbolOrReference, newSymbolDeclaration } from '../model-definition/symbolsAndReferences';
 
 export type RuleContext = {
 	name: string,
@@ -14,8 +15,7 @@ export type ParamRuleContext = {
 	value?: string
 }
 
-//@Koos: Ik verwacht dat context.getPredecessorOfType(ModelElementTypes.Rule) het ruleDefinition object zou teruggeven
-export class CompletionContext implements INodeContext {
+export class CompletionContext implements IXmlNodeContext {
 	public inAttribute: boolean;
 	public inTag: boolean;
 	public nodes: SymbolOrReference[];
@@ -51,11 +51,7 @@ export class CompletionContext implements INodeContext {
 		return this.nodes.some(node => node.name == name);
 	}
 
-	public getCurrentNode() {
-		return this.getXmlNode();
-	}
-
-	public getXmlNode() {
+	public getCurrentXmlNode() {
 		return this.symbolOrReferenceToXmlNode(this.nodes[this.numberOfNodes - 1]);
 	}
 
@@ -106,7 +102,9 @@ export class CompletionContext implements INodeContext {
 		return names;
 	}
 
-	public createChildContext(child: SymbolOrReference) {
+	public createVirtualChildContext(tag: string) {
+		const range = Range.create({ character: 0, line: 0 }, { character: 0, line: 0 });
+		const child = newSymbolDeclaration("", tag, ModelElementTypes.Unknown, range, "");
 		const nodesForChild = { ...this.nodes, child }; //Create copy and add child
 		return new CompletionContext(false, false, nodesForChild, "", this.uri);
 	}

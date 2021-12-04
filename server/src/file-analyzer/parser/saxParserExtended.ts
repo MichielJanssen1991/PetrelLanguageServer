@@ -39,7 +39,7 @@ export interface ISaxParserExtended extends ISaxParser {
 	uri: string,
 	getFirstParent: () => XmlNode,
 	hasParentTag: (name: string) => boolean,
-	getCurrentNode: () => XmlNode,
+	getCurrentXmlNode: () => XmlNode,
 	getTagRange: () => LSP.Range;
 	getAttributeRange: (attribute: { name: string, value: string }) => LSP.Range;
 	getAttributeValueRange: (attribute: { name: string, value: string }) => LSP.Range;
@@ -81,7 +81,7 @@ export function newSaxParserExtended(
 		const parentNodeStack = this.tags;
 		return parentNodeStack[parentNodeStack.length - 2];
 	};
-	parser.getCurrentNode = function () {
+	parser.getCurrentXmlNode = function () {
 		return this.tag;
 	};
 

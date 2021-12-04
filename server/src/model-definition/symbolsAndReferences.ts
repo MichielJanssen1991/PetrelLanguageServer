@@ -53,8 +53,13 @@ export type ContextQualifiers = {
 	nameSpace?: string
 }
 
-export interface INodeContext {
-	getCurrentNode: () => XmlNode
+/**
+ * The IXmlNodeContext interface is the bare minimum required for the modelparser to find the correct 
+ * definitions using the matchCondition. The definition should stay small such that it remains easy 
+ * for other classes or context objects to provide the necessary information to find the correct definition. 
+ */
+export interface IXmlNodeContext {
+	getCurrentXmlNode: () => XmlNode
 	getFirstParent: () => any,
 	hasParentTag: (name: string) => boolean
 }
@@ -153,12 +158,12 @@ export type Definition = {
 	attributes?: ElementAttributes[],
 	childs?: ChildDefinition[],
 	parent?: any,
-	matchCondition?: (nodeContext: INodeContext) => boolean,
+	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
 	type?: ModelElementTypes,
 	prefixNameSpace?: boolean,
 	isReference?: boolean,
 	detailLevel?: ModelDetailLevel,
-	contextQualifiers?: (nodeContext: INodeContext) => ContextQualifiers
+	contextQualifiers?: (nodeContext: IXmlNodeContext) => ContextQualifiers
 
 }
 
