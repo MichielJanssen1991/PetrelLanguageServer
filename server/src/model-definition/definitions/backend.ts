@@ -1,7 +1,5 @@
-import { NAMES } from '../constants';
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { isOutputDeclaration } from './other';
-import { dev_comment_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element } from './shared';
+import { action_argument_element, action_output_element, dev_comment_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element } from './shared';
 export const BACKEND_DEFINITION: Definitions = {
 	"root": [{
 		attributes: [
@@ -260,12 +258,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			}
 		]
 	}],
-	"argument": [{
-		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
-		type: ModelElementTypes.Input,
-		isReference: true,
-		detailLevel: ModelDetailLevel.SubReferences,
-	}],
+	"argument": [action_argument_element],
 	"include-blocks": [include_blocks_element],
 	"include-block": [{
 		type: ModelElementTypes.IncludeBlock
@@ -288,16 +281,5 @@ export const BACKEND_DEFINITION: Definitions = {
 		],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
-	"output": [{
-		matchCondition: (nodeContext) => isOutputDeclaration(nodeContext),
-		type: ModelElementTypes.Output,
-		detailLevel: ModelDetailLevel.Declarations
-	},
-	{
-		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
-		matchCondition: (nodeContext) => !isOutputDeclaration(nodeContext),
-		type: ModelElementTypes.Output,
-		isReference: true,
-		detailLevel: ModelDetailLevel.SubReferences
-	}]
+	"output": [action_output_element]
 };

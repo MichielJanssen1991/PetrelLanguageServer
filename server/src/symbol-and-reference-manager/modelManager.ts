@@ -22,7 +22,7 @@ export class ModelManager extends SymbolAndReferenceManager {
 	}
 
 	public getActionArguments(actionReference: Reference) {
-		return this.getChildrenOfType(actionReference, ModelElementTypes.Input);
+		return this.getChildrenOfType(actionReference, ModelElementTypes.Argument);
 	}
 	public getActionOutputs(actionReference: Reference) {
 		return this.getChildrenOfType(actionReference, ModelElementTypes.Output);

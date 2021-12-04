@@ -104,7 +104,7 @@ export interface Attribute {
 	name: string,
 	range: LSP.Range,
 	fullRange: LSP.Range,
-	value: string | number | boolean
+	value: string
 }
 
 export type SymbolOrReference = SymbolDeclaration | Reference;

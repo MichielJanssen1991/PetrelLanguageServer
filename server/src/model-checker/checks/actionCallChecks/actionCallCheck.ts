@@ -25,7 +25,8 @@ export abstract class ActionCallCheck extends ModelCheck {
 		const attribute = reference.attributeReferences[attributeName];
 		let attributeMissing = !attribute || attribute?.name == "" || attribute?.name == undefined;
 		if (attributeMissing && argumentAllowed) {
-			const argumentNotPassed = reference.children.find(x => x.type == ModelElementTypes.Input && x.name == attributeName) == undefined;
+			const actionArguments = this.modelManager.getActionArguments(reference);
+			const argumentNotPassed = actionArguments.find(x => x.name == attributeName) == undefined;
 			attributeMissing = attributeMissing && argumentNotPassed;
 		}
 		return attributeMissing;

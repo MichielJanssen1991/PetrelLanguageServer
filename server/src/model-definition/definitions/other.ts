@@ -1,5 +1,6 @@
 import { ModelDetailLevel, ModelElementTypes, IXmlNodeContext, Definitions, AttributeTypes } from '../symbolsAndReferences';
 import { NAMES } from '../constants';
+import { action_argument_element, action_output_element, isOutputDeclaration, view_argument_element } from './shared';
 
 //Defines a list of possible refrerences and declarations for each opening tag
 export const OTHER_DEFINITION: Definitions =
@@ -90,19 +91,7 @@ export const OTHER_DEFINITION: Definitions =
 		isReference: true,
 		detailLevel: ModelDetailLevel.References
 	}],
-	"argument": [{
-		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
-		type: ModelElementTypes.Input,
-		detailLevel: ModelDetailLevel.Declarations,
-		matchCondition: (nodeContext) => isViewArgument(nodeContext)
-	},
-	{
-		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
-		type: ModelElementTypes.Input,
-		isReference: true,
-		detailLevel: ModelDetailLevel.SubReferences,
-		matchCondition: (nodeContext) => !isViewArgument(nodeContext)
-	}],
+	"argument": [view_argument_element,	action_argument_element],
 	"input": [{
 		type: ModelElementTypes.Input,
 		attributes: [
@@ -136,13 +125,7 @@ export const OTHER_DEFINITION: Definitions =
 		type: ModelElementTypes.Output,
 		detailLevel: ModelDetailLevel.Declarations
 	},
-	{
-		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
-		matchCondition: (nodeContext) => !isOutputDeclaration(nodeContext),
-		type: ModelElementTypes.Output,
-		isReference: true,
-		detailLevel: ModelDetailLevel.SubReferences
-	}],
+	action_output_element],
 	"variable": [{
 		matchCondition: (nodeContext) => isInfosetOutput(nodeContext),
 		type: ModelElementTypes.Output,
@@ -221,7 +204,7 @@ export const OTHER_DEFINITION: Definitions =
 		matchCondition: (nodeContext) => !isFilterDeclaration(nodeContext),
 		attributes: [{
 			name: NAMES.ATTRIBUTE_TYPE,
-			type:{
+			type: {
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Type,
 			},
@@ -342,14 +325,9 @@ export function isNonPetrelModelTag(tagName: string) {
 }
 
 
-export function isViewArgument(nodeContext: IXmlNodeContext): boolean {
-	return nodeContext.getFirstParent().name == "view";
-}
 
-export function isOutputDeclaration(nodeContext: IXmlNodeContext): boolean {
-	return (["rule", "infoset", "function"].includes(nodeContext.getFirstParent().name))
-		|| (nodeContext.getFirstParent().name == "action" && nodeContext.hasParentTag("actions"));
-}
+
+
 
 export function isInfosetOutput(nodeContext: IXmlNodeContext): boolean {
 	return ("infoset" == nodeContext.getFirstParent().name);

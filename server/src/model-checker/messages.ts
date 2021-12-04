@@ -13,7 +13,10 @@ export const CHECKS_MESSAGES = {
 	NO_REFERENCES_FOUND: (symbol: SymbolDeclaration) => `No references found to ${symbol.type} with name '${symbol.name}'.`,
 	SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND: (attribute: Reference, typeRef: Reference) => `Attribute '${attribute.name}' not found in ${typeRef.type} with name '${typeRef.name}'.`,
 	SEARCHCOLUMN_ATTRIBUTE_VARIABLE_NOT_FOUND: (attributeName: string) => `Attribute variable '${attributeName}' not found in infoset.`,
-	VALIDATION_ERROR: (error: string, node: Reference | SymbolDeclaration) => `Error occured when trying to validate ${node.type} with name '${node.name}':${error}.`
+	VALIDATION_ERROR: (error: string, node: Reference | SymbolDeclaration) => `Error occured when trying to validate ${node.type} with name '${node.name}':${error}.`,
+	RULE_LOCALNAME_NOT_FOUND: (localName: string) => `Local name '${localName}' is not defined.`,
+	RULE_LOCALNAME_NOT_REFERENCED: (localName: string) => `Local name '${localName}' is not referenced.`,
+	RULE_OUTPUT_ATTRIBUTE_NOT_FOUND: (name: string) => `Attribute '${name}' is not defined.`
 };
 
 function formatReferenceEnumeration(referenceAndSubReferences: Reference[]) {

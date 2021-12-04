@@ -1,7 +1,6 @@
 import { NAMES } from '../constants';
 import { AttributeTypes, JsonElementVariable, ModelElementTypes, Definition, Definitions, ValidationLevels, ModelDetailLevel } from '../symbolsAndReferences';
-import { isOutputDeclaration } from './other';
-import { dev_comment_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element } from './shared';
+import { dev_comment_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element } from './shared';
 export const RULE_DEFINITION: Definitions = {
 	"rules": [{
 		type: ModelElementTypes.Rule,

@@ -1,7 +1,5 @@
-import { NAMES } from '../constants';
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { isViewArgument } from './other';
-import { dev_comment_attribute, include_blocks_element, include_element } from './shared';
+import { dev_comment_attribute, include_blocks_element, include_element, view_argument_element } from './shared';
 
 export const FRONTEND_DEFINITION: Definitions = {
 	"root": [{}],
@@ -16,12 +14,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"toolbar": [{}],
 	"views": [{}],
 	"view": [{}],
-	"argument": [{
-		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
-		type: ModelElementTypes.Input,
-		detailLevel: ModelDetailLevel.Declarations,
-		matchCondition: (nodeContext) => isViewArgument(nodeContext)
-	}],
+	"argument": [view_argument_element, view_argument_element],
 	"events": [{}],
 	"server-events": [{}],
 	"event": [{}],
@@ -168,19 +161,19 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "required",
 				autoadd: true,
-				type: 
-					{
-						type: AttributeTypes.Enum,
-						options: [
-							{
-								name: "yes",
-								default: true
-							},
-							{
-								name: "no"
-							}
-						]
-					}
+				type:
+				{
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "yes",
+							default: true
+						},
+						{
+							name: "no"
+						}
+					]
+				}
 			},
 		]
 	}],
@@ -190,15 +183,15 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "meta-name",
 				description: "For which element to apply rules.",
-				type: 
-					{
-						type: AttributeTypes.Reference,
-						options: [
-							{
-								name: "@backend-definition/element/@element"
-							}
-						]
-					}
+				type:
+				{
+					type: AttributeTypes.Reference,
+					options: [
+						{
+							name: "@backend-definition/element/@element"
+						}
+					]
+				}
 			}
 		],
 		childs: [
@@ -211,15 +204,15 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "meta-name",
 				description: "For which element to apply rules.",
-				type: 
-					{
-						type: AttributeTypes.Reference,
-						options: [
-							{
-								name: "@backend-definition/element/@element"
-							}
-						]
-					}
+				type:
+				{
+					type: AttributeTypes.Reference,
+					options: [
+						{
+							name: "@backend-definition/element/@element"
+						}
+					]
+				}
 			}
 		],
 		childs: [
