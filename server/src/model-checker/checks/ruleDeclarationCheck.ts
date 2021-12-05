@@ -1,5 +1,5 @@
 import { NAMES } from '../../model-definition/constants';
-import { ModelElementTypes, IsSymbolOrReference, SymbolDeclaration, SymbolOrReference, Reference, Attribute } from '../../model-definition/symbolsAndReferences';
+import { ModelElementTypes, IsSymbolOrReference, SymbolDeclaration, Attribute, TreeNode } from '../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
@@ -16,7 +16,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 		super(modelManager);
 	}
 
-	protected checkInternal(node: SymbolOrReference, options: ModelCheckerOptions) {
+	protected checkInternal(node: TreeNode, options: ModelCheckerOptions) {
 		this.ruleLocalNames=[];
 		this.ruleLocalNameReferences=[];
 		this.verifyRuleDeclaration(node as SymbolDeclaration, options);
@@ -27,7 +27,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 		const ruleOutputs = this.modelManager.getChildrenOfType(rule, ModelElementTypes.Output);
 
 		//Initialize local names with rule inputs
-		this.ruleLocalNames = ruleInputs.map(input => { return { name: "name", value: input.name, range: input.range, fullRange: input.fullRange }; });
+		this.ruleLocalNames = ruleInputs.map(input => { return { name: "name", value: this.modelManager.getActionArgumentLocalName(input), range: input.range, fullRange: input.fullRange }; });
 
 		//Walk over child nodes which are not inputs or outputs
 		rule.children.filter(child => child.type != ModelElementTypes.Input && child.type != ModelElementTypes.Output).forEach(child => {
@@ -56,7 +56,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 		});
 	}
 
-	private walkNodesAndCheck(node: SymbolOrReference, options: ModelCheckerOptions) {
+	private walkNodesAndCheck(node: TreeNode, options: ModelCheckerOptions) {
 		switch (node.type) {
 			case ModelElementTypes.Argument:
 				{

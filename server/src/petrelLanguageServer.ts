@@ -143,15 +143,14 @@ export default class PetrelLanguageServer {
 
 	public onDefinition(params: TextDocumentPositionParams) {
 		const context = this.getContext(params);
-		const { nodes, word } = context;
+		const { nodes, word, attribute } = context;
 		this.logRequest({ request: 'onDefinition', params, context });
 		let symbols: SymbolDeclaration[] = [];
-		if (nodes.length > 0) {
+		if (nodes.length > 0 && attribute?.isReference) {
+			const reference = attribute as Reference;
 			const lastNode = context.nodes[nodes.length - 1];
-			const possibleReferencesSelected = [lastNode, ...Object.values(lastNode.attributeReferences)].filter(x => x.objectType == IsSymbolOrReference.Reference && (x.name == word || x.name.endsWith(`.${word}`))) as Reference[];
-			symbols = possibleReferencesSelected
-				.map(ref => this.modelManager.getReferencedObject(ref))
-				.filter(x => (x != undefined)) as SymbolDeclaration[];
+			const symbol = this.modelManager.getReferencedObject(reference);
+			symbols = symbol ? [symbol] : [];
 		} else {
 			symbols = this.modelManager.findSymbolsMatchingWord({ exactMatch: true, word });
 		}
@@ -165,7 +164,7 @@ export default class PetrelLanguageServer {
 		let references: Reference[] = [];
 		if (nodes.length > 0) {
 			const lastNode = context.nodes[nodes.length - 1];
-			const possibleDeclarationsSelected = [lastNode].filter(x => x.objectType == IsSymbolOrReference.Symbol && (x.name == word || x.name.endsWith(`.${word}`))) as SymbolDeclaration[];
+			const possibleDeclarationsSelected = [lastNode].filter(x => x.isSymbolDeclaration && ((x as SymbolDeclaration).name == word || (x as SymbolDeclaration).name.endsWith(`.${word}`))) as SymbolDeclaration[];
 			references = possibleDeclarationsSelected.flatMap(ref => this.modelManager.getReferencesForSymbol(ref));
 		} else {
 			references = this.modelManager.findReferencesMatchingWord({ exactMatch: true, word });
@@ -185,9 +184,8 @@ export default class PetrelLanguageServer {
 	}) {
 		const nodesSimplified = context?.nodes.map(node => {
 			return {
-				name: node.name,
 				type: node.type,
-				objectType: node.objectType,
+				objectType: node.isSymbolDeclaration,
 				tag: node.tag,
 				otherAttributes: node.otherAttributes,
 				attributeReferences: node.attributeReferences

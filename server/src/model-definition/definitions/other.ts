@@ -8,17 +8,18 @@ export const OTHER_DEFINITION: Definitions =
 	"rule": [{
 		type: ModelElementTypes.Rule,
 		prefixNameSpace: true,
+		isSymbolDeclaration: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		matchCondition: (nodeContext) => !isProfileRule(nodeContext)
 	},
 	{
 		matchCondition: (nodeContext) => isProfileRule(nodeContext),
 		type: ModelElementTypes.Rule,
-		isReference: true,
 		detailLevel: ModelDetailLevel.References
 	}],
 	"infoset": [{
 		type: ModelElementTypes.Infoset,
+		isSymbolDeclaration: true,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
 	}],
@@ -45,11 +46,13 @@ export const OTHER_DEFINITION: Definitions =
 	"function": [{
 		type: ModelElementTypes.Function,
 		prefixNameSpace: true,
+		isSymbolDeclaration: true,
 		detailLevel: ModelDetailLevel.Declarations,
 	}],
 	"type": [{
 		type: ModelElementTypes.Type,
 		prefixNameSpace: true,
+		isSymbolDeclaration: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		attributes: [
 			{
@@ -66,7 +69,6 @@ export const OTHER_DEFINITION: Definitions =
 	{
 		matchCondition: (nodeContext) => isProfileType(nodeContext),
 		type: ModelElementTypes.Type,
-		isReference: true,
 		detailLevel: ModelDetailLevel.References
 	}],
 	"view": [{
@@ -88,12 +90,12 @@ export const OTHER_DEFINITION: Definitions =
 	{
 		matchCondition: (nodeContext) => isProfileView(nodeContext),
 		type: ModelElementTypes.View,
-		isReference: true,
 		detailLevel: ModelDetailLevel.References
 	}],
-	"argument": [view_argument_element,	action_argument_element],
+	"argument": [view_argument_element, action_argument_element],
 	"input": [{
 		type: ModelElementTypes.Input,
+		isSymbolDeclaration:true,
 		attributes: [
 			{
 				name: "required",
@@ -118,14 +120,15 @@ export const OTHER_DEFINITION: Definitions =
 				detailLevel: ModelDetailLevel.Declarations
 			}
 		],
-		detailLevel: ModelDetailLevel.Declarations
+		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration:true
 	}],
 	"output": [{
 		matchCondition: (nodeContext) => isOutputDeclaration(nodeContext),
 		type: ModelElementTypes.Output,
 		detailLevel: ModelDetailLevel.Declarations
 	},
-	action_output_element],
+		action_output_element],
 	"variable": [{
 		matchCondition: (nodeContext) => isInfosetOutput(nodeContext),
 		type: ModelElementTypes.Output,
@@ -146,13 +149,20 @@ export const OTHER_DEFINITION: Definitions =
 		type: ModelElementTypes.Action,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true
 	},
 	{
-		type: ModelElementTypes.Action,
-		isReference: true,
+		type: ModelElementTypes.ActionCall,
 		detailLevel: ModelDetailLevel.References,
 		matchCondition: (nodeContext: IXmlNodeContext) => !isActionDefinition(nodeContext) && !isModelCheckRuleAction(nodeContext),
 		attributes: [{
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Action,
+			},
+			detailLevel: ModelDetailLevel.References,
+			name: NAMES.ATTRIBUTE_NAME
+		}, {
 			type: {
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Rule,
@@ -218,56 +228,79 @@ export const OTHER_DEFINITION: Definitions =
 	"include-block": [{
 		type: ModelElementTypes.IncludeBlock,
 		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true
 	}],
 	"include-block1": [{
 		type: ModelElementTypes.IncludeBlock,
 		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true
 	}],
 	"decorator": [{
 		type: ModelElementTypes.Decorator,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true
 	}],
 	"decoration": [{
 		type: ModelElementTypes.Decorator,
-		isReference: true,
 		detailLevel: ModelDetailLevel.References
 	}],
 	"include": [{
 		name: (x) => x.attributes.block,
 		type: ModelElementTypes.IncludeBlock,
-		isReference: true,
 		detailLevel: ModelDetailLevel.References,
 	}],
 	"profile": [{
 		type: ModelElementTypes.Profile,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true
 	}],
 	// ---------- Premium tags ----------
 	"ProfileType": [{
-		name: (x) => x.attributes.TypeName,
-		type: ModelElementTypes.Type,
-		isReference: true,
-		detailLevel: ModelDetailLevel.References
+		detailLevel: ModelDetailLevel.References,
+		attributes: [{
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Type,
+			},
+			detailLevel: ModelDetailLevel.References,
+			name: "TypeName"
+		}],
 	}],
 	"ProfileView": [{
-		name: (x) => x.attributes.ViewName,
-		type: ModelElementTypes.View,
-		isReference: true,
-		detailLevel: ModelDetailLevel.References
+		detailLevel: ModelDetailLevel.References,
+		attributes: [{
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.View,
+			},
+			detailLevel: ModelDetailLevel.References,
+			name: "ViewName"
+		}]
 	}],
 	"ProfileRule": [{
-		name: (x) => x.attributes.RuleName,
-		type: ModelElementTypes.Rule,
-		isReference: true,
-		detailLevel: ModelDetailLevel.References
+		detailLevel: ModelDetailLevel.References,
+		attributes: [{
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Rule,
+			},
+			detailLevel: ModelDetailLevel.References,
+			name: "RuleName"
+		}]
 	}],
 	"DataConversion": [{
-		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_DATACONVERSION_RULENAME])),
 		type: ModelElementTypes.Rule,
-		isReference: true,
-		detailLevel: ModelDetailLevel.References
+		detailLevel: ModelDetailLevel.References,
+		attributes: [{
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Rule,
+			},
+			detailLevel: ModelDetailLevel.References,
+			name: "RuleName"
+		}]
 	}],
 	"Types": [{
 		type: ModelElementTypes.Unknown,

@@ -1,4 +1,4 @@
-import { ModelElementTypes, IsSymbolOrReference, Reference, SymbolOrReference } from '../../../model-definition/symbolsAndReferences';
+import { ModelElementTypes, IsSymbolOrReference, TreeNode, SymbolDeclaration, Reference } from '../../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
 import { flattenArray } from '../../../util/array';
 import { ModelCheck } from '../../modelCheck';
@@ -6,60 +6,60 @@ import { CHECKS_MESSAGES } from '../../messages';
 import { ModelCheckerOptions } from '../../modelChecker';
 
 export abstract class ActionCallCheck extends ModelCheck {
-	protected modelElementType = ModelElementTypes.Action
-	protected objectType = IsSymbolOrReference.Reference
+	protected modelElementType = ModelElementTypes.ActionCall
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);
 	}
 
-	protected abstract getAdditionalInputsForSpecificAction(actionReference: Reference):string[]
-	protected abstract getAdditionalOutputsForSpecificAction(actionReference: Reference):string[]
-	protected abstract verifyActionCall(actionReference: Reference, options: ModelCheckerOptions):void
+	protected abstract getAdditionalInputsForSpecificAction(actionCall: TreeNode):string[]
+	protected abstract getAdditionalOutputsForSpecificAction(actionCall: TreeNode):string[]
+	protected abstract verifyActionCall(actionCall: TreeNode, options: ModelCheckerOptions):void
 
-	protected checkInternal(node: SymbolOrReference, options: ModelCheckerOptions) {
-		this.verifyActionCall(node as Reference, options);
+	protected checkInternal(node: TreeNode, options: ModelCheckerOptions) {
+		this.verifyActionCall(node, options);
 	}
 
-	protected verifyMandatoryAttributeProvided(reference: Reference, attributeName: string, argumentAllowed: boolean) {
-		const attribute = reference.attributeReferences[attributeName];
+	protected verifyMandatoryAttributeProvided(actionCall: TreeNode, attributeName: string, argumentAllowed: boolean) {
+		const attribute = actionCall.attributeReferences[attributeName];
 		let attributeMissing = !attribute || attribute?.name == "" || attribute?.name == undefined;
 		if (attributeMissing && argumentAllowed) {
-			const actionArguments = this.modelManager.getActionArguments(reference);
-			const argumentNotPassed = actionArguments.find(x => x.name == attributeName) == undefined;
+			const actionArguments = this.modelManager.getActionArguments(actionCall);
+			const argumentNotPassed = actionArguments.find(x => this.modelManager.getActionArgumentRemoteName(x) == attributeName) == undefined;
 			attributeMissing = attributeMissing && argumentNotPassed;
 		}
 		return attributeMissing;
 	}
 
-	protected verifyInputsAreKnownInReferencedObjects(reference: Reference) {
-		const referenceAndSubReferences = [reference, ...Object.values(reference.attributeReferences)];
+	protected verifyInputsAreKnownInReferencedObjects(actionCall: TreeNode) {
+		const referenceAndSubReferences = Object.values(actionCall.attributeReferences);
 		const referencedSymbolInputs = referenceAndSubReferences.map(subRef => {
 			const referencedSymbol = this.modelManager.getReferencedObject(subRef);
 			return referencedSymbol ? this.modelManager.getSymbolInputs(referencedSymbol) : [];
 		});
-		const inputNames = new Set(flattenArray(referencedSymbolInputs).map(x => x.name));
-		this.getAdditionalInputsForAction(reference).forEach(x => { inputNames.add(x); });
-		this.modelManager.getActionArguments(reference).forEach(argument => {
-			if (!inputNames.has(argument.name)) {
+		const inputNames = new Set(flattenArray(referencedSymbolInputs as SymbolDeclaration[][]).map(x => x.name));
+		this.getAdditionalInputsForAction(actionCall).forEach(x => { inputNames.add(x); });
+		this.modelManager.getActionArguments(actionCall).forEach(argument => {
+			const remoteName = this.modelManager.getActionArgumentRemoteName(argument);
+			if (!inputNames.has(remoteName)) {
 				this.addWarning(
-					argument.range, CHECKS_MESSAGES.INPUT_NOT_FOUND(argument.name, referenceAndSubReferences),
+					argument.range, CHECKS_MESSAGES.INPUT_NOT_FOUND(remoteName, referenceAndSubReferences),
 				);
 			}
 		});
 	}
 
-	protected verifyOutputsAreKnownInReferencedObjects(reference: Reference) {
-		const referenceAndSubReferences = [reference, ...Object.values(reference.attributeReferences)];
+	protected verifyOutputsAreKnownInReferencedObjects(actionCall: TreeNode) {
+		const referenceAndSubReferences = Object.values(actionCall.attributeReferences);
 		const referencedSymbolOutputs = referenceAndSubReferences.map(subRef => {
 			const referencedSymbol = this.modelManager.getReferencedObject(subRef);
 			return referencedSymbol ? this.modelManager.getSymbolOutputs(referencedSymbol) : [];
 		});
-		const outputNames = new Set(flattenArray(referencedSymbolOutputs).map(x => x.name));
-		this.getAdditionalOutputsForActions(reference).forEach(x => outputNames.add(x));
+		const outputNames = new Set(flattenArray(referencedSymbolOutputs as SymbolDeclaration[][]).map(x => x.name));
+		this.getAdditionalOutputsForActions(actionCall).forEach(x => outputNames.add(x));
 
-		this.modelManager.getActionOutputs(reference).forEach(output => {
-			const outputName = output.name;
+		this.modelManager.getActionOutputs(actionCall).forEach(output => {
+			const outputName = (output as SymbolDeclaration).name;
 			if (!outputNames.has(outputName)) {
 				this.addWarning(
 					output.range, CHECKS_MESSAGES.OUTPUT_NOT_FOUND(outputName, referenceAndSubReferences)
@@ -68,26 +68,28 @@ export abstract class ActionCallCheck extends ModelCheck {
 		});
 	}
 
-	protected verifyReferencedObjectsMandatoryInputsProvided(reference: Reference, subRef: Reference) {
-		const actionArguments = this.modelManager.getActionArguments(reference);
+	protected verifyReferencedObjectsMandatoryInputsProvided(actionCall: TreeNode, subRef: Reference) {
+		const actionArguments = this.modelManager.getActionArguments(actionCall);
 		const referencedSymbol = this.modelManager.getReferencedObject(subRef);
-		const argumentNames = new Set(actionArguments.map(x => x.name));
+		const argumentNames = new Set(actionArguments.map(x => this.modelManager.getActionArgumentRemoteName(x)));
 		if (referencedSymbol) {
 			const referencedSymbolMandatoryInputs = this.modelManager.getMandatorySymbolInputs(referencedSymbol);
 			referencedSymbolMandatoryInputs.forEach(input => {
-				if (!argumentNames.has(input.name)) {
-					this.addError(subRef.range, CHECKS_MESSAGES.MANDATORY_INPUT_MISSING(input.name, subRef));
+				const inputName = (input as SymbolDeclaration).name;
+				if (!argumentNames.has(inputName)) {
+					this.addError(subRef.range, CHECKS_MESSAGES.MANDATORY_INPUT_MISSING(inputName, subRef));
 				}
 			});
 		}
 	}
 
-	protected getAdditionalInputsForAction(actionReference: Reference) {
+	protected getAdditionalInputsForAction(actionCall: TreeNode) {
 		let inputNames: string[] = [];
-		this.getAdditionalInputsForSpecificAction(actionReference).forEach(x => inputNames.push(x));
-		const referencedAction = this.modelManager.getReferencedObject(actionReference);
+		this.getAdditionalInputsForSpecificAction(actionCall).forEach(x => inputNames.push(x));
+		const actionRef = actionCall.attributeReferences["name"];
+		const referencedAction = this.modelManager.getReferencedObject(actionRef);
 		if (referencedAction) {
-			const actionAttributes = this.modelManager.getChildrenOfType(referencedAction, ModelElementTypes.Attribute);
+			const actionAttributes = this.modelManager.getChildrenOfType(referencedAction, ModelElementTypes.Attribute) as SymbolDeclaration[];
 			const actionAttributesNames = actionAttributes.map(x => x.name);
 			inputNames = inputNames.concat(actionAttributesNames);
 		}
@@ -95,8 +97,8 @@ export abstract class ActionCallCheck extends ModelCheck {
 		return inputNames;
 	}
 	
-	private getAdditionalOutputsForActions(reference: Reference) {
-		const outputNames: string[] = this.getAdditionalOutputsForSpecificAction(reference);
+	private getAdditionalOutputsForActions(actionCall: TreeNode) {
+		const outputNames: string[] = this.getAdditionalOutputsForSpecificAction(actionCall);
 		return outputNames;
 	}
 }

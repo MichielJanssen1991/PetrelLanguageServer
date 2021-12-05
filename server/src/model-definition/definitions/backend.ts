@@ -221,7 +221,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"decorator": [{}],
 	"decoration": [{}],
 	"action": [{
-		type: ModelElementTypes.Action,
+		type: ModelElementTypes.ActionCall,
 		description: "The action to perform.",
 		attributes: [
 			{
@@ -273,6 +273,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"merge-instruction": [merge_instruction_element],
 	"input": [{
 		type: ModelElementTypes.Input,
+		isSymbolDeclaration:true,
 		attributes: [
 			{
 				name: "required",

@@ -290,9 +290,7 @@ export const include_element =
 	} as Definition;
 
 export const view_argument_element: Definition = {
-	name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 	type: ModelElementTypes.Argument,
-	isReference: true,
 	detailLevel: ModelDetailLevel.SubReferences,
 	matchCondition: (nodeContext) => !isViewArgument(nodeContext),
 	attributes: [{
@@ -306,7 +304,6 @@ export const view_argument_element: Definition = {
 export const action_argument_element: Definition = {
 	name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 	type: ModelElementTypes.Argument,
-	isReference: true,
 	detailLevel: ModelDetailLevel.SubReferences,
 	matchCondition: (nodeContext) => !isViewArgument(nodeContext),
 	attributes: [{
@@ -322,7 +319,6 @@ export const action_output_element: Definition =
 	name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 	matchCondition: (nodeContext) => !isOutputDeclaration(nodeContext),
 	type: ModelElementTypes.Output,
-	isReference: true,
 	detailLevel: ModelDetailLevel.SubReferences
 };
 

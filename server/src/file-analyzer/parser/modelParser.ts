@@ -1,13 +1,13 @@
 import { Range } from 'vscode-languageserver-types';
 import { isNonPetrelModelTag } from '../../model-definition/definitions/other';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, IXmlNodeContext, SymbolOrReference, Definition, ModelElementTypes, ChildDefinition, Attribute, Definitions, ElementAttributes } from '../../model-definition/symbolsAndReferences';
+import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, IXmlNodeContext, TreeNode, Definition, ModelElementTypes, ChildDefinition, Attribute, Definitions, ElementAttributes, newTreeNode } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
 import { ISaxParserExtended, newSaxParserExtended, XmlNode, ProcessingInstruction } from './saxParserExtended';
 
 export class ModelParser extends FileParser implements IXmlNodeContext {
 	private parser: ISaxParserExtended;
-	private parsedObjectStack: { depth: number, parsedObject: SymbolOrReference, definition?: Definition }[] = [];
+	private parsedObjectStack: { depth: number, parsedObject: TreeNode, definition?: Definition }[] = [];
 	private context: ModelFileContext = ModelFileContext.Unknown;
 	private modelDefinitionManager: ModelDefinitionManager;
 	private attributeRanges: Record<string, { range: Range, fullRange: Range }> = {};
@@ -97,8 +97,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		let object;
 
 		// Validate node using new definition structure (might completely replace the old parsing)
-		if(this.context!=ModelFileContext.Unknown)
-		{
+		if (this.context != ModelFileContext.Unknown) {
 			this.validateNode(node, definition);
 		}
 
@@ -112,7 +111,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 
 		//If no definition is found only add the parsed tag when detail level is All 
 		if (this.detailLevel == ModelDetailLevel.All && !object) {
-			object = newSymbolDeclaration(node.name, node.name, ModelElementTypes.Unknown, this.getTagRange(), this.uri);
+			object = newTreeNode(node.name, ModelElementTypes.Unknown, this.getTagRange(), this.uri);
 			this.pushToParsedObjectStack(object);
 		}
 
@@ -151,7 +150,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	}
 
 	// Push the ParsedObject to the parsedObjectStack
-	private pushToParsedObjectStack(parsedObject: SymbolOrReference, definition?: Definition) {
+	private pushToParsedObjectStack(parsedObject: TreeNode, definition?: Definition) {
 		const depth = this.getCurrentDepth();
 		this.parsedObjectStack.push({ depth: depth, parsedObject, definition });
 	}
@@ -170,7 +169,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		}
 	}
 
-	private processParsedObjectFromStack(item: { depth: number; parsedObject: SymbolOrReference; }, context: ContextQualifiers) {
+	private processParsedObjectFromStack(item: { depth: number; parsedObject: TreeNode; }, context: ContextQualifiers) {
 		const { parsedObject } = item;
 		parsedObject.contextQualifiers = context;
 		parsedObject.fullRange.end = this.getTagRange().end;
@@ -181,17 +180,17 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		}
 	}
 
-	private parseNodeForDefinition(node: XmlNode, definition: Definition): SymbolOrReference | undefined {
+	private parseNodeForDefinition(node: XmlNode, definition: Definition): TreeNode | undefined {
 		if (this.detailLevel >= (definition.detailLevel != undefined ? definition.detailLevel : ModelDetailLevel.All)) {
-			const name = this.parseNodeForName(definition, node);
-			let object: SymbolOrReference;
+			let object: TreeNode;
 			const comment = node.attributes.comment;
 			const type = definition.type || ModelElementTypes.Unknown;
-			if (definition.isReference) {
-				object = newReference(name, node.name, type, this.getTagRange(), this.uri, comment);
+			if (definition.isSymbolDeclaration) {
+				const name = this.parseNodeForName(definition, node);
+				object = newSymbolDeclaration(name, node.name, type, this.getTagRange(), this.uri, comment);
 			}
 			else {
-				object = newSymbolDeclaration(name, node.name, type, this.getTagRange(), this.uri, comment);
+				object = newTreeNode(node.name, type, this.getTagRange(), this.uri);
 			}
 
 			const { attributeReferences, otherAttributes } = this.parseAttributes(definition, node);
@@ -234,16 +233,19 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 				if (otherAttribute) { otherAttributes[attributeName] = otherAttribute; }
 			});
 		}
+
 		// For now add fixed attributes for action calls (e.g. reference to rule / infoset or type) based on the old definition, should use action defintions 
-		const otherDefinition = this.modelDefinitionManager.getModelDefinition(ModelFileContext.Unknown);
-		const actionCallDefinition = otherDefinition["action"].find(x => x.isReference);
-		if (actionCallDefinition && actionCallDefinition.attributes) {
-			actionCallDefinition.attributes.forEach(attributeDefinition => {
-				const { attributeReference, otherAttribute } = this.parseAttributeForDefinition(attributeDefinition, node);
-				const attributeName = attributeDefinition.name;
-				if (attributeReference) { attributeReferences[attributeName] = attributeReference; }
-				if (otherAttribute) { otherAttributes[attributeName] = otherAttribute; }
-			});
+		if (definition.type == ModelElementTypes.ActionCall) {
+			const otherDefinition = this.modelDefinitionManager.getModelDefinition(ModelFileContext.Unknown);
+			const actionCallDefinition = otherDefinition["action"].find(x => x.type == ModelElementTypes.ActionCall);
+			if (actionCallDefinition && actionCallDefinition.attributes) {
+				actionCallDefinition.attributes.forEach(attributeDefinition => {
+					const { attributeReference, otherAttribute } = this.parseAttributeForDefinition(attributeDefinition, node);
+					const attributeName = attributeDefinition.name;
+					if (attributeReference) { attributeReferences[attributeName] = attributeReference; }
+					if (otherAttribute) { otherAttributes[attributeName] = otherAttribute; }
+				});
+			}
 		}
 
 		// When detail level is All add all attributes not yet recognized as otherattributes
@@ -269,9 +271,8 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 			const { range, fullRange } = this.attributeRanges[attributeName];
 			const relatedto = attributeDefinition.type?.relatedTo;
 			if (relatedto) {
-				attributeReference = newReference(attributeValue, node.name, relatedto, range, this.uri);
+				attributeReference = newReference(attributeName, attributeValue, relatedto, range, this.uri);
 				attributeReference.fullRange = fullRange;
-				attributeReference.contextQualifiers = this.getContextQualifiers();
 			}
 			else {
 				otherAttribute = { name: attributeName, value: attributeValue, range, fullRange };
@@ -312,9 +313,8 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 
 	private getModelDefinitionForParentNode() {
 		const numberOfParsedParents = this.parsedObjectStack.length;
-		if(numberOfParsedParents>0)
-		{
-			return this.parsedObjectStack[numberOfParsedParents-1].definition;
+		if (numberOfParsedParents > 0) {
+			return this.parsedObjectStack[numberOfParsedParents - 1].definition;
 		}
 	}
 }

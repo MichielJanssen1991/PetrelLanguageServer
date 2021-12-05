@@ -2,7 +2,7 @@ import FuzzySearch = require('fuzzy-search');
 import { Position } from 'vscode-languageserver-types';
 import { standaloneObjectTypes } from '../model-definition/definitions/other';
 import { ModelFileContext } from '../model-definition/modelDefinitionManager';
-import { ModelElementTypes, IsSymbolOrReference, Reference, SymbolDeclaration, SymbolOrReference, Attribute } from '../model-definition/symbolsAndReferences';
+import { ModelElementTypes, IsSymbolOrReference, Reference, SymbolDeclaration, TreeNode, Attribute } from '../model-definition/symbolsAndReferences';
 import { flattenNestedListObjects, flattenNestedObjectValues, flattenObjectValues } from '../util/array';
 import { pointIsInRange } from '../util/other';
 
@@ -10,7 +10,7 @@ type Symbols = { [name: string]: SymbolDeclaration[] }
 type FileSymbols = { [uri: string]: Symbols }
 type References = { [name: string]: Reference[] }
 type FileReferences = { [uri: string]: References }
-type FileTrees = { [uri: string]: SymbolDeclaration }
+type FileTrees = { [uri: string]: TreeNode }
 type FileContexts = { [uri: string]: ModelFileContext | undefined }
 
 export class SymbolAndReferenceManager {
@@ -45,7 +45,7 @@ export class SymbolAndReferenceManager {
 	/**
 	 * Update the tree for a given file
 	 */
-	public updateTree(url: string, tree: SymbolDeclaration, modelFileContext?: ModelFileContext) {
+	public updateTree(url: string, tree: TreeNode, modelFileContext?: ModelFileContext) {
 		this.referencesByNameCached = undefined;
 		this.symbolsByNameCached = undefined;
 		this.uriToTree[url] = tree;
@@ -55,24 +55,28 @@ export class SymbolAndReferenceManager {
 		this.walkNodes(tree);
 	}
 
-	private walkNodes(node: SymbolOrReference) {
+	private walkNodes(node: TreeNode) {
 		this.processNode(node);
 		node.children.forEach(x => this.walkNodes(x));
-		Object.values(node.attributeReferences).forEach(x => this.processNode(x));
+		Object.values(node.attributeReferences).forEach(x => this.processAttribute(x));
 	}
 
-	private processNode(node: SymbolOrReference) {
+	private processNode(node: TreeNode) {
 		if (standaloneObjectTypes.has(node.type)) {
-			switch (node.objectType) {
-				case IsSymbolOrReference.Symbol: { this.addSymbolDeclaration(node as SymbolDeclaration); break; }
-				case IsSymbolOrReference.Reference: { this.addNamedReference(node as Reference); break; }
+			if (node.isSymbolDeclaration) {
+				this.addSymbolDeclaration(node as SymbolDeclaration);
 			}
 		}
 	}
+	private processAttribute(ref: Reference) {
+		if (standaloneObjectTypes.has(ref.type)) {
+			this.addReference(ref);
+		}
+	}
 
-	private addNamedReference(reference: Reference) {
+	private addReference(reference: Reference) {
 		const uri = reference.uri;
-		const name = reference.type == ModelElementTypes.Action ? reference.name.toLowerCase() : reference.name;
+		const name = reference.type == ModelElementTypes.Action ? reference.value.toLowerCase() : reference.value;
 		const namedReferencesForName = this.uriToReferences[uri][name] || [];
 		namedReferencesForName.push(reference);
 		this.uriToReferences[uri][name] = namedReferencesForName;
@@ -206,7 +210,7 @@ export class SymbolAndReferenceManager {
 	 */
 	public getReferencedObject(reference: Reference) {
 		const caseSensitive = !(reference.type == ModelElementTypes.Action);
-		const name = caseSensitive ? reference.name : reference.name.toLowerCase();
+		const name = caseSensitive ? reference.value : reference.value.toLowerCase();
 		const referencedSymbol = (this.symbolsByName[name] || []).find(x => (x.type == reference.type));
 		return referencedSymbol;
 	}
@@ -247,14 +251,14 @@ export class SymbolAndReferenceManager {
 		this.addSubNodesForPosition(nodes, this.uriToTree[uri], position);
 		const lastNode = nodes[nodes.length - 1];
 		const inTag = pointIsInRange(lastNode.range, position);
-		let attribute:Reference|Attribute|undefined = Object.values(lastNode.attributeReferences).find(x => pointIsInRange(x.fullRange, position));
-		if(!attribute){
+		let attribute: Reference | Attribute | undefined = Object.values(lastNode.attributeReferences).find(x => pointIsInRange(x.fullRange, position));
+		if (!attribute) {
 			attribute = Object.values(lastNode.otherAttributes).find(x => pointIsInRange(x.fullRange, position));
 		}
 		return { nodes, inTag, attribute };
 	}
 
-	private addSubNodesForPosition(nodes: SymbolOrReference[], node: SymbolOrReference, position: Position) {
+	private addSubNodesForPosition(nodes: TreeNode[], node: TreeNode, position: Position) {
 		const childNode = node.children.find(x => pointIsInRange(x.fullRange, position));
 		if (childNode) {
 			nodes.push(childNode);

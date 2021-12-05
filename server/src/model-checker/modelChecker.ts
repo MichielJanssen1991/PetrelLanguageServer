@@ -1,7 +1,6 @@
 import * as LSP from 'vscode-languageserver';
-import { ModelDetailLevel, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, SymbolDeclaration, TreeNode } from '../model-definition/symbolsAndReferences';
 import { removeFilesFromDirectories } from '../util/fs';
-import { standaloneObjectTypes } from '../model-definition/definitions/other';
 import { ModelCheck } from './modelCheck';
 import { InfosetDeclarationCheck } from './checks/infosetDeclarationCheck';
 import { ReferencedObjectExistsCheck } from './checks/referencedObjectExistsCheck';
@@ -70,25 +69,24 @@ export class ModelChecker {
 		return this.diagnostics;
 	}
 
-	private walkNodes(node: SymbolOrReference, options: ModelCheckerOptions) {
+	private walkNodes(node: TreeNode, options: ModelCheckerOptions) {
 		this.verifyNode(node, options);
 		const isObsolete = node.contextQualifiers.isObsolete;
 		if (!isObsolete) {
 			node.children.forEach(x => this.walkNodes(x, options));
-			Object.values(node.attributeReferences).forEach(x => this.verifyNode(x, options));
 		}
 	}
 
-	private verifyNode(node: SymbolOrReference, options: ModelCheckerOptions) {
-		if (!standaloneObjectTypes.has(node.type)) { return; } //Nodes which require context are checked as part of their parent
+	private verifyNode(node: TreeNode, options: ModelCheckerOptions) {
 		try {
 			const applicableChecks = this.checks.filter(c=> c.isApplicable(node));
 			this.diagnostics = this.diagnostics.concat(applicableChecks.flatMap(c=> c.check(node, options)));
 		}
 		catch (error: any) {
-			this.addError(node.range, CHECKS_MESSAGES.VALIDATION_ERROR(error.message, node));
+			this.addError(node.range, CHECKS_MESSAGES.VALIDATION_ERROR(error.message, node as SymbolDeclaration));
 		}
 	}
+
 
 	private addInformation(range: LSP.Range, message: string) {
 		this.addDiagnostics(range, message, LSP.DiagnosticSeverity.Information);

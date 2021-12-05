@@ -1,6 +1,6 @@
 import { Range } from 'vscode-languageserver-types';
 import { XmlNode } from '../file-analyzer/parser/saxParserExtended';
-import { Attribute, IXmlNodeContext, IsSymbolOrReference, ModelElementTypes, Reference, SymbolOrReference, newSymbolDeclaration } from '../model-definition/symbolsAndReferences';
+import { Attribute, IXmlNodeContext, IsSymbolOrReference, ModelElementTypes, Reference, TreeNode, newSymbolDeclaration, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
 
 export type RuleContext = {
 	name: string,
@@ -18,7 +18,7 @@ export type ParamRuleContext = {
 export class CompletionContext implements IXmlNodeContext {
 	public inAttribute: boolean;
 	public inTag: boolean;
-	public nodes: SymbolOrReference[];
+	public nodes: TreeNode[];
 	public word: string;
 	public uri: string;
 	public attribute?: Reference | Attribute;
@@ -26,11 +26,11 @@ export class CompletionContext implements IXmlNodeContext {
 		return this.nodes.length;
 	}
 
-	public get currentNode(): SymbolOrReference | undefined {
+	public get currentNode(): TreeNode | undefined {
 		return this.numberOfNodes > 0 ? this.nodes[this.numberOfNodes - 1] : undefined;
 	}
 
-	constructor(inAttribute: boolean, inTag: boolean, nodes: SymbolOrReference[], word: string, uri: string, attribute?: Reference | Attribute) {
+	constructor(inAttribute: boolean, inTag: boolean, nodes: TreeNode[], word: string, uri: string, attribute?: Reference | Attribute) {
 		this.inAttribute = inAttribute;
 		this.inTag = inTag;
 		this.nodes = nodes;
@@ -48,14 +48,14 @@ export class CompletionContext implements IXmlNodeContext {
 	}
 
 	public hasParentTag(name: string) {
-		return this.nodes.some(node => node.name == name);
+		return this.nodes.some(node => node.tag == name);
 	}
 
 	public getCurrentXmlNode() {
 		return this.symbolOrReferenceToXmlNode(this.nodes[this.numberOfNodes - 1]);
 	}
 
-	private symbolOrReferenceToXmlNode(symbolOrReference: SymbolOrReference): XmlNode {
+	private symbolOrReferenceToXmlNode(symbolOrReference: TreeNode): XmlNode {
 		const attributeReferences = symbolOrReference.attributeReferences;
 		const attributes1 = Object.keys(attributeReferences).
 			reduce((result: Record<string, string>, att) => {
@@ -73,12 +73,12 @@ export class CompletionContext implements IXmlNodeContext {
 	}
 
 	//Returns the first predecessor of the given type
-	public getPredecessorOfType(type: ModelElementTypes, symbolOrReference: IsSymbolOrReference) {
-		return this.nodes.reverse().find(node => node.type == type && node.objectType == symbolOrReference);
+	public getPredecessorOfType(type: ModelElementTypes, isSymbolDeclaration: boolean) {
+		return this.nodes.reverse().find(node => node.type == type && node.isSymbolDeclaration == isSymbolDeclaration);
 	}
 
 	public getRuleContext() {
-		const ruleDefinition = this.getPredecessorOfType(ModelElementTypes.Rule, IsSymbolOrReference.Symbol);
+		const ruleDefinition = this.getPredecessorOfType(ModelElementTypes.Rule, true) as SymbolDeclaration;
 		if (ruleDefinition) {
 			const rulename = ruleDefinition.name;
 			const params = this.findNames(ruleDefinition.children, [ModelElementTypes.Output, ModelElementTypes.Input, ModelElementTypes.SetVar]);

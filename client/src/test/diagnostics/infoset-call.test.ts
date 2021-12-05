@@ -35,7 +35,7 @@ suite('Should get diagnostics for infoset call', () => {
 	test('Diagnoses infoset call with non preferred capitalization', async () => {
 		const docUri = getDocUri('diagnostics\\infoset-call\\wrong-capitalization.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Preferred capitalization for Action with name 'infoset' is 'Infoset'.", range: toRange(4, 5, 4, 70), severity: vscode.DiagnosticSeverity.Information, source: 'ex' },
+			{ message: "Preferred capitalization for Action with name 'infoset' is 'Infoset'.", range: toRange(4, 17, 4, 26), severity: vscode.DiagnosticSeverity.Information, source: 'ex' },
 		]);
 	});
 	

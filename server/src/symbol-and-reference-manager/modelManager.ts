@@ -1,31 +1,37 @@
 import { NAMES } from '../model-definition/constants';
-import { IsSymbolOrReference, ModelElementTypes, Reference, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
+import { ModelElementTypes, Reference, SymbolDeclaration, TreeNode } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from './symbolAndReferenceManager';
 
 /**
  * The ModelManager extends the SymbolAndReferenceManager with knowledge about the petrel model. It provides more advanced querying on the model.
  */
 export class ModelManager extends SymbolAndReferenceManager {
-	public getChildrenOfType(object: Reference | SymbolDeclaration, type: ModelElementTypes): (Reference | SymbolDeclaration)[] {
+	public getChildrenOfType(object: TreeNode | SymbolDeclaration, type: ModelElementTypes): (TreeNode | SymbolDeclaration)[] {
 		const directChilren = object.children.filter(x => (x.type == type));
 		const decoratorsOrIncludeBlocks = object.children.filter(
 			x => (x.type == ModelElementTypes.Decorator
 				|| x.type == ModelElementTypes.IncludeBlock)
-				&& x.objectType == IsSymbolOrReference.Reference
-		) as Reference[];
+		);
 
-		const decoratedChildren: (Reference | SymbolDeclaration)[] = decoratorsOrIncludeBlocks.flatMap(decoratorOrIncludeBlockRef => {
+		const decoratedChildren: (TreeNode | SymbolDeclaration)[] = decoratorsOrIncludeBlocks.flatMap(decoratorOrIncludeBlock => {
+			const decoratorOrIncludeBlockRef = decoratorOrIncludeBlock.attributeReferences["name"] as Reference;
 			const decoratorsOrIncludeBlocks = this.getReferencedObject(decoratorOrIncludeBlockRef);
 			return decoratorsOrIncludeBlocks ? this.getChildrenOfType(decoratorsOrIncludeBlocks, type) : [];
 		});
 		return [...directChilren, ...decoratedChildren];
 	}
 
-	public getActionArguments(actionReference: Reference) {
-		return this.getChildrenOfType(actionReference, ModelElementTypes.Argument);
+	public getActionArguments(actionCall: TreeNode) {
+		return this.getChildrenOfType(actionCall, ModelElementTypes.Argument);
 	}
-	public getActionOutputs(actionReference: Reference) {
-		return this.getChildrenOfType(actionReference, ModelElementTypes.Output);
+	public getActionArgumentRemoteName(actionArgument: TreeNode) {
+		return (actionArgument.otherAttributes[NAMES.ATTRIBUTE_REMOTENAME]?.value || actionArgument.otherAttributes[NAMES.ATTRIBUTE_LOCALNAME]?.value || "");
+	}
+	public getActionArgumentLocalName(actionArgument: TreeNode) {
+		return actionArgument.otherAttributes[NAMES.ATTRIBUTE_LOCALNAME]?.value || "";
+	}
+	public getActionOutputs(actionCall: TreeNode) {
+		return this.getChildrenOfType(actionCall, ModelElementTypes.Output);
 	}
 	public getSymbolInputs(symbol: SymbolDeclaration) {
 		return symbol.children.filter(x => (x.type == ModelElementTypes.Input));
@@ -43,7 +49,7 @@ export class ModelManager extends SymbolAndReferenceManager {
 	}
 
 	public getTypeAttributes(type: SymbolDeclaration): string[] {
-		let attributeNames = this.getChildrenOfType(type, ModelElementTypes.Attribute).map(x => x.name);
+		let attributeNames = this.getChildrenOfType(type, ModelElementTypes.Attribute).map(x => (x as SymbolDeclaration).name);
 		const basedOnTypeRef = type.attributeReferences["type"];
 		if (basedOnTypeRef) {
 			const basedOnType = this.getReferencedObject(basedOnTypeRef);

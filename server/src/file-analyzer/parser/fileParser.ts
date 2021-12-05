@@ -1,7 +1,7 @@
 import * as LSP from 'vscode-languageserver';
 import { Diagnostic } from 'vscode-languageserver';
 import { ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { ModelDetailLevel, ModelElementTypes, newSymbolDeclaration, SymbolDeclaration } from '../../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes, newTreeNode, TreeNode } from '../../model-definition/symbolsAndReferences';
 
 export abstract class FileParser {
 	protected uri: string;
@@ -11,7 +11,7 @@ export abstract class FileParser {
 	constructor(uri: string, detailLevel: ModelDetailLevel) {
 		this.uri = uri;
 		this.detailLevel = detailLevel;
-		const rootNode = newSymbolDeclaration("root", "root", ModelElementTypes.Unknown, LSP.Range.create({ character: 0, line: 0 }, { character: 0, line: 0 }), uri);
+		const rootNode = newTreeNode("root", ModelElementTypes.Unknown, LSP.Range.create({ character: 0, line: 0 }, { character: 0, line: 0 }), uri);
 		this.results = { problems: [], tree: rootNode };
 	}
 
@@ -36,6 +36,6 @@ export abstract class FileParser {
 
 export type FileParserResults = {
 	problems: Diagnostic[],
-	tree: SymbolDeclaration,
+	tree: TreeNode,
 	modelFileContext?: ModelFileContext,
 }

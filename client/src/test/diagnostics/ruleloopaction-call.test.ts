@@ -56,7 +56,7 @@ suite('Should get diagnostics for ruleloopaction call', () => {
 	test('Diagnoses RuleLoopAction call with non preferred capitalization', async () => {
 		const docUri = getDocUri('diagnostics\\ruleloopaction-call\\wrong-capitalization.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Preferred capitalization for Action with name 'ruleLoopAction' is 'RuleLoopAction'.", range: toRange(2, 5, 2, 83), severity: vscode.DiagnosticSeverity.Information, source: 'ex' },
+			{ message: "Preferred capitalization for Action with name 'ruleLoopAction' is 'RuleLoopAction'.", range: toRange(2, 17, 2, 33), severity: vscode.DiagnosticSeverity.Information, source: 'ex' },
 		]);
 	});
 });

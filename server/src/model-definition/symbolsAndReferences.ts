@@ -8,6 +8,7 @@ export enum ModelElementTypes {
 	NameSpace = "NameSpace",
 	Input = "Input",
 	Action = "Action",
+	ActionCall = "ActionCall",
 	Function = "Function",
 	Type = "Type",
 	View = "View",
@@ -76,57 +77,67 @@ export enum ModelDetailLevel {
 	All
 }
 
-export interface ObjectIdentifier {
-	name: string,
+export interface TreeNode {
 	tag: string,
 	type: ModelElementTypes,
-	identifier: string,
 	range: LSP.Range,
 	fullRange: LSP.Range,
 	uri: string,
-	objectType: IsSymbolOrReference,
-	children: (Reference | SymbolDeclaration)[],
+	isSymbolDeclaration: boolean,
+	children: (TreeNode | SymbolDeclaration)[],
 	otherAttributes: Record<string, Attribute>,
 	attributeReferences: Record<string, Reference>,
 	comment?: string,
 	contextQualifiers: ContextQualifiers
 }
 
-export interface Reference extends ObjectIdentifier {
-	objectType: IsSymbolOrReference.Reference
-}
-
-export interface SymbolDeclaration extends ObjectIdentifier {
-	objectType: IsSymbolOrReference.Symbol
-}
-
 export interface Attribute {
 	name: string,
 	range: LSP.Range,
 	fullRange: LSP.Range,
-	value: string
+	value: string,
+	isReference?: boolean
+}
+export interface Reference extends Attribute {
+	isReference: true,
+	type: ModelElementTypes,
+	uri: string
 }
 
-export type SymbolOrReference = SymbolDeclaration | Reference;
+export interface SymbolDeclaration extends TreeNode {
+	isSymbolDeclaration: true,
+	name: string,
+	identifier: string
+}
 
-export function newReference(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, comment?: string): Reference {
+
+export function newReference(name: string, value: string, type: ModelElementTypes, range: LSP.Range, uri: string): Reference {
 	return {
 		name,
-		tag,
+		value,
 		type,
-		identifier: objectIdentifier(name, type, range),
 		range,
 		fullRange: LSP.Range.create(range.start, range.end),
-		children: [],
 		uri,
-		otherAttributes: {},
-		attributeReferences: {},
-		contextQualifiers: {},
-		comment,
-		objectType: IsSymbolOrReference.Reference
+		isReference: true
 	};
 }
 
+export function newTreeNode(tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, comment?: string): TreeNode {
+	return {
+		type,
+		tag,
+		range,
+		fullRange: LSP.Range.create(range.start, range.end),
+		uri,
+		children: [],
+		otherAttributes: {},
+		contextQualifiers: {},
+		comment,
+		attributeReferences: {},
+		isSymbolDeclaration: false
+	};
+}
 export function newSymbolDeclaration(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, comment?: string): SymbolDeclaration {
 	return {
 		name,
@@ -141,9 +152,10 @@ export function newSymbolDeclaration(name: string, tag: string, type: ModelEleme
 		contextQualifiers: {},
 		comment,
 		attributeReferences: {},
-		objectType: IsSymbolOrReference.Symbol
+		isSymbolDeclaration: true
 	};
 }
+
 export function objectIdentifier(name: string, type: ModelElementTypes, range: LSP.Range) {
 	return `${type}:${name}:${range.start.line}`;
 }
@@ -161,7 +173,7 @@ export type Definition = {
 	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
 	type?: ModelElementTypes,
 	prefixNameSpace?: boolean,
-	isReference?: boolean,
+	isSymbolDeclaration?: boolean,
 	detailLevel?: ModelDetailLevel,
 	contextQualifiers?: (nodeContext: IXmlNodeContext) => ContextQualifiers
 

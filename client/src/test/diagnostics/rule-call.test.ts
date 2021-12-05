@@ -41,7 +41,7 @@ suite('Should get diagnostics for rule call', () => {
 	test('Diagnoses rule call with non preferred capitalization', async () => {
 		const docUri = getDocUri('diagnostics\\rule-call\\wrong-capitalization.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Preferred capitalization for Action with name 'rule' is 'Rule'.", range: toRange(2, 5, 2, 45), severity: vscode.DiagnosticSeverity.Information, source: 'ex' },
+			{ message: "Preferred capitalization for Action with name 'rule' is 'Rule'.", range: toRange(2, 17, 2, 23), severity: vscode.DiagnosticSeverity.Information, source: 'ex' },
 		]);
 	});
 });

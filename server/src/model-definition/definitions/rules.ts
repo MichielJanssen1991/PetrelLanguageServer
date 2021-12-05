@@ -94,6 +94,7 @@ export const RULE_DEFINITION: Definitions = {
 		type: ModelElementTypes.Rule,
 		detailLevel: ModelDetailLevel.Declarations,
 		prefixNameSpace: true,
+		isSymbolDeclaration: true,
 		description: "You call a rule (from the client side) by using this name. A rule answers by returning several (name, value) - pairs.",
 		attributes: [
 			{
@@ -340,9 +341,8 @@ export const RULE_DEFINITION: Definitions = {
 		]
 	}],
 	"action": [{
-		type: ModelElementTypes.Action,
+		type: ModelElementTypes.ActionCall,
 		detailLevel: ModelDetailLevel.References,
-		isReference: true,
 		description: "An action.",
 		checkObsolete: true,
 		attributes: [
@@ -578,6 +578,7 @@ export const RULE_DEFINITION: Definitions = {
 	}],
 	"input": [{
 		type: ModelElementTypes.Input,
+		isSymbolDeclaration:true,
 		description: "Specifies an input argument.",
 		attributes: [
 			{
@@ -698,7 +699,6 @@ export const RULE_DEFINITION: Definitions = {
 		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 		matchCondition: (nodeContext) => !isOutputDeclaration(nodeContext),
 		type: ModelElementTypes.Output,
-		isReference: true,
 		detailLevel: ModelDetailLevel.SubReferences
 	}],
 	"argument": [{
