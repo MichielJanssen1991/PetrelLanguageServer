@@ -160,6 +160,13 @@ export class SymbolAndReferenceManager {
 	}
 
 	/**
+     * Returns all symbols of a given type
+     */
+	public getAllSymbolsForType(type:ModelElementTypes): SymbolDeclaration[] {
+        return this.getAllSymbols().filter(x=> x.tag.toLowerCase() ==type.toLowerCase());
+    }
+
+	/**
 	 * Returns all references
 	 */
 	public getAllReferences(): Reference[] {

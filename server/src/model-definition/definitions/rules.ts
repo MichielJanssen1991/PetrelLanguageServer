@@ -273,11 +273,7 @@ export const RULE_DEFINITION: Definitions = {
 				required: true,
 				type: {
 					type: AttributeTypes.Reference,
-					options: [
-						{
-							name: "@backend-actions/action/@name"
-						}
-					]
+					relatedTo: ModelElementTypes.Action
 				}
 			},
 			{
@@ -317,6 +313,24 @@ export const RULE_DEFINITION: Definitions = {
 						attribute: "name",
 						condition: "==",
 						value: "rule"
+					}
+				]
+			},
+			{
+				// rulename is already loaded via backendactions. 
+				// The xxx (in visibilityConditions) ensures that this item is never visible in attribute context provider
+				// Despite it is not visible, the attribute value context provider uses the type definition
+				name: "rulename",
+				description: "",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Rule
+				},
+				visibilityConditions: [	
+					{
+						attribute: "name",
+						condition: "==",
+						value: "xxx"	
 					}
 				]
 			},
@@ -503,15 +517,16 @@ export const RULE_DEFINITION: Definitions = {
 				autoadd: true,
 				type: {
 					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.RuleContext,
 					options: [
 						{
-							name: "$rule/input/@name"		// TODO
+							name: ModelElementTypes.Input
 						},
 						{
-							name: "$rule//set-var/@name"	// TODO
+							name: ModelElementTypes.SetVar
 						},
 						{
-							name: "$rule//action/output/@local-name" // TODO
+							name: ModelElementTypes.Output
 						}
 					]
 				}
@@ -605,11 +620,7 @@ export const RULE_DEFINITION: Definitions = {
 				description: "An infoset which' contents to return.",
 				type: {
 					type: AttributeTypes.Reference,
-					options: [
-						{
-							name: "document(infosets)//infoset" // TODO
-						}
-					]
+					relatedTo: ModelElementTypes.Infoset
 				}
 			},
 			{
@@ -617,11 +628,7 @@ export const RULE_DEFINITION: Definitions = {
 				description: "A variable from an infoset to be returned. If the rule engine wants to use a variable that is defined in the infosets.xml file, first all {..} parameters in the search query are resolved. Then Petrel is called with this query. The records are returned, one by one: from each record, the attribute with the defined name is taken, and on all of these values, an aggregation like operator is used",
 				type: {
 					type: AttributeTypes.Reference,
-					options: [
-						{
-							name: "$infoset/variable/@name" // TODO
-						}
-					]
+					relatedTo: ModelElementTypes.Variable
 				}
 			},
 			{
@@ -814,15 +821,16 @@ export const RULE_DEFINITION: Definitions = {
 				autoadd: true,
 				type: {
 					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.RuleContext,
 					options: [
 						{
-							name: "@current-rule/input/@name",
+							name: ModelElementTypes.Input,
 						},
 						{
-							name: "@current-rule/set-var/@name",
+							name: ModelElementTypes.SetVar,
 						},
 						{
-							name: "@current-rule/action/output/@local-name",
+							name: ModelElementTypes.Output,
 						}
 					]
 				}
@@ -896,11 +904,7 @@ export const RULE_DEFINITION: Definitions = {
 				description: "A constant as right hand side.",
 				type: {
 					type: AttributeTypes.Reference,
-					options: [
-						{
-							name: "document(constants)/constants//variable/@name" // TODO
-						}
-					]
+					relatedTo: ModelElementTypes.Constant
 				}
 			},
 			{
@@ -1090,15 +1094,16 @@ export const RULE_DEFINITION: Definitions = {
 				autoadd: true,
 				type: {
 					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.RuleContext,
 					options: [
 						{
-							name: "$rule/input/@name"	// TODO
+							name: ModelElementTypes.Input
 						},
 						{
-							name: "$rule//set-var/@name"	// TODO
+							name: ModelElementTypes.SetVar
 						},
 						{
-							name: "$rule//action/output/@local-name"	// TODO
+							name: ModelElementTypes.Output
 						},
 					]
 				}
@@ -1286,6 +1291,7 @@ export const RULE_DEFINITION: Definitions = {
 				autoadd: true,
 				type: {
 					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Unknown,
 					options: [
 						{
 							name: "@backend-definition/element/@element"

@@ -3,8 +3,11 @@ import { XmlNode } from '../file-analyzer/parser/saxParserExtended';
 
 export enum ModelElementTypes {
 	Infoset = "Infoset",
+	Variable = "Variable",
+	Constant = "Constant",
 	Condition = "Condition",
 	Rule = "Rule",
+	RuleContext = "RuleContext",
 	NameSpace = "NameSpace",
 	Input = "Input",
 	Action = "Action",

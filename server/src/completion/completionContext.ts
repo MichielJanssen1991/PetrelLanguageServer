@@ -77,16 +77,13 @@ export class CompletionContext implements IXmlNodeContext {
 		return this.nodes.reverse().find(node => node.type == type && node.isSymbolDeclaration == isSymbolDeclaration);
 	}
 
-	public getRuleContext() {
-		const ruleDefinition = this.getPredecessorOfType(ModelElementTypes.Rule, true) as SymbolDeclaration;
-		if (ruleDefinition) {
-			const rulename = ruleDefinition.name;
-			const params = this.findNames(ruleDefinition.children, [ModelElementTypes.Output, ModelElementTypes.Input, ModelElementTypes.SetVar]);
-			return { name: rulename, availableParams: params };
+	public getFromContext(modelType: ModelElementTypes, matchTags: ModelElementTypes[]){
+		const definition = this.getPredecessorOfType(modelType, true) as SymbolDeclaration;
+		if (definition) {
+			const params = this.findNames(definition.children, matchTags);
+			return { name: definition.name, availableParams: params };
 		}
-		else {
-			return undefined;
-		}
+		return undefined;
 	}
 
 	private findNames(children: any[], matchTags: ModelElementTypes[]): string[] {

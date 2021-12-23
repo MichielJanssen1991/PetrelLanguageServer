@@ -1,5 +1,5 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
-import { AttributeTypes, ChildDefinition, IsSymbolOrReference, ModelElementTypes, Definition, Reference, SymbolDeclaration, TreeNode, IXmlNodeContext, ValidationMatches, ElementAttributes } from '../model-definition/symbolsAndReferences';
+import { AttributeTypes, ChildDefinition, ModelElementTypes, Definition, Reference, SymbolDeclaration, TreeNode, IXmlNodeContext, ValidationMatches, ElementAttributes } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { CompletionContext } from './completionContext';
@@ -62,10 +62,12 @@ export class CompletionProvider {
 			if (node.type == ModelElementTypes.ActionCall) {
 				const actionReference = node.attributeReferences["name"] as Reference;
 				const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionReference);
-				attributesForAction = (referencedAction?.children
+				if (referencedAction){
+					attributesForAction = (referencedAction?.children
 					.filter(x => x.type == ModelElementTypes.Attribute) as SymbolDeclaration[])
 					.map(x => {return {name: x.name, description: "geen"};
-				}) || [];
+					}) || [];
+				}
 			}
 
 			let allAttributes = [...attributesForAction, ...attributesForTag];
@@ -185,9 +187,28 @@ export class CompletionProvider {
 			const type = attrDefinition?.type;
 			if (attrDefinition && type) {
 				if (type.type == AttributeTypes.Reference) {
-					// concept ............ need 'some' work :)
-					const ruleContext = context.getRuleContext();
-					symbols = ruleContext?.availableParams.map(param => ({ label: param })) || [{ label: "no parames found" }];
+					switch (type.relatedTo) {
+						case ModelElementTypes.RuleContext:
+							symbols = context
+								.getFromContext(ModelElementTypes.Rule, [
+									ModelElementTypes.Output,
+									ModelElementTypes.Input,
+									ModelElementTypes.SetVar,
+								])
+								?.availableParams.map((param) => ({ label: param })) || [
+									{ label: "no parames found" },
+								];
+							break;
+						case ModelElementTypes.Rule:
+						case ModelElementTypes.Action:
+						case ModelElementTypes.IncludeBlock:
+						case ModelElementTypes.Type:
+							symbols = this.symbolAndReferenceManager.getAllSymbolsForType(type.relatedTo).map((x) => ({ label: x.name })) || [
+								{ label: "no " + type.relatedTo + "s found" }];
+							break;
+						default:
+							break;
+					}
 				} else if (type.type == AttributeTypes.Enum && type.options) {
 					symbols = type.options.map(option => ({ label: option.name }));
 				}

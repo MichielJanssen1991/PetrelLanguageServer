@@ -493,6 +493,10 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				name: "relation-type",
 				description: "Set relation type to let this attribute represent a relation to an object of this type. For example, the attribute 'Patient' in a type 'Consults per patient' has as relation type value 'Patients'. When the relation type is specified, the attribute can have linked relation attributes using the relation field property (see below).",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Type
+				},
 				visibilityConditions: [
 					{
 						attribute: "type",
