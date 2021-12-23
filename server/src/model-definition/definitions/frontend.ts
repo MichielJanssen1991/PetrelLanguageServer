@@ -14,7 +14,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"toolbar": [{}],
 	"views": [{}],
 	"view": [{}],
-	"argument": [view_argument_element, view_argument_element],
+	"argument": [view_argument_element],
 	"events": [{}],
 	"server-events": [{}],
 	"event": [{}],

@@ -193,14 +193,15 @@ export type ElementAttributes = {
 	required?: boolean,
 	autoadd?: boolean,						// mark attribute to auto add when (parent) element is created
 	deprecated?: boolean,
-	conditions?: ValidationMatches[],
+	visibilityConditions?: ValidationMatches[],
+	requiredConditions?: ValidationMatches[],
 	type?: AttributeType,
 	detailLevel?: ModelDetailLevel
 }
 
 export type AttributeValidation = {
-	type: string,
-	value: string,
+	type: "regex",
+	value: RegExp,
 	message: string,
 	name?: string,
 	identifier?: string,
@@ -228,7 +229,7 @@ export type ValidationMatches = {
 	operator?: "and" | "or",
 	attribute: string,
 	condition: "==" | "!=" | "misses" | "not-in" | "contains" | "not-in-like",
-	value: string | JsonElementVariable
+	value: string
 }
 
 export type AttributeType = {
@@ -237,35 +238,4 @@ export type AttributeType = {
 	options?: AttributeOption[],
 	pathHints?: AttributeOption[]
 
-}
-
-/**
- * This class handles the variable Json attributes from the definitions. 
- * Based on the file-reference, child-reference and it's attribute (optional) it gets the proper data
- * 
- * NOTE I'm not sure if the definition data (in cache) is an XML object or JSON object.
- */
-export class JsonElementVariable {
-	constructor(definitionReference: string, xpathExpr: string) {
-		let definition = "";
-		switch (definitionReference) {
-			case "backend-actions":
-				// get backend.actions.xml definition(s)
-				definition = "<xml />";
-				break;
-			case "frontend-actions":
-				// get frontend.actions.xml definition(s)
-				definition = "<xml />";
-				break;
-			case "rule-definitions":
-				// not yet implemnted
-				break;
-			case "type-definitions":
-				// not yet implemnted
-				break;
-		}
-		xpathExpr = "//action" + xpathExpr;
-		//return definition.evaluate("/html/body//h2", definition, null, XPathResult.ANY_TYPE, null).toString();
-		return "";
-	}
 }

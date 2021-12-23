@@ -1,6 +1,6 @@
 import { NAMES } from '../constants';
-import { AttributeTypes, JsonElementVariable, ModelElementTypes, Definition, Definitions, ValidationLevels, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element } from './shared';
+import { AttributeTypes, ModelElementTypes, Definition, Definitions, ValidationLevels, ModelDetailLevel } from '../symbolsAndReferences';
+import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element, default_yes_no_attribute_type } from './shared';
 export const RULE_DEFINITION: Definitions = {
 	"rules": [{
 		type: ModelElementTypes.Rule,
@@ -44,27 +44,9 @@ export const RULE_DEFINITION: Definitions = {
 				description: "The module name.",
 				autoadd: true
 			},
-			{
-				name: "target-namespace",
-				description: "Target namespace of the contents of the module. A relative namespace may start with a +, e.g., \"+Preferences\" may result in, e.g., \"Platform.Preferences\". (The target namespace together with the module name makes the module unique.)",
-				autoadd: true,
-				validations: [
-					{
-						type: "regex",
-						"value": "(\\+?[A-Z][a-zA-Z]+(\\.[A-Z][a-zA-Z]+)*)?",
-						"message": "Only alphabetic, CamelCased words separated by dots are allowed.",
-						"level": ValidationLevels.Fatal
-					}
-				]
-			},
-			{
-				name: "description",
-				description: "Description of contents and purpose."
-			},
-			{
-				name: "comment",
-				description: "Developer's comment on this element"
-			}
+			target_namespace_attribute,
+			dev_description_attribute,
+			dev_comment_attribute,
 		],
 		childs: [
 			{
@@ -104,15 +86,15 @@ export const RULE_DEFINITION: Definitions = {
 				validations: [
 					{
 						type: "regex",
-						"value": "[\\w_]+",
-						"message": "The name should only contain letters or underscore",
-						"level": ValidationLevels.Fatal
+						value: /[\\w_]+/,
+						message: "The name should only contain letters or underscore",
+						level: ValidationLevels.Fatal
 					}],
-				conditions: [
+				visibilityConditions: [
 					{
-						"attribute": "import",
-						"condition": "==",
-						"value": ""
+						attribute: "import",
+						condition: "==",
+						value: ""
 					}
 				]
 			},
@@ -141,46 +123,34 @@ export const RULE_DEFINITION: Definitions = {
 						}
 					]
 				},
-				conditions: [
+				visibilityConditions: [
 					{
-						"attribute": "import",
-						"condition": "==",
-						"value": ""
+						attribute: "import",
+						condition: "==",
+						value: ""
 					}
 				]
 			},
 			{
 				name: "max-cache-duration-minutes",
 				description: "The maximum duration that the invocations will be cached. Only valid in case the cache-level has been set. By default it will be 1 to 5 minutes, depending on how often the rule is invoked with that input.",
-				conditions: [
+				visibilityConditions: [
 					{
-						"attribute": "import",
-						"condition": "==",
-						"value": ""
+						attribute: "import",
+						condition: "==",
+						value: ""
 					}
 				]
 			},
 			{
 				name: "ignore-empty-action-outputs",
 				description: "Whether to ignore empty action outputs when used for variable assignments, or allow them to overwrite filled variables. By default these empty action outputs are ignored, i.e. not allowed to overwrite a filled variable.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "yes",
-							description: ""
-						},
-						{
-							name: "no",
-							description: ""
-						}
-					]
-				},
-				conditions: [
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
 					{
-						"attribute": "import",
-						"condition": "==",
-						"value": ""
+						attribute: "import",
+						condition: "==",
+						value: ""
 					}
 				]
 			},
@@ -191,52 +161,28 @@ export const RULE_DEFINITION: Definitions = {
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Rule
 				},
-				conditions: [
+				visibilityConditions: [
 					{
-						"attribute": "name",
-						"condition": "==",
-						"value": ""
+						attribute: "name",
+						condition: "==",
+						value: ""
 					}
 				]
 			},
 			{
 				name: "obsolete",
 				description: "Set to yes if this model entity is obsolete. This means another way of modeling is prefered and this old functionality may be removed in the next version.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "yes",
-							description: ""
-						},
-						{
-							name: "no",
-							description: ""
-						}
-					]
-				}
+				type: default_yes_no_attribute_type
 			},
 			{
 				name: "obsolete-message",
 				description: "Indicate what to use as an alternative.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "yes",
-							description: ""
-						},
-						{
-							name: "no",
-							description: ""
-						}
-					]
-				},
-				conditions: [
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
 					{
-						"attribute": "obsolete",
-						"condition": "==",
-						"value": "yes"
+						attribute: "obsolete",
+						condition: "==",
+						value: "yes"
 					}
 				]
 			},
@@ -272,37 +218,11 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "is-declaration",
 				description: "May be used to have a metadata item which only specifies override rights and not specifies an instance.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "yes"
-						},
-						{
-							name: "no"
-						}
-					]
-				}
+				type: default_yes_no_attribute_type
 			},
-			{
-				name: "ignore-modelcheck",
-				description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
-			},
-			{
-				name: "ignore-modelcheck-justification",
-				description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				conditions: [
-					{
-						"attribute": "ignore-modelcheck",
-						"condition": "!=",
-						"value": ""
-					}
-				]
-			},
-			{
-				name: "comment",
-				description: "Developer's comment on this element."
-			}
+			dev_ignore_modelcheck_attribute,
+			dev_ignore_modelcheck_justification_attribute,
+			dev_comment_attribute
 		],
 		childs: [
 			{
@@ -363,32 +283,12 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "input-all",
 				description: "If yes, all available local variables (in the frontend, the non-data bound as well as the data bound variables) will be passed to the action. Default is no.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "yes"
-						},
-						{
-							name: "no"
-						}
-					]
-				}
+				type: default_yes_no_attribute_type
 			},
 			{
 				name: "output-all",
 				description: "If yes, all outputs returned by the action will be made available locally (in the frontend as non-data bound variables). Default is no.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "yes"
-						},
-						{
-							name: "no"
-						}
-					]
-				}
+				type: default_yes_no_attribute_type
 			},
 			{
 				name: "dataless",
@@ -411,44 +311,18 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "user-created",
 				description: "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "yes"
-						},
-						{
-							name: "no"
-						}
-					]
-				},
-				conditions: [
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
 					{
-						"attribute": "name",
-						"condition": "==",
-						"value": "rule"
+						attribute: "name",
+						condition: "==",
+						value: "rule"
 					}
 				]
 			},
-			{
-				name: "ignore-modelcheck",
-				description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
-			},
-			{
-				name: "ignore-modelcheck-justification",
-				description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				conditions: [
-					{
-						"attribute": "ignore-modelcheck",
-						"condition": "!=",
-						"value": ""
-					}
-				]
-			},
-			{
-				name: "comment",
-				description: "Developer's comment on this element."
-			}
+			dev_ignore_modelcheck_attribute,
+			dev_ignore_modelcheck_justification_attribute,
+			dev_comment_attribute
 		],
 		childs: [
 			{
@@ -458,98 +332,98 @@ export const RULE_DEFINITION: Definitions = {
 				element: "output",
 				validations: [
 					{
-						"identifier": "RULE00001",
+						identifier: "RULE00001",
 						name: "action-outputs-missing",
-						"matches": [
+						matches: [
 							{
-								"attribute": "(remote/local)-name",
-								"condition": "misses",
-								"value": new JsonElementVariable("backend-rules", "/output[@name]")
+								attribute: "remote/local)-name",
+								condition: "misses",
+								value: ""//new JsonElementVariable("backend-rules", "/output[@name]")
 							},
 							{
-								"operator": "or",
-								"attribute": "local-name",
-								"condition": "misses",
-								"value": new JsonElementVariable("backend-rules", "/output[@name]")
+								operator: "or",
+								attribute: "local-name",
+								condition: "misses",
+								value: ""//new JsonElementVariable("backend-rules", "/output[@name]")
 							}
 						],
-						"message": "Missing defined output ${@backend-rules.output[name]} for rule ${@parent[rulename]}",
-						"level": ValidationLevels.Info,
+						message: "Missing defined output ${@backend-rules.output[name]} for rule ${@parent[rulename]}",
+						level: ValidationLevels.Info,
 						conditions: [
 							{
-								"attribute": "@parent[name]",
-								"condition": "==",
-								"value": "rule"
+								attribute: "@parent[name]",
+								condition: "==",
+								value: "rule"
 							}
 						]
 					},
 					{
-						"identifier": "RULE00002",
+						identifier: "RULE00002",
 						name: "rule-outputs-notdefined",
-						"matches": [
+						matches: [
 							{
-								"attribute": "remote-name",
-								"condition": "not-in",
-								"value": new JsonElementVariable("backend-rules", "/output[@name]")
+								attribute: "remote-name",
+								condition: "not-in",
+								value: ""//new JsonElementVariable("backend-rules", "/output[@name]")
 							},
 							{
-								"attribute": "local-name",
-								"condition": "not-in",
-								"value": new JsonElementVariable("backend-rules", "/output[@name]")
+								attribute: "local-name",
+								condition: "not-in",
+								value: ""//new JsonElementVariable("backend-rules", "/output[@name]")
 							}
 						],
-						"message": "Output ${@name} is not defined in rule ${@rulename}",
-						"level": ValidationLevels.Error,
+						message: "Output ${@name} is not defined in rule ${@rulename}",
+						level: ValidationLevels.Error,
 						conditions: [
 							{
-								"attribute": "@parent[name]",
-								"condition": "==",
-								"value": "rule"
+								attribute: "@parent[name]",
+								condition: "==",
+								value: "rule"
 							}
 						]
 					},
 					{
-						"identifier": "RULE00003",
+						identifier: "RULE00003",
 						name: "rule-outputs-not-used",
-						"matches": [
+						matches: [
 							{
-								"attribute": "(local/remote)-name",
-								"condition": "not-in",
-								"value": "@parent-rule-definition.arguments"
+								attribute: "(local/remote)-name",
+								condition: "not-in",
+								value: "@parent-rule-definition.arguments"
 							},
 							{
-								"attribute": "(local/remote)-name",
-								"condition": "not-in",
-								"value": "@parent-rule-definition.condition[variable]"
+								attribute: "(local/remote)-name",
+								condition: "not-in",
+								value: "@parent-rule-definition.condition[variable]"
 							},
 							{
-								"attribute": "(local/remote)-name",
-								"condition": "not-in-like",
-								"value": "@parent-rule-definition.condition[expression]"
+								attribute: "(local/remote)-name",
+								condition: "not-in-like",
+								value: "@parent-rule-definition.condition[expression]"
 							},
 							{
-								"attribute": "(local/remote)-name",
-								"condition": "not-in-like",
-								"value": "@parent-rule-definition.set-var[expression]"
+								attribute: "(local/remote)-name",
+								condition: "not-in-like",
+								value: "@parent-rule-definition.set-var[expression]"
 							},
 							{
-								"attribute": "(local/remote)-name",
-								"condition": "not-in",
-								"value": "@parent-rule-definition.output[variable]"
+								attribute: "(local/remote)-name",
+								condition: "not-in",
+								value: "@parent-rule-definition.output[variable]"
 							},
 							{
-								"attribute": "(local/remote)-name",
-								"condition": "not-in-like",
-								"value": "@parent-rule-definition.output[expression]"
+								attribute: "(local/remote)-name",
+								condition: "not-in-like",
+								value: "@parent-rule-definition.output[expression]"
 							}
 						],
-						"message": "Output ${@name} is outputted, but not used in rule ${@parent-rule-definition[name]}",
-						"level": ValidationLevels.Warning,
+						message: "Output ${@name} is outputted, but not used in rule ${@parent-rule-definition[name]}",
+						level: ValidationLevels.Warning,
 						conditions: [
 							{
-								"attribute": "@parent[name]",
-								"condition": "==",
-								"value": "rule"
+								attribute: "@parent[name]",
+								condition: "==",
+								value: "rule"
 							}
 						]
 					}
@@ -605,25 +479,9 @@ export const RULE_DEFINITION: Definitions = {
 					]
 				}
 			},
-			{
-				name: "ignore-modelcheck",
-				description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
-			},
-			{
-				name: "ignore-modelcheck-justification",
-				description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				conditions: [
-					{
-						"attribute": "ignore-modelcheck",
-						"condition": "!=",
-						"value": ""
-					}
-				]
-			},
-			{
-				name: "comment",
-				description: "Developer's comment on this element."
-			},
+			dev_ignore_modelcheck_attribute,
+			dev_ignore_modelcheck_justification_attribute,
+			dev_comment_attribute
 		],
 	}],
 	"output": [{
@@ -674,25 +532,9 @@ export const RULE_DEFINITION: Definitions = {
 				name: "postcondition",
 				description: "A condition to check the value with."
 			},
-			{
-				name: "ignore-modelcheck",
-				description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
-			},
-			{
-				name: "ignore-modelcheck-justification",
-				description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				conditions: [
-					{
-						"attribute": "ignore-modelcheck",
-						"condition": "!=",
-						"value": ""
-					}
-				]
-			},
-			{
-				name: "comment",
-				description: "Developer's comment on this element."
-			},
+			dev_ignore_modelcheck_attribute,
+			dev_ignore_modelcheck_justification_attribute,
+			dev_comment_attribute
 		],
 	},
 	{
@@ -786,25 +628,9 @@ export const RULE_DEFINITION: Definitions = {
 				name: "value",
 				description: "A fixed value."
 			},
-			{
-				name: "ignore-modelcheck",
-				description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
-			},
-			{
-				name: "ignore-modelcheck-justification",
-				description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				conditions: [
-					{
-						"attribute": "ignore-modelcheck",
-						"condition": "!=",
-						"value": ""
-					}
-				]
-			},
-			{
-				name: "comment",
-				description: "Developer's comment on this element."
-			}
+			dev_ignore_modelcheck_attribute,
+			dev_ignore_modelcheck_justification_attribute,
+			dev_comment_attribute
 		]
 	}],
 	"clear-var": [{
@@ -817,25 +643,9 @@ export const RULE_DEFINITION: Definitions = {
 				required: true,
 				autoadd: true
 			},
-			{
-				name: "ignore-modelcheck",
-				description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
-			},
-			{
-				name: "ignore-modelcheck-justification",
-				description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
-				conditions: [
-					{
-						"attribute": "ignore-modelcheck",
-						"condition": "!=",
-						"value": ""
-					}
-				]
-			},
-			{
-				name: "comment",
-				description: "Developer's comment on this element."
-			}
+			dev_ignore_modelcheck_attribute,
+			dev_ignore_modelcheck_justification_attribute,
+			dev_comment_attribute
 		]
 	}],
 	"if": [{

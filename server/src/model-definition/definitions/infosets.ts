@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element } from './shared';
+import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type } from './shared';
 export const INFOSET_DEFINITION: Definitions = {
 	"infosets": [{
 		description: "Collection of infosets.",
@@ -28,21 +28,8 @@ export const INFOSET_DEFINITION: Definitions = {
 				name: "name",
 				description: "The name of the module"
 			},
-			{
-				name: "target-namespace",
-				description: "Target namespace of the contents of the module. A relative namespace may start with a +, e.g., \"+Preferences\" may result in, e.g., \"Platform.Preferences\". (The target namespace together with the module name makes the module unique.)",
-				"validations": [
-					{
-						type: "regex",
-						"value": "(\\+?[A-Z][a-zA-Z]+(\\.[A-Z][a-zA-Z]+)*)?",
-						"message": "Only alphabetic, CamelCased words separated by dots are allowed."
-					}
-				]
-			},
-			{
-				name: "description",
-				description: "Description of contents and purpose."
-			}
+			target_namespace_attribute,
+			dev_description_attribute,
 		],
 		childs: [
 			{
@@ -82,31 +69,17 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 			{
 				name: "sort",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "yes"
-						},
-						{
-							name: "no"
-						}
-					]
-				}
+				type: default_yes_no_attribute_type
 			},
 			{
 				name: "sort-column",
 				description: "A single column on which the result is sorted.",
 				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "$type/attribute/@name"	// TODO
-						}
-					]
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute
 				}
 				,
-				conditions: [
+				visibilityConditions: [
 					{
 						"attribute": "sort",
 						"condition": "!=",
@@ -136,7 +109,7 @@ export const INFOSET_DEFINITION: Definitions = {
 						},
 					]
 				},
-				conditions: [
+				visibilityConditions: [
 					{
 						"attribute": "sort-column",
 						"condition": "!=",
@@ -187,7 +160,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				name: "filter",
 				description: "The type filter to apply for search.",
 				type: {
-					type: AttributeTypes.Enum,
+					type: AttributeTypes.Reference,
 					options: [
 						{
 							name: "$type/filters/search/@name"	// TODO
@@ -308,7 +281,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				name: "user-created",
 				description: "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
-				conditions: [
+				visibilityConditions: [
 					{
 						"attribute": "name",
 						"condition": "==",

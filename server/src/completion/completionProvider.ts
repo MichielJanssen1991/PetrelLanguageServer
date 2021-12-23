@@ -1,5 +1,5 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
-import { AttributeTypes, ChildDefinition, IsSymbolOrReference, ModelElementTypes, Definition, Reference, SymbolDeclaration, TreeNode, IXmlNodeContext } from '../model-definition/symbolsAndReferences';
+import { AttributeTypes, ChildDefinition, IsSymbolOrReference, ModelElementTypes, Definition, Reference, SymbolDeclaration, TreeNode, IXmlNodeContext, ValidationMatches, ElementAttributes } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { CompletionContext } from './completionContext';
@@ -53,28 +53,126 @@ export class CompletionProvider {
 		if (node) {
 			// get default attributes based on model definition
 			const modelDefinition = this.modelDefinitionManager.getModelDefinitionForCurrentNode(modelFileContext, context);
-			const attributesForTag = modelDefinition?.attributes?.map(x => x.name) || [];
-
+			
+			// get a lit of nonvisible elements (attributes which should not appear in the completion list because they do not apply )
+			const attributesForTag = this.getVisibleAttributes(modelDefinition, node);
+			
 			// get attributes based on the action called
-			let attributesForAction: string[] = [];
+			let attributesForAction: ElementAttributes[] = [];
 			if (node.type == ModelElementTypes.ActionCall) {
 				const actionReference = node.attributeReferences["name"] as Reference;
 				const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionReference);
 				attributesForAction = (referencedAction?.children
 					.filter(x => x.type == ModelElementTypes.Attribute) as SymbolDeclaration[])
-					.map(x => x.name||"") || [];
+					.map(x => {return {name: x.name, description: "geen"};
+				}) || [];
 			}
 
 			let allAttributes = [...attributesForAction, ...attributesForTag];
+			
 			// remove already available attributes
 			const allExistingAttributes = [...Object.keys(node.attributeReferences), ...Object.keys(node.otherAttributes)];
-			allAttributes = allAttributes.filter(item => !allExistingAttributes.includes(item));
+			allAttributes = allAttributes.filter(item => !allExistingAttributes.includes(item.name));
 
 			attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);
 
 			return attributeCompletions;
 		}
 		return [];
+	}
+
+	/**
+	 * Get a list of non visible attributes based on the visibilityConditions of the Model Definition
+	 * @param modelDefinition 
+	 * @param node 
+	 * @returns a list of non visible attribute names 
+	 */
+	private getVisibleAttributes(modelDefinition: Definition | undefined, node: TreeNode){
+		// get all attributes without visibilityConditions
+		const a = modelDefinition?.attributes?.filter(
+			attr => !attr.visibilityConditions
+		) || [];
+		
+		// get all attributes with visibilityConditions and conditions did match
+		const b = modelDefinition?.attributes?.filter(
+			attr => {
+				let totRetVal: boolean | undefined;
+				const allNodeAttributes: any = {...node.otherAttributes, ...node.attributeReferences};
+				
+				attr.visibilityConditions?.forEach(visCond => {
+					switch(visCond.condition){
+						case "==":
+							if (allNodeAttributes[visCond.attribute]){
+								totRetVal = this.returnEqualsOperationResult(totRetVal, visCond.operator, visCond.value, allNodeAttributes[visCond.attribute].value);
+							} else {
+								totRetVal = this.returnEqualsOperationResult(totRetVal, visCond.operator, visCond.value);
+							}			
+							break;
+						case "!=":
+							if (allNodeAttributes[visCond.attribute]){
+								totRetVal = this.returnUnEqualsOperationResult(totRetVal, visCond.operator, visCond.value, allNodeAttributes[visCond.attribute].value);
+							} else {
+								totRetVal = this.returnUnEqualsOperationResult(totRetVal, visCond.operator, visCond.value);
+							}							
+							break;
+						case "misses":
+							// not implemented yet
+							totRetVal = false;
+							break;
+						case "not-in":
+							// not implemented yet
+							totRetVal = false;
+							break;
+						case "not-in-like":
+							// not implemented yet
+							totRetVal = false;
+							break;
+						default:
+							totRetVal = false;
+							break;
+					}
+				});
+				return totRetVal;
+			}
+		) || [];
+
+		return [...a, ...b];
+	}
+
+	/**
+	 * A basic function to calculate the EQUALS operation value (overall boolean result + new conditions) based on the given operator.
+	 * When no operator is given, it default uses OR conditions
+	 * @param returnResult 
+	 * @param operator 
+	 * @param conditionValue 
+	 * @param nodevalue 
+	 * @returns 
+	 */
+	private returnEqualsOperationResult(returnResult: boolean | undefined, operator: string | undefined, conditionValue: string, nodevalue="") : boolean {
+		if (!operator || operator == "or") {
+			returnResult = returnResult || nodevalue == conditionValue;
+		} else {
+			returnResult = returnResult && nodevalue == conditionValue;
+		}
+		return returnResult || false;
+	}
+
+	/**
+	 * A basic function to calculate the UNEQUALS operation value (overall boolean result + new conditions) based on the given operator.
+	 * When no operator is given, it default uses AND conditions
+	 * @param returnResult 
+	 * @param operator 
+	 * @param conditionValue 
+	 * @param nodevalue 
+	 * @returns 
+	 */
+	private returnUnEqualsOperationResult(returnResult: boolean | undefined, operator: string | undefined, conditionValue: string, nodevalue="") : boolean {
+		if (returnResult !== undefined && (!operator || operator == "and")) {
+			returnResult = returnResult && nodevalue != conditionValue;
+		} else {
+			returnResult = returnResult || nodevalue != conditionValue;
+		}
+		return returnResult || false;
 	}
 
 	private getAttributeValueCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
@@ -95,7 +193,6 @@ export class CompletionProvider {
 				}
 			}
 		}
-
 		return symbols;
 	}
 
@@ -112,11 +209,14 @@ export class CompletionProvider {
 		return childCompletions;
 	}
 
-	private mapAttributesToCompletionItem(attributes: string[]): CompletionItem[] {
+	private mapAttributesToCompletionItem(attributes: ElementAttributes[]): CompletionItem[] {
 		return attributes.map(att => ({
-			label: att,
-			kind: CompletionItemKind.Property,
-			detail: "Attribute"
+			label: att.name,
+			kind: CompletionItemKind.Snippet,
+			insertText: `${att.name}="\${0}"`,
+			insertTextFormat: InsertTextFormat.Snippet,
+			documentation: att.description,
+			detail: att.description
 		}));
 	}
 

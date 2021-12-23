@@ -1,10 +1,83 @@
 import { NAMES } from '../constants';
-import { AttributeTypes, ElementAttributes, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext } from '../symbolsAndReferences';
+import { AttributeTypes, ElementAttributes, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType } from '../symbolsAndReferences';
+
+export const default_yes_no_attribute_type =
+	{
+		type: AttributeTypes.Enum,
+		"options": [
+			{
+				name: "yes"
+			},
+			{
+				name: "no",
+			}						
+		]
+	} as AttributeType;
 
 export const dev_comment_attribute =
 	{
 		name: "comment",
 		description: "Developer's comment on this element."
+	} as ElementAttributes;
+
+export const dev_obsolete_attribute =
+	{
+		name: "obsolete",
+		description: "Set to yes if this model entity is obsolete. This means another way of modeling is prefered and this old functionality may be removed in the next version.",
+		type: default_yes_no_attribute_type
+	} as ElementAttributes;
+
+export const dev_obsolete_message_attribute =
+	{
+		name: "obsolete-message",
+		description: "Indicate what to use as an alternative.",
+		visibilityConditions: [
+			{
+				attribute: "obsolete",
+				condition: "==",
+				value: "yes"
+			}
+		]
+	} as ElementAttributes;
+
+export const dev_description_attribute =
+	{
+		name: "description",
+		description: "Description of contents and purpose."
+	} as ElementAttributes;
+
+export const dev_ignore_modelcheck_attribute =
+	{
+		name: "ignore-modelcheck",
+		description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
+	} as ElementAttributes;
+
+export const dev_ignore_modelcheck_justification_attribute =
+	{
+		name: "ignore-modelcheck-justification",
+		description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
+		visibilityConditions: [
+			{
+				attribute: "ignore-modelcheck",
+				condition: "!=",
+				value: ""
+			}
+		]
+	} as ElementAttributes;
+
+export const target_namespace_attribute =
+	{
+		name: "target-namespace",
+		description: "Target namespace of the contents of the module. A relative namespace may start with a +, e.g., \"+Preferences\" may result in, e.g., \"Platform.Preferences\". (The target namespace together with the module name makes the module unique.)",
+		autoadd: true,
+		validations: [
+			{
+				type: "regex",
+				value: /(\\+?[A-Z][a-zA-Z]+(\\.[A-Z][a-zA-Z]+)*)?/,
+				message: "Only alphabetic, CamelCased words separated by dots are allowed.",
+				level: ValidationLevels.Fatal
+			}
+		]
 	} as ElementAttributes;
 
 export const include_blocks_element =
@@ -141,7 +214,7 @@ export const include_element =
 						]
 					}
 				],
-				conditions: [
+				visibilityConditions: [
 					{
 						"attribute": "file",
 						"condition": "==",
@@ -152,7 +225,7 @@ export const include_element =
 			{
 				name: "file",
 				description: "A file to include. Model paths can be used.",
-				conditions: [
+				visibilityConditions: [
 					{
 						"attribute": "block",
 						"condition": "==",
@@ -211,7 +284,7 @@ export const include_element =
 						]
 					}
 				],
-				conditions: [
+				visibilityConditions: [
 					{
 						"attribute": "is-fragment",
 						"condition": "==",
@@ -235,7 +308,7 @@ export const include_element =
 						]
 					}
 				],
-				conditions: [
+				visibilityConditions: [
 					{
 						"attribute": "is-fragment",
 						"condition": "==",
@@ -261,7 +334,7 @@ export const include_element =
 						]
 					}
 				],
-				conditions: [
+				visibilityConditions: [
 					{
 						"attribute": "presedence",
 						"condition": "==",
@@ -277,7 +350,7 @@ export const include_element =
 			{
 				name: "application",
 				description: "To select an application within the included file.",
-				conditions: [
+				visibilityConditions: [
 					{
 						"attribute": "file",
 						"condition": "!=",
