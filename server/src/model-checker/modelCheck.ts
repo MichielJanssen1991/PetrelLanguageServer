@@ -1,4 +1,5 @@
 import * as LSP from 'vscode-languageserver';
+import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
 import { ModelElementTypes, TreeNode } from '../model-definition/symbolsAndReferences';
 import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 import { ModelCheckerOptions } from './modelChecker';
@@ -6,11 +7,13 @@ import { ModelCheckerOptions } from './modelChecker';
 export abstract class ModelCheck {
 	private diagnostics: LSP.Diagnostic[] = [];
 	protected modelManager: ModelManager;
+	protected modelDefinitionManager: ModelDefinitionManager;
 	protected abstract modelElementType: ModelElementTypes;
 	protected abstract matchCondition?: (node: TreeNode) => boolean;
 
-	constructor(modelManager: ModelManager) {
+	constructor(modelManager: ModelManager, modelDefinitionManager? : ModelDefinitionManager) {
 		this.modelManager = modelManager;
+		this.modelDefinitionManager = modelDefinitionManager || new ModelDefinitionManager();
 	}
 
 	public check(node: TreeNode, options: ModelCheckerOptions): LSP.Diagnostic[] {

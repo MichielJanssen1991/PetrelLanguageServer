@@ -86,7 +86,7 @@ export const RULE_DEFINITION: Definitions = {
 				validations: [
 					{
 						type: "regex",
-						value: /[\\w_]+/,
+						value: /^[\w_]+$/,
 						message: "The name should only contain letters or underscore",
 						level: ValidationLevels.Fatal
 					}],
@@ -553,10 +553,59 @@ export const RULE_DEFINITION: Definitions = {
 		],
 	},
 	{
+		description: "Output of the action.",
 		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 		matchCondition: (nodeContext) => !isOutputDeclaration(nodeContext),
 		type: ModelElementTypes.Output,
-		detailLevel: ModelDetailLevel.SubReferences
+		detailLevel: ModelDetailLevel.SubReferences,
+		attributes:[
+			{
+				name: "local-name",
+				description: "Name for a local field or variable.",
+				autoadd: true
+			},
+			{
+				name: "remote-name",
+				description: "Name for a destination field or variable.",
+				autoadd: true
+			},
+			{
+				name: "value",
+				description: "The value for the argument. For output arguments, this is the default value."
+			},
+			{
+				name: "postcondition",
+				description: "A condition to check the value with.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "is not empty"
+						}
+					]
+				}
+			},
+			{
+				name: "override-inherited",
+				description: "A condition to check the value with.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "childs",
+							description: "yes"
+						},
+						{
+							name: "",
+							description: "no"
+						}
+					]
+				}
+			},
+			dev_comment_attribute,
+			dev_ignore_modelcheck_attribute,
+			dev_ignore_modelcheck_justification_attribute
+		]
 	}],
 	"argument": [{
 		type: ModelElementTypes.Argument,
@@ -672,17 +721,17 @@ export const RULE_DEFINITION: Definitions = {
 		childs: [
 			{
 				element: "condition",
-				"occurence": "at-least-once",
+				occurence: "at-least-once",
 				required: true
 			},
 			{
 				element: "then",
-				"occurence": "once",
+				occurence: "once",
 				required: true
 			},
 			{
 				element: "else",
-				"occurence": "once"
+				occurence: "once"
 			},
 		]
 	}],
@@ -703,17 +752,17 @@ export const RULE_DEFINITION: Definitions = {
 		childs: [
 			{
 				element: "condition",
-				"occurence": "at-least-once",
+				occurence: "at-least-once",
 				required: true
 			},
 			{
 				element: "then",
-				"occurence": "once",
+				occurence: "once",
 				required: true
 			},
 			{
 				element: "else",
-				"occurence": "once"
+				occurence: "once"
 			},
 		]
 	}],
@@ -1124,11 +1173,11 @@ export const RULE_DEFINITION: Definitions = {
 		childs: [
 			{
 				element: "case",
-				"occurence": "at-least-once"
+				occurence: "at-least-once"
 			},
 			{
 				element: "default",
-				"occurence": "once"
+				occurence: "once"
 			}
 		]
 	}],

@@ -48,7 +48,8 @@ export enum ValidationLevels {
 
 export enum AttributeTypes {
 	Enum = "enum",
-	Reference = "reference"
+	Reference = "reference",
+	Numeric = "numeric"
 }
 
 export type ContextQualifiers = {

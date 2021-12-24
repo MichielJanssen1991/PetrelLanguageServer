@@ -104,7 +104,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				validations: [
 					{
 						type: "regex",
-						value: /[A-Za-z][A-Za-z0-9]*/,
+						value: /^[A-Za-z][A-Za-z0-9]*$/,
 						message: "The type name should only consist of letters and numbers and should start with a letter."
 					}
 				]
@@ -135,26 +135,14 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				name: "system-table",
 				description: "If the type is a system type. This influences, e.g., if the type is included in Export.",
-				type:
-				{
-					type: AttributeTypes.Enum,
-					"options": [
-						{
-							name: "yes"
-						},
-						{
-							name: "no",
-						},
-						{
-							name: "",
-							description: "(default) no"
-						}
-					]
-				}
+				type: default_yes_no_attribute_type
 			},
 			{
 				name: "iid-field",
-				description: "The field which contains the identifier of the instances."
+				description: "The field which contains the identifier of the instances.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
 			},
 			{
 				name: "store-context-info",
@@ -473,15 +461,79 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			{
 				name: "key",
-				description: "",
+				description: "One or more attributes of a type can be defined as key. These attributes together determine the primary key, which allows for a default sort order and ensures uniqueness of the fields.",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "relation-field",
+						condition: "!=",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "attribute",
+				description: "An attribute to inherit all properties from.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute // TODO: add Context of current type
+				}
+			},
+			{
+				name: "attribute-template",		// TODO: check if platform still supports this
+				description: "A template this attribute is based on.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute // TODO: change this to AttributeTemplates once it's clear that platform it still supports
+				}
+			},
+			{
+				name: "allow-existing",
+				description: "When set to 'no', an existing option is not allowed.",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "relation-type",
+						condition: "!=",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "delete-cascade",
+				description: "Specifies if with the removal of the referred object it is allowed to remove this relation. Indicates that when removing the parent to which this attribute is related, child records also have to be deleted. This is only useful for an identifying relation of e.g. \"Consults per patient\" (as childs) to parent \"Patient\". If false (default) an exception is thrown when one tries to delete the refered object and the relation still exists.",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "relation-type",
+						condition: "!=",
+						value: ""
+					}
+				]
 			},
 			{
 				name: "sort",
-				description: "",
+				description: "A consecutive numeric value (starting with 1) which indicates the sort order index.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
 			},
 			{
 				name: "sort-type",
-				description: "",
+				description: "If the sorting on this field should be ascending or descending.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "ASC",
+							description: "Ascending"
+						},
+						{
+							name: "DESC",
+							description: "Descending"
+						}
+					]
+				},
 				visibilityConditions: [
 					{
 						attribute: "sort",
@@ -618,13 +670,9 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				name: "max-length",
 				description: "Specifies the field width, defined in number of characters displayed.",
-				validations: [
-					{
-						type: "regex",
-						value: /\d+/,
-						message: "Please enter a numeric value."
-					}
-				]
+				type: {
+					type: AttributeTypes.Numeric
+				}
 			},
 			{
 				name: "allowed-file-extensions",
@@ -645,7 +693,17 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			{
 				name: "max-list-items",
-				description: "",
+				description: "Limit the enum list to a maximum",
+				type: {
+					type: AttributeTypes.Numeric
+				},
+				visibilityConditions: [
+					{
+						attribute: "type",
+						condition: "==",
+						value: "enum"
+					}					
+				]
 			},
 			{
 				name: "show-colorfield",
@@ -683,7 +741,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			{
 				name: "translatable",
-				description: "",
+				description: "If this attribute is multilingual. If so, the attribute will store a translation ID. The attribute will be translated before sending it to the front-end. See [Multilingual data]",
 				type: default_yes_no_attribute_type
 			},
 			{
@@ -692,18 +750,50 @@ export const BACKEND_DEFINITION: Definitions = {
 				type: default_yes_no_attribute_type
 			},
 			{
+				name: "always-in-multidata",
+				description: "",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "type",
+						condition: "==",
+						value: "boolset"
+					}
+				]
+			},
+			{
 				name: "encrypted",
 				description: "Relation attributes are encrypted at the type to which they belong.",
 				type: default_yes_no_attribute_type,
 				visibilityConditions: [
 					{
 						attribute: "relation-field",
-						condition: '!=',
+						condition: '==',
 						value: ""
 					}
 				]
 
 			}
+		],
+		childs: [
+			{
+				element: "option"
+			},
+			{
+				element: "format",
+				occurence: "once"
+			},
+			{
+				element: "auto-key",
+				occurence: "once"
+			},
+			{
+				element: "auto-field-filter",
+				occurence: "once"
+			},
+			{
+				element: "copy-attribute" // TODO move to frontend
+			},
 		]
 	}],
 	"option": [{}],

@@ -196,7 +196,7 @@ export class CompletionProvider {
 									ModelElementTypes.SetVar,
 								])
 								?.availableParams.map((param) => ({ label: param })) || [
-									{ label: "no parames found" },
+									{ label: "no params found" },
 								];
 							break;
 						case ModelElementTypes.Rule:
@@ -244,7 +244,7 @@ export class CompletionProvider {
 	private mapChildrenToCompletionItems(children: ChildDefinition[], modelFileContext: ModelFileContext): CompletionItem[] {
 		return children.map(
 			(child: ChildDefinition) => {
-				const childsOwnDefinition = this.modelDefinitionManager.getModelDefinitionForTagWitouthContext(modelFileContext, child.element);//TODO: should pass node and context of child
+				const childsOwnDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, child.element);//TODO: should pass node and context of child
 				const snippet = this.buildChildElementSnippet(modelFileContext, child, childsOwnDefinition);
 				return {
 					label: child.element,
@@ -295,7 +295,7 @@ export class CompletionProvider {
 		// get the required child nodes and add them to the snippet
 		const childSnippets: string[] = [];
 		childChildren?.filter(childNode => childNode.required).forEach(item => {
-			const childDefinition = this.modelDefinitionManager.getModelDefinitionForTagWitouthContext(modelFileContext, item.element);
+			const childDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, item.element);
 			childSnippets.push(this.buildChildElementSnippet(modelFileContext, item, childDefinition, tabIndent + `\t`));
 		});
 

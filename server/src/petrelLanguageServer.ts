@@ -39,7 +39,7 @@ export default class PetrelLanguageServer {
 		this.modelDefinitionManager = new ModelDefinitionManager();
 		this.modelManager = new ModelManager();
 		this.analyzer = new Analyzer(this.modelManager, this.modelDefinitionManager);
-		this.modelChecker = new ModelChecker(this.modelManager);
+		this.modelChecker = new ModelChecker(this.modelManager, this.modelDefinitionManager);
 		this.completionProvider = new CompletionProvider(this.modelManager, this.modelDefinitionManager);
 		this.connection = connection;
 

@@ -13,6 +13,8 @@ import { RuleCallCheck } from './checks/actionCallChecks/ruleCallCheck';
 import { RuleLoopActionCallCheck } from './checks/actionCallChecks/ruleLoopActionCallCheck';
 import { FunctionCallCheck } from './checks/actionCallChecks/functionCallCheck';
 import { RuleDeclarationCheck } from './checks/ruleDeclarationCheck';
+import { ModelDefinitionCheck } from './checks/modelDefinitionCheck';
+import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
 
 export type ModelCheckerOptions = {
 	maxNumberOfProblems?: number,
@@ -25,11 +27,13 @@ export type ModelCheckerOptions = {
 export class ModelChecker {
 	private diagnostics: LSP.Diagnostic[] = [];
 	private modelManager: ModelManager;
+	private modelDefinitionManager: ModelDefinitionManager;
 	private static defaultOptions: ModelCheckerOptions = { detailLevel: ModelDetailLevel.SubReferences, skipFolders: [] };
 	private checks: ModelCheck[] = [];
 
-	constructor(modelManager: ModelManager) {
+	constructor(modelManager: ModelManager, modelDefinitionManager: ModelDefinitionManager) {
 		this.modelManager = modelManager;
+		this.modelDefinitionManager = modelDefinitionManager;
 
 		this.checks.push(new InfosetCallCheck(modelManager));
 		this.checks.push(new RuleCallCheck(modelManager));
@@ -39,6 +43,7 @@ export class ModelChecker {
 		this.checks.push(new InfosetDeclarationCheck(modelManager));
 		this.checks.push(new ReferencedObjectExistsCheck(modelManager));
 		this.checks.push(new SymbolIsReferencedCheck(modelManager));
+		this.checks.push(new ModelDefinitionCheck(modelManager, modelDefinitionManager));
 		//this.checks.push(new RuleDeclarationCheck(modelManager));
 	}
 

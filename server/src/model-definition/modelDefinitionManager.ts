@@ -48,7 +48,7 @@ export class ModelDefinitionManager {
 	}
 
 	//Should be removed later (context will always be required to distinguish between some tags)
-	public getModelDefinitionForTagWitouthContext(context: ModelFileContext, tag: string) {
+	public getModelDefinitionForTagWithoutContext(context: ModelFileContext, tag: string) {
 		const definitionsForTag = this.getModelDefinition(context)[tag] || [];
 		return definitionsForTag.find(def => true);
 	}
