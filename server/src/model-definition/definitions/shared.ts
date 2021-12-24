@@ -389,10 +389,59 @@ export const action_argument_element: Definition = {
 
 export const action_output_element: Definition =
 {
+	description: "Output of the action.",
 	name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 	matchCondition: (nodeContext) => !isOutputDeclaration(nodeContext),
 	type: ModelElementTypes.Output,
-	detailLevel: ModelDetailLevel.SubReferences
+	detailLevel: ModelDetailLevel.SubReferences,
+	attributes:[
+		{
+			name: "local-name",
+			description: "Name for a local field or variable.",
+			autoadd: true
+		},
+		{
+			name: "remote-name",
+			description: "Name for a destination field or variable.",
+			autoadd: true
+		},
+		{
+			name: "value",
+			description: "The value for the argument. For output arguments, this is the default value."
+		},
+		{
+			name: "postcondition",
+			description: "A condition to check the value with.",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "is not empty"
+					}
+				]
+			}
+		},
+		{
+			name: "override-inherited",
+			description: "A condition to check the value with.",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "childs",
+						description: "yes"
+					},
+					{
+						name: "",
+						description: "no"
+					}
+				]
+			}
+		},
+		dev_comment_attribute,
+		dev_ignore_modelcheck_attribute,
+		dev_ignore_modelcheck_justification_attribute
+	]
 };
 
 export function isViewArgument(nodeContext: IXmlNodeContext): boolean {

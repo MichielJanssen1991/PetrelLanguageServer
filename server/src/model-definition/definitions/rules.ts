@@ -1,6 +1,6 @@
 import { NAMES } from '../constants';
 import { AttributeTypes, ModelElementTypes, Definition, Definitions, ValidationLevels, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element, default_yes_no_attribute_type } from './shared';
+import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_output_element } from './shared';
 export const RULE_DEFINITION: Definitions = {
 	"rules": [{
 		type: ModelElementTypes.Rule,
@@ -550,63 +550,9 @@ export const RULE_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_attribute,
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
-		],
-	},
-	{
-		description: "Output of the action.",
-		name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
-		matchCondition: (nodeContext) => !isOutputDeclaration(nodeContext),
-		type: ModelElementTypes.Output,
-		detailLevel: ModelDetailLevel.SubReferences,
-		attributes:[
-			{
-				name: "local-name",
-				description: "Name for a local field or variable.",
-				autoadd: true
-			},
-			{
-				name: "remote-name",
-				description: "Name for a destination field or variable.",
-				autoadd: true
-			},
-			{
-				name: "value",
-				description: "The value for the argument. For output arguments, this is the default value."
-			},
-			{
-				name: "postcondition",
-				description: "A condition to check the value with.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "is not empty"
-						}
-					]
-				}
-			},
-			{
-				name: "override-inherited",
-				description: "A condition to check the value with.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "childs",
-							description: "yes"
-						},
-						{
-							name: "",
-							description: "no"
-						}
-					]
-				}
-			},
-			dev_comment_attribute,
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute
-		]
-	}],
+		]},
+		action_output_element
+	],
 	"argument": [{
 		type: ModelElementTypes.Argument,
 		description: "An argument to pass to the action.",

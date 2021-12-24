@@ -288,7 +288,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			{
 				name: "audit-trail",
-				description: "Specifies if changes to the type instances should be logged in an audit log table.</summary>The audit log includes timestamp, user, and the change.",
+				description: "Specifies if changes to the type instances should be logged in an audit log table.The audit log includes timestamp, user, and the change.",
 				type: default_yes_no_attribute_type
 			},
 			{
@@ -796,15 +796,259 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 		]
 	}],
-	"option": [{}],
-	"keys": [{}],
-	"key": [{}],
-	"keyfield": [{}],
-	"format": [{}],
-	"image": [{}],
-	"text": [{}],
-	"server-events": [{}],
-	"server-event": [{}],
+	"option": [{
+		description: "A field value option. Options may be used for enums, radios and boolsets.",
+		attributes: [
+			{
+				name: "value",
+				description: "The value of the option. Options with the empty value can be used to represent the situation when the attribute has no value, and thus will be presented by default (not applicable to boolean sets). The values should be unique inside the field.",
+				validations: [
+					{
+						type: "regex",
+						value: /[|]+/,
+						message: "The value cannot contain '|'."
+					}
+				]
+			},
+			{
+				name: "caption",
+				required: true,
+				description: "The representation of the option to the user. The caption should be unique inside the field."				
+			},
+			{
+				name: "label-width",
+				description: "The width of the option label in the frontend."		
+			},
+			{
+				name: "src",
+				description: "URL for an option image.",
+				visibilityConditions: [
+					{
+						attribute: "parent::attribute::type",	// TODO: figure out how to get the attribute of parent element
+						condition: '==',
+						value: "enum"
+					}
+				]
+			},
+			{
+				name: "width",
+				description: "The width of the option image.",
+				visibilityConditions: [
+					{
+						attribute: "src",
+						condition: '!=',
+						value: ""
+					},
+					{
+						operator: "and",
+						attribute: "parent::format::child[width]",	// TODO: figure out how to get the attribute of parent element
+						condition: '==',
+						value: ""
+					}
+				]
+			},
+			{
+				name: "height",
+				description: "The height of the option image.",
+				visibilityConditions: [
+					{
+						attribute: "src",
+						condition: '!=',
+						value: ""
+					},
+					{
+						operator: "and",
+						attribute: "parent::format::child[height]",	// TODO: figure out how to get the attribute of parent element
+						condition: '==',
+						value: ""
+					}
+				]
+			},
+			dev_comment_attribute
+		]
+	}],
+	"keys": [{
+		description: "Database indexing keys. These are the sorting keys for creating (non) unique indices, as a result of which a performance improvement can be realised. Keys are when possible, used for queries. When no suitable key is found, the framework searches for the minimal set (this will however be usually bigger than when with a suitable key). From this set, at the server, those records that not satisfactory with a slower mechanism, are removed.",
+		attributes: [dev_comment_attribute],
+		childs: [
+			{
+				element: "key",
+				required: true,
+				occurence: "at-least-once"
+			}
+		]
+	}],
+	"key": [{
+		description: "A database indexing key. Max lenght of 25 letters",
+		attributes: [
+			{
+				name: "name",
+				required: true,
+				description: "The name of the key.",
+				validations: [
+					{
+						type: "regex",
+						value: /^\w{1,25}$/,
+						message: "Name can not be longer then 25 characters and only contain letters"
+					}
+				]
+			},
+			{
+				name: "is-unique",
+				description: "Defines an unique key. The combination of all fields contained in the key have to be unique.",
+				type: default_yes_no_attribute_type
+			},
+			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "keyfield",
+				occurence: "at-least-once"
+			}
+		]
+	}],
+	"keyfield": [{
+		description: "",
+		attributes: [
+			{
+				name: "name",
+				required: true,
+				description: "The link to the field in the type which has to be included in this key. (Notice this is only useful for attributes (including relations), not for relation attributes.)",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute // TODO: filter on parent type
+				}
+			}
+		]
+	}],
+	"format": [{
+		description: "Defines a lay-out.",
+		childs: [
+			{
+				element: "image"
+			},
+			{
+				element: "text"
+			}
+		]
+	}],
+	"image": [{
+		description: "Displays the option images.",
+		attributes: [
+			{
+				name: "width",
+				description: "The width of the option images."
+			},
+			{
+				name: "height",
+				description: "The height of the option images."
+			}
+		]
+	}],
+	"text": [{
+		description: "Displays the option labels.",
+		attributes: [
+			{
+				name: "width",
+				description: "The width of the option labels."
+			}
+		]
+	}],
+	"server-events": [{
+		description: "A server event registration.",
+		attributes: [dev_comment_attribute],
+		childs: [
+			{
+				element: "server-event",
+				required: true,
+				occurence: "at-least-once"
+			}
+		]
+	}],
+	"server-event": [{
+		description: "Server side event.",
+		attributes: [
+			{
+				name: "name",
+				required: true,
+				description: "The type of event to listen to.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "onbeforeload",
+							description: "Before loading an existing record"
+						},
+						{
+							name: "onafterload",
+							description: "After loading an existing record"
+						},
+						{
+							name: "onbeforeupdate",
+							description: "Before updating an existing record"
+						},
+						{
+							name: "onbeforeinsert",
+							description: "Before inserting a new record"
+						},
+						{
+							name: "onbeforesave",
+							description: "Before saving a record (insert or update)"
+						},
+						{
+							name: "onbeforepersist",
+							description: "Before writing a record to the persistence"
+						},
+						{
+							name: "onafterpersist",
+							description: "After writing a record to the persistence"
+						},
+						{
+							name: "onaftersave",
+							description: "After saving a record (insert or update)"
+						},
+						{
+							name: "onafterinsert",
+							description: "After inserting a new record"
+						},
+						{
+							name: "onafterupdate",
+							description: "After updating an existing record"
+						},
+						{
+							name: "onbeforedelete",
+							description: "Before deleting a record"
+						},
+						{
+							name: "onafterdelete",
+							description: "After deleting a record successfully"
+						},
+						{
+							name: "ondeletefailed",
+							description: "After failure of deleting a record"
+						},
+					]
+				}
+			},
+			{
+				name: "assembly",
+				description: "The assembly which implements the event."
+			},
+			{
+				name: "class",
+				description: "The class which implements the event."
+			},
+			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "action"
+			},
+			{
+				element: "clear-var"
+			}
+		]
+	}],
 	"decorators": [{}],
 	"decorator": [{}],
 	"decoration": [{}],
