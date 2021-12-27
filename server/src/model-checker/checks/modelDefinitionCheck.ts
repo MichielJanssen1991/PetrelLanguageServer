@@ -1,4 +1,4 @@
-import { Attribute, AttributeTypes, ChildDefinition, Definition, ModelElementTypes, TreeNode, ValidationLevels } from '../../model-definition/symbolsAndReferences';
+import { Attribute, AttributeTypes, Definition, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
 
@@ -67,8 +67,28 @@ export class ModelDefinitionCheck extends ModelCheck {
 
 		// check required attribute is added
 		definition.attributes?.forEach(attr=>{
+			// based on required:true attribute
 			if (attr.required && !this.allNodeAttributes.map(x=>x.name.toLowerCase()).includes(attr.name.toLowerCase())){
 				this.addError(element.range, `Missing required attribute '${attr.name}' for element '${element.tag}'`);
+			} 
+			// based on requiredConditions
+			else if (attr.requiredConditions){ 
+				attr.requiredConditions.forEach(rc=>{
+					const attrElement: Attribute = element.otherAttributes[rc.attribute] || element.attributeReferences[rc.attribute];
+					const attrDefElement: Attribute = element.otherAttributes[attr.name] || element.attributeReferences[attr.name];
+					switch (rc.condition) {
+						case "==":
+							if (
+								!attrElement && (!attrDefElement || attrDefElement?.value == "") && rc.value == "" ||	
+								!attrDefElement && attrElement?.value == rc.value){
+								this.addError(element.range, `Missing required attribute '${attr.name}' for element '${element.tag}'`);
+							}
+							break;
+						default:
+							// not implemented yet
+							break;
+					}				
+				});
 			}
 		});
 	}
@@ -80,7 +100,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 				if (dv.type == "regex"){
 					const attrElement: Attribute = element.otherAttributes[da.name] || element.attributeReferences[da.name];
 					const regEx = new RegExp(dv.value);
-					if (!regEx.test(attrElement.value)){
+					if (attrElement && !regEx.test(attrElement.value)){
 						this.addError(element.range, `Invalid value for '${da.name}': ${dv.message}`);
 					}
 				}
