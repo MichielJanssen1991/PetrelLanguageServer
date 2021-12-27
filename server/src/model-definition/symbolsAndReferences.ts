@@ -38,6 +38,7 @@ export enum ModelElementTypes {
 	All = "All",
 	Module = "Module",
 	Decorators = "Decorators",
+	In = "In",
 }
 
 export enum ValidationLevels {

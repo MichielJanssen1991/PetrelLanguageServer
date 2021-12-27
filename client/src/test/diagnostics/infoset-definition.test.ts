@@ -21,7 +21,7 @@ suite('Should get diagnostics for infoset declaration', () => {
 	test('Diagnoses infoset declaration with unknown search-column attribute in subquery', async () => {
 		const docUri = getDocUri('diagnostics\\infoset-definition\\subquery-searchcolumn-unknown-attribute.xml');
 		await testDiagnostics(docUri, [
-			{ message: "Attribute 'UnknownAttribute' not found in Type with name 'Type_Test_SearchColumnUnknownAttribute'.", range: toRange(5, 35, 5, 58), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
+			{ message: "Attribute 'UnknownAttribute' not found in Type with name 'Type_Test_SearchColumnUnknownAttributeInSubquery'.", range: toRange(8, 29, 8, 47), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
 		]);
 	});
 	
