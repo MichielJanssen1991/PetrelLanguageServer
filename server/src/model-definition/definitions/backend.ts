@@ -332,8 +332,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		],
 		childs: [
 			{
-				element: "attribute",
-				occurence: "at-least-once"
+				element: "attribute"
 			},
 			{
 				element: "keys",
@@ -356,8 +355,20 @@ export const BACKEND_DEFINITION: Definitions = {
 				occurence: "once"
 			},
 			{
+				element: "decorations"
+			},
+			{
+				element: "include"
+			},
+			{
 				element: "one-to-many"
 			},
+			{
+				element: "include"
+			},
+			{
+				element: "model-condition"
+			}
 		]
 	}],
 	"attribute": [{
@@ -396,6 +407,9 @@ export const BACKEND_DEFINITION: Definitions = {
 						},
 						{
 							name: "date",
+						},
+						{
+							name: "time",
 						},
 						{
 							name: "datetime",
@@ -780,6 +794,9 @@ export const BACKEND_DEFINITION: Definitions = {
 				element: "option"
 			},
 			{
+				element: "include"
+			},
+			{
 				element: "format",
 				occurence: "once"
 			},
@@ -805,8 +822,8 @@ export const BACKEND_DEFINITION: Definitions = {
 				validations: [
 					{
 						type: "regex",
-						value: /[|]+/,
-						message: "The value cannot contain '|'."
+						value: /^[a-zA-Z]+[a-zA-Z0-9\s\-_.]*$/,
+						message: "The value can only contain 'letters, numbers, spaces, dashes, underscores or dots. The value must begin with a letter'."
 					}
 				]
 			},
@@ -1120,9 +1137,30 @@ export const BACKEND_DEFINITION: Definitions = {
 	"include": [include_element],
 	"model-condition": [model_condition_element],
 	"auto-key": [{
-		"parent": {
-			element: "attribute"
-		}
+		"description": "Automatically generates a value, based on some counting method. This can be used e.g. for sequence numbers. The value of this attribute is automatically incremented with each new record.",
+		attributes: [
+			{
+				name: "type",
+				description: "The counter representation.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "numeric",
+							default: true
+						}
+					]
+				}
+			},
+			{
+				name: "places",
+				description: "Length of string. Empty means: not restricted.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
+			},
+			dev_comment_attribute
+		]
 	}],
 	"merge-instruction": [merge_instruction_element],
 	"input": [{
@@ -1136,5 +1174,71 @@ export const BACKEND_DEFINITION: Definitions = {
 		],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
-	"output": [action_output_element]
+	"output": [action_output_element],
+	"filters": [{
+		description: "Defines search filters for this type.",
+		childs: [
+			{
+				element: "search"
+			}
+		]
+	}],
+	"search": [{
+		description: "A filter on the instances of a type.",
+		attributes: [
+			{
+				name: "name",
+				description: "Unique filter identifier."
+			},
+			{
+				name: "add-relations",
+				description: "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "filter",
+				description: "The type filter to apply for search."
+			},
+			{
+				name: "all-when-empty-filter",
+				description: "If 'no' the search returns nothing (matches no record) when the filter is empty or if all the parameter based search columns are left out; if 'yes' it  all records (matches all records).",
+				type: default_yes_no_attribute_type
+			},
+			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "searchcolumn"
+			},
+			{
+				element: "searchcolumn-submatch"
+			},
+			{
+				element: "or"
+			},
+			{
+				element: "and"
+			},
+			{
+				element: "group"
+			},
+			{
+				element: "in"
+			},
+			{
+				element: "include"
+			},
+			{
+				element: "full-text-query",
+				occurence: "once"
+			},
+		]
+	}],
+	"searchcolumn": [{}],
+	"searchcolumn-submatch": [{}],
+	"or": [{}],
+	"and": [{}],
+	"group": [{}],
+	"in": [{}],
+	"full-text-query": [{}],
 };

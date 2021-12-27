@@ -73,7 +73,7 @@ export const target_namespace_attribute =
 		validations: [
 			{
 				type: "regex",
-				value: /(\\+?[A-Z][a-zA-Z]+(\\.[A-Z][a-zA-Z]+)*)?/,
+				value: /^(\+?[A-Z][a-zA-Z]+(\.[A-Z][a-zA-Z]+)*)?$/,
 				message: "Only alphabetic, CamelCased words separated by dots are allowed.",
 				level: ValidationLevels.Fatal
 			}
@@ -354,7 +354,7 @@ export const model_condition_element: Definition =
 						{
 							name: "",
 							description: "Equals",
-							"default": true
+							default: true
 						},
 						{
 							name: "Unequal",
@@ -365,19 +365,19 @@ export const model_condition_element: Definition =
 							description: "starts with"
 						},
 						{
-							name: "&gt;",
+							name: ">",
 							description: "greater than (string compare)"
 						},
 						{
-							name: "&gt;=",
+							name: ">=",
 							description: "greater than or equal to (string compare)"
 						},
 						{
-							name: "&lt;=",
+							name: "<=",
 							description: "less than or equal to (string compare)"
 						},
 						{
-							name: "&lt;",
+							name: "<",
 							description: "less than (string compare)"
 						},
 					]
@@ -439,7 +439,7 @@ export const include_element: Definition =
 			{
 				name: "precedence",
 				description: "If the included block has import precedence. Default, included XML has no import precedence (thus the included XML can be overridden by the includer). When setting precedence to an include, the present XML is overridden by the included.",
-				"deprecated": true,
+				deprecated: true,
 				type: default_yes_no_attribute_type,
 				visibilityConditions: [
 					{
@@ -620,8 +620,7 @@ export const decorator_input_element: Definition =
 	]
 };
 
-export const target_element: Definition = 
-{
+export const target_element: Definition = {
 	type: ModelElementTypes.Target,
 	description: "This element is mandatory and is a 'placeholder' for the element on which the decorator is applied. It can be extended with attributes and elements. Elements outside this element will occur outside the target element also.",
 	attributes: [
@@ -686,6 +685,54 @@ export const decorator_context_entity_element: Definition =
 	childs: {
 		matchElementFromAttribute: "meta-name"
 	}
+};
+
+export const action_definition_argument_element: Definition = {
+	description: "Allows to define attributes/inputs/outputs shared per module",
+	attributes: [
+		{
+			name: "name",
+			required: true
+		},
+		{
+			name: "type",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "string"
+					},
+					{
+						name: "integer"
+					},
+					{
+						name: "boolean"
+					},
+					{
+						name: "numeric"
+					},
+					{
+						name: "xml"
+					},
+					{
+						name: "xml-string"
+					},
+					{
+						name: "mixed"
+					},
+					{
+						name: "iid"
+					},
+					{
+						name: "pipedlist"
+					},
+					{
+						name: "xml-list"
+					},
+				]
+			}
+		},
+	]
 };
 
 export const view_argument_element: Definition = {

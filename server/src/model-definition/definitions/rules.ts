@@ -257,6 +257,12 @@ export const RULE_DEFINITION: Definitions = {
 			},
 			{
 				element: "switch"
+			},
+			{
+				element: "include"
+			},
+			{
+				element: "model-condition"
 			}
 		]
 	}],
@@ -310,7 +316,6 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "attribute",
 				description: "A local variable name, a constant, or a data element (not supported in drop-down).",
-				required: true,
 				autoadd: true,
 				type: {
 					type: AttributeTypes.Reference,
@@ -326,15 +331,36 @@ export const RULE_DEFINITION: Definitions = {
 							name: ModelElementTypes.Output
 						}
 					]
-				}
+				},
+				requiredConditions: [
+					{
+						attribute: "expression",
+						condition: "==",
+						value: ""
+					}
+				]
 			},
 			{
 				name: "expression",
-				description: "Expression value."
+				description: "Expression value.",
+				visibilityConditions: [
+					{
+						attribute: "attribute",
+						condition: "==",
+						value: ""
+					}
+				]
 			},
 			{
 				name: "value",
-				description: "Fixed value."
+				description: "Fixed value.",
+				visibilityConditions: [
+					{
+						attribute: "attribute",
+						condition: "==",
+						value: ""
+					}
+				]
 			},
 			{
 				name: "format",
@@ -773,6 +799,12 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "switch"
 			},
+			{
+				element: "include"
+			},
+			{
+				element: "model-condition"
+			}
 		]
 	}],
 	"else": [{
