@@ -60,7 +60,7 @@ export class CompletionProvider {
 			// get attributes based on the action called
 			let attributesForAction: ElementAttributes[] = [];
 			if (node.type == ModelElementTypes.ActionCall) {
-				const actionReference = node.attributeReferences["name"] as Reference;
+				const actionReference = node.attributes["name"] as Reference;
 				const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionReference);
 				if (referencedAction){
 					attributesForAction = (referencedAction?.children
@@ -73,8 +73,8 @@ export class CompletionProvider {
 			let allAttributes = [...attributesForAction, ...attributesForTag];
 			
 			// remove already available attributes
-			const allExistingAttributes = [...Object.keys(node.attributeReferences), ...Object.keys(node.otherAttributes)];
-			allAttributes = allAttributes.filter(item => !allExistingAttributes.includes(item.name));
+			const existingAttributes = [...Object.keys(node.attributes)];
+			allAttributes = allAttributes.filter(item => !existingAttributes.includes(item.name));
 
 			attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);
 
@@ -99,20 +99,20 @@ export class CompletionProvider {
 		const b = modelDefinition?.attributes?.filter(
 			attr => {
 				let totRetVal: boolean | undefined;
-				const allNodeAttributes: any = {...node.otherAttributes, ...node.attributeReferences};
+				const nodeAttributes: any = node.attributes;
 				
 				attr.visibilityConditions?.forEach(visCond => {
 					switch(visCond.condition){
 						case "==":
-							if (allNodeAttributes[visCond.attribute]){
-								totRetVal = this.returnEqualsOperationResult(totRetVal, visCond.operator, visCond.value, allNodeAttributes[visCond.attribute].value);
+							if (nodeAttributes[visCond.attribute]){
+								totRetVal = this.returnEqualsOperationResult(totRetVal, visCond.operator, visCond.value, nodeAttributes[visCond.attribute].value);
 							} else {
 								totRetVal = this.returnEqualsOperationResult(totRetVal, visCond.operator, visCond.value);
 							}			
 							break;
 						case "!=":
-							if (allNodeAttributes[visCond.attribute]){
-								totRetVal = this.returnUnEqualsOperationResult(totRetVal, visCond.operator, visCond.value, allNodeAttributes[visCond.attribute].value);
+							if (nodeAttributes[visCond.attribute]){
+								totRetVal = this.returnUnEqualsOperationResult(totRetVal, visCond.operator, visCond.value, nodeAttributes[visCond.attribute].value);
 							} else {
 								totRetVal = this.returnUnEqualsOperationResult(totRetVal, visCond.operator, visCond.value);
 							}							

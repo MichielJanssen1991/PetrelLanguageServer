@@ -193,9 +193,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 				object = newTreeNode(node.name, type, this.getTagRange(), this.uri);
 			}
 
-			const { attributeReferences, otherAttributes } = this.parseAttributes(definition, node);
-			object.otherAttributes = otherAttributes;
-			object.attributeReferences = attributeReferences;
+			object.attributes = this.parseAttributes(definition, node);
 			object.contextQualifiers = this.parseContextQualifiers(definition, node);
 			return object;
 		}
@@ -224,15 +222,12 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		}
 	}
 
-	private parseAttributes(definition: Definition, node: XmlNode): { attributeReferences: Record<string, Reference>, otherAttributes: Record<string, Attribute> } {
-		const attributeReferences: Record<string, Reference> = {};
-		let otherAttributes: Record<string, Attribute> = {};
+	private parseAttributes(definition: Definition, node: XmlNode):  Record<string, Reference|Attribute> {
+		let attributes: Record<string, Attribute|Reference> = {};
 		if (definition.attributes) {
 			definition.attributes.forEach(attributeDefinition => {
-				const { attributeReference, otherAttribute } = this.parseAttributeForDefinition(attributeDefinition, node);
-				const attributeName = attributeDefinition.name;
-				if (attributeReference) { attributeReferences[attributeName] = attributeReference; }
-				if (otherAttribute) { otherAttributes[attributeName] = otherAttribute; }
+				const attribute = this.parseAttributeForDefinition(attributeDefinition, node);
+					if (attribute) { attributes[attributeDefinition.name] = attribute; }
 			});
 		}
 
@@ -242,17 +237,15 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 			const actionCallDefinition = otherDefinition["action"].find(x => x.type == ModelElementTypes.ActionCall);
 			if (actionCallDefinition && actionCallDefinition.attributes) {
 				actionCallDefinition.attributes.forEach(attributeDefinition => {
-					const { attributeReference, otherAttribute } = this.parseAttributeForDefinition(attributeDefinition, node);
-					const attributeName = attributeDefinition.name;
-					if (attributeReference) { attributeReferences[attributeName] = attributeReference; }
-					if (otherAttribute) { otherAttributes[attributeName] = otherAttribute; }
+					const attribute = this.parseAttributeForDefinition(attributeDefinition, node);
+					if (attribute) { attributes[attributeDefinition.name] = attribute; }
 				});
 			}
 		}
 
 		// When detail level is All add all attributes not yet recognized as otherattributes
 		if (this.detailLevel == ModelDetailLevel.All) {
-			const attributesRecognized = new Set([...Object.keys(otherAttributes), ...Object.keys(attributeReferences)]);
+			const attributesRecognized = new Set(Object.keys(attributes));
 			const attributesNotRecognized = Object.keys(node.attributes).filter(attributeName => !attributesRecognized.has(attributeName)).reduce((obj: Record<string, Attribute>, attributeName) => {
 				const attributeValue = node.attributes[attributeName];
 				const { range, fullRange } = this.attributeRanges[attributeName];
@@ -260,27 +253,26 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 				obj[attributeName] = attribute;
 				return obj;
 			}, {});
-			otherAttributes = { ...otherAttributes, ...attributesNotRecognized };
+			attributes = { ...attributes, ...attributesNotRecognized };
 		}
-		return { attributeReferences, otherAttributes };
+		return attributes;
 	}
 
 	private parseAttributeForDefinition(attributeDefinition: ElementAttributes, node: XmlNode) {
-		let attributeReference, otherAttribute;
+		let attribute;
 		const attributeName = attributeDefinition.name;
 		const attributeValue = node.attributes[attributeName];
 		if (attributeValue) {
 			const { range, fullRange } = this.attributeRanges[attributeName];
 			const relatedto = attributeDefinition.type?.relatedTo;
 			if (relatedto) {
-				attributeReference = newReference(attributeName, attributeValue, relatedto, range, this.uri);
-				attributeReference.fullRange = fullRange;
+				attribute = newReference(attributeName, attributeValue, relatedto, range, fullRange, this.uri);
 			}
 			else {
-				otherAttribute = { name: attributeName, value: attributeValue, range, fullRange };
+				attribute = { name: attributeName, value: attributeValue, range, fullRange };
 			}
 		}
-		return { attributeReference, otherAttribute };
+		return attribute;
 	}
 
 	private parseContextQualifiers(definition: Definition, node: XmlNode) {

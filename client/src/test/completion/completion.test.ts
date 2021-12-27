@@ -8,11 +8,11 @@ suite('Should do completion', () => {
 		const docUri = getDocUri('completion\\argument-attributes.xml');
 		await testCompletionEquals(docUri, new vscode.Position(4, 14), {
 			items: [
-				{ label: 'local-name', kind: vscode.CompletionItemKind.Property },
-				{ label: 'parseType', kind: vscode.CompletionItemKind.Property },
-				{ label: 'precondition', kind: vscode.CompletionItemKind.Property },
-				{ label: 'remote-name', kind: vscode.CompletionItemKind.Property },
-				{ label: 'value', kind: vscode.CompletionItemKind.Property },
+				{ label: 'local-name', kind: vscode.CompletionItemKind.Snippet },
+				{ label: 'parseType', kind: vscode.CompletionItemKind.Snippet },
+				{ label: 'precondition', kind: vscode.CompletionItemKind.Snippet },
+				{ label: 'remote-name', kind: vscode.CompletionItemKind.Snippet },
+				{ label: 'value', kind: vscode.CompletionItemKind.Snippet },
 			]
 		});
 	});
@@ -37,12 +37,12 @@ suite('Should do completion', () => {
 		const docUri = getDocUri('completion\\action-call-attributes.xml');
 		await testCompletionContains(docUri, new vscode.Position(3, 27), {
 			items: [
-				{ label: 'infoset-name', kind: vscode.CompletionItemKind.Property }
+				{ label: 'infoset-name', kind: vscode.CompletionItemKind.Snippet }
 			]
 		});
 		await testCompletionContains(docUri, new vscode.Position(4, 24), {
 			items: [
-				{ label: 'rulename', kind: vscode.CompletionItemKind.Property }
+				{ label: 'rulename', kind: vscode.CompletionItemKind.Snippet }
 			]
 		});
 	});
@@ -51,7 +51,7 @@ suite('Should do completion', () => {
 		const docUri = getDocUri('completion\\action-call-attributes.xml');
 		await testCompletionDoesNotContain(docUri, new vscode.Position(5, 45), {
 			items: [
-				{ label: 'rulename', kind: vscode.CompletionItemKind.Property }
+				{ label: 'rulename', kind: vscode.CompletionItemKind.Snippet }
 			]
 		});
 	});

@@ -6,7 +6,7 @@ import { ModelCheckerOptions } from '../../modelChecker';
 import { ActionCallCheck } from './actionCallCheck';
 
 export class RuleLoopActionCallCheck extends ActionCallCheck {
-	protected matchCondition = (node: TreeNode) => (node.attributeReferences.name.value).toLowerCase() == "ruleloopaction";
+	protected matchCondition = (node: TreeNode) => (node.attributes.name.value).toLowerCase() == "ruleloopaction";
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);
@@ -22,7 +22,8 @@ export class RuleLoopActionCallCheck extends ActionCallCheck {
 		this.verifyOutputsAreKnownInReferencedObjects(node);
 
 		if (options.detailLevel >= ModelDetailLevel.SubReferences) {
-			Object.values(node.attributeReferences).forEach(subRef => {
+			const references = Object.values(node.attributes).filter(x=>x.isReference) as Reference[];
+			references.forEach(subRef => {
 				this.verifyReferencedObjectsMandatoryInputsProvidedForRuleLoop(node, subRef);
 			});
 		}
@@ -35,12 +36,12 @@ export class RuleLoopActionCallCheck extends ActionCallCheck {
 		const referencedSymbol = this.modelManager.getReferencedObject(subRef);
 		const argumentNames = new Set(actionArguments.map(x => (x as SymbolDeclaration).name));
 		if (subRef.type == ModelElementTypes.Rule) {
-			const infosetRef = node.attributeReferences[NAMES.ATTRIBUTE_INFOSET];
+			const infosetRef = node.attributes[NAMES.ATTRIBUTE_INFOSET] as Reference;
 			const infoset = infosetRef ? this.modelManager.getReferencedObject(infosetRef) : undefined;
 			if (infoset) {
 				const query = this.modelManager.getChildrenOfType(infoset, ModelElementTypes.Search)[0];
 				if (query) {
-					const typeRef = query.attributeReferences[NAMES.ATTRIBUTE_TYPE];
+					const typeRef = query.attributes[NAMES.ATTRIBUTE_TYPE] as Reference;
 					if (typeRef) {
 						this.modelManager.getReferencedTypeAttributes(typeRef).forEach(x => argumentNames.add(x));
 					}

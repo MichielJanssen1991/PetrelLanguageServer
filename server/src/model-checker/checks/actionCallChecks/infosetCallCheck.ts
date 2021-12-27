@@ -1,12 +1,12 @@
 import { NAMES } from '../../../model-definition/constants';
-import { TreeNode, ModelDetailLevel } from '../../../model-definition/symbolsAndReferences';
+import { TreeNode, ModelDetailLevel, Reference } from '../../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
 import { CHECKS_MESSAGES } from '../../messages';
 import { ModelCheckerOptions } from '../../modelChecker';
 import { ActionCallCheck } from './actionCallCheck';
 
 export class InfosetCallCheck extends ActionCallCheck {
-	protected matchCondition = (node: TreeNode) => (node.attributeReferences.name.value).toLowerCase() == "infoset";
+	protected matchCondition = (node: TreeNode) => (node.attributes.name.value).toLowerCase() == "infoset";
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);
@@ -24,7 +24,8 @@ export class InfosetCallCheck extends ActionCallCheck {
 			this.verifyInputsAreKnownInReferencedObjects(reference);
 			this.verifyOutputsAreKnownInReferencedObjects(reference);
 
-			Object.values(reference.attributeReferences).forEach(subRef => {
+			const references = Object.values(reference.attributes).filter(x=>x.isReference) as Reference[];
+			references.forEach(subRef => {
 				this.verifyReferencedObjectsMandatoryInputsProvided(reference, subRef);
 			});
 		}
@@ -41,7 +42,7 @@ export class InfosetCallCheck extends ActionCallCheck {
 	protected getAdditionalInputsForSpecificAction(node: TreeNode) { return []; }
 
 	protected getAdditionalOutputsForSpecificAction(node: TreeNode) {
-		const infosetRef = node.attributeReferences[NAMES.ATTRIBUTE_INFOSET];
+		const infosetRef = node.attributes[NAMES.ATTRIBUTE_INFOSET];
 		return [infosetRef.name];
 	}
 }

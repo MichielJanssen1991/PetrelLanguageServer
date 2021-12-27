@@ -36,7 +36,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 
 		//Add output to local name references
 		ruleOutputs.forEach(output => {
-			const localNameRefInOutput = { name: "name", value: output.otherAttributes[NAMES.ATTRIBUTE_ATTRIBUTE].value, range: output.range, fullRange: output.fullRange };
+			const localNameRefInOutput = { name: "name", value: output.attributes[NAMES.ATTRIBUTE_ATTRIBUTE].value, range: output.range, fullRange: output.fullRange };
 			this.ruleLocalNameReferences.push(localNameRefInOutput);
 		});
 
@@ -49,7 +49,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 
 		//Check all outputs are defined?
 		ruleOutputs.forEach(output => {
-			const outputAttributeName = output.otherAttributes[NAMES.ATTRIBUTE_ATTRIBUTE].value;
+			const outputAttributeName = output.attributes[NAMES.ATTRIBUTE_ATTRIBUTE].value;
 			if (!this.ruleLocalNameReferences.find(x => x.value == outputAttributeName)) {
 				this.addWarning(output.range, CHECKS_MESSAGES.RULE_OUTPUT_ATTRIBUTE_NOT_FOUND(outputAttributeName));
 			}
@@ -60,8 +60,8 @@ export class RuleDeclarationCheck extends ModelCheck {
 		switch (node.type) {
 			case ModelElementTypes.Argument:
 				{
-					const localName = node.otherAttributes[NAMES.ATTRIBUTE_LOCALNAME];
-					const expression = node.otherAttributes[NAMES.ATTRIBUTE_EXPRESSION];
+					const localName = node.attributes[NAMES.ATTRIBUTE_LOCALNAME];
+					const expression = node.attributes[NAMES.ATTRIBUTE_EXPRESSION];
 
 					if (localName) {
 						if (!this.ruleLocalNames.find(x => (x.value == localName.value))) {
@@ -75,7 +75,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 				}
 			case ModelElementTypes.Output:
 				{
-					const localName = node.otherAttributes[NAMES.ATTRIBUTE_LOCALNAME];
+					const localName = node.attributes[NAMES.ATTRIBUTE_LOCALNAME];
 					if (localName) {
 						this.ruleLocalNames.push(localName);
 					}

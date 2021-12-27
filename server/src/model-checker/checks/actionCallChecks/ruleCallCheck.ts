@@ -6,7 +6,7 @@ import { ModelCheckerOptions } from '../../modelChecker';
 import { ActionCallCheck } from './actionCallCheck';
 
 export class RuleCallCheck extends ActionCallCheck {
-	protected matchCondition = (node: TreeNode) => (node.attributeReferences.name.value).toLowerCase() == "rule";
+	protected matchCondition = (node: TreeNode) => (node.attributes.name.value).toLowerCase() == "rule";
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);
@@ -20,7 +20,8 @@ export class RuleCallCheck extends ActionCallCheck {
 			this.verifyInputsAreKnownInReferencedObjects(node);
 			this.verifyOutputsAreKnownInReferencedObjects(node);
 
-			Object.values(node.attributeReferences).forEach(subRef => {
+			const references = Object.values(node.attributes).filter(x=>x.isReference) as Reference[];
+			references.forEach(subRef => {
 				this.verifyReferencedObjectsMandatoryInputsProvided(node, subRef);
 			});
 		}

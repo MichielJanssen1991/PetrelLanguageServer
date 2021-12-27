@@ -214,7 +214,10 @@ export const INFOSET_DEFINITION: Definitions = {
 	"or": [{}],
 	"and": [{}],
 	"group": [{}],
-	"in": [{}],
+	"in": [{
+		type: ModelElementTypes.In,
+		detailLevel: ModelDetailLevel.Declarations
+	}],
 	"full-text-query": [{}],
 	"query": [{}],
 	"exists": [{}],

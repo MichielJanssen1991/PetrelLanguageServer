@@ -38,6 +38,7 @@ export enum ModelElementTypes {
 	All = "All",
 	Module = "Module",
 	Decorators = "Decorators",
+	In = "In",
 }
 
 export enum ValidationLevels {
@@ -91,8 +92,7 @@ export interface TreeNode {
 	uri: string,
 	isSymbolDeclaration: boolean,
 	children: (TreeNode | SymbolDeclaration)[],
-	otherAttributes: Record<string, Attribute>,
-	attributeReferences: Record<string, Reference>,
+	attributes: Record<string, Attribute|Reference>,
 	comment?: string,
 	contextQualifiers: ContextQualifiers
 }
@@ -102,7 +102,8 @@ export interface Attribute {
 	range: LSP.Range,
 	fullRange: LSP.Range,
 	value: string,
-	isReference?: boolean
+	isReference?: boolean,
+	type?: ModelElementTypes
 }
 export interface Reference extends Attribute {
 	isReference: true,
@@ -117,13 +118,13 @@ export interface SymbolDeclaration extends TreeNode {
 }
 
 
-export function newReference(name: string, value: string, type: ModelElementTypes, range: LSP.Range, uri: string): Reference {
+export function newReference(name: string, value: string, type: ModelElementTypes, range: LSP.Range, fullRange: LSP.Range, uri: string): Reference {
 	return {
 		name,
 		value,
 		type,
 		range,
-		fullRange: LSP.Range.create(range.start, range.end),
+		fullRange,
 		uri,
 		isReference: true
 	};
@@ -137,10 +138,9 @@ export function newTreeNode(tag: string, type: ModelElementTypes, range: LSP.Ran
 		fullRange: LSP.Range.create(range.start, range.end),
 		uri,
 		children: [],
-		otherAttributes: {},
+		attributes: {},
 		contextQualifiers: {},
 		comment,
-		attributeReferences: {},
 		isSymbolDeclaration: false
 	};
 }
@@ -154,10 +154,9 @@ export function newSymbolDeclaration(name: string, tag: string, type: ModelEleme
 		fullRange: LSP.Range.create(range.start, range.end),
 		uri,
 		children: [],
-		otherAttributes: {},
+		attributes: {},
 		contextQualifiers: {},
 		comment,
-		attributeReferences: {},
 		isSymbolDeclaration: true
 	};
 }

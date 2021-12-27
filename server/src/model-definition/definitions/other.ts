@@ -43,6 +43,10 @@ export const OTHER_DEFINITION: Definitions =
 			},
 		}]
 	}],
+	"in": [{
+		type: ModelElementTypes.In,
+		detailLevel: ModelDetailLevel.Declarations,
+	}],
 	"function": [{
 		type: ModelElementTypes.Function,
 		prefixNameSpace: true,

@@ -62,7 +62,7 @@ export class CompletionContext implements IXmlNodeContext {
 				if (value == ""){
 					const res = this.walkChildrenToFindAttributeInTag(n, inTag, searchName);
 					if (res) {
-						const allNodeAttributes: any = {...res.otherAttributes, ...res.attributeReferences};
+						const allNodeAttributes: any = res.attributes;
 						value = allNodeAttributes[searchName].value;
 					}
 				}				
@@ -74,7 +74,7 @@ export class CompletionContext implements IXmlNodeContext {
 	private walkChildrenToFindAttributeInTag(node: TreeNode, inTag: ModelElementTypes, searchName: string): TreeNode | undefined{
 		let res;
 		if (node.tag.toLowerCase() == inTag.toLowerCase()){
-			const allNodeAttributes: any = {...node.otherAttributes, ...node.attributeReferences};
+			const allNodeAttributes: any = node.attributes;
 			const attrValue = allNodeAttributes[searchName].value;
 			if (attrValue){
 				res = node;
@@ -90,19 +90,14 @@ export class CompletionContext implements IXmlNodeContext {
 	}
 
 	private symbolOrReferenceToXmlNode(symbolOrReference: TreeNode): XmlNode {
-		const attributeReferences = symbolOrReference.attributeReferences;
-		const attributes1 = Object.keys(attributeReferences).
+		const attributes = symbolOrReference.attributes;
+		const attributesSimplified = Object.keys(attributes).
 			reduce((result: Record<string, string>, att) => {
-				result[att] = attributeReferences[att].name; return result;
-			}, {});
-		const otherAttributes = symbolOrReference.otherAttributes;
-		const attributes2 = Object.keys(otherAttributes).
-			reduce((result: Record<string, string>, att) => {
-				result[att] = otherAttributes[att].name; return result;
+				result[att] = attributes[att].name; return result;
 			}, {});
 		return {
 			name: symbolOrReference.tag,
-			attributes: { ...attributes1, ...attributes2 }
+			attributes: attributesSimplified
 		};
 	}
 

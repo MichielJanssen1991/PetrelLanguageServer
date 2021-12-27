@@ -187,8 +187,7 @@ export default class PetrelLanguageServer {
 				type: node.type,
 				objectType: node.isSymbolDeclaration,
 				tag: node.tag,
-				otherAttributes: node.otherAttributes,
-				attributeReferences: node.attributeReferences
+				attributes: node.attributes
 			};
 		}); // Only log essentials to avoid very large log messages (especially caused by chidren)
 		this.connection.console.log(

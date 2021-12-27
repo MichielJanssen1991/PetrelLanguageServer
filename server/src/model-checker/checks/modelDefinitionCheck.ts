@@ -17,7 +17,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 		// (The parse function has some checks currently)
 		const tagDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, node.tag);
 		
-		this.allNodeAttributes = Object.values({...node.otherAttributes, ...node.attributeReferences});
+		this.allNodeAttributes = Object.values(node.attributes);
 		if (tagDefinition){
 			this.checkChildOccurrences(node, tagDefinition);
 			this.checkAttributeOccurrences(node, tagDefinition);
@@ -98,7 +98,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 		definition.attributes?.filter(da=>da.validations && this.allNodeAttributes.map(x=>x.name.toLowerCase()).includes(da.name.toLowerCase())).forEach(da=>{
 			da.validations?.forEach(dv=>{
 				if (dv.type == "regex"){
-					const attrElement: Attribute = element.otherAttributes[da.name] || element.attributeReferences[da.name];
+					const attrElement: Attribute = element.attributes[da.name];
 					const regEx = new RegExp(dv.value);
 					if (attrElement && !regEx.test(attrElement.value)){
 						this.addError(element.range, `Invalid value for '${da.name}': ${dv.message}`);

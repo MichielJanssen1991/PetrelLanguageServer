@@ -58,7 +58,8 @@ export class SymbolAndReferenceManager {
 	private walkNodes(node: TreeNode) {
 		this.processNode(node);
 		node.children.forEach(x => this.walkNodes(x));
-		Object.values(node.attributeReferences).forEach(x => this.processAttribute(x));
+		
+		Object.values(node.attributes).forEach(x => this.processAttribute(x));
 	}
 
 	private processNode(node: TreeNode) {
@@ -68,9 +69,13 @@ export class SymbolAndReferenceManager {
 			}
 		}
 	}
-	private processAttribute(ref: Reference) {
-		if (standaloneObjectTypes.has(ref.type)) {
-			this.addReference(ref);
+	private processAttribute(attribute: Attribute) {
+		if(attribute.isReference)
+		{
+			const ref = attribute as Reference; 
+			if (standaloneObjectTypes.has(ref.type)) {
+				this.addReference(ref);
+			}
 		}
 	}
 
@@ -258,10 +263,7 @@ export class SymbolAndReferenceManager {
 		this.addSubNodesForPosition(nodes, this.uriToTree[uri], position);
 		const lastNode = nodes[nodes.length - 1];
 		const inTag = pointIsInRange(lastNode.range, position);
-		let attribute: Reference | Attribute | undefined = Object.values(lastNode.attributeReferences).find(x => pointIsInRange(x.fullRange, position));
-		if (!attribute) {
-			attribute = Object.values(lastNode.otherAttributes).find(x => pointIsInRange(x.fullRange, position));
-		}
+		const attribute: Reference | Attribute | undefined = Object.values(lastNode.attributes).find(x => pointIsInRange(x.fullRange, position));
 		return { nodes, inTag, attribute };
 	}
 
