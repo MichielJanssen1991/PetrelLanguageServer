@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type } from './shared';
+import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute } from './shared';
 export const INFOSET_DEFINITION: Definitions = {
 	"infosets": [{
 		description: "Collection of infosets.",
@@ -12,13 +12,88 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 			{
 				element: "infoset"
+			},
+			{
+				element: "include"
 			}
 		]
 	}],
 	"infoset": [{
+		description: "A data query description.",
 		type: ModelElementTypes.Infoset,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
+		attributes: [
+			{
+				name: "name",
+				description: "Unique name for the infoset.",
+				required: true,
+				validations: [
+					{
+						type: "regex",
+						value: /^([A-Z][a-zA-Z]+\.)*[A-Za-z][A-Za-z0-9]*$/,
+						message: "Mathematical symbols and punctuation are not allowed in model entity identifiers."
+					}
+				]
+			},
+			dev_obsolete_attribute,
+			dev_obsolete_message_attribute,
+			dev_override_rights_attribute,
+			dev_is_declaration_attribute,
+			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "input"
+			},
+			{
+				element: "search",
+				occurence: "once"
+			},
+			{
+				element: "variable"
+			},
+			{
+				element: "query",
+				occurence: "once"
+			},
+			{
+				element: "exists",
+				occurence: "once"
+			},
+			{
+				element: "count",
+				occurence: "once"
+			},
+			{
+				element: "min",
+				occurence: "once"
+			},
+			{
+				element: "max",
+				occurence: "once"
+			},
+			{
+				element: "sum",
+				occurence: "once"
+			},
+			{
+				element: "average",
+				occurence: "once"
+			},
+			{
+				element: "generate-interval",
+				occurence: "once"
+			},
+			{
+				element: "set-aggregate-query",
+				occurence: "once"
+			},
+			{
+				element: "single-aggregate-query",
+				occurence: "once"
+			},
+		]
 	}],
 	"module": [{
 		type: ModelElementTypes.Module,
@@ -55,7 +130,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 			{
 				element: "decorations",
-				"occurence": "once"
+				occurence: "once"
 			}
 		]
 	}],
@@ -81,9 +156,9 @@ export const INFOSET_DEFINITION: Definitions = {
 				,
 				visibilityConditions: [
 					{
-						"attribute": "sort",
-						"condition": "!=",
-						"value": "no"
+						attribute: "sort",
+						condition: "!=",
+						value: "no"
 					}
 				]
 
@@ -111,9 +186,9 @@ export const INFOSET_DEFINITION: Definitions = {
 				},
 				visibilityConditions: [
 					{
-						"attribute": "sort-column",
-						"condition": "!=",
-						"value": ""
+						attribute: "sort-column",
+						condition: "!=",
+						value: ""
 					}
 				]
 			},
@@ -132,7 +207,7 @@ export const INFOSET_DEFINITION: Definitions = {
 						},
 						{
 							name: "no",
-							"default": true
+							default: true
 						}
 					]
 				}
@@ -150,7 +225,7 @@ export const INFOSET_DEFINITION: Definitions = {
 						},
 						{
 							name: "no",
-							"default": true
+							default: true
 						}
 					]
 				}
@@ -176,7 +251,7 @@ export const INFOSET_DEFINITION: Definitions = {
 					options: [
 						{
 							name: "yes",
-							"default": true
+							default: true
 						},
 						{
 							name: "no"
@@ -189,26 +264,193 @@ export const INFOSET_DEFINITION: Definitions = {
 				description: "An internal name for the search query which is available to use for 'match search field' purposes."
 			},
 			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "searchcolumn"
+			},
+			{
+				element: "searchcolumn-submatch"
+			},
+			{
+				element: "group"
+			},
+			{
+				element: "in"
+			},
+			{
+				element: "full-text-query"
+			},
+			{
+				element: "include"
+			}
 		]
 	}],
 	"searchcolumn": [{
+		description: "Definition of the conditions of the search.",
 		type: ModelElementTypes.SearchColumn,
 		detailLevel: ModelDetailLevel.Declarations,
-		attributes: [{
-			name: "name",
-			type: {
-				type: AttributeTypes.Reference,
-				relatedTo: ModelElementTypes.Attribute,
+		attributes: [
+			{
+				name: "name",
+				description: "The column to be searched.",
+				required: true,
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute,
+				},
 			},
-		},
-		{
-			name: "rule",
-			type: {
-				type: AttributeTypes.Reference,
-				relatedTo: ModelElementTypes.Rule,
+			{
+				name: "is-context-info",
+				type: default_yes_no_attribute_type
 			},
-			detailLevel: ModelDetailLevel.References,
-		}]
+			{
+				name: "search-relation-iids",
+				description: "Only applicable to relation searchcolumns. Decides if the type will be searched by the specified display-as attribute (search-relation-iids = false) or by IId (search-relation-iids = true).",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "condition",
+				required: true,
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "xxx"
+						}
+					]
+				}
+			},
+			{
+				name: "value",
+				description: "The column value to be searched. You can work with parameters in this query, by using the syntax {..}. For example: &lt;search type=\"Patientencounter\"&gt;&lt;searchcolumn name=\"patientID\" value=\"{@patientID}\" condition=\"IS\" /&gt;&lt;/search&gt;",
+				visibilityConditions: [
+					{
+						attribute: "rule",
+						condition: "==",
+						value: ""
+					},
+					{
+						operator: "and",
+						attribute: "match-searchfield",
+						condition: "==",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "match-searchfield",
+				description: "A field in the search query to match with.",
+				visibilityConditions: [
+					{
+						attribute: "rule",
+						condition: "==",
+						value: ""
+					},
+					{
+						operator: "and",
+						attribute: "value",
+						condition: "==",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "match-searchfilter",
+				description: "The search query to match the \"match-searchfield\" from. If empty, it will match from the current context search query.",
+				visibilityConditions: [
+					{
+						attribute: "rule",
+						condition: "==",
+						value: ""
+					},
+					{
+						operator: "and",
+						attribute: "value",
+						condition: "==",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "rule",
+				description: "A rule that computes the value to compare with. Only for rules with no required inputs.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Rule,
+				},
+				detailLevel: ModelDetailLevel.References,
+				visibilityConditions: [
+					{
+						attribute: "value",
+						condition: "==",
+						value: ""
+					},
+					{
+						operator: "and",
+						attribute: "match-searchfield",
+						condition: "==",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "rule-output",
+				description: "The name of the output argument of the rule to take for the value of this search column.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Output,
+				},
+				detailLevel: ModelDetailLevel.References,
+				visibilityConditions: [
+					{
+						attribute: "rule",
+						condition: "!=",
+						value: ""
+					}
+				],
+				requiredConditions: [
+					{
+						attribute: "rule",
+						condition: "!=",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "search-when-empty",
+				description: "Whether to use this condition or not if the value is empty",
+				type: default_yes_no_attribute_type,
+			},
+			{
+				name: "sort",
+				description: "The sequence in which multiple columns should be sorted.",
+				type: {
+					type: AttributeTypes.Numeric
+				},
+			},
+			{
+				name: "sort-order",
+				description: "The order how the sort-column is ordered.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "ASC",
+							description: "Sorts ascending."
+						},
+						{
+							name: "DESC",
+							description: "Sorts descending."
+						},
+						{
+							name: "",
+							description: "Takes the default sort order for this attribute."
+						},
+					]
+				},
+			},
+		]
 	}],
 	"searchcolumn-submatch": [{}],
 	"or": [{}],
@@ -238,27 +480,72 @@ export const INFOSET_DEFINITION: Definitions = {
 		detailLevel: ModelDetailLevel.Declarations,
 		attributes: [
 			{
-				name: "attribute",
+				name: "name",
+				required: true,
+				description: "Unique name of the variable.",
 				type: {
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Attribute,
 				},
 				detailLevel: ModelDetailLevel.SubReferences
-			}
+			},
+			{
+				name: "attribute",
+				description: "One of the attributes in the result data. If left empty, the 'iid' attribute will be fetched.",
+				required: true,
+				type: {		// TODO: add iid to the list of references since it is not a defined attribute of the type
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute,
+				},
+				detailLevel: ModelDetailLevel.SubReferences
+			},
+			{
+				name: "operator",
+				description: "May be used as a scalar over the result data. When left empty, the ''attribute'' value of the first record is returned.",
+				required: true,
+				type: {		
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "",
+							description: "first non-empty attribute value"
+						},
+						{
+							name: "PIPEDLIST",
+							description: "piped list, the values of ''attribute'' in the records found as a piped list ('''1|2|3|4|'''), which can subsequently be used in another query"
+						},
+					]
+				},
+				detailLevel: ModelDetailLevel.SubReferences
+			},
+			dev_ignore_modelcheck_attribute,
+			dev_ignore_modelcheck_justification_attribute,
+			dev_obsolete_attribute,
+			dev_obsolete_message_attribute,
+			dev_comment_attribute
 		],
+		childs: [ // HUH? ... WHY??
+			{
+				element: "input"
+			},
+			{
+				element: "search"
+			},
+			{
+				element: "query"
+			},
+			{
+				element: "action"
+			}
+		]
 	}],
-	"decorators": [{
-		type: ModelElementTypes.Decorators
-	}],
-	"decorator": [{
-		type: ModelElementTypes.Decorator
-	}],
-	"decoration": [{
-		type: ModelElementTypes.Decorator
-	}],
+	"decorators": [decorators_element],
+	"decorator": [decorator_element],
+	"decorations": [decorations_element],
+	"decoration": [decoration_element],
 	"action": [{
 		type: ModelElementTypes.Action,
-		description: "The action to perform.",
+		description: "A functional action (thus one that takes data, and returns data) to apply to the calculated value.",
 		attributes: [
 			{
 				name: "name",
@@ -292,6 +579,17 @@ export const INFOSET_DEFINITION: Definitions = {
 					}
 				]
 			}
+		],
+		childs: [
+			{
+				element: "input"
+			},
+			{
+				element: "output"
+			},
+			{
+				element: "graph-params"
+			},
 		]
 	}],
 	"include-blocks": [include_blocks_element],

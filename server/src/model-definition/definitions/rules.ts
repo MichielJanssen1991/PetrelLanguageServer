@@ -1,6 +1,6 @@
 import { NAMES } from '../constants';
 import { AttributeTypes, ModelElementTypes, Definition, Definitions, ValidationLevels, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_output_element, backend_action_element } from './shared';
+import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_output_element, backend_action_element, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_is_declaration_attribute, dev_override_rights_attribute } from './shared';
 export const RULE_DEFINITION: Definitions = {
 	"rules": [{
 		type: ModelElementTypes.Rule,
@@ -169,57 +169,10 @@ export const RULE_DEFINITION: Definitions = {
 					}
 				]
 			},
-			{
-				name: "obsolete",
-				description: "Set to yes if this model entity is obsolete. This means another way of modeling is prefered and this old functionality may be removed in the next version.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "obsolete-message",
-				description: "Indicate what to use as an alternative.",
-				type: default_yes_no_attribute_type,
-				visibilityConditions: [
-					{
-						attribute: "obsolete",
-						condition: "==",
-						value: "yes"
-					}
-				]
-			},
-			{
-				name: "override-rights",
-				description: "May restrict which layers can override / extend this declaration.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "All",
-							description: "Full"
-						},
-						{
-							name: "User",
-							description: "Allowed until User layer"
-						},
-						{
-							name: "Company",
-							description: "Allowed until Company layer"
-						},
-						{
-							name: "General",
-							description: "Allowed until General layer"
-						},
-						{
-							name: "None",
-							description: "No override allowed, not even on the same level"
-						}
-					]
-				}
-			},
-			{
-				name: "is-declaration",
-				description: "May be used to have a metadata item which only specifies override rights and not specifies an instance.",
-				type: default_yes_no_attribute_type
-			},
+			dev_obsolete_attribute,
+			dev_obsolete_message_attribute,
+			dev_override_rights_attribute,
+			dev_is_declaration_attribute,
 			dev_ignore_modelcheck_attribute,
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute

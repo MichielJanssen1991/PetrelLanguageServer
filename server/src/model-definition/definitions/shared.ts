@@ -40,6 +40,45 @@ export const dev_obsolete_message_attribute: ElementAttributes =
 		]
 	};
 
+	export const dev_override_rights_attribute: ElementAttributes =
+	{
+		name: "override-rights",
+		description: "May restrict which layers can override / extend this declaration.",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "All",
+					description: "Full"
+				},
+				{
+					name: "User",
+					description: "Allowed until User layer"
+				},
+				{
+					name: "Company",
+					description: "Allowed until Company layer"
+				},
+				{
+					name: "General",
+					description: "Allowed until General layer"
+				},
+				{
+					name: "None",
+					description: "No override allowed, not even on the same level"
+				}
+			]
+		}
+	};
+	
+	export const dev_is_declaration_attribute: ElementAttributes =
+	{
+		name: "is-declaration",
+		description: "May be used to have a metadata item which only specifies override rights and not specifies an instance.",
+		type: default_yes_no_attribute_type
+	};
+	
+
 export const dev_description_attribute: ElementAttributes =
 	{
 		name: "description",
@@ -65,7 +104,7 @@ export const dev_ignore_modelcheck_justification_attribute: ElementAttributes =
 		]
 	};
 
-export const target_namespace_attribute =
+export const target_namespace_attribute: ElementAttributes =
 	{
 		name: "target-namespace",
 		description: "Target namespace of the contents of the module. A relative namespace may start with a +, e.g., \"+Preferences\" may result in, e.g., \"Platform.Preferences\". (The target namespace together with the module name makes the module unique.)",
@@ -78,7 +117,7 @@ export const target_namespace_attribute =
 				level: ValidationLevels.Fatal
 			}
 		]
-	} as ElementAttributes;
+	};
 
 export const include_blocks_element: Definition =
 	{
