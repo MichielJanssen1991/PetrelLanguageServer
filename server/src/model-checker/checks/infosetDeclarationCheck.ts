@@ -1,5 +1,5 @@
 import { NAMES } from '../../model-definition/constants';
-import { ModelElementTypes, IsSymbolOrReference, SymbolDeclaration, TreeNode } from '../../model-definition/symbolsAndReferences';
+import { ModelElementTypes, IsSymbolOrReference, SymbolDeclaration, TreeNode, Reference } from '../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
@@ -31,11 +31,11 @@ export class InfosetDeclarationCheck extends ModelCheck {
 
 	private verifySearch(search: TreeNode, options: ModelCheckerOptions) {
 		const searchColumns = this.modelManager.getChildrenOfType(search, ModelElementTypes.SearchColumn) as TreeNode[];
-		const typeRef = search.attributeReferences[NAMES.ATTRIBUTE_TYPE];
+		const typeRef = search.attributes[NAMES.ATTRIBUTE_TYPE] as Reference;
 		if (!attributeValueIsAVariable(typeRef.value)) { //Do not check when type name is a variable
 			const typeAttributes = this.modelManager.getReferencedTypeAttributes(typeRef);
 			searchColumns.forEach(sc => {
-				const attributeRef = sc.attributeReferences.name;
+				const attributeRef = sc.attributes.name as Reference;
 				const attributeName = attributeRef.value;
 				//Check attributes which are not a variable
 				if (!attributeValueIsAVariable(attributeName)) {

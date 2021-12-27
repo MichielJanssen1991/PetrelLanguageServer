@@ -16,7 +16,8 @@ export class ReferencedObjectExistsCheck extends ModelCheck {
 
 	protected checkInternal(node: TreeNode, options: ModelCheckerOptions)
 	{
-		Object.values(node.attributeReferences).forEach(x => this.verifyReferencedObjectExists(x as Reference, options));		
+		const references = Object.values(node.attributes).filter(x=>x.isReference) as Reference[];
+		references.forEach(x => this.verifyReferencedObjectExists(x as Reference, options));		
 	}
 
 	private verifyReferencedObjectExists(reference: Reference, options:ModelCheckerOptions) {

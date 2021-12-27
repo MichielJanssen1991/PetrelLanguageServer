@@ -21,7 +21,7 @@ export abstract class ActionCallCheck extends ModelCheck {
 	}
 
 	protected verifyMandatoryAttributeProvided(actionCall: TreeNode, attributeName: string, argumentAllowed: boolean) {
-		const attribute = actionCall.attributeReferences[attributeName];
+		const attribute = actionCall.attributes[attributeName];
 		let attributeMissing = !attribute || attribute?.name == "" || attribute?.name == undefined;
 		if (attributeMissing && argumentAllowed) {
 			const actionArguments = this.modelManager.getActionArguments(actionCall);
@@ -32,7 +32,7 @@ export abstract class ActionCallCheck extends ModelCheck {
 	}
 
 	protected verifyInputsAreKnownInReferencedObjects(actionCall: TreeNode) {
-		const referenceAndSubReferences = Object.values(actionCall.attributeReferences);
+		const referenceAndSubReferences = Object.values(actionCall.attributes).filter(x=>x.isReference) as Reference[];
 		const referencedSymbolInputs = referenceAndSubReferences.map(subRef => {
 			const referencedSymbol = this.modelManager.getReferencedObject(subRef);
 			return referencedSymbol ? this.modelManager.getSymbolInputs(referencedSymbol) : [];
@@ -50,7 +50,7 @@ export abstract class ActionCallCheck extends ModelCheck {
 	}
 
 	protected verifyOutputsAreKnownInReferencedObjects(actionCall: TreeNode) {
-		const referenceAndSubReferences = Object.values(actionCall.attributeReferences);
+		const referenceAndSubReferences = Object.values(actionCall.attributes).filter(x=>x.isReference) as Reference[];
 		const referencedSymbolOutputs = referenceAndSubReferences.map(subRef => {
 			const referencedSymbol = this.modelManager.getReferencedObject(subRef);
 			return referencedSymbol ? this.modelManager.getSymbolOutputs(referencedSymbol) : [];
@@ -86,7 +86,7 @@ export abstract class ActionCallCheck extends ModelCheck {
 	protected getAdditionalInputsForAction(actionCall: TreeNode) {
 		let inputNames: string[] = [];
 		this.getAdditionalInputsForSpecificAction(actionCall).forEach(x => inputNames.push(x));
-		const actionRef = actionCall.attributeReferences["name"];
+		const actionRef = actionCall.attributes["name"] as Reference;
 		const referencedAction = this.modelManager.getReferencedObject(actionRef);
 		if (referencedAction) {
 			const actionAttributes = this.modelManager.getChildrenOfType(referencedAction, ModelElementTypes.Attribute) as SymbolDeclaration[];

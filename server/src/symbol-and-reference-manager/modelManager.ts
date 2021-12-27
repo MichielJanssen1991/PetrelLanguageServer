@@ -14,7 +14,7 @@ export class ModelManager extends SymbolAndReferenceManager {
 		);
 
 		const decoratedChildren: (TreeNode | SymbolDeclaration)[] = decoratorsOrIncludeBlocks.flatMap(decoratorOrIncludeBlock => {
-			const decoratorOrIncludeBlockRef = decoratorOrIncludeBlock.attributeReferences["name"] as Reference;
+			const decoratorOrIncludeBlockRef = decoratorOrIncludeBlock.attributes["name"] as Reference;
 			const decoratorsOrIncludeBlocks = this.getReferencedObject(decoratorOrIncludeBlockRef);
 			return decoratorsOrIncludeBlocks ? this.getChildrenOfType(decoratorsOrIncludeBlocks, type) : [];
 		});
@@ -25,10 +25,10 @@ export class ModelManager extends SymbolAndReferenceManager {
 		return this.getChildrenOfType(actionCall, ModelElementTypes.Argument);
 	}
 	public getActionArgumentRemoteName(actionArgument: TreeNode) {
-		return (actionArgument.otherAttributes[NAMES.ATTRIBUTE_REMOTENAME]?.value || actionArgument.otherAttributes[NAMES.ATTRIBUTE_LOCALNAME]?.value || "");
+		return (actionArgument.attributes[NAMES.ATTRIBUTE_REMOTENAME]?.value || actionArgument.attributes[NAMES.ATTRIBUTE_LOCALNAME]?.value || "");
 	}
 	public getActionArgumentLocalName(actionArgument: TreeNode) {
-		return actionArgument.otherAttributes[NAMES.ATTRIBUTE_LOCALNAME]?.value || "";
+		return actionArgument.attributes[NAMES.ATTRIBUTE_LOCALNAME]?.value || "";
 	}
 	public getActionOutputs(actionCall: TreeNode) {
 		return this.getChildrenOfType(actionCall, ModelElementTypes.Output);
@@ -37,7 +37,7 @@ export class ModelManager extends SymbolAndReferenceManager {
 		return symbol.children.filter(x => (x.type == ModelElementTypes.Input));
 	}
 	public getMandatorySymbolInputs(symbol: SymbolDeclaration) {
-		return this.getSymbolInputs(symbol).filter(x => (x.otherAttributes.required));
+		return this.getSymbolInputs(symbol).filter(x => (x.attributes.required));
 	}
 	public getSymbolOutputs(symbol: SymbolDeclaration) {
 		return symbol.children.filter(x => (x.type == ModelElementTypes.Output));
@@ -50,7 +50,7 @@ export class ModelManager extends SymbolAndReferenceManager {
 
 	public getTypeAttributes(type: SymbolDeclaration): string[] {
 		let attributeNames = this.getChildrenOfType(type, ModelElementTypes.Attribute).map(x => (x as SymbolDeclaration).name);
-		const basedOnTypeRef = type.attributeReferences["type"];
+		const basedOnTypeRef = type.attributes["type"] as Reference;
 		if (basedOnTypeRef) {
 			const basedOnType = this.getReferencedObject(basedOnTypeRef);
 			if (basedOnType) {
