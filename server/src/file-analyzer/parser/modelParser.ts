@@ -213,10 +213,12 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 			if (parentNode && parentDefinition) {
 				if (parentDefinition?.childs) {
 					const tagNameParent = parentNode.name;
-					const childSelected = parentDefinition.childs.find(x => x.element == tagName);
-					if (!childSelected) {
-						this.addError(this.getTagRange(), ModelParser.MESSAGES.INVALID_CHILD_TAG(tagName, tagNameParent, parentDefinition.childs));
-					}
+					if (Array.isArray(parentDefinition.childs)){
+						const childSelected = parentDefinition.childs.find(x => x.element == tagName);
+						if (!childSelected) {
+							this.addError(this.getTagRange(), ModelParser.MESSAGES.INVALID_CHILD_TAG(tagName, tagNameParent, parentDefinition.childs));
+						}
+					}					
 				}
 			}
 		}

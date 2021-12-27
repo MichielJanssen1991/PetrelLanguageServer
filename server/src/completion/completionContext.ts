@@ -55,6 +55,40 @@ export class CompletionContext implements IXmlNodeContext {
 		return this.symbolOrReferenceToXmlNode(this.nodes[this.numberOfNodes - 1]);
 	}
 
+	public getAttributeValueByTagAndName(inTag: ModelElementTypes|undefined, searchName: string): string {
+		let value = "";
+		if (inTag) {
+			this.nodes.forEach(n=>{
+				if (value == ""){
+					const res = this.walkChildrenToFindAttributeInTag(n, inTag, searchName);
+					if (res) {
+						const allNodeAttributes: any = {...res.otherAttributes, ...res.attributeReferences};
+						value = allNodeAttributes[searchName].value;
+					}
+				}				
+			});
+		}
+		return value;
+	}
+
+	private walkChildrenToFindAttributeInTag(node: TreeNode, inTag: ModelElementTypes, searchName: string): TreeNode | undefined{
+		let res;
+		if (node.tag.toLowerCase() == inTag.toLowerCase()){
+			const allNodeAttributes: any = {...node.otherAttributes, ...node.attributeReferences};
+			const attrValue = allNodeAttributes[searchName].value;
+			if (attrValue){
+				res = node;
+			}
+		} 
+		
+		if (!res && node.children){
+			node.children.forEach(c=>{
+				res = this.walkChildrenToFindAttributeInTag(c, inTag, searchName);
+			});
+		}
+		return res;	
+	}
+
 	private symbolOrReferenceToXmlNode(symbolOrReference: TreeNode): XmlNode {
 		const attributeReferences = symbolOrReference.attributeReferences;
 		const attributes1 = Object.keys(attributeReferences).

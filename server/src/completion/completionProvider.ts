@@ -1,5 +1,5 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
-import { AttributeTypes, ChildDefinition, ModelElementTypes, Definition, Reference, SymbolDeclaration, TreeNode, IXmlNodeContext, ValidationMatches, ElementAttributes } from '../model-definition/symbolsAndReferences';
+import { AttributeTypes, ChildDefinition, ModelElementTypes, Definition, Reference, SymbolDeclaration, TreeNode, ElementAttributes } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { CompletionContext } from './completionContext';
@@ -222,8 +222,28 @@ export class CompletionProvider {
 		let childCompletions: CompletionItem[] = [];
 		if (elementDefinition) {
 			const children = elementDefinition.childs;
-			if (children) {
+			if (Array.isArray(children) && children){
 				childCompletions = this.mapChildrenToCompletionItems(children, modelFileContext);
+			} else {
+				if (children?.matchElementFromAttribute) {
+					const elementName = context.getAttributeValueByTagAndName(elementDefinition.type, children?.matchElementFromAttribute).toLowerCase();
+					if (elementName){
+						const childElementDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, elementName);
+						const childChildren = childElementDefinition?.childs;
+						if (Array.isArray(childChildren) && childChildren){
+							childCompletions = this.mapChildrenToCompletionItems(childChildren, modelFileContext);
+						}					
+					}
+				} else if (children?.matchFromParent){
+					const parentTag = context.getFirstParent()?.name;
+					if (parentTag) {
+						const parentElementDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, parentTag);
+						const parentChildren = parentElementDefinition?.childs;
+						if (Array.isArray(parentChildren) && parentChildren){
+							childCompletions = this.mapChildrenToCompletionItems(parentChildren, modelFileContext);
+						}
+					}				
+				}
 			}
 		}
 
@@ -294,14 +314,16 @@ export class CompletionProvider {
 
 		// get the required child nodes and add them to the snippet
 		const childSnippets: string[] = [];
-		childChildren?.filter(childNode => childNode.required).forEach(item => {
-			const childDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, item.element);
-			childSnippets.push(this.buildChildElementSnippet(modelFileContext, item, childDefinition, tabIndent + `\t`));
-		});
-
+		if (Array.isArray(childChildren) && childChildren){
+			childChildren?.filter(childNode => childNode.required).forEach(item => {
+				const childDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, item.element);
+				childSnippets.push(this.buildChildElementSnippet(modelFileContext, item, childDefinition, tabIndent + `\t`));
+			});
+		}
+		
 		// construct snipped. Put element sting, attribute string and child string together.
 		const lastTab = (tabIndent == "") ? `\${${(childsAttributes?.length || 0) + 1}}` : "";
-		const snippet = childChildren != undefined && childChildren.length > 0
+		const snippet = childChildren != undefined && (!Array.isArray(childChildren) || (Array.isArray(childChildren) && childChildren.length > 0))
 			? `${tabIndent}<${elementName} ${attributes}> \n${childSnippets.join(`\n`)} ${lastTab} \n${tabIndent}</${elementName}>`
 			: `${tabIndent}<${elementName} ${attributes} ${lastTab}/>`;
 		return snippet;

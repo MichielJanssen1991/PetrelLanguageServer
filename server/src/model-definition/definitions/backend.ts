@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { action_argument_element, action_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute } from './shared';
+import { action_argument_element, action_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_element } from './shared';
 export const BACKEND_DEFINITION: Definitions = {
 	"root": [{
 		attributes: [
@@ -1049,51 +1049,73 @@ export const BACKEND_DEFINITION: Definitions = {
 			}
 		]
 	}],
-	"decorators": [{}],
-	"decorator": [{}],
-	"decoration": [{}],
-	"action": [{
-		type: ModelElementTypes.ActionCall,
-		description: "The action to perform.",
+	"decorations": [decorations_element],
+	"decoration": [decoration_element],
+	"decoration-argument": [decoration_argument_element],
+	"decorators": [decorators_element],
+	"decorator": [decorator_element],
+	"decorator-input": [decorator_input_element],
+	"target": [target_element],
+	"decorator-context-entity": [decorator_context_entity_element],
+	"argument": [action_argument_element],
+	"action": [backend_action_element],
+	"include-blocks": [include_blocks_element],
+	"include-block": [{
+		type: ModelElementTypes.IncludeBlock,
+		detailLevel: ModelDetailLevel.Declarations,
+		description: "A model fragment that is included by includes.",
 		attributes: [
 			{
 				name: "name",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Action
-
+				description: "Unique identifier",
+				required: true,
+				autoadd: true,
+			},
+			{
+				name: "meta-name",
+				description: "For which element to apply rules.",
+				required: true,
+				autoadd: true,
+				type:
+				{
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: ModelElementTypes.Module
+						},
+						{
+							name: ModelElementTypes.Type
+						},
+						{
+							name: ModelElementTypes.Attribute
+						},
+						{
+							name: ModelElementTypes.Action
+						},
+						{
+							name: "server-events"
+						},
+						{
+							name: "server-event"
+						},
+						{
+							name: "keys"
+						},
+						{
+							name: "key"
+						}
+					]
 				}
 			},
 			{
-				name: "input-all"
+				name: "meta-index",
+				description: "For which element to apply rules."
 			},
-			{
-				name: "output-all"
-			},
-			{
-				name: "dataless",
-				description: "If the standard added data argument should be left out. It is now left out by default for performance (unless input-all is set). (Currently, only applicable for frontend calls to server actions.)"
-			},
-			{
-				name: "rulename"
-			},
-			{
-				name: "user-created",
-				description: "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
-				visibilityConditions: [
-					{
-						attribute: "name",
-						condition: "==",
-						value: "rule"
-					}
-				]
-			}
-		]
-	}],
-	"argument": [action_argument_element],
-	"include-blocks": [include_blocks_element],
-	"include-block": [{
-		type: ModelElementTypes.IncludeBlock
+			dev_comment_attribute
+		],
+		childs: {
+			matchElementFromAttribute: "meta-name"
+		}
 	}],
 	"include": [include_element],
 	"model-condition": [model_condition_element],

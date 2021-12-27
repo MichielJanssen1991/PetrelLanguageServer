@@ -28,30 +28,32 @@ export class ModelDefinitionCheck extends ModelCheck {
 	private checkChildOccurrences(element: TreeNode, definition: Definition): void {
 		// check element on invalid child nodes (TODO: merge with ModelParser class)
 		element.children.forEach(child => {
-			if (!definition.childs?.map(x=>x.element).includes(child.tag)){
+			if (Array.isArray(definition.childs) && !definition.childs?.map(x=>x.element.toLowerCase()).includes(child.tag.toLowerCase())){
 				this.addError(element.range, `Invalid child node '${child.tag}' for element '${element.tag}'`);
 			}
 		});
 
 		// check the amount of occurrences of a child and compare it with the definition
-		definition.childs?.forEach(x=>{
-			const childOccurrences = element.children.filter(c=>c.tag==x.element).length;
+		if (Array.isArray(definition.childs)){
+			definition.childs?.forEach(x=>{
+				const childOccurrences = element.children.filter(c=>c.tag.toLowerCase()==x.element.toLowerCase()).length;
 
-			switch(x.occurence){
-				case "once":
-					if (childOccurrences > 1) {
-						this.addError(element.range, `Invalid child node occurence '${x.element}' for element '${element.tag}'. Element '${x.element}' could only be applied once to parent '${element.tag}'`);
-					} else if (childOccurrences == 0 && x.required){
-						this.addError(element.range, `Missing required '${x.element}' for element '${element.tag}'.`);
-					}
-					break;
-				case "at-least-once":
-					if (childOccurrences == 0){
-						this.addError(element.range, `Invalid child node occurence '${x.element}' for element '${element.tag}'. Element '${x.element}' should be applied at least once to parent '${element.tag}'`);
-					}
-					break;
-			}
-		});
+				switch(x.occurence){
+					case "once":
+						if (childOccurrences > 1) {
+							this.addError(element.range, `Invalid child node occurence '${x.element}' for element '${element.tag}'. Element '${x.element}' could only be applied once to parent '${element.tag}'`);
+						} else if (childOccurrences == 0 && x.required){
+							this.addError(element.range, `Missing required '${x.element}' for element '${element.tag}'.`);
+						}
+						break;
+					case "at-least-once":
+						if (childOccurrences == 0){
+							this.addError(element.range, `Invalid child node occurence '${x.element}' for element '${element.tag}'. Element '${x.element}' should be applied at least once to parent '${element.tag}'`);
+						}
+						break;
+				}
+			});
+		}
 	}
 
 	private checkAttributeOccurrences(element: TreeNode, definition: Definition): void {
@@ -59,13 +61,13 @@ export class ModelDefinitionCheck extends ModelCheck {
 		// TODO: attributes are always unique in the TreeNode. It is not possible to validate whether attributes are unique or not
 		const uniqueValues = new Set(this.allNodeAttributes.map(x => x.name));
 		if (uniqueValues.size < this.allNodeAttributes.length) {
-			const intersection = this.allNodeAttributes.filter(x => Array.from(uniqueValues).includes(x.name));
+			const intersection = this.allNodeAttributes.filter(x => Array.from(uniqueValues).map(x=>x.toLowerCase()).includes(x.name));
 			this.addError(element.range, `Duplicate attribute '${intersection[0].name}' in element '${element.tag}'`);
 		}
 
 		// check required attribute is added
 		definition.attributes?.forEach(attr=>{
-			if (attr.required && !this.allNodeAttributes.map(x=>x.name).includes(attr.name)){
+			if (attr.required && !this.allNodeAttributes.map(x=>x.name.toLowerCase()).includes(attr.name.toLowerCase())){
 				this.addError(element.range, `Missing required attribute '${attr.name}' for element '${element.tag}'`);
 			}
 		});
@@ -73,7 +75,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 
 	private checkAttributeValues(element: TreeNode, definition: Definition): void {
 		// check attribute validations
-		definition.attributes?.filter(da=>da.validations && this.allNodeAttributes.map(x=>x.name).includes(da.name)).forEach(da=>{
+		definition.attributes?.filter(da=>da.validations && this.allNodeAttributes.map(x=>x.name.toLowerCase()).includes(da.name.toLowerCase())).forEach(da=>{
 			da.validations?.forEach(dv=>{
 				if (dv.type == "regex"){
 					const attrElement: Attribute = element.otherAttributes[da.name] || element.attributeReferences[da.name];
@@ -91,7 +93,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 			
 			switch(da.type?.type){
 				case AttributeTypes.Enum:
-					if (da.type?.options && !da.type?.options?.map(o=>o.name).includes(attrValue)){
+					if (da.type?.options && !da.type?.options?.map(o=>o.name.toLowerCase()).includes(attrValue.toLowerCase())){
 						this.addError(element.range, `Invalid value for '${da.name}': '${attrValue}' is not a valid option`);
 					}
 					break;

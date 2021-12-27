@@ -1,6 +1,6 @@
 import { NAMES } from '../constants';
 import { AttributeTypes, ModelElementTypes, Definition, Definitions, ValidationLevels, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_output_element } from './shared';
+import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_output_element, backend_action_element } from './shared';
 export const RULE_DEFINITION: Definitions = {
 	"rules": [{
 		type: ModelElementTypes.Rule,
@@ -260,210 +260,7 @@ export const RULE_DEFINITION: Definitions = {
 			}
 		]
 	}],
-	"action": [{
-		type: ModelElementTypes.ActionCall,
-		detailLevel: ModelDetailLevel.References,
-		description: "An action.",
-		checkObsolete: true,
-		attributes: [
-			{
-				name: "name",
-				description: "The action to perform.",
-				autoadd: true,
-				required: true,
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Action
-				}
-			},
-			{
-				name: "input-all",
-				description: "If yes, all available local variables (in the frontend, the non-data bound as well as the data bound variables) will be passed to the action. Default is no.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "output-all",
-				description: "If yes, all outputs returned by the action will be made available locally (in the frontend as non-data bound variables). Default is no.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "dataless",
-				description: "If the standard added data argument should be left out. It is now left out by default for performance (unless input-all is set). (Currently, only applicable for frontend calls to server actions.)",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "default"
-						},
-						{
-							name: "yes"
-						},
-						{
-							name: "no"
-						}
-					]
-				}
-			},
-			{
-				name: "user-created",
-				description: "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
-				type: default_yes_no_attribute_type,
-				visibilityConditions: [
-					{
-						attribute: "name",
-						condition: "==",
-						value: "rule"
-					}
-				]
-			},
-			{
-				// rulename is already loaded via backendactions. 
-				// The xxx (in visibilityConditions) ensures that this item is never visible in attribute context provider
-				// Despite it is not visible, the attribute value context provider uses the type definition
-				name: "rulename",
-				description: "",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Rule
-				},
-				visibilityConditions: [	
-					{
-						attribute: "name",
-						condition: "==",
-						value: "xxx"	
-					}
-				]
-			},
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_comment_attribute
-		],
-		childs: [
-			{
-				element: "argument"
-			},
-			{
-				element: "output",
-				validations: [
-					{
-						identifier: "RULE00001",
-						name: "action-outputs-missing",
-						matches: [
-							{
-								attribute: "remote/local)-name",
-								condition: "misses",
-								value: ""//new JsonElementVariable("backend-rules", "/output[@name]")
-							},
-							{
-								operator: "or",
-								attribute: "local-name",
-								condition: "misses",
-								value: ""//new JsonElementVariable("backend-rules", "/output[@name]")
-							}
-						],
-						message: "Missing defined output ${@backend-rules.output[name]} for rule ${@parent[rulename]}",
-						level: ValidationLevels.Info,
-						conditions: [
-							{
-								attribute: "@parent[name]",
-								condition: "==",
-								value: "rule"
-							}
-						]
-					},
-					{
-						identifier: "RULE00002",
-						name: "rule-outputs-notdefined",
-						matches: [
-							{
-								attribute: "remote-name",
-								condition: "not-in",
-								value: ""//new JsonElementVariable("backend-rules", "/output[@name]")
-							},
-							{
-								attribute: "local-name",
-								condition: "not-in",
-								value: ""//new JsonElementVariable("backend-rules", "/output[@name]")
-							}
-						],
-						message: "Output ${@name} is not defined in rule ${@rulename}",
-						level: ValidationLevels.Error,
-						conditions: [
-							{
-								attribute: "@parent[name]",
-								condition: "==",
-								value: "rule"
-							}
-						]
-					},
-					{
-						identifier: "RULE00003",
-						name: "rule-outputs-not-used",
-						matches: [
-							{
-								attribute: "(local/remote)-name",
-								condition: "not-in",
-								value: "@parent-rule-definition.arguments"
-							},
-							{
-								attribute: "(local/remote)-name",
-								condition: "not-in",
-								value: "@parent-rule-definition.condition[variable]"
-							},
-							{
-								attribute: "(local/remote)-name",
-								condition: "not-in-like",
-								value: "@parent-rule-definition.condition[expression]"
-							},
-							{
-								attribute: "(local/remote)-name",
-								condition: "not-in-like",
-								value: "@parent-rule-definition.set-var[expression]"
-							},
-							{
-								attribute: "(local/remote)-name",
-								condition: "not-in",
-								value: "@parent-rule-definition.output[variable]"
-							},
-							{
-								attribute: "(local/remote)-name",
-								condition: "not-in-like",
-								value: "@parent-rule-definition.output[expression]"
-							}
-						],
-						message: "Output ${@name} is outputted, but not used in rule ${@parent-rule-definition[name]}",
-						level: ValidationLevels.Warning,
-						conditions: [
-							{
-								attribute: "@parent[name]",
-								condition: "==",
-								value: "rule"
-							}
-						]
-					}
-				]
-			},
-			{
-				element: "graph-params"
-			},
-			{
-				element: "include-blocks"
-			},
-			{
-				element: "include-block"
-			},
-			{
-				element: "include"
-			},
-			{
-				element: "model-condition"
-			},
-			{
-				element: "merge-instruction"
-			}
-
-		]
-	}],
+	"action": [backend_action_element],
 	"input": [{
 		type: ModelElementTypes.Input,
 		isSymbolDeclaration:true,
@@ -1284,12 +1081,39 @@ export const RULE_DEFINITION: Definitions = {
 				description: "For which element to apply rules.",
 				required: true,
 				autoadd: true,
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Unknown,
+				type:
+				{
+					type: AttributeTypes.Enum,
 					options: [
 						{
-							name: "@backend-definition/element/@element"
+							name: ModelElementTypes.Module
+						},
+						{
+							name: ModelElementTypes.Rule
+						},
+						{
+							name: ModelElementTypes.Action
+						},
+						{
+							name: ModelElementTypes.If
+						},
+						{
+							name: "then"
+						},
+						{
+							name: "else"
+						},
+						{
+							name: "case"
+						},
+						{
+							name: "switch"
+						},
+						{
+							name: "forloop"
+						},
+						{
+							name: "transaction"
 						}
 					]
 				}
@@ -1300,9 +1124,9 @@ export const RULE_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
-			// depends on meta-name attribute
-		]
+		childs: {
+			matchElementFromAttribute: "meta-name"
+		}
 	}],
 	"include": [include_element],
 	"merge-instruction": [merge_instruction_element],

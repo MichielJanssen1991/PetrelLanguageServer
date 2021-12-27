@@ -23,8 +23,10 @@ export enum ModelElementTypes {
 	Aggregate = "Aggregate",
 	SearchColumn = "SearchColumn",
 	TypeFilter = "TypeFilter",
-	IncludeBlock = "IncludeBlock",
+	IncludeBlock = "Include-Block",
 	Decorator = "Decorator",
+	DecoratorContextEntity = "Decorator-context-entity",
+	Target = "Target",
 	Argument = "Argument",
 	Profile = "Profile",
 	Unknown = "Unknown",
@@ -172,7 +174,7 @@ export type Definition = {
 	description?: string,
 	checkObsolete?: boolean,
 	attributes?: ElementAttributes[],
-	childs?: ChildDefinition[],
+	childs?: ChildDefinition[] | ChildReference,
 	parent?: any,
 	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
 	type?: ModelElementTypes,
@@ -180,7 +182,6 @@ export type Definition = {
 	isSymbolDeclaration?: boolean,
 	detailLevel?: ModelDetailLevel,
 	contextQualifiers?: (nodeContext: IXmlNodeContext) => ContextQualifiers
-
 }
 
 export type ChildDefinition = {
@@ -188,6 +189,11 @@ export type ChildDefinition = {
 	occurence?: "once" | "at-least-once",
 	required?: boolean,
 	validations?: ChildValidation[]
+}
+
+export type ChildReference = {
+	matchElementFromAttribute?: string,
+	matchFromParent?: boolean,
 }
 
 export type ElementAttributes = {
