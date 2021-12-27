@@ -74,8 +74,8 @@ export class ModelDefinitionCheck extends ModelCheck {
 			// based on requiredConditions
 			else if (attr.requiredConditions){ 
 				attr.requiredConditions.forEach(rc=>{
-					const attrElement: Attribute = element.otherAttributes[rc.attribute] || element.attributeReferences[rc.attribute];
-					const attrDefElement: Attribute = element.otherAttributes[attr.name] || element.attributeReferences[attr.name];
+					const attrElement: Attribute = element.attributes[rc.attribute] ;
+					const attrDefElement: Attribute = element.attributes[attr.name];
 					switch (rc.condition) {
 						case "==":
 							if (
