@@ -829,7 +829,7 @@ export const RULE_DEFINITION: Definitions = {
 		]
 	}],
 	"switch": [{
-		type: ModelElementTypes.Unknown,
+		type: ModelElementTypes.Switch,
 		description: "",
 		attributes: [
 			{

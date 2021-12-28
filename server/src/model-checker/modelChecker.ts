@@ -44,7 +44,7 @@ export class ModelChecker {
 		this.checks.push(new ReferencedObjectExistsCheck(modelManager));
 		this.checks.push(new SymbolIsReferencedCheck(modelManager));
 		this.checks.push(new ModelDefinitionCheck(modelManager, modelDefinitionManager));
-		//this.checks.push(new RuleDeclarationCheck(modelManager));
+		this.checks.push(new RuleDeclarationCheck(modelManager));
 	}
 
 	public checkAllFiles(options?: ModelCheckerOptions) {

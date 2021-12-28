@@ -96,7 +96,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		const definition = this.getModelDefinitionForCurrentNode();
 		let object;
 
-		// Validate node using new definition structure (might completely replace the old parsing)
+		// Validate node using new definition structure (To be removed when these checks are included in ModelDefinitionCheck)
 		if (this.context != ModelFileContext.Unknown) {
 			this.validateNode(node, definition);
 		}

@@ -3,7 +3,7 @@ import { getDocUri, } from '../../helper';
 import { testDiagnostics, toRange } from '../common';
 
 suite('Required attributes', () => {
-	test.only('Missing required attribute', async () => {
+	test('Missing required attribute', async () => {
 		const docUri = getDocUri('diagnostics\\structure\\required-attributes.xml');
 		await testDiagnostics(docUri,  [
 			{ message: 'Missing required attribute \'persistent-in-type\' for element \'type\'', range: toRange(14, 7, 14, 65), severity: vscode.DiagnosticSeverity.Error, source: 'ex' },
