@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute } from './shared';
+import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_condition_options_attribute_type, search_childs, search_attributes, input_element } from './shared';
 export const INFOSET_DEFINITION: Definitions = {
 	"infosets": [{
 		description: "Collection of infosets.",
@@ -265,26 +265,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
-			{
-				element: "searchcolumn"
-			},
-			{
-				element: "searchcolumn-submatch"
-			},
-			{
-				element: "group"
-			},
-			{
-				element: "in"
-			},
-			{
-				element: "full-text-query"
-			},
-			{
-				element: "include"
-			}
-		]
+		childs: search_childs
 	}],
 	"searchcolumn": [{
 		description: "Definition of the conditions of the search.",
@@ -311,15 +292,9 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 			{
 				name: "condition",
+				description: "The search condition.",
 				required: true,
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "xxx"
-						}
-					]
-				}
+				type: search_condition_options_attribute_type
 			},
 			{
 				name: "value",
@@ -452,28 +427,435 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 		]
 	}],
-	"searchcolumn-submatch": [{}],
-	"or": [{}],
-	"and": [{}],
-	"group": [{}],
-	"in": [{
-		type: ModelElementTypes.In,
-		detailLevel: ModelDetailLevel.Declarations
+	"searchcolumn-submatch": [{
+		description: "A condition that matches an attribute with sub query results.",
+		attributes: [
+			{
+				name: "name",
+				description: "The column to be searched.",
+				required: true
+			},
+			{
+				name: "is-context-info",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "search-relation-iids",
+				description: "Only applicable to relation searchcolumns. Decides if the type will be searched by the specified display-as attribute (search-relation-iids = false) or by IId (search-relation-iids = true).",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "true"
+						},
+						{
+							name: "false"
+						},
+					]
+				}
+			},
+			{
+				name: "condition",
+				description: "The search condition.",
+				required: true,
+				type: search_condition_options_attribute_type
+			}
+		],
+		childs: [
+			{
+				element: "scalar-aggregate-query",
+				occurence: "once"
+			},
+			{
+				element: "set-aggregate-query",
+				occurence: "once"
+			}
+		]
 	}],
-	"full-text-query": [{}],
-	"query": [{}],
-	"exists": [{}],
-	"count": [{}],
-	"min": [{}],
-	"max": [{}],
-	"average": [{}],
-	"generate-interval": [{}],
-	"set-aggregate-query": [{}],
-	"single-aggregate-query": [{}],
-	"aggregate-attribute": [{}],
-	"aggregate-function": [{}],
-	"grouping": [{}],
-	"grouping-item": [{}],
+	"or": [{
+		description: "The or-operator between search columns. Use the group element to specify brackets."
+	}],
+	"and": [{
+		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted."
+	}],
+	"group": [{
+		description: "",
+		childs: search_childs
+	}],
+	"in": [{
+		description: "Applies a querying condition to a relation. This may be a relation from the queried type to another type, or vice versa. It may even be applied to non-relation attributes.",
+		type: ModelElementTypes.In,
+		detailLevel: ModelDetailLevel.Declarations,
+		attributes: [
+			{
+				name: "field",
+				description: "The name of the attribute defined at the type of which the value is compared with the set returned by the sub query.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute	// TODO add iid to the list
+				}
+			},
+			{
+				name: "include-empty",
+				description: "If results where the relation is empty are included too.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "condition",
+				description: "The condition to apply for filtering the relation field using the filter applied to the relation instances.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "is included in",
+							default: true
+						},
+						{
+							name: "is not included in"
+						}
+					]
+				}
+			},
+			{
+				name: "search-when-empty",
+				description: "Whether to drop this where-in condition if the filter is empty (if all the parameter based search columns are left out).",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "sub-filter-select-field",
+				description: "The attribute of the type queried in the sub query to match on. Default is the IID.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute	// TODO add iid to the list
+				}
+			}
+		],
+		childs: [
+			{
+				element: "search",
+				required: true,
+				occurence: "once"
+			}
+		]
+	}],
+	"full-text-query": [{
+		description: "A full text search query criterion. This must be added at the root of a search filter. It may be combined with other search criteria.",
+		attributes: [
+			{
+				name: "query",
+				description: "The free text string to query on. Logical operators like AND/OR or quotes are ignored. Multiple values separated by pipe are note supported.",
+				required: true
+			}
+		]
+	}],
+	"query": [{
+		description: "A specific data query command.",
+		childs: [
+			{
+				element: "select",
+				occurence: "once"
+			},
+			{
+				element: "delete",
+				occurence: "once"
+			}
+		]
+	}],
+	"exists": [{
+		description: "Evaluates if a selected data object exists.",
+		attributes: search_attributes,
+		childs: search_childs
+	}],
+	"count": [{
+		description: "Evaluates the count over the selected data objects.",
+		attributes: search_attributes,
+		childs: search_childs
+	}],
+	"min": [{
+		description: "Evaluates the minimal value of an attribute over the selected data objects.",
+		attributes: search_attributes,
+		childs: search_childs
+	}],
+	"max": [{
+		description: "Evaluates the maximal value of an attribute over the selected data objects.",
+		attributes: search_attributes,
+		childs: search_childs
+	}],
+	"average": [{
+		description: "Evaluates the average of an attribute over the selected data objects.",
+		attributes: search_attributes,
+		childs: search_childs
+	}],
+	"sum": [{
+		description: "Evaluates the sum of an attribute over the selected data objects.",
+		attributes: search_attributes,
+		childs: search_childs
+	}],
+	"generate-interval": [{
+		description: "Will generate a series of values for the attribute \"x\". See the type \"XType\" in the generic backend.",
+		attributes: [
+			{
+				name: "min",
+				description: "The first x-value of the series that has to be generated.",
+				required: true,
+				validations: [
+					{
+						type: "regex",
+						value: /^\d+(\.\d+)?$/,
+						message: "Invalid value given."
+					}
+				]
+			},
+			{
+				name: "max",
+				description: "The last x-value of the series that has to be generated.",
+				required: true,
+				validations: [
+					{
+						type: "regex",
+						value: /^\d+(\.\d+)?$/,
+						message: "Invalid value given."
+					}
+				]
+			},
+			{
+				name: "steps",
+				description: "Integer that specifies in how much steps to divide max-min x-values.",
+				required: true,
+				type: {
+					type: AttributeTypes.Numeric
+				}
+			},
+		]
+	}],
+	"set-aggregate-query": [{
+		description: "Specifies an aggregate query that returns a set of aggregate result objects.",
+		attributes: [
+			{
+				name: "type",
+				description: "The type of the objects to apply the query to.",
+				required: true
+			},
+			{
+				name: "filter",
+				description: "A reference to a filter on the type being queryed. May also be defined inline.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.TypeFilter // TODO: should not be visible if child group is added
+				}
+			},
+			{
+				name: "page-size",
+				description: "The number of results per page. Default, no paging is used.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
+			},
+			{
+				name: "page-number",
+				description: "The number of the page to return. Default, the first page is returned.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
+			},
+			{
+				name: "result-type",
+				description: "The result type of the aggregate results. If not specified, returns results of the Platform.AggregateResults type.</summary>Define a type inheriting from Platform.AggregateResults. Relation attributes may be added to this type, and views can be created for it.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Type
+				}
+			},
+			{
+				name: "grouping",
+				description: "A reference to a grouping on the type being queryed. May also be defined inline."	// TODO: should not be visible if child group is added
+			}
+		],
+		childs: [
+			{
+				element: "aggregate-attribute",
+				occurence: "at-least-once",
+				required: true
+			},
+			{
+				element: "grouping",
+				occurence: "once"
+			},
+			{
+				element: "ordering",
+				occurence: "once"
+			},
+			{
+				element: "filter",
+				occurence: "once"
+			},
+		]
+	}],
+	"single-aggregate-query": [{
+		description: "Specifies an aggregate query that returns a single aggregate result object.",
+		attributes: [
+			{
+				name: "type",
+				description: "The type of the objects to apply the query to.",
+				required: true
+			},
+			{
+				name: "filter",
+				description: "A reference to a filter on the type being queryed. May also be defined inline.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.TypeFilter // TODO: should not be visible if child group is added
+				}
+			},
+			{
+				name: "result-type",
+				description: "The result type of the aggregate results. If not specified, returns results of the Platform.AggregateResults type.</summary>Define a type inheriting from Platform.AggregateResults. Relation attributes may be added to this type, and views can be created for it.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Type
+				}
+			}
+		],
+		childs: [
+			{
+				element: "aggregate-attribute",
+				occurence: "at-least-once",
+				required: true
+			},
+			{
+				element: "filter",
+				occurence: "once"
+			}
+		]
+	}],
+	"aggregate-attribute": [{
+		description: "Specifies an aggregate result.",
+		attributes: [
+			{
+				name: "name",
+				required: true,
+				description: "Unique identifer. This name is used as output name."
+			}
+		], 
+		childs: [
+			{
+				element: "aggregate-function"
+			}
+		]
+	}],
+	"aggregate-function": [{
+		description: "Specifies the value of an aggregate.",
+		attributes: [
+			{
+				name: "name",
+				description: "The function to apply.",
+				required: true,
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "common value"
+						},
+						{
+							name: "sum"
+						},
+						{
+							name: "maximum"
+						},
+						{
+							name: "minimum"
+						},
+						{
+							name: "average"
+						},
+						{
+							name: "count"
+						},
+					]
+				}
+			},
+			{
+				name: "attribute",
+				description: "The attribute parameter to the function.",
+				requiredConditions: [
+					{
+						attribute: "name",
+						condition: "==",
+						value: "count"
+					}
+				]
+			}
+		]
+	}],
+	"ordering": [{
+		description: "An ordering over sets of objects of a certain type.",
+		childs: [
+			{
+				element: "sort",
+				occurence: "at-least-once",
+				required: true
+			}
+		]
+	}],
+	"sort": [{
+		description: "Defines an ordering over a property of objects of a certain type. Multiple property orderings may be stacked.",
+		attributes: [
+			{
+				name: "name",
+				description: "Specifies an attribute of the type to order by.",
+				required: true,
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute
+				}
+			},
+			{
+				name: "order",
+				description: "The type of ordering over the values of the property to order by.",
+				autoadd: true,
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "asc",
+							description: "Ascending",
+							default: true
+						},
+						{
+							name: "desc",
+							description: "Descending"
+						},
+					]
+				}
+			},
+		],
+		childs: [
+			{
+				element: "sort",
+				occurence: "at-least-once",
+				required: true
+			}
+		]
+	}],
+	"grouping": [{
+		description: "A grouping over sets of objects of a certain type.",
+		childs: [
+			{
+				element: "grouping-item",
+				occurence: "at-least-once",
+				required: true
+			}
+		]
+	}],
+	"grouping-item": [{
+		description: "A property of an object to group over.",
+		attributes: [
+			{
+				name: "attribute",
+				description: "Specifies a type attribute to use as grouping."
+			}
+		]
+	}],
 	"variable": [{
 		description: "An infoset can be based on one or more variables. The values of the contained infoset variables will be collected into the infoset. You can assign a fixed value to a variable, base it upon an aggregation, or base it upon a query.",
 		type: ModelElementTypes.Output,
@@ -502,7 +884,6 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				name: "operator",
 				description: "May be used as a scalar over the result data. When left empty, the ''attribute'' value of the first record is returned.",
-				required: true,
 				type: {		
 					type: AttributeTypes.Enum,
 					options: [
@@ -594,14 +975,119 @@ export const INFOSET_DEFINITION: Definitions = {
 	}],
 	"include-blocks": [include_blocks_element],
 	"include-block": [{
-		type: ModelElementTypes.IncludeBlock
+		type: ModelElementTypes.IncludeBlock,
+		detailLevel: ModelDetailLevel.Declarations,
+		description: "A model fragment that is included by includes.",
+		attributes: [
+			{
+				name: "name",
+				description: "Unique identifier",
+				required: true,
+				autoadd: true,
+			},
+			{
+				name: "meta-name",
+				description: "For which element to apply rules.",
+				required: true,
+				autoadd: true,
+				type:
+				{
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: ModelElementTypes.Module
+						},
+						{
+							name: ModelElementTypes.Infoset
+						},
+						{
+							name: ModelElementTypes.Variable
+						},
+						{
+							name: ModelElementTypes.Action
+						},
+						{
+							name: "search"
+						},
+						{
+							name: "searchcolumn"
+						}
+					]
+				}
+			},
+			{
+				name: "meta-index",
+				description: "For which element to apply rules."
+			},
+			dev_comment_attribute
+		],
+		childs: {
+			matchElementFromAttribute: "meta-name"
+		}
 	}],
 	"include": [include_element],
 	"model-condition": [model_condition_element],
 	"auto-key": [{
-		"parent": {
-			element: "attribute"
-		}
+		description: "Automatically generates a value, based on some counting method.</summary>This can be used e.g. for sequence numbers. The value of this attribute is automatically incremented with each new record.",
+		attributes: [
+			{
+				name: "type",
+				description: "The counter representation.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "numeric"
+						}
+					]
+				}
+			},
+			{
+				name: "places",
+				description: "Length of string. Empty means: not restricted.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
+			},
+			dev_comment_attribute
+		]
 	}],
-	"merge-instruction": [merge_instruction_element]
+	"merge-instruction": [merge_instruction_element],
+	"select": [{
+		description: "Select a page or a single object.",
+		attributes: [
+			{
+				name: "iid",
+				description: "The instance identifier of the data object to fetch.",
+				visibilityConditions: [
+					{
+						attribute: "iids",
+						condition: "==",
+						value: ""
+					}
+				],
+				requiredConditions: [
+					{
+						attribute: "iids",
+						condition: "==",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "iids",
+				description: "A piped list to fetch a list of records.",
+				visibilityConditions: [
+					{
+						attribute: "iid",
+						condition: "==",
+						value: ""
+					}
+				]
+			},
+			dev_comment_attribute
+		]
+	}],
+	"input": [input_element]
+	
 };

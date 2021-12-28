@@ -1,5 +1,5 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
-import { AttributeTypes, ChildDefinition, ModelElementTypes, Definition, Reference, SymbolDeclaration, TreeNode, ElementAttributes } from '../model-definition/symbolsAndReferences';
+import { AttributeTypes, ChildDefinition, ModelElementTypes, Definition, Reference, SymbolDeclaration, TreeNode, ElementAttribute } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { CompletionContext } from './completionContext';
@@ -58,7 +58,7 @@ export class CompletionProvider {
 			const attributesForTag = this.getVisibleAttributes(modelDefinition, node);
 			
 			// get attributes based on the action called
-			let attributesForAction: ElementAttributes[] = [];
+			let attributesForAction: ElementAttribute[] = [];
 			if (node.type == ModelElementTypes.ActionCall) {
 				const actionReference = node.attributes["name"] as Reference;
 				const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionReference);
@@ -217,14 +217,30 @@ export class CompletionProvider {
 		return symbols;
 	}
 
+	/**
+	 * Get the possible children of an element. 
+	 * ModelDefinition.childs could contain:
+	 * - nothing (the completions will be empty)
+	 * - list of children (the completions will filled with these items)
+	 * - object with attribute matchElementFromAttribute referring to another element (the completions will be filled with the childs of that element)
+	 * - object with matchFromParent. (the completions will be filled with the childs of the parent)
+	 * @param modelFileContext 
+	 * @param context 
+	 * @returns 
+	 */
 	private getChildElementCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
 		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForCurrentNode(modelFileContext, context);
 		let childCompletions: CompletionItem[] = [];
 		if (elementDefinition) {
 			const children = elementDefinition.childs;
+			// if the definition contains an array of children
 			if (Array.isArray(children) && children){
 				childCompletions = this.mapChildrenToCompletionItems(children, modelFileContext);
-			} else {
+			} 
+			// if the definition contains something else then an array of children. (could be empty too)
+			// In some cases the context of children is determined by the parent tag or some attribute
+			else {
+				// match context from an attribute to retrieve the children (e.g. include)
 				if (children?.matchElementFromAttribute) {
 					const elementName = context.getAttributeValueByTagAndName(elementDefinition.type, children?.matchElementFromAttribute).toLowerCase();
 					if (elementName){
@@ -234,7 +250,9 @@ export class CompletionProvider {
 							childCompletions = this.mapChildrenToCompletionItems(childChildren, modelFileContext);
 						}					
 					}
-				} else if (children?.matchFromParent){
+				}
+				// match context from the parent tag to retrieve the children. (e.g. model-condition)
+				else if (children?.matchFromParent){
 					const parentTag = context.getFirstParent()?.name;
 					if (parentTag) {
 						const parentElementDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, parentTag);
@@ -250,7 +268,7 @@ export class CompletionProvider {
 		return childCompletions;
 	}
 
-	private mapAttributesToCompletionItem(attributes: ElementAttributes[]): CompletionItem[] {
+	private mapAttributesToCompletionItem(attributes: ElementAttribute[]): CompletionItem[] {
 		return attributes.map(att => ({
 			label: att.name,
 			kind: CompletionItemKind.Snippet,

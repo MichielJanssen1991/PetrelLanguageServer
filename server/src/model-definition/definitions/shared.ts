@@ -1,5 +1,5 @@
 import { NAMES } from '../constants';
-import { AttributeTypes, ElementAttributes, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType } from '../symbolsAndReferences';
+import { AttributeTypes, ElementAttribute, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType, ChildReference, ChildDefinition, Attribute } from '../symbolsAndReferences';
 
 export const default_yes_no_attribute_type: AttributeType =
 	{
@@ -14,20 +14,20 @@ export const default_yes_no_attribute_type: AttributeType =
 		]
 	} as AttributeType;
 
-export const dev_comment_attribute: ElementAttributes =
+export const dev_comment_attribute: ElementAttribute =
 	{
 		name: "comment",
 		description: "Developer's comment on this element."
 	};
 
-export const dev_obsolete_attribute: ElementAttributes =
+export const dev_obsolete_attribute: ElementAttribute =
 	{
 		name: "obsolete",
 		description: "Set to yes if this model entity is obsolete. This means another way of modeling is prefered and this old functionality may be removed in the next version.",
 		type: default_yes_no_attribute_type
 	};
 
-export const dev_obsolete_message_attribute: ElementAttributes =
+export const dev_obsolete_message_attribute: ElementAttribute =
 	{
 		name: "obsolete-message",
 		description: "Indicate what to use as an alternative.",
@@ -40,7 +40,7 @@ export const dev_obsolete_message_attribute: ElementAttributes =
 		]
 	};
 
-	export const dev_override_rights_attribute: ElementAttributes =
+	export const dev_override_rights_attribute: ElementAttribute =
 	{
 		name: "override-rights",
 		description: "May restrict which layers can override / extend this declaration.",
@@ -71,7 +71,7 @@ export const dev_obsolete_message_attribute: ElementAttributes =
 		}
 	};
 	
-	export const dev_is_declaration_attribute: ElementAttributes =
+	export const dev_is_declaration_attribute: ElementAttribute =
 	{
 		name: "is-declaration",
 		description: "May be used to have a metadata item which only specifies override rights and not specifies an instance.",
@@ -79,19 +79,19 @@ export const dev_obsolete_message_attribute: ElementAttributes =
 	};
 	
 
-export const dev_description_attribute: ElementAttributes =
+export const dev_description_attribute: ElementAttribute =
 	{
 		name: "description",
 		description: "Description of contents and purpose."
 	};
 
-export const dev_ignore_modelcheck_attribute: ElementAttributes =
+export const dev_ignore_modelcheck_attribute: ElementAttribute =
 	{
 		name: "ignore-modelcheck",
 		description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
 	};
 
-export const dev_ignore_modelcheck_justification_attribute: ElementAttributes =
+export const dev_ignore_modelcheck_justification_attribute: ElementAttribute =
 	{
 		name: "ignore-modelcheck-justification",
 		description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
@@ -104,7 +104,50 @@ export const dev_ignore_modelcheck_justification_attribute: ElementAttributes =
 		]
 	};
 
-export const target_namespace_attribute: ElementAttributes =
+export const search_condition_options_attribute_type: AttributeType =
+	{
+		type: AttributeTypes.Enum,
+		options: [
+			{
+				name: "Is",
+				description: "= (equal to)"
+			},
+			{
+				name: "Like",
+				description: "≈ (like)"
+			},
+			{
+				name: "Greater",
+				description: "> (greater than)"
+			},
+			{
+				name: "Smaller",
+				description: "< (smaller than)>"
+			},
+			{
+				name: "GreaterOrEqual",
+				description: "≥ (greater than or equal to)"
+			},
+			{
+				name: "SmallerOrEqual",
+				description: "≤ (smaller than or equal to)"
+			},
+			{
+				name: "Not",
+				description: "≠ (not equal to)"
+			},
+			{
+				name: "StartsWith",
+				description: "starts with"
+			},
+			{
+				name: "WildCard",
+				description: "Any wildcard search that is supported by the persistence, e.g., \"%[A-Z]_[0-9]\""
+			}
+		]
+	};
+
+export const target_namespace_attribute: ElementAttribute =
 	{
 		name: "target-namespace",
 		description: "Target namespace of the contents of the module. A relative namespace may start with a +, e.g., \"+Preferences\" may result in, e.g., \"Platform.Preferences\". (The target namespace together with the module name makes the module unique.)",
@@ -118,6 +161,42 @@ export const target_namespace_attribute: ElementAttributes =
 			}
 		]
 	};
+
+export const input_element: Definition = 
+{
+	type: ModelElementTypes.Input,
+	isSymbolDeclaration:true,
+	description: "Specifies an input argument.",
+	attributes: [
+		{
+			name: "name",
+			description: "Unique name for the input.",
+			required: true,
+			autoadd: true
+		},
+		{
+			name: "required",
+			description: "If required is set to yes, an exception will be thrown if the input argument is not present.",
+			autoadd: true,
+			detailLevel: ModelDetailLevel.Declarations,
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "yes",
+						"default": true
+					},
+					{
+						name: "no"
+					}
+				]
+			}
+		},
+		dev_ignore_modelcheck_attribute,
+		dev_ignore_modelcheck_justification_attribute,
+		dev_comment_attribute
+	],
+};
 
 export const include_blocks_element: Definition =
 	{
@@ -855,6 +934,83 @@ export const action_output_element: Definition =
 		dev_ignore_modelcheck_justification_attribute
 	]
 };
+
+export const search_attributes: ElementAttribute[] = 
+[
+	{
+		name: "type",
+		description: "Type of object to be retrieved.",
+		required: true,
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Type
+		}
+	},
+	{
+		name: "name",
+		description: "Unique filter identifier."	// only visible from backend types
+	},
+	{
+		name: "field",
+		description: "Attribute of the data to scalar.",
+		required: true,
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Attribute // TODO: filter attributes on type
+		}
+	},
+	{
+		name: "add-relations",
+		description: "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "filter",
+		description: "The type filter to apply for search.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.TypeFilter	// TODO: filter on typename
+		}
+	},
+	{
+		name: "all-when-empty-filter",
+		description: "If 'no' the search returns nothing (matches no record) when the filter is empty or if all the parameter based search columns are left out; if 'yes' it returns all records (matches all records).",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "alias",
+		description: "An internal name for the search query which is available to use for 'match search field' purposes."
+	},
+	dev_comment_attribute
+];
+
+export const search_childs: ChildDefinition[] = 
+[
+	{
+		element: "or"
+	},
+	{
+		element: "and"
+	},
+	{
+		element: "searchcolumn"
+	},
+	{
+		element: "searchcolumn-submatch"
+	},
+	{
+		element: "group"
+	},
+	{
+		element: "in"
+	},
+	{
+		element: "full-text-query"
+	},
+	{
+		element: "include"
+	},
+];
 
 export function isViewArgument(nodeContext: IXmlNodeContext): boolean {
 	return nodeContext.getFirstParent().name == "view";

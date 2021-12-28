@@ -1,7 +1,7 @@
 import { Range } from 'vscode-languageserver-types';
 import { isNonPetrelModelTag } from '../../model-definition/definitions/other';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, IXmlNodeContext, TreeNode, Definition, ModelElementTypes, ChildDefinition, Attribute, Definitions, ElementAttributes, newTreeNode } from '../../model-definition/symbolsAndReferences';
+import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, IXmlNodeContext, TreeNode, Definition, ModelElementTypes, ChildDefinition, Attribute, Definitions, ElementAttribute, newTreeNode } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
 import { ISaxParserExtended, newSaxParserExtended, XmlNode, ProcessingInstruction } from './saxParserExtended';
 
@@ -258,7 +258,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		return attributes;
 	}
 
-	private parseAttributeForDefinition(attributeDefinition: ElementAttributes, node: XmlNode) {
+	private parseAttributeForDefinition(attributeDefinition: ElementAttribute, node: XmlNode) {
 		let attribute;
 		const attributeName = attributeDefinition.name;
 		const attributeValue = node.attributes[attributeName];

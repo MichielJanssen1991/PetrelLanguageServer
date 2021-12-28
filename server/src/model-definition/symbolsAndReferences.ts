@@ -172,7 +172,7 @@ export type Definition = {
 	name?: (x: any) => string,
 	description?: string,
 	checkObsolete?: boolean,
-	attributes?: ElementAttributes[],
+	attributes?: ElementAttribute[],
 	childs?: ChildDefinition[] | ChildReference,
 	parent?: any,
 	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
@@ -195,7 +195,7 @@ export type ChildReference = {
 	matchFromParent?: boolean,
 }
 
-export type ElementAttributes = {
+export type ElementAttribute = {
 	name: string,
 	description?: string,
 	validations?: AttributeValidation[],

@@ -1,6 +1,6 @@
 import { NAMES } from '../constants';
 import { AttributeTypes, ModelElementTypes, Definition, Definitions, ValidationLevels, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_output_element, backend_action_element, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_is_declaration_attribute, dev_override_rights_attribute } from './shared';
+import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_output_element, backend_action_element, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_is_declaration_attribute, dev_override_rights_attribute, input_element } from './shared';
 export const RULE_DEFINITION: Definitions = {
 	"rules": [{
 		type: ModelElementTypes.Rule,
@@ -220,40 +220,7 @@ export const RULE_DEFINITION: Definitions = {
 		]
 	}],
 	"action": [backend_action_element],
-	"input": [{
-		type: ModelElementTypes.Input,
-		isSymbolDeclaration:true,
-		description: "Specifies an input argument.",
-		attributes: [
-			{
-				name: "name",
-				description: "Unique name for the input.",
-				required: true,
-				autoadd: true
-			},
-			{
-				name: "required",
-				description: "If required is set to yes, an exception will be thrown if the input argument is not present.",
-				autoadd: true,
-				detailLevel: ModelDetailLevel.Declarations,
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "yes",
-							"default": true
-						},
-						{
-							name: "no"
-						}
-					]
-				}
-			},
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_comment_attribute
-		],
-	}],
+	"input": [input_element],
 	"output": [{
 		type: ModelElementTypes.Output,
 		matchCondition: (nodeContext) => isOutputDeclaration(nodeContext),
