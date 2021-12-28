@@ -94,7 +94,8 @@ export interface TreeNode {
 	children: (TreeNode | SymbolDeclaration)[],
 	attributes: Record<string, Attribute|Reference>,
 	comment?: string,
-	contextQualifiers: ContextQualifiers
+	contextQualifiers: ContextQualifiers,
+	parent?:TreeNode
 }
 
 export interface Attribute {

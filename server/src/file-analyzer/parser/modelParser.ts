@@ -176,6 +176,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		const parentIndex = this.parsedObjectStack.length - 1;
 		const firstParent = parentIndex >= 0 ? this.parsedObjectStack[parentIndex] : undefined;
 		if (firstParent) {
+			parsedObject.parent = firstParent.parsedObject;
 			this.parsedObjectStack[parentIndex].parsedObject.children.push(parsedObject);
 		}
 	}

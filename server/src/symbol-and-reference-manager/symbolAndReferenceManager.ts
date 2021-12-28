@@ -2,7 +2,7 @@ import FuzzySearch = require('fuzzy-search');
 import { Position } from 'vscode-languageserver-types';
 import { standaloneObjectTypes } from '../model-definition/definitions/other';
 import { ModelFileContext } from '../model-definition/modelDefinitionManager';
-import { ModelElementTypes, IsSymbolOrReference, Reference, SymbolDeclaration, TreeNode, Attribute } from '../model-definition/symbolsAndReferences';
+import { ModelElementTypes, Reference, SymbolDeclaration, TreeNode, Attribute } from '../model-definition/symbolsAndReferences';
 import { flattenNestedListObjects, flattenNestedObjectValues, flattenObjectValues } from '../util/array';
 import { pointIsInRange } from '../util/other';
 
