@@ -1,0 +1,21 @@
+<?cp-edit petrel/backend?>
+<root>
+	<application>
+    <module>
+      <type name="test1" caption="test1"   > 
+            
+      </type>
+    
+    
+      <type name="test2" caption="test1" persistence="CompanyInspecific"    > 
+        
+      </type>
+    
+    
+      <type name="abc" caption="aabbcc" persistence="Virtual"   >
+        <attribute   />
+        <attribute name="asdf" max-length="1" /> 
+      </type>
+    </module>
+  </application>
+</root>

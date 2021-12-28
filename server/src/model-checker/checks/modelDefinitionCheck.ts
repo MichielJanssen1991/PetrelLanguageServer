@@ -18,7 +18,8 @@ export class ModelDefinitionCheck extends ModelCheck {
 		const tagDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, node.tag);
 		
 		this.allNodeAttributes = Object.values(node.attributes);
-		if (tagDefinition){
+		// there is a root with child root in the treeNode for some reason. This is not part of the definition... TODO: remove root in root in TreeNode
+		if (tagDefinition && !(node.tag == "root" && node.range.start.line == 0 && node.range.start.character == 0)){
 			this.checkChildOccurrences(node, tagDefinition);
 			this.checkAttributeOccurrences(node, tagDefinition);
 			this.checkAttributeValues(node, tagDefinition);
@@ -79,7 +80,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 					switch (rc.condition) {
 						case "==":
 							if (
-								!attrElement && (!attrDefElement || attrDefElement?.value == "") && rc.value == "" ||	
+								!attrElement && (!attrDefElement || attrDefElement?.value == "") && rc.value == "" ||
 								!attrDefElement && attrElement?.value == rc.value){
 								this.addError(element.range, `Missing required attribute '${attr.name}' for element '${element.tag}'`);
 							}

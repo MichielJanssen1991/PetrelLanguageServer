@@ -492,7 +492,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				description: "The name of the attribute defined at the type of which the value is compared with the set returned by the sub query.",
 				type: {
 					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute	// TODO add iid to the list
+					relatedTo: ModelElementTypes.Attribute	// TODO filter on type + add iid to the list
 				}
 			},
 			{

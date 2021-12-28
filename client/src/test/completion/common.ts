@@ -17,11 +17,11 @@ async function activateAndGetCompletionItems(docUri: vscode.Uri, position: vscod
 export async function testCompletionEquals(docUri: vscode.Uri, position: vscode.Position, expectedCompletionList: vscode.CompletionList) {
 	const actualCompletionList = await activateAndGetCompletionItems(docUri, position);
 
-	assert.ok(actualCompletionList.items.length >= 2);
+	assert.strictEqual(actualCompletionList.items.length, expectedCompletionList.items.length, "length");
 	expectedCompletionList.items.forEach((expectedItem, i) => {
 		const actualItem = actualCompletionList.items[i];
 		assert.strictEqual(actualItem.label, expectedItem.label);
-		assert.strictEqual(actualItem.kind, expectedItem.kind);
+		assert.strictEqual(actualItem.kind, expectedItem.kind, "Completion kind");
 	});
 }
 
