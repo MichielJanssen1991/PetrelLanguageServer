@@ -15,11 +15,11 @@ export class ModelDefinitionCheck extends ModelCheck {
 		// 
 		// I think I still prefer the checks in the 'check' classes and the 'parse' functions in the parse classes and not mix them together.
 		// (The parse function has some checks currently)
-		const tagDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, node.tag);
+		const tagDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, node.tag, node.type);
 		
 		this.allNodeAttributes = Object.values(node.attributes);
-		// there is a root with child root in the treeNode for some reason. This is not part of the definition... TODO: remove root in root in TreeNode
-		if (tagDefinition && !(node.tag == "root" && node.range.start.line == 0 && node.range.start.character == 0)){
+		// Skip the document root node (ModelElementType: Document)
+		if (tagDefinition && !(node.type==ModelElementTypes.Document)){
 			this.checkChildOccurrences(node, tagDefinition);
 			this.checkAttributeOccurrences(node, tagDefinition);
 			this.checkAttributeValues(node, tagDefinition);

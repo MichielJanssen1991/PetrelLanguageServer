@@ -11,7 +11,7 @@ export abstract class FileParser {
 	constructor(uri: string, detailLevel: ModelDetailLevel) {
 		this.uri = uri;
 		this.detailLevel = detailLevel;
-		const rootNode = newTreeNode("root", ModelElementTypes.Unknown, LSP.Range.create({ character: 0, line: 0 }, { character: 0, line: 0 }), uri);
+		const rootNode = newTreeNode("document", ModelElementTypes.Unknown, LSP.Range.create({ character: 0, line: 0 }, { character: 0, line: 0 }), uri);
 		this.results = { problems: [], tree: rootNode };
 	}
 
