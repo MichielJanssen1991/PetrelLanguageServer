@@ -2,6 +2,8 @@
   <rule name="KnownRuleWithMandatoryInputs">
     <input name="KnownAttribute" required="yes"/>
     <input name="UnknownAttribute" required="yes"/>
+    <output name="KnownAttribute" attribute="KnownAttribute"/>
+    <output name="UnknownAttribute" attribute="UnknownAttribute"/>
   </rule>
   <rule name="ExampleRule">
     <action name="RuleLoopAction" rulename="KnownRuleWithMandatoryInputs" infoset-name="KnownInfoset">

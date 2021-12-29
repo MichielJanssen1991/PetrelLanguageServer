@@ -43,13 +43,16 @@ export class RuleDeclarationCheck extends ModelCheck {
 
 		//Add output to local name references
 		ruleOutputs.forEach(output => {
-			const localNameRefInOutput = {
-				name: "name",
-				value: output.attributes[NAMES.ATTRIBUTE_ATTRIBUTE].value,
-				range: output.range,
-				fullRange: output.fullRange
-			};
-			this.ruleLocalNameReferences.push(localNameRefInOutput);
+			const attribute = output.attributes[NAMES.ATTRIBUTE_ATTRIBUTE];
+			if (attribute) {
+				const localNameRefInOutput = {
+					name: "name",
+					value: output.attributes[NAMES.ATTRIBUTE_ATTRIBUTE].value,
+					range: output.range,
+					fullRange: output.fullRange
+				};
+				this.ruleLocalNameReferences.push(localNameRefInOutput);
+			}
 		});
 
 		//Check all localNames where referenced?
@@ -94,18 +97,18 @@ export class RuleDeclarationCheck extends ModelCheck {
 					this.processLocalNameDefinition(localName);
 					break;
 				}
-			case ModelElementTypes.Switch: 
-			{
-				const localName = node.attributes[NAMES.ATTRIBUTE_VARIABLE];
-				this.processLocalNameReference(localName);
-				break;
-			}
-			case ModelElementTypes.Condition: 
-			{
-				const localName = node.attributes[NAMES.ATTRIBUTE_VARIABLE];
-				this.processLocalNameReference(localName);
-				break;
-			}
+			case ModelElementTypes.Switch:
+				{
+					const localName = node.attributes[NAMES.ATTRIBUTE_VARIABLE];
+					this.processLocalNameReference(localName);
+					break;
+				}
+			case ModelElementTypes.Condition:
+				{
+					const localName = node.attributes[NAMES.ATTRIBUTE_VARIABLE];
+					this.processLocalNameReference(localName);
+					break;
+				}
 		}
 
 		//Walk over child nodes

@@ -7,5 +7,7 @@
       <output local-name="TestAttribute"/>
       <output local-name="Infoset_Test_Valid"/>
     </action>
+    <output name="TestAttribute" attribute="TestAttribute"/>
+    <output name="Infoset_Test_Valid" attribute="Infoset_Test_Valid"/>
   </rule>
 </module>
