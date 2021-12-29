@@ -15,7 +15,7 @@ export type ParamRuleContext = {
 	value?: string
 }
 
-export class CompletionContext implements IXmlNodeContext {
+export class CompletionContext {
 	public inAttribute: boolean;
 	public inTag: boolean;
 	public nodes: TreeNode[];
@@ -30,6 +30,10 @@ export class CompletionContext implements IXmlNodeContext {
 		return this.numberOfNodes > 0 ? this.nodes[this.numberOfNodes - 1] : undefined;
 	}
 
+	public get firstParent(): TreeNode | undefined {
+		return this.numberOfNodes > 1 ? this.nodes[this.numberOfNodes - 2] : undefined;
+	}
+
 	constructor(inAttribute: boolean, inTag: boolean, nodes: TreeNode[], word: string, uri: string, attribute?: Reference | Attribute) {
 		this.inAttribute = inAttribute;
 		this.inTag = inTag;
@@ -37,22 +41,6 @@ export class CompletionContext implements IXmlNodeContext {
 		this.word = word;
 		this.uri = uri;
 		this.attribute = attribute;
-	}
-
-	// INodeContext methods
-	public getFirstParent() {
-		if (this.numberOfNodes > 2) {
-			const parentNode = this.nodes[this.numberOfNodes - 2];
-			return this.symbolOrReferenceToXmlNode(parentNode);
-		}
-	}
-
-	public hasParentTag(name: string) {
-		return this.nodes.some(node => node.tag == name);
-	}
-
-	public getCurrentXmlNode() {
-		return this.symbolOrReferenceToXmlNode(this.nodes[this.numberOfNodes - 1]);
 	}
 
 	public getAttributeValueByTagAndName(inTag: ModelElementTypes|undefined, searchName: string): string {

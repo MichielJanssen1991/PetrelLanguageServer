@@ -52,26 +52,27 @@ export class CompletionProvider {
 		const node = context.currentNode;
 		if (node) {
 			// get default attributes based on model definition
-			const modelDefinition = this.modelDefinitionManager.getModelDefinitionForCurrentNode(modelFileContext, context);
-			
+			const modelDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, node.tag, node.type);
+
 			// get a lit of nonvisible elements (attributes which should not appear in the completion list because they do not apply )
 			const attributesForTag = this.getVisibleAttributes(modelDefinition, node);
-			
+
 			// get attributes based on the action called
 			let attributesForAction: ElementAttribute[] = [];
 			if (node.type == ModelElementTypes.ActionCall) {
 				const actionReference = node.attributes["name"] as Reference;
 				const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionReference);
-				if (referencedAction){
+				if (referencedAction) {
 					attributesForAction = (referencedAction?.children
-					.filter(x => x.type == ModelElementTypes.Attribute) as SymbolDeclaration[])
-					.map(x => {return {name: x.name, description: "geen"};
-					}) || [];
+						.filter(x => x.type == ModelElementTypes.Attribute) as SymbolDeclaration[])
+						.map(x => {
+							return { name: x.name, description: "geen" };
+						}) || [];
 				}
 			}
 
 			let allAttributes = [...attributesForAction, ...attributesForTag];
-			
+
 			// remove already available attributes
 			const existingAttributes = [...Object.keys(node.attributes)];
 			allAttributes = allAttributes.filter(item => !existingAttributes.includes(item.name));
@@ -89,33 +90,33 @@ export class CompletionProvider {
 	 * @param node 
 	 * @returns a list of non visible attribute names 
 	 */
-	private getVisibleAttributes(modelDefinition: Definition | undefined, node: TreeNode){
+	private getVisibleAttributes(modelDefinition: Definition | undefined, node: TreeNode) {
 		// get all attributes without visibilityConditions
 		const a = modelDefinition?.attributes?.filter(
 			attr => !attr.visibilityConditions
 		) || [];
-		
+
 		// get all attributes with visibilityConditions and conditions did match
 		const b = modelDefinition?.attributes?.filter(
 			attr => {
 				let totRetVal: boolean | undefined;
 				const nodeAttributes: any = node.attributes;
-				
+
 				attr.visibilityConditions?.forEach(visCond => {
-					switch(visCond.condition){
+					switch (visCond.condition) {
 						case "==":
-							if (nodeAttributes[visCond.attribute]){
+							if (nodeAttributes[visCond.attribute]) {
 								totRetVal = this.returnEqualsOperationResult(totRetVal, visCond.operator, visCond.value, nodeAttributes[visCond.attribute].value);
 							} else {
 								totRetVal = this.returnEqualsOperationResult(totRetVal, visCond.operator, visCond.value);
-							}			
+							}
 							break;
 						case "!=":
-							if (nodeAttributes[visCond.attribute]){
+							if (nodeAttributes[visCond.attribute]) {
 								totRetVal = this.returnUnEqualsOperationResult(totRetVal, visCond.operator, visCond.value, nodeAttributes[visCond.attribute].value);
 							} else {
 								totRetVal = this.returnUnEqualsOperationResult(totRetVal, visCond.operator, visCond.value);
-							}							
+							}
 							break;
 						case "misses":
 							// not implemented yet
@@ -150,7 +151,7 @@ export class CompletionProvider {
 	 * @param nodevalue 
 	 * @returns 
 	 */
-	private returnEqualsOperationResult(returnResult: boolean | undefined, operator: string | undefined, conditionValue: string, nodevalue="") : boolean {
+	private returnEqualsOperationResult(returnResult: boolean | undefined, operator: string | undefined, conditionValue: string, nodevalue = ""): boolean {
 		if (!operator || operator == "or") {
 			returnResult = returnResult || nodevalue == conditionValue;
 		} else {
@@ -168,7 +169,7 @@ export class CompletionProvider {
 	 * @param nodevalue 
 	 * @returns 
 	 */
-	private returnUnEqualsOperationResult(returnResult: boolean | undefined, operator: string | undefined, conditionValue: string, nodevalue="") : boolean {
+	private returnUnEqualsOperationResult(returnResult: boolean | undefined, operator: string | undefined, conditionValue: string, nodevalue = ""): boolean {
 		if (returnResult !== undefined && (!operator || operator == "and")) {
 			returnResult = returnResult && nodevalue != conditionValue;
 		} else {
@@ -178,7 +179,8 @@ export class CompletionProvider {
 	}
 
 	private getAttributeValueCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
-		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForCurrentNode(modelFileContext, context);
+		const node = context.currentNode as TreeNode;
+		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, node.tag, node.type);
 		const attribute = context.attribute;
 		let symbols = [{ label: "no posibilities found" }];
 		if (attribute && elementDefinition && elementDefinition.attributes) {
@@ -229,38 +231,39 @@ export class CompletionProvider {
 	 * @returns 
 	 */
 	private getChildElementCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
-		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForCurrentNode(modelFileContext, context);
+		const node = context.currentNode as TreeNode;
+		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, node.tag, node.type);
 		let childCompletions: CompletionItem[] = [];
 		if (elementDefinition) {
 			const children = elementDefinition.childs;
 			// if the definition contains an array of children
-			if (Array.isArray(children) && children){
+			if (Array.isArray(children) && children) {
 				childCompletions = this.mapChildrenToCompletionItems(children, modelFileContext);
-			} 
+			}
 			// if the definition contains something else then an array of children. (could be empty too)
 			// In some cases the context of children is determined by the parent tag or some attribute
 			else {
 				// match context from an attribute to retrieve the children (e.g. include)
 				if (children?.matchElementFromAttribute) {
 					const elementName = context.getAttributeValueByTagAndName(elementDefinition.type, children?.matchElementFromAttribute).toLowerCase();
-					if (elementName){
-						const childElementDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, elementName);
+					if (elementName) {
+						const childElementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, elementName, ModelElementTypes.All); //TODO: Add the correct ModelElementType
 						const childChildren = childElementDefinition?.childs;
-						if (Array.isArray(childChildren) && childChildren){
+						if (Array.isArray(childChildren) && childChildren) {
 							childCompletions = this.mapChildrenToCompletionItems(childChildren, modelFileContext);
-						}					
+						}
 					}
 				}
 				// match context from the parent tag to retrieve the children. (e.g. model-condition)
-				else if (children?.matchFromParent){
-					const parentTag = context.getFirstParent()?.name;
-					if (parentTag) {
-						const parentElementDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, parentTag);
+				else if (children?.matchFromParent) {
+					const parent = context.firstParent;
+					if (parent) {
+						const parentElementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, parent.tag, parent.type);
 						const parentChildren = parentElementDefinition?.childs;
-						if (Array.isArray(parentChildren) && parentChildren){
+						if (Array.isArray(parentChildren) && parentChildren) {
 							childCompletions = this.mapChildrenToCompletionItems(parentChildren, modelFileContext);
 						}
-					}				
+					}
 				}
 			}
 		}
@@ -282,7 +285,7 @@ export class CompletionProvider {
 	private mapChildrenToCompletionItems(children: ChildDefinition[], modelFileContext: ModelFileContext): CompletionItem[] {
 		return children.map(
 			(child: ChildDefinition) => {
-				const childsOwnDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, child.element);//TODO: should pass node and context of child
+				const childsOwnDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, child.element, ModelElementTypes.All);//TODO: should pass node and context of child
 				const snippet = this.buildChildElementSnippet(modelFileContext, child, childsOwnDefinition);
 				return {
 					label: child.element,
@@ -332,13 +335,13 @@ export class CompletionProvider {
 
 		// get the required child nodes and add them to the snippet
 		const childSnippets: string[] = [];
-		if (Array.isArray(childChildren) && childChildren){
+		if (Array.isArray(childChildren) && childChildren) {
 			childChildren?.filter(childNode => childNode.required).forEach(item => {
-				const childDefinition = this.modelDefinitionManager.getModelDefinitionForTagWithoutContext(modelFileContext, item.element);
+				const childDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, item.element, item.type || ModelElementTypes.All);
 				childSnippets.push(this.buildChildElementSnippet(modelFileContext, item, childDefinition, tabIndent + `\t`));
 			});
 		}
-		
+
 		// construct snipped. Put element sting, attribute string and child string together.
 		const lastTab = (tabIndent == "") ? `\${${(childsAttributes?.length || 0) + 1}}` : "";
 		const snippet = childChildren != undefined && (!Array.isArray(childChildren) || (Array.isArray(childChildren) && childChildren.length > 0))

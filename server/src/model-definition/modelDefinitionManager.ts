@@ -4,7 +4,7 @@ import { FRONTEND_DEFINITION } from './definitions/frontend';
 import { INFOSET_DEFINITION } from './definitions/infosets';
 import { OTHER_DEFINITION } from './definitions/other';
 import { RULE_DEFINITION } from './definitions/rules';
-import { IXmlNodeContext, Definitions } from './symbolsAndReferences';
+import { IXmlNodeContext, Definitions, ModelElementTypes } from './symbolsAndReferences';
 
 export enum ModelFileContext {
 	Backend,
@@ -34,7 +34,8 @@ export class ModelDefinitionManager {
 	/**
 	 * Get the definition for the current tag in the current xml node
 	 * - The nodeContext is required to distinguish between duplicate tags based on the matchCondition
-	 * @param modelFileContext 
+	 * - To be used when parsing the model
+	 * @param modelFileContext the model file context
 	 * @param nodeContext the current nodeContext 
 	 * @returns definition for the current node
 	 */
@@ -47,9 +48,16 @@ export class ModelDefinitionManager {
 		);
 	}
 
-	//Should be removed later (context will always be required to distinguish between some tags)
-	public getModelDefinitionForTagWithoutContext(context: ModelFileContext, tag: string) {
+	/**
+	 * Get the definition for the current tag and model element type
+	 * - The type is required to distinguish between duplicate tags based on the type
+	 * - To be used after parsing the xml model, ambiguities should be resolved during parsing 
+	 * @param modelFileContext the model file context
+	 * @param type the model element type
+	 * @returns definition for the current node
+	 */
+	public getModelDefinitionForTagAndType(context: ModelFileContext, tag: string, type: ModelElementTypes) {
 		const definitionsForTag = this.getModelDefinition(context)[tag] || [];
-		return definitionsForTag.find(def => true);
+		return definitionsForTag.find(def => (def.type == type)||type==ModelElementTypes.All);
 	}
 }

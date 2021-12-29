@@ -4,6 +4,7 @@ import { XmlNode } from '../file-analyzer/parser/saxParserExtended';
 export enum ModelElementTypes {
 	Action = "Action",
 	ActionCall = "ActionCall",
+	ActionOutput = "ActionOutput",
 	Aggregate = "Aggregate",
 	All = "All",
 	Argument = "Argument",
@@ -15,6 +16,7 @@ export enum ModelElementTypes {
 	Decorators = "Decorators",
 	Decorator = "Decorator",
 	DecoratorContextEntity = "Decorator-context-entity",
+	Document = "Document",
 	ElseIf = "ElseIf",
 	Exists = "Exists",
 	Function = "Function",
@@ -189,7 +191,8 @@ export type ChildDefinition = {
 	element: string,
 	occurence?: "once" | "at-least-once",
 	required?: boolean,
-	validations?: ChildValidation[]
+	validations?: ChildValidation[],
+	type?:ModelElementTypes
 }
 
 export type ChildReference = {

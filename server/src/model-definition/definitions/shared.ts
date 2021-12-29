@@ -881,9 +881,8 @@ export const action_argument_element: Definition = {
 export const action_output_element: Definition =
 {
 	description: "Output of the action.",
-	name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 	matchCondition: (nodeContext) => !isOutputDeclaration(nodeContext),
-	type: ModelElementTypes.Output,
+	type: ModelElementTypes.ActionOutput,
 	detailLevel: ModelDetailLevel.SubReferences,
 	attributes:[
 		{
