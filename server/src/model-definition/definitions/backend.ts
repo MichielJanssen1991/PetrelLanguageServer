@@ -55,6 +55,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	}],
 	"module": [{
 		type: ModelElementTypes.Module,
+		detailLevel: ModelDetailLevel.Declarations,
 		description: "Used for grouping model entities and model namespacing.",
 		attributes: [
 			{
@@ -94,6 +95,8 @@ export const BACKEND_DEFINITION: Definitions = {
 	}],
 	"type": [{
 		type: ModelElementTypes.Type,
+		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true,
 		prefixNameSpace: true,
 		description: "",
 		attributes: [
@@ -204,7 +207,7 @@ export const BACKEND_DEFINITION: Definitions = {
 						{
 							name: "CompanyInspecific",
 							description: "A table multiple companies share."
-						}						
+						}
 					]
 				},
 				visibilityConditions: [
@@ -275,7 +278,7 @@ export const BACKEND_DEFINITION: Definitions = {
 						{
 							name: "CompanyInspecific",
 							description: "A table multiple companies share."
-						}						
+						}
 					]
 				},
 				visibilityConditions: [
@@ -324,7 +327,7 @@ export const BACKEND_DEFINITION: Definitions = {
 						value: "yes"
 					}
 				]
-			},			
+			},
 			dev_obsolete_attribute,
 			dev_ignore_modelcheck_attribute,
 			dev_ignore_modelcheck_justification_attribute,
@@ -373,6 +376,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	}],
 	"attribute": [{
 		type: ModelElementTypes.Attribute,
+		detailLevel: ModelDetailLevel.Declarations,
 		description: "Describes an attribute of this type.",
 		attributes: [
 			{
@@ -383,7 +387,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				name: "type",
 				description: "Determines field type and the saved attribute value.",
-				type: 
+				type:
 				{
 					type: AttributeTypes.Enum,
 					options: [
@@ -452,7 +456,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				name: "empty-allowed",
 				description: "If the attribute or field can be left empty.",
-				type: 
+				type:
 				{
 					type: AttributeTypes.Enum,
 					"options": [
@@ -461,7 +465,7 @@ export const BACKEND_DEFINITION: Definitions = {
 							default: true
 						},
 						{
-							name: "no"						
+							name: "no"
 						}
 					]
 				},
@@ -635,7 +639,7 @@ export const BACKEND_DEFINITION: Definitions = {
 						},
 						{
 							name: "",
-							description: "no"							
+							description: "no"
 						}
 					]
 				},
@@ -656,11 +660,11 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				name: "display-as",
 				description: "An attribute of the related type to display. Display-as can only be used when a relation type or relation field is specified.",
-				type: 
-					{
-						type: AttributeTypes.Reference,
-						relatedTo: ModelElementTypes.Attribute	// TODO add specification what attributes need to be displayed. Filter on parent type name OR related type attribute
-					},
+				type:
+				{
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute	// TODO add specification what attributes need to be displayed. Filter on parent type name OR related type attribute
+				},
 				visibilityConditions: [
 					{
 						attribute: "relation-type",
@@ -716,7 +720,7 @@ export const BACKEND_DEFINITION: Definitions = {
 						attribute: "type",
 						condition: "==",
 						value: "enum"
-					}					
+					}
 				]
 			},
 			{
@@ -830,11 +834,11 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				name: "caption",
 				required: true,
-				description: "The representation of the option to the user. The caption should be unique inside the field."				
+				description: "The representation of the option to the user. The caption should be unique inside the field."
 			},
 			{
 				name: "label-width",
-				description: "The width of the option label in the frontend."		
+				description: "The width of the option label in the frontend."
 			},
 			{
 				name: "src",
@@ -1165,7 +1169,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"merge-instruction": [merge_instruction_element],
 	"input": [{
 		type: ModelElementTypes.Input,
-		isSymbolDeclaration:true,
+		isSymbolDeclaration: true,
 		attributes: [
 			{
 				name: "required",

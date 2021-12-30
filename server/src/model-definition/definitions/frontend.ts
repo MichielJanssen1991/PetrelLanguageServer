@@ -7,7 +7,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"include-block": [include_blocks_element],
 	"include": [include_element],
 	"main-view": [{}],
-	"module": [{}],
+	"module": [{
+		type:ModelElementTypes.Module,
+		detailLevel: ModelDetailLevel.Declarations
+	}],
 	"trees": [{}],
 	"tree": [{}],
 	"toolbars": [{}],
