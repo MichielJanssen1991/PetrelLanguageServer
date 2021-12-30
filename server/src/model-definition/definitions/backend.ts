@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { action_argument_element, action_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_element } from './shared';
+import { action_argument_element, action_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_element, dev_description_attribute } from './shared';
 export const BACKEND_DEFINITION: Definitions = {
 	"root": [{
 		attributes: [
@@ -59,10 +59,12 @@ export const BACKEND_DEFINITION: Definitions = {
 		attributes: [
 			{
 				name: "name",
-				description: "The name of the module"
+				description: "The module name.",
+				autoadd: true
 			},
 			target_namespace_attribute,
-			dev_comment_attribute
+			dev_description_attribute,
+			dev_comment_attribute,
 		],
 		childs: [
 			{

@@ -37,11 +37,13 @@ export enum ModelElementTypes {
 	SetVar = "SetVar",
 	Switch = "Switch",
 	Target = "Target",
+	TargetView = "TargetView",	// this is not a list of elements of TargetViews, but a list of Views filled with attribute "TargetName"
 	Type = "Type",
 	TypeFilter = "TypeFilter",
 	Unknown = "Unknown",
 	Variable = "Variable",
 	View = "View",
+	Style = "Style",
 }
 
 export enum ValidationLevels {
@@ -55,7 +57,8 @@ export enum ValidationLevels {
 export enum AttributeTypes {
 	Enum = "enum",
 	Reference = "reference",
-	Numeric = "numeric"
+	Numeric = "numeric",
+	URL = "url"	// base-location = wwwroot
 }
 
 export type ContextQualifiers = {
@@ -250,6 +253,6 @@ export type AttributeType = {
 	type: AttributeTypes,
 	relatedTo?: ModelElementTypes,
 	options?: AttributeOption[],
-	pathHints?: AttributeOption[]
-
+	pathHints?: AttributeOption[],
+	default?: string
 }

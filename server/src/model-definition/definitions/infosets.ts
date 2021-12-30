@@ -101,10 +101,12 @@ export const INFOSET_DEFINITION: Definitions = {
 		attributes: [
 			{
 				name: "name",
-				description: "The name of the module"
+				description: "The module name.",
+				autoadd: true
 			},
 			target_namespace_attribute,
 			dev_description_attribute,
+			dev_comment_attribute,
 		],
 		childs: [
 			{
