@@ -10,8 +10,8 @@ export function getContextFromLine(textDocument: TextDocument, pos: Position) {
 	const lineTextBeforeCurrentPoint = lineText.slice(0, pos.character);
 	const countNumberOfOpeningParenthesis = lineTextBeforeCurrentPoint.split("\"").length - 1;
 	const inAttribute = countNumberOfOpeningParenthesis % 2 === 1;
-	const tag = lineTextBeforeCurrentPoint.split("<")[1].split(" ")[0];
-	return { inAttribute, tag };
+
+	return inAttribute;
 }
 
 export function wordAtPoint(textDocument: TextDocument, pos: Position):string {

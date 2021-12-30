@@ -5,17 +5,17 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
-import { formatFileURL } from './util/fs';
-import { ModelDetailLevel, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
-import { CompletionContext, CompletionProvider } from './completion/completionProvider';
+import { ModelDetailLevel, IsSymbolOrReference, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
+import { CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
 
 //Other
 import { time, timeEnd } from 'console';
 import * as fs from 'fs';
 import path = require('path');
-import { pointIsInRange } from './util/other';
 import { ModelManager } from './symbol-and-reference-manager/modelManager';
+import { ModelDefinitionManager } from './model-definition/modelDefinitionManager';
+import { CompletionContext } from './completion/completionContext';
 
 interface DocumentSettings {
 	maxNumberOfProblems: number;
@@ -27,6 +27,7 @@ export default class PetrelLanguageServer {
 	private analyzer: Analyzer;
 	private connection: LSP._Connection;
 	private modelManager: ModelManager;
+	private modelDefinitionManager: ModelDefinitionManager;
 	private completionProvider: CompletionProvider;
 	private modelChecker: ModelChecker;
 	private documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -35,10 +36,11 @@ export default class PetrelLanguageServer {
 	private settings: DocumentSettings = PetrelLanguageServer.defaultSettings;
 
 	constructor(connection: LSP._Connection) {
+		this.modelDefinitionManager = new ModelDefinitionManager();
 		this.modelManager = new ModelManager();
-		this.analyzer = new Analyzer(this.modelManager);
-		this.modelChecker = new ModelChecker(this.modelManager);
-		this.completionProvider = new CompletionProvider(this.modelManager);
+		this.analyzer = new Analyzer(this.modelManager, this.modelDefinitionManager);
+		this.modelChecker = new ModelChecker(this.modelManager, this.modelDefinitionManager);
+		this.completionProvider = new CompletionProvider(this.modelManager, this.modelDefinitionManager);
 		this.connection = connection;
 
 		// Make the text document manager listen on the connection
@@ -50,14 +52,14 @@ export default class PetrelLanguageServer {
 		this.documents.onDidChangeContent(change => {
 			this.onDocumentChangeContent(change);
 		});
-		
+
 	}
 
 	public static async fromRoot(connection: LSP._Connection, rootPath: string): Promise<PetrelLanguageServer> {
 		const languageServer = new PetrelLanguageServer(connection);
 		languageServer.settings = PetrelLanguageServer.getConfigSettings(rootPath);
 
-		languageServer.analyzer = await Analyzer.fromRoot({ connection, rootPath }, languageServer.modelManager, languageServer.settings);
+		languageServer.analyzer = await Analyzer.fromRoot({ connection, rootPath }, languageServer.modelManager, languageServer.modelDefinitionManager, languageServer.settings);
 		return languageServer;
 	}
 
@@ -86,7 +88,7 @@ export default class PetrelLanguageServer {
 
 	public async onDocumentChangeContent(change: any) {
 		const document = change.document;
-		this.analyzer.updateDocument(formatFileURL(document.uri), document);
+		this.analyzer.updateDocument(document.uri, document);
 		const diagnostics = await this.validateTextDocument(document);
 		this.connection.sendDiagnostics({
 			uri: document.uri,
@@ -95,9 +97,9 @@ export default class PetrelLanguageServer {
 	}
 
 	private async validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
-		const uri = formatFileURL(textDocument.uri);
-		const parsingDiagnostics = this.analyzer.analyze(uri, textDocument, ModelDetailLevel.ArgumentReferences);
-		
+		const uri = textDocument.uri;
+		const parsingDiagnostics = this.analyzer.analyze(uri, textDocument, ModelDetailLevel.All);
+
 		time("Verifying references");
 		const referenceChecksDiagnostics = this.modelChecker.checkFile(uri);
 		timeEnd("Verifying references");
@@ -113,27 +115,20 @@ export default class PetrelLanguageServer {
 	 * Get the context for a given DocumentPosition.
 	 */
 	public getContext(params: LSP.TextDocumentPositionParams): CompletionContext {
-		const word = this.getWordAtPoint(params);
+		let word = "";
+
+		if (params.position && params.position.line) {
+			word = this.getWordAtPoint(params);
+		}
+
 		const uri = params.textDocument.uri;
 		const pos = params.position;
-		const { inAttribute, tag } = this.analyzer.contextFromLine(uri, pos);
+		const inAttribute = this.analyzer.contextFromLine(uri, pos);
 
-		//Find main reference if any
-		let referencesAtPosition = this.modelManager.getReferencesForPosition(uri, pos);
-		//Find main declaration if any
-		const declarationsAtPosition = this.modelManager.getSymbolsForPosition(uri, pos);
+		const { nodes, inTag, attribute } = this.modelManager.getNodesForPosition(uri, pos);
+		const context = new CompletionContext(inAttribute, inTag, nodes, word, uri, attribute);
 
-		//If no reference found possibly a child reference
-		let parentReferenceAtPoint;
-		if (referencesAtPosition.length == 0) {
-			const parentReferencesAtPoint = this.modelManager.getReferencesForPosition(uri, pos, true);
-			if (parentReferencesAtPoint.length > 0) {
-				const parentReferenceAtPoint = parentReferencesAtPoint[0];
-				referencesAtPosition = parentReferenceAtPoint.children.filter(ref =>
-					pointIsInRange(ref.range, pos));
-			}
-		}
-		return { word, references: referencesAtPosition, declarations: declarationsAtPosition, parentReference: parentReferenceAtPoint, inAttribute, tag };
+		return context;
 	}
 
 	public onCompletion(params: TextDocumentPositionParams): CompletionItem[] {
@@ -148,30 +143,31 @@ export default class PetrelLanguageServer {
 
 	public onDefinition(params: TextDocumentPositionParams) {
 		const context = this.getContext(params);
-		const { references, word } = context;
+		const { nodes, word, attribute } = context;
 		this.logRequest({ request: 'onDefinition', params, context });
 		let symbols: SymbolDeclaration[] = [];
-		if (references.length > 0) {
-			const possibleReferencesSelected = references.filter(x => x.name == word || x.name.endsWith(`.${word}`));
-			symbols = possibleReferencesSelected
-			.map(ref => this.modelManager.getReferencedObject(ref))
-			.filter(x=> (x!=undefined)) as SymbolDeclaration[];
-		}else{
-			symbols = this.modelManager.findSymbolsMatchingWord({exactMatch:true,word});
+		if (nodes.length > 0 && attribute?.isReference) {
+			const reference = attribute as Reference;
+			const lastNode = context.nodes[nodes.length - 1];
+			const symbol = this.modelManager.getReferencedObject(reference);
+			symbols = symbol ? [symbol] : [];
+		} else {
+			symbols = this.modelManager.findSymbolsMatchingWord({ exactMatch: true, word });
 		}
 		return this.getSymbolDefinitionLocationLinks(symbols);
 	}
 
 	public onReference(params: TextDocumentPositionParams) {
 		const context = this.getContext(params);
-		const { declarations, word } = context;
+		const { nodes, word } = context;
 		this.logRequest({ request: 'onReference', params, context });
 		let references: Reference[] = [];
-		if (declarations.length > 0) {
-			const possibleDeclarationsSelected = declarations.filter(x => x.name == word || x.name.endsWith(`.${word}`));
+		if (nodes.length > 0) {
+			const lastNode = context.nodes[nodes.length - 1];
+			const possibleDeclarationsSelected = [lastNode].filter(x => x.isSymbolDeclaration && ((x as SymbolDeclaration).name == word || (x as SymbolDeclaration).name.endsWith(`.${word}`))) as SymbolDeclaration[];
 			references = possibleDeclarationsSelected.flatMap(ref => this.modelManager.getReferencesForSymbol(ref));
-		}else{
-			references = this.modelManager.findSymbolsMatchingWord({exactMatch:true,word});
+		} else {
+			references = this.modelManager.findReferencesMatchingWord({ exactMatch: true, word });
 		}
 
 		return this.getReferenceLocations(references);
@@ -181,15 +177,26 @@ export default class PetrelLanguageServer {
 		return symbols.map((def) => this.symbolDefinitionToLocationLink(def));
 	}
 
-	private logRequest({ request, params, word, context }: {
+	private logRequest({ request, params, context }: {
 		request: string
 		params: LSP.TextDocumentPositionParams
-		word?: string | null
-		context?: any
+		context?: CompletionContext
 	}) {
-		const wordLog = word ? `"${word}"` : 'null';
+		const nodesSimplified = context?.nodes.map(node => {
+			return {
+				type: node.type,
+				objectType: node.isSymbolDeclaration,
+				tag: node.tag,
+				attributes: node.attributes
+			};
+		}); // Only log essentials to avoid very large log messages (especially caused by chidren)
 		this.connection.console.log(
-			`${request} ${params.position.line}:${params.position.character} word=${wordLog} context=${JSON.stringify(context)}`,
+			`${request} ${params.position.line}:${params.position.character} 
+			inAttribute=${JSON.stringify(context?.inAttribute)},
+			inTag=${JSON.stringify(context?.inTag)},
+			uri=${JSON.stringify(context?.uri)},
+			word=${JSON.stringify(context?.word)},
+			nodes (simplified)=${JSON.stringify(nodesSimplified)}`
 		);
 	}
 
@@ -201,11 +208,11 @@ export default class PetrelLanguageServer {
 		};
 		return locLink;
 	}
-	
+
 	private async getReferenceLocations(symbols: Reference[]): Promise<Location[]> {
 		return symbols.map((def) => this.referenceToLocation(def));
 	}
-	
+
 	private referenceToLocation(symbol: Reference): Location {
 		const locLink: Location = {
 			range: symbol.range,

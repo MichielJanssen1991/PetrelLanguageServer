@@ -21,7 +21,22 @@ It also includes an End-to-End test.
 ├── package.json // The extension manifest.
 └── server // Language Server
     └── src
-        └── server.ts // Language Server entry point
+        ├── server.ts // Language Server entry point which initializes the PetrelLanguageServer and forwards requests
+        ├── petrelLanguageServer.ts // Implements the petrel language server. Initializes various 
+        │                              components and delegates requests (autocomplete/analyze files/find definition...) 
+        │                              to the components 
+        ├── completion // Anything related to completion requests 
+        ├── file-analyzer
+        │   ├── analyzer.ts // Responsible for gathering files and passing them to a parser, updates the symbolAndReferenceManager 
+        │   │                  with  the output
+        │   └── parser // Includes various parserss
+        ├── model-checker // Anything related to model validation
+        ├── model-definition // Definition of the model used for parsing files, autocompletes and performing validations
+        ├── symbol-and-reference-manager
+        │   ├── symbolAndReferenceManager.ts // Holds de parsed model trees and provides efficients ways to query the results.          
+        │   │                                   Is injected to various other components which require access to the model.
+        │   └── modelManager.ts // Extends the symbolAndReferenceManager with specific querying holding more detailed platform knowledge
+        └── utils
 ```
 
 ## Running the language server for developers

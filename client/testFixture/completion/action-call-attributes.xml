@@ -1,0 +1,8 @@
+<?cp-edit petrel/rules?>
+<module>
+  <rule>
+    <action name="Infoset" />
+    <action name="Rule" />
+    <action name="Rule" rulename="KnownRule" />
+  </rule>
+</module>

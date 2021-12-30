@@ -1,7 +1,7 @@
 <module>
   <rule name="ExampleRule">
     <action name="Rule">
-      <argument local-name="rulename" />
+      <argument remote-name="rulename" value="KnownRule" />
     </action>
   </rule>
 </module>

@@ -1,8 +1,6 @@
 <module>
   <rule name="ExampleRule">
     <action name="Rule">
-      <argument local-name="someArgument" />
-      <output local-name="someOutput" />
     </action>
   </rule>
 </module>

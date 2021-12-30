@@ -1,33 +1,34 @@
 import * as LSP from 'vscode-languageserver';
-import { ModelElementTypes, ObjectIdentifierTypes, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
+import { ModelElementTypes, TreeNode } from '../model-definition/symbolsAndReferences';
 import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 import { ModelCheckerOptions } from './modelChecker';
 
 export abstract class ModelCheck {
 	private diagnostics: LSP.Diagnostic[] = [];
 	protected modelManager: ModelManager;
-	protected abstract objectType: ObjectIdentifierTypes;
+	protected modelDefinitionManager: ModelDefinitionManager;
 	protected abstract modelElementType: ModelElementTypes;
-	protected abstract matchCondition?: (node: SymbolOrReference) => boolean;
+	protected abstract matchCondition?: (node: TreeNode) => boolean;
 
-	constructor(modelManager: ModelManager) {
+	constructor(modelManager: ModelManager, modelDefinitionManager? : ModelDefinitionManager) {
 		this.modelManager = modelManager;
+		this.modelDefinitionManager = modelDefinitionManager || new ModelDefinitionManager();
 	}
 
-	public check(node: SymbolOrReference, options: ModelCheckerOptions): LSP.Diagnostic[] {
+	public check(node: TreeNode, options: ModelCheckerOptions): LSP.Diagnostic[] {
 		this.diagnostics = [];
 		this.checkInternal(node, options);
 		return this.diagnostics;
 	}
 
-	public isApplicable(node: SymbolOrReference): boolean {
-		let isApplicable = (node.type == this.modelElementType || this.modelElementType == ModelElementTypes.All);
-		isApplicable = isApplicable && (node.objectType == this.objectType);
-		isApplicable = isApplicable && (this.matchCondition?this.matchCondition(node):true);
+	public isApplicable(node: TreeNode): boolean {
+		const isApplicable = (node?.type == this.modelElementType || this.modelElementType == ModelElementTypes.All)
+			&& (this.matchCondition ? this.matchCondition(node) : true);
 		return isApplicable;
 	}
 
-	protected abstract checkInternal(node: SymbolOrReference, options: ModelCheckerOptions): void
+	protected abstract checkInternal(node: TreeNode, options: ModelCheckerOptions): void
 
 	protected addInformation(range: LSP.Range, message: string) {
 		this.addDiagnostics(range, message, LSP.DiagnosticSeverity.Information);

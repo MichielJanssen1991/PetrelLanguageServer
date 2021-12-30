@@ -11,6 +11,7 @@ import { ModelParser } from './parser/modelParser';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { JavascriptParser } from './parser/javascriptParser';
 import { FileParser } from './parser/fileParser';
+import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -19,18 +20,24 @@ const readFileAsync = promisify(fs.readFile);
  */
 export class Analyzer {
 	private symbolAndReferenceManager: SymbolAndReferenceManager;
+	private modelDefinitionManager: ModelDefinitionManager;
 	private uriToTextDocument: { [uri: string]: TextDocument } = {};
 
-	constructor(symbolAndReferenceManager: SymbolAndReferenceManager) {
+	constructor(symbolAndReferenceManager: SymbolAndReferenceManager, modelDefinitionManager:ModelDefinitionManager) {
 		this.symbolAndReferenceManager = symbolAndReferenceManager;
+		this.modelDefinitionManager =  modelDefinitionManager;
 	}
 
 	/**
 	 * Initialize the Analyzer based on a connection to the client and a root path.	 
 	 */
-	public static async fromRoot({ connection, rootPath }: { connection: LSP.Connection, rootPath: string }, symbolAndReferenceManager: SymbolAndReferenceManager, options?: { skipFolders: string[] })
+	public static async fromRoot(
+		{ connection, rootPath }: { connection: LSP.Connection, rootPath: string }, 
+		symbolAndReferenceManager: SymbolAndReferenceManager, 
+		modelDefinitionManager: ModelDefinitionManager, 
+		options?: { skipFolders: string[] })
 		: Promise<Analyzer> {
-		const analyzer = new Analyzer(symbolAndReferenceManager);
+		const analyzer = new Analyzer(symbolAndReferenceManager, modelDefinitionManager);
 
 		if (rootPath) {
 			connection.console.log(`Analyzing files inside ${rootPath}`);
@@ -86,13 +93,13 @@ export class Analyzer {
 		const extension = getFileExtension(uri);
 		let parser:FileParser;
 		switch (extension) {
-			case "xml": parser = new ModelParser(uri, detailLevel); break;
+			case "xml": parser = new ModelParser(uri, detailLevel, this.modelDefinitionManager); break;
 			case "js": parser = new JavascriptParser(uri); break;
-			default: parser = new ModelParser(uri, detailLevel); break;
+			default: parser = new ModelParser(uri, detailLevel, this.modelDefinitionManager); break;
 		}
 
 		const results = parser.parseFile(contents);
-		this.symbolAndReferenceManager.updateTree(uri, results.tree);
+		this.symbolAndReferenceManager.updateTree(uri, results.tree, results.modelFileContext);
 		problems = problems.concat(results.problems);
 		timeEnd("Analyzing file for declarations and references");
 		return problems;
@@ -108,8 +115,8 @@ export class Analyzer {
 
 	public contextFromLine(uri: string, pos: Position) {
 		const textDocument = this.uriToTextDocument[uri];
-		const { inAttribute, tag } = getContextFromLine(textDocument, pos);
-		return { inAttribute, tag };
+		const inAttribute = getContextFromLine(textDocument, pos);
+		return inAttribute;
 	}
 
 }

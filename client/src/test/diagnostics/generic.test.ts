@@ -1,4 +1,3 @@
-
 import * as vscode from 'vscode';
 import { getDocUri, } from '../helper';
 import { testDiagnostics, toRange } from './common';

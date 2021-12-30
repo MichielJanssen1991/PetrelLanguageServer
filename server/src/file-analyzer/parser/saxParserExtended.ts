@@ -4,10 +4,12 @@ const sax = require("../../../node_modules/sax/lib/sax");
 
 // Define the interface for the parser from the sax module
 export interface ISaxParser {
+	onprocessinginstruction: any,
 	onerror: any,
 	ontext: any,
 	onend: any,
 	onopentag: any,
+	onattribute: any,
 	onclosetag: any,
 	write: any,
 	close: any,
@@ -21,21 +23,35 @@ export interface ISaxParser {
 	tags: any,
 }
 
+export type ProcessingInstruction = {
+	name: string,
+	body: string
+}
+
+export type XmlNode = {
+	name: string
+	attributes: Record<string, string>
+}
+
 
 // Extend with own functionality used for parsing model xml
 export interface ISaxParserExtended extends ISaxParser {
 	uri: string,
-	getFirstParent: () => any,
-	hasParentTag: (name: string) => boolean
-	findParent: (predicate: (n: any) => boolean) => any | null,
-	getRange: () => LSP.Range;
+	getFirstParent: () => XmlNode,
+	hasParentTag: (name: string) => boolean,
+	getCurrentXmlNode: () => XmlNode,
+	getTagRange: () => LSP.Range;
+	getAttributeRange: (attribute: { name: string, value: string }) => LSP.Range;
+	getAttributeValueRange: (attribute: { name: string, value: string }) => LSP.Range;
 }
 
 
 export function newSaxParserExtended(
 	onerror: ((e: any, parser: ISaxParserExtended) => void),
 	onopentag: ((node: any, parser: ISaxParserExtended) => void),
-	onclosetag: (() => void)
+	onattribute: ((node: any, parser: ISaxParserExtended) => void),
+	onclosetag: (() => void),
+	onprocessinginstruction: ((instruction: ProcessingInstruction) => void)
 ): ISaxParserExtended {
 	const parser = sax.parser(true) as ISaxParserExtended;
 
@@ -49,13 +65,24 @@ export function newSaxParserExtended(
 		onopentag(node, this);
 	};
 
+	parser.onattribute = function (node: any) {
+		onattribute(node, this);
+	};
+
 	parser.onclosetag = function () {
 		onclosetag();
+	};
+
+	parser.onprocessinginstruction = function (instruction: ProcessingInstruction) {
+		onprocessinginstruction(instruction);
 	};
 
 	parser.getFirstParent = function () {
 		const parentNodeStack = this.tags;
 		return parentNodeStack[parentNodeStack.length - 2];
+	};
+	parser.getCurrentXmlNode = function () {
+		return this.tag;
 	};
 
 	parser.hasParentTag = function (name: string) {
@@ -63,7 +90,7 @@ export function newSaxParserExtended(
 		return parentTagNames != undefined;
 	};
 
-	parser.getRange = function () {
+	parser.getTagRange = function () {
 		return LSP.Range.create(
 			this.line,
 			Math.max(this.column + this.startTagPosition - this.position, 0),
@@ -72,17 +99,27 @@ export function newSaxParserExtended(
 		);
 	};
 
-	parser.findParent = function (predicate) {
-		const parentNodeStack = this.tags;
-		let index = parentNodeStack.length - 1;
-		while (index >= 0) {
-			const node = parentNodeStack[index];
-			if (predicate(node)) {
-				return node;
-			}
-			index = index - 1;
-		}
-		return null;
+	parser.getAttributeRange = function (attribute) {
+		//Assumes there are no spaces between attribute name, the '=' sign and the value
+		const equalSignAndTwoQuotesLength = 3;
+		const attributeLength = attribute.name.length + attribute.value.length + equalSignAndTwoQuotesLength;
+		return LSP.Range.create(
+			this.line,
+			Math.max(this.column - attributeLength, 0),
+			this.line,
+			this.column,
+		);
+	};
+
+	parser.getAttributeValueRange = function (attribute) {
+		const twoQuotesLength = 2;
+		const attributeValueLength = attribute.value.length + twoQuotesLength;
+		return LSP.Range.create(
+			this.line,
+			Math.max(this.column - attributeValueLength, 0),
+			this.line,
+			this.column,
+		);
 	};
 
 	return parser;

@@ -1,28 +1,61 @@
 import * as LSP from 'vscode-languageserver';
-import { Position } from 'vscode-languageserver';
+import { XmlNode } from '../file-analyzer/parser/saxParserExtended';
 
 export enum ModelElementTypes {
-	Infoset = "Infoset",
-	Rule = "Rule",
-	NameSpace = "NameSpace",
-	Input = "Input",
 	Action = "Action",
-	Function = "Function",
-	Type = "Type",
-	View = "View",
-	Attribute = "Attribute",
-	Output = "Output",
-	Search = "Search",
-	Count = "Count",
-	Exists = "Exists",
+	ActionCall = "ActionCall",
+	ActionOutput = "ActionOutput",
 	Aggregate = "Aggregate",
-	SearchColumn = "SearchColumn",
-	TypeFilter = "TypeFilter",
-	IncludeBlock = "IncludeBlock",
-	Decorator = "Decorator",
-	Profile = "Profile",
-	Unknown = "Unknown",
 	All = "All",
+	Argument = "Argument",
+	Attribute = "Attribute",
+	Constant = "Constant",
+	Condition = "Condition",
+	Count = "Count",
+	ClearVar = "ClearVar",
+	Decorators = "Decorators",
+	Decorator = "Decorator",
+	DecoratorContextEntity = "Decorator-context-entity",
+	Document = "Document",
+	ElseIf = "ElseIf",
+	Exists = "Exists",
+	Function = "Function",
+	Group = "Group",
+	Infoset = "Infoset",
+	Input = "Input",
+	IncludeBlock = "Include-Block",
+	If = "If",
+	In = "In",
+	Module = "Module",
+	NameSpace = "NameSpace",
+	Rule = "Rule",
+	RuleContext = "RuleContext",
+	Output = "Output",
+	Profile = "Profile",
+	Search = "Search",
+	SearchColumn = "SearchColumn",
+	SetVar = "SetVar",
+	Switch = "Switch",
+	Target = "Target",
+	Type = "Type",
+	TypeFilter = "TypeFilter",
+	Unknown = "Unknown",
+	Variable = "Variable",
+	View = "View",
+}
+
+export enum ValidationLevels {
+	None = "none",
+	Info = "info",
+	Warning = "warning",
+	Error = "error",
+	Fatal = "fatal"
+}
+
+export enum AttributeTypes {
+	Enum = "enum",
+	Reference = "reference",
+	Numeric = "numeric"
 }
 
 export type ContextQualifiers = {
@@ -31,14 +64,18 @@ export type ContextQualifiers = {
 	nameSpace?: string
 }
 
-export interface INodeContext {
+/**
+ * The IXmlNodeContext interface is the bare minimum required for the modelparser to find the correct 
+ * definitions using the matchCondition. The definition should stay small such that it remains easy 
+ * for other classes or context objects to provide the necessary information to find the correct definition. 
+ */
+export interface IXmlNodeContext {
+	getCurrentXmlNode: () => XmlNode
 	getFirstParent: () => any,
 	hasParentTag: (name: string) => boolean
-	findParent: (predicate: (n: any) => boolean) => any | null,
-	getRange: () => LSP.Range;
 }
 
-export enum ObjectIdentifierTypes {
+export enum IsSymbolOrReference {
 	Symbol,
 	Reference
 }
@@ -46,100 +83,173 @@ export enum ObjectIdentifierTypes {
 export enum ModelDetailLevel {
 	Declarations,
 	References,
-	ArgumentReferences
+	SubReferences,
+	All
 }
 
-export interface ObjectIdentifier {
-	name: string,
+export interface TreeNode {
+	tag: string,
 	type: ModelElementTypes,
-	identifier: string,
 	range: LSP.Range,
+	fullRange: LSP.Range,
 	uri: string,
-	objectType: ObjectIdentifierTypes,
-	rangeExtended: LSP.Range
-	children: (Reference|SymbolDeclaration)[]
-}
-
-export interface Reference extends ObjectIdentifier {
-	otherAttributes: Record<string, string | boolean | number>,
-	attributeReferences: Record<string, Reference>
-	contextQualifiers: ContextQualifiers
-}
-
-export interface SymbolDeclaration extends ObjectIdentifier {
-	otherAttributes: Record<string, string | boolean | number>,
+	isSymbolDeclaration: boolean,
+	children: (TreeNode | SymbolDeclaration)[],
+	attributes: Record<string, Attribute|Reference>,
 	comment?: string,
-	isObsolete: boolean,
-	attributeReferences: Record<string, Reference>
-	contextQualifiers: ContextQualifiers
+	contextQualifiers: ContextQualifiers,
+	parent?:TreeNode
 }
 
-export type SymbolOrReference = SymbolDeclaration | Reference;
+export interface Attribute {
+	name: string,
+	range: LSP.Range,
+	fullRange: LSP.Range,
+	value: string,
+	isReference?: boolean,
+	type?: ModelElementTypes
+}
+export interface Reference extends Attribute {
+	isReference: true,
+	type: ModelElementTypes,
+	uri: string
+}
 
-export function newReference(name: any, type: ModelElementTypes, range: LSP.Range, uri: string): Reference {
+export interface SymbolDeclaration extends TreeNode {
+	isSymbolDeclaration: true,
+	name: string,
+	identifier: string
+}
+
+
+export function newReference(name: string, value: string, type: ModelElementTypes, range: LSP.Range, fullRange: LSP.Range, uri: string): Reference {
 	return {
 		name,
+		value,
 		type,
-		identifier: objectIdentifier(name, type, range),
 		range,
-		get rangeExtended() {
-			return extendedRange(this) ;
-		},
-		children: [],
+		fullRange,
 		uri,
-		otherAttributes: {},
-		attributeReferences: {},
-		contextQualifiers: {},
-		objectType: ObjectIdentifierTypes.Reference
+		isReference: true
 	};
 }
 
-export function newSymbolDeclaration(name: any, type: ModelElementTypes, range: LSP.Range, uri: string, isObsolete: boolean, comment?: string): SymbolDeclaration {
+export function newTreeNode(tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, comment?: string): TreeNode {
 	return {
-		name,
 		type,
-		identifier: objectIdentifier(name, type, range),
+		tag,
 		range,
-		get rangeExtended() {
-			return extendedRange(this) ;
-		},
+		fullRange: LSP.Range.create(range.start, range.end),
 		uri,
 		children: [],
-		otherAttributes: {},
+		attributes: {},
 		contextQualifiers: {},
-		isObsolete,
 		comment,
-		attributeReferences: {},
-		objectType: ObjectIdentifierTypes.Symbol
+		isSymbolDeclaration: false
 	};
 }
+export function newSymbolDeclaration(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, comment?: string): SymbolDeclaration {
+	return {
+		name,
+		type,
+		tag,
+		identifier: objectIdentifier(name, type, range),
+		range,
+		fullRange: LSP.Range.create(range.start, range.end),
+		uri,
+		children: [],
+		attributes: {},
+		contextQualifiers: {},
+		comment,
+		isSymbolDeclaration: true
+	};
+}
+
 export function objectIdentifier(name: string, type: ModelElementTypes, range: LSP.Range) {
 	return `${type}:${name}:${range.start.line}`;
 }
 
-export interface Definition {
+
+export type Definitions = Record<string, Definition[]>
+
+export type Definition = {
 	name?: (x: any) => string,
-	matchCondition?: (x: any, nodeContext: INodeContext) => boolean,
-	type: ModelElementTypes,
+	description?: string,
+	checkObsolete?: boolean,
+	attributes?: ElementAttribute[],
+	childs?: ChildDefinition[] | ChildReference,
+	parent?: any,
+	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
+	type?: ModelElementTypes,
 	prefixNameSpace?: boolean,
-	otherAttributes?: Record<string, (x: any, nodeContext: INodeContext) => string | boolean | number>,
-	contextQualifiers?: (x: any, nodeContext: INodeContext) => ContextQualifiers,
-	detailLevel: ModelDetailLevel
-	attributeReferences?: ModelAttributeReferenceDefinition[],
+	isSymbolDeclaration?: boolean,
+	detailLevel?: ModelDetailLevel,
+	contextQualifiers?: (nodeContext: IXmlNodeContext) => ContextQualifiers
 }
 
-export interface ModelAttributeReferenceDefinition {
-	type: ModelElementTypes,
-	detailLevel: ModelDetailLevel,
+export type ChildDefinition = {
+	element: string,
+	occurence?: "once" | "at-least-once",
+	required?: boolean,
+	validations?: ChildValidation[],
+	type?:ModelElementTypes
+}
+
+export type ChildReference = {
+	matchElementFromAttribute?: string,
+	matchFromParent?: boolean,
+}
+
+export type ElementAttribute = {
+	name: string,
+	description?: string,
+	validations?: AttributeValidation[],
+	required?: boolean,
+	autoadd?: boolean,						// mark attribute to auto add when (parent) element is created
+	deprecated?: boolean,
+	visibilityConditions?: ValidationMatches[],
+	requiredConditions?: ValidationMatches[],
+	type?: AttributeType,
+	detailLevel?: ModelDetailLevel
+}
+
+export type AttributeValidation = {
+	type: "regex",
+	value: RegExp,
+	message: string,
+	name?: string,
+	identifier?: string,
+	matches?: ValidationMatches[],
+	level?: ValidationLevels,
+	conditions?: ValidationMatches[]
+}
+
+export type ChildValidation = {
+	identifier: string,
+	name: string,
+	message: string,
+	matches: ValidationMatches[],
+	level: ValidationLevels,
+	conditions?: ValidationMatches[]
+}
+
+export type AttributeOption = {
+	name: string,
+	description?: string,
+	default?: boolean
+}
+
+export type ValidationMatches = {
+	operator?: "and" | "or",
 	attribute: string,
+	condition: "==" | "!=" | "misses" | "not-in" | "contains" | "not-in-like",
+	value: string
 }
 
-function extendedRange(object: ObjectIdentifier): LSP.Range {
-	const startPosition: Position = (object.range.start);
-	const endPosition: Position = object.children.reduce((currentEnd, child) => {
-		const childEnd = child.range.end;
-		const childEndIsAfterCurrentEnd = childEnd.line > currentEnd.line || (childEnd.line >= currentEnd.line && childEnd.character > currentEnd.character);
-		return childEndIsAfterCurrentEnd ? childEnd : currentEnd;
-	}, object.range.end);
-	return { start: startPosition, end: endPosition };
+export type AttributeType = {
+	type: AttributeTypes,
+	relatedTo?: ModelElementTypes,
+	options?: AttributeOption[],
+	pathHints?: AttributeOption[]
+
 }

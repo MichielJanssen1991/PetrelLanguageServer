@@ -1,7 +1,6 @@
 import * as LSP from 'vscode-languageserver';
-import { ModelElementTypes, SymbolDeclaration, ModelDetailLevel, ObjectIdentifierTypes, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, SymbolDeclaration, TreeNode } from '../model-definition/symbolsAndReferences';
 import { removeFilesFromDirectories } from '../util/fs';
-import { objectsTypesWhichRequireContext } from '../model-definition/declarations';
 import { ModelCheck } from './modelCheck';
 import { InfosetDeclarationCheck } from './checks/infosetDeclarationCheck';
 import { ReferencedObjectExistsCheck } from './checks/referencedObjectExistsCheck';
@@ -12,6 +11,10 @@ import { DataActionCallCheck } from './checks/actionCallChecks/dataActionCallChe
 import { InfosetCallCheck } from './checks/actionCallChecks/infosetCallCheck';
 import { RuleCallCheck } from './checks/actionCallChecks/ruleCallCheck';
 import { RuleLoopActionCallCheck } from './checks/actionCallChecks/ruleLoopActionCallCheck';
+import { FunctionCallCheck } from './checks/actionCallChecks/functionCallCheck';
+import { RuleDeclarationCheck } from './checks/ruleDeclarationCheck';
+import { ModelDefinitionCheck } from './checks/modelDefinitionCheck';
+import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
 
 export type ModelCheckerOptions = {
 	maxNumberOfProblems?: number,
@@ -24,19 +27,24 @@ export type ModelCheckerOptions = {
 export class ModelChecker {
 	private diagnostics: LSP.Diagnostic[] = [];
 	private modelManager: ModelManager;
-	private static defaultOptions: ModelCheckerOptions = { detailLevel: ModelDetailLevel.ArgumentReferences, skipFolders: [] };
+	private modelDefinitionManager: ModelDefinitionManager;
+	private static defaultOptions: ModelCheckerOptions = { detailLevel: ModelDetailLevel.SubReferences, skipFolders: [] };
 	private checks: ModelCheck[] = [];
 
-	constructor(modelManager: ModelManager) {
+	constructor(modelManager: ModelManager, modelDefinitionManager: ModelDefinitionManager) {
 		this.modelManager = modelManager;
+		this.modelDefinitionManager = modelDefinitionManager;
 
 		this.checks.push(new InfosetCallCheck(modelManager));
 		this.checks.push(new RuleCallCheck(modelManager));
+		this.checks.push(new FunctionCallCheck(modelManager));
 		this.checks.push(new DataActionCallCheck(modelManager));
 		this.checks.push(new RuleLoopActionCallCheck(modelManager));
 		this.checks.push(new InfosetDeclarationCheck(modelManager));
 		this.checks.push(new ReferencedObjectExistsCheck(modelManager));
 		this.checks.push(new SymbolIsReferencedCheck(modelManager));
+		this.checks.push(new ModelDefinitionCheck(modelManager, modelDefinitionManager));
+		this.checks.push(new RuleDeclarationCheck(modelManager));
 	}
 
 	public checkAllFiles(options?: ModelCheckerOptions) {
@@ -66,26 +74,24 @@ export class ModelChecker {
 		return this.diagnostics;
 	}
 
-	private walkNodes(node: SymbolOrReference, options: ModelCheckerOptions) {
+	private walkNodes(node: TreeNode, options: ModelCheckerOptions) {
 		this.verifyNode(node, options);
-		const isObsolete = (node.objectType == ObjectIdentifierTypes.Symbol && (node as SymbolDeclaration).isObsolete);
+		const isObsolete = node.contextQualifiers.isObsolete;
 		if (!isObsolete) {
 			node.children.forEach(x => this.walkNodes(x, options));
-			Object.values(node.attributeReferences).forEach(x => this.verifyNode(x, options));
 		}
 	}
 
-	private verifyNode(node: SymbolOrReference, options: ModelCheckerOptions) {
-		if (node.type == ModelElementTypes.Unknown) { return; }
-		if (objectsTypesWhichRequireContext.has(node.type)) { return; }
+	private verifyNode(node: TreeNode, options: ModelCheckerOptions) {
 		try {
 			const applicableChecks = this.checks.filter(c=> c.isApplicable(node));
 			this.diagnostics = this.diagnostics.concat(applicableChecks.flatMap(c=> c.check(node, options)));
 		}
 		catch (error: any) {
-			this.addError(node.range, CHECKS_MESSAGES.VALIDATION_ERROR(error.message, node));
+			this.addError(node.range, CHECKS_MESSAGES.VALIDATION_ERROR(error.message, node as SymbolDeclaration));
 		}
 	}
+
 
 	private addInformation(range: LSP.Range, message: string) {
 		this.addDiagnostics(range, message, LSP.DiagnosticSeverity.Information);

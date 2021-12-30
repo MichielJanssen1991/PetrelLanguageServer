@@ -1,7 +1,8 @@
 import FuzzySearch = require('fuzzy-search');
 import { Position } from 'vscode-languageserver-types';
-import { objectsTypesWhichRequireContext } from '../model-definition/declarations';
-import { ModelElementTypes, ObjectIdentifierTypes, Reference, SymbolDeclaration, SymbolOrReference } from '../model-definition/symbolsAndReferences';
+import { standaloneObjectTypes } from '../model-definition/definitions/other';
+import { ModelFileContext } from '../model-definition/modelDefinitionManager';
+import { ModelElementTypes, Reference, SymbolDeclaration, TreeNode, Attribute } from '../model-definition/symbolsAndReferences';
 import { flattenNestedListObjects, flattenNestedObjectValues, flattenObjectValues } from '../util/array';
 import { pointIsInRange } from '../util/other';
 
@@ -9,12 +10,14 @@ type Symbols = { [name: string]: SymbolDeclaration[] }
 type FileSymbols = { [uri: string]: Symbols }
 type References = { [name: string]: Reference[] }
 type FileReferences = { [uri: string]: References }
-type FileTrees = { [uri: string]: SymbolDeclaration }
+type FileTrees = { [uri: string]: TreeNode }
+type FileContexts = { [uri: string]: ModelFileContext | undefined }
 
 export class SymbolAndReferenceManager {
 	private uriToSymbols: FileSymbols = {};
 	private uriToReferences: FileReferences = {};
 	private uriToTree: FileTrees = {};
+	private uriToModelFileContext: FileContexts = {};
 	private get symbolsByName(): Symbols {
 		if (!this.symbolsByNameCached) {
 			this.symbolsByNameCached = flattenNestedListObjects(this.uriToSymbols);
@@ -42,33 +45,43 @@ export class SymbolAndReferenceManager {
 	/**
 	 * Update the tree for a given file
 	 */
-	public updateTree(url: string, tree: SymbolDeclaration) {
+	public updateTree(url: string, tree: TreeNode, modelFileContext?: ModelFileContext) {
 		this.referencesByNameCached = undefined;
 		this.symbolsByNameCached = undefined;
 		this.uriToTree[url] = tree;
 		this.uriToSymbols[url] = {};
 		this.uriToReferences[url] = {};
+		this.uriToModelFileContext[url] = modelFileContext;
 		this.walkNodes(tree);
 	}
 
-	private walkNodes(node: SymbolOrReference) {
+	private walkNodes(node: TreeNode) {
 		this.processNode(node);
 		node.children.forEach(x => this.walkNodes(x));
-		Object.values(node.attributeReferences).forEach(x => this.processNode(x));
+		
+		Object.values(node.attributes).forEach(x => this.processAttribute(x));
 	}
 
-	private processNode(node: SymbolOrReference) {
-		if (!objectsTypesWhichRequireContext.has(node.type)) {
-			switch (node.objectType) {
-				case ObjectIdentifierTypes.Symbol: { this.addSymbolDeclaration(node as SymbolDeclaration); break; }
-				case ObjectIdentifierTypes.Reference: { this.addNamedReference(node as Reference); break; }
+	private processNode(node: TreeNode) {
+		if (standaloneObjectTypes.has(node.type)) {
+			if (node.isSymbolDeclaration) {
+				this.addSymbolDeclaration(node as SymbolDeclaration);
+			}
+		}
+	}
+	private processAttribute(attribute: Attribute) {
+		if(attribute.isReference)
+		{
+			const ref = attribute as Reference; 
+			if (standaloneObjectTypes.has(ref.type)) {
+				this.addReference(ref);
 			}
 		}
 	}
 
-	private addNamedReference(reference: Reference) {
+	private addReference(reference: Reference) {
 		const uri = reference.uri;
-		const name = reference.type == ModelElementTypes.Action ? reference.name.toLowerCase() : reference.name;
+		const name = reference.type == ModelElementTypes.Action ? reference.value.toLowerCase() : reference.value;
 		const namedReferencesForName = this.uriToReferences[uri][name] || [];
 		namedReferencesForName.push(reference);
 		this.uriToReferences[uri][name] = namedReferencesForName;
@@ -118,6 +131,14 @@ export class SymbolAndReferenceManager {
 	}
 
 	/**
+	 * Returns the references for a given file
+	 */
+	public getModelFileContextForFile(uri: string) {
+		const context = this.uriToModelFileContext[uri];
+		return (context != undefined) ? context : ModelFileContext.Unknown;
+	}
+
+	/**
 	 * Returns the symbols for a given file and popsition
 	 */
 	public getSymbolsForPosition(uri: string, pos: Position) {
@@ -132,7 +153,7 @@ export class SymbolAndReferenceManager {
 			return this.getReferencesForFile(uri).filter(ref => pointIsInRange(ref.range, pos));
 		}
 		else {
-			return this.getReferencesForFile(uri).filter(ref => pointIsInRange(ref.rangeExtended, pos));
+			return this.getReferencesForFile(uri).filter(ref => pointIsInRange(ref.fullRange, pos));
 		}
 	}
 
@@ -142,6 +163,13 @@ export class SymbolAndReferenceManager {
 	private getAllSymbols(): SymbolDeclaration[] {
 		return flattenNestedObjectValues(this.uriToSymbols);
 	}
+
+	/**
+     * Returns all symbols of a given type
+     */
+	public getAllSymbolsForType(type:ModelElementTypes): SymbolDeclaration[] {
+        return this.getAllSymbols().filter(x=> x.tag.toLowerCase() ==type.toLowerCase());
+    }
 
 	/**
 	 * Returns all references
@@ -167,7 +195,6 @@ export class SymbolAndReferenceManager {
 		});
 		return symbols;
 	}
-
 
 	/**
 	 * Find all the symbols where something named 'name' of type 'type' has been defined.
@@ -195,7 +222,7 @@ export class SymbolAndReferenceManager {
 	 */
 	public getReferencedObject(reference: Reference) {
 		const caseSensitive = !(reference.type == ModelElementTypes.Action);
-		const name = caseSensitive ? reference.name : reference.name.toLowerCase();
+		const name = caseSensitive ? reference.value : reference.value.toLowerCase();
 		const referencedSymbol = (this.symbolsByName[name] || []).find(x => (x.type == reference.type));
 		return referencedSymbol;
 	}
@@ -209,4 +236,43 @@ export class SymbolAndReferenceManager {
 		const referencesToSymbol = (this.referencesByName[name] || []).filter(x => (x.type == symbol.type));
 		return referencesToSymbol;
 	}
+
+	/**
+	 * Find references matching the given word.
+	 */
+	public findReferencesMatchingWord({ exactMatch, word }: { exactMatch: boolean, word: string }): Reference[] {
+		const references: Reference[] = [];
+
+		Object.keys(this.uriToReferences).forEach(uri => {
+			const declarationsInFile = this.uriToReferences[uri] || {};
+			Object.keys(declarationsInFile).map(name => {
+				const match = exactMatch ? name === word : name.startsWith(word);
+				if (match) {
+					declarationsInFile[name].forEach(ref => references.push(ref));
+				}
+			});
+		});
+		return references;
+	}
+
+	/**
+	 * Get a list of nodes for the current position in the tree. Each node is a child of the previous node
+	 */
+	public getNodesForPosition(uri: string, position: Position) {
+		const nodes = [this.uriToTree[uri]];
+		this.addSubNodesForPosition(nodes, this.uriToTree[uri], position);
+		const lastNode = nodes[nodes.length - 1];
+		const inTag = pointIsInRange(lastNode.range, position);
+		const attribute: Reference | Attribute | undefined = Object.values(lastNode.attributes).find(x => pointIsInRange(x.fullRange, position));
+		return { nodes, inTag, attribute };
+	}
+
+	private addSubNodesForPosition(nodes: TreeNode[], node: TreeNode, position: Position) {
+		const childNode = node.children.find(x => pointIsInRange(x.fullRange, position));
+		if (childNode) {
+			nodes.push(childNode);
+			this.addSubNodesForPosition(nodes, childNode, position);
+		}
+	}
+
 }

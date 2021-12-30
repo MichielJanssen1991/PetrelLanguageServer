@@ -16,15 +16,14 @@ export class JavascriptParser extends FileParser {
 	public parseFile(fileContent: string) {
 		const regexpInitFrontendAction = /(initAction\()(?<firstArgument>([\w._])+)(,([\n\t ]*)(?<secondArgument>(\w)+))?(,([\n\t ]*)(?<thirdArgument>([\w._"'])+))?/g;
 		const matches = [...fileContent.matchAll(regexpInitFrontendAction)];
-		console.log(matches);
 		matches.forEach((match) => {
 			const range = this.indexStartAndEndToRange(fileContent, match.index || 0, match.index || 0 + match.length + 1);
 
 			if (match?.groups) {
 				const { thirdArgument, firstArgument } = match.groups;
 				if (thirdArgument) {
-					if (isStringArgument(thirdArgument)) {
-						this.addAction(stringArgumentValue(thirdArgument), range);
+					if (this.isStringArgument(thirdArgument)) {
+						this.addAction(this.stringArgumentValue(thirdArgument), range);
 					}
 					else {
 						this.addWarning(range, JavascriptParser.MESSAGES.THIRD_ARGUMENT_NOT_STRING);
@@ -37,15 +36,14 @@ export class JavascriptParser extends FileParser {
 
 		const regexpInitFrontendLayoutAction = /(LayoutActionBase.init\()(?<firstArgument>([\w._])+)(,([\n\t ]*)(?<secondArgument>([\w._"'])+))?/g;
 		const matchesLayoutActions = [...fileContent.matchAll(regexpInitFrontendLayoutAction)];
-		console.log(matchesLayoutActions);
 		matchesLayoutActions.forEach((matchesLayoutActions) => {
 			const range = this.indexStartAndEndToRange(fileContent, matchesLayoutActions.index || 0, matchesLayoutActions.index || 0 + 8);
 
 			if (matchesLayoutActions?.groups) {
 				const { secondArgument, firstArgument } = matchesLayoutActions.groups;
 				if (secondArgument) {
-					if (isStringArgument(secondArgument)) {
-						this.addAction(stringArgumentValue(secondArgument), range);
+					if (this.isStringArgument(secondArgument)) {
+						this.addAction(this.stringArgumentValue(secondArgument), range);
 					}
 					else {
 						this.addWarning(range, JavascriptParser.MESSAGES.SECOND_ARGUMENT_NOT_STRING);
@@ -56,41 +54,28 @@ export class JavascriptParser extends FileParser {
 			}
 		});
 
-		return this.getResults();
-
-		function stringArgumentValue(argument: string): any {
-			return argument.replace(/['"]$/, "").replace(/^['"]/, "");
-		}
-
-		function isStringArgument(argument: string) {
-			return argument.startsWith("\"") || argument.startsWith("'")
-				&& argument.endsWith("\"") || argument.endsWith("'");
-		}
+		return this.results;
 	}
 
-	private addWarning(range: LSP.Range, message: string) {
-		this.results.problems.push(LSP.Diagnostic.create(
-			range,
-			message,
-			LSP.DiagnosticSeverity.Warning
-		));
+	private stringArgumentValue(argument: string): any {
+		return argument.replace(/['"]$/, "").replace(/^['"]/, "");
+	}
+
+	private isStringArgument(argument: string) {
+		return argument.startsWith("\"") || argument.startsWith("'")
+			&& argument.endsWith("\"") || argument.endsWith("'");
+	}
+
+	private removeActionPostfix(actionName: string): any {
+		return actionName.replace(/(Action)$/, "").replace(/(action)$/, "");
 	}
 
 	private addAction(actionName: any, range: LSP.Range) {
-		actionName = removeActionPostfix(actionName);
-		const symbol = newSymbolDeclaration(actionName, ModelElementTypes.Action, range, this.uri, false);
+		actionName = this.removeActionPostfix(actionName);
+		const symbol = newSymbolDeclaration(actionName, "", ModelElementTypes.Action, range, this.uri);
 		this.addSymbolDeclaration(symbol);
 
-		function removeActionPostfix(actionName: string): any {
-			return actionName.replace(/(Action)$/, "").replace(/(action)$/, "");
-		}
-
-
 		return actionName;
-	}
-
-	public getResults() {
-		return this.results;
 	}
 
 	private addSymbolDeclaration(symbol: SymbolDeclaration) {
@@ -101,7 +86,6 @@ export class JavascriptParser extends FileParser {
 		const startPos = this.indexToLineAndCharacter(data, indexStart);
 		const endPos = this.indexToLineAndCharacter(data, indexEnd);
 
-
 		return LSP.Range.create(
 			startPos.line,
 			startPos.character,
@@ -109,6 +93,7 @@ export class JavascriptParser extends FileParser {
 			endPos.character,
 		);
 	}
+
 	private indexToLineAndCharacter(data: string, index: number) {
 		const perLine = data.split('\n');
 		let total_length = 0;

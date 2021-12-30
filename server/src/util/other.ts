@@ -6,3 +6,9 @@ export function pointIsInRange(range: Range, pos: Position): boolean {
 	const endRangeAfterPoint = (range.end.line > line || (range.end.line >= line && range.end.character > character));
 	return startRangeBeforePoint && endRangeAfterPoint;
 }
+
+//Returns true when the value is a variable: "{variableName}"
+export function attributeValueIsAVariable(value: string)
+{
+	return value.startsWith("{"); 
+}

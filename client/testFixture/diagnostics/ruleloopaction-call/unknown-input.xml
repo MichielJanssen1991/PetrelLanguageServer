@@ -1,7 +1,7 @@
 <module>
   <rule name="ExampleRule">
     <action name="RuleLoopAction" rulename="KnownRule" infoset-name="KnownInfoset">
-    <argument local-name = "UnknownInput"/>
+    <argument remote-name="UnknownInput"/>
     </action>
   </rule>
 </module>

@@ -1,7 +1,7 @@
 <module>
   <rule name="ExampleRule">
     <action name="Rule" rulename="KnownRule">
-    <argument local-name = "UnknownInput"/>
+    <argument remote-name="UnknownInput"/>
     </action>
   </rule>
 </module>
