@@ -77,6 +77,13 @@ export const dev_obsolete_message_attribute: ElementAttribute =
 		description: "May be used to have a metadata item which only specifies override rights and not specifies an instance.",
 		type: default_yes_no_attribute_type
 	};
+
+	export const dev_is_public_attribute: ElementAttribute =
+	{
+		name: "is-public",
+		description: "Indicates whether this entity is part of the public API and exposed to other models using it. NOTE: There is currently no validation of the contract, and this property is only used for the unused entities model check, but features may be added later.",
+		type: default_yes_no_attribute_type
+	};
 	
 
 export const dev_description_attribute: ElementAttribute =

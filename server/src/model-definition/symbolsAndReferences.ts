@@ -44,6 +44,8 @@ export enum ModelElementTypes {
 	Variable = "Variable",
 	View = "View",
 	Style = "Style",
+	Toolbar = "Toolbar",
+	Tree = "Tree",
 }
 
 export enum ValidationLevels {
@@ -58,7 +60,8 @@ export enum AttributeTypes {
 	Enum = "enum",
 	Reference = "reference",
 	Numeric = "numeric",
-	URL = "url"	// base-location = wwwroot
+	URL = "url",	// base-location = wwwroot
+	Date = "date"
 }
 
 export type ContextQualifiers = {
@@ -239,7 +242,8 @@ export type ChildValidation = {
 export type AttributeOption = {
 	name: string,
 	description?: string,
-	default?: boolean
+	default?: boolean,
+	obsolete?: boolean
 }
 
 export type ValidationMatches = {
