@@ -387,6 +387,10 @@ export const BACKEND_DEFINITION: Definitions = {
 				description: "",
 			},
 			{
+				name: "caption",
+				description: "",
+			},
+			{
 				name: "type",
 				description: "Determines field type and the saved attribute value.",
 				type:
@@ -584,32 +588,6 @@ export const BACKEND_DEFINITION: Definitions = {
 				]
 			},
 			{
-				name: "list-relation-type",	// TODO: move to frontend
-				description: "",
-				visibilityConditions: [
-					{
-						attribute: "relation-type",
-						condition: "==",
-						value: "Platform.Lists"
-					}
-				]
-			},
-			{
-				name: "relation-type-multiple",			// TODO: move to frontend
-				description: "The relation type for the multiple relation.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Type
-				},
-				visibilityConditions: [
-					{
-						attribute: "type",
-						condition: "==",
-						value: "multiselect"
-					}
-				]
-			},
-			{
 				name: "relation-field",
 				description: "Set relation field to let this attribute represent another attribute of a related type. This type of attribute is called a \"relation attribute\". Relation attributes *must* be defined in the backend because the backend otherwise will not send data to the frontend.",
 				type: {
@@ -689,6 +667,13 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			{
 				name: "max-length",
+				description: "Specifies the field width, defined in number of characters displayed.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
+			},
+			{
+				name: "display-length",
 				description: "Specifies the field width, defined in number of characters displayed.",
 				type: {
 					type: AttributeTypes.Numeric
@@ -813,10 +798,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				element: "auto-field-filter",
 				occurence: "once"
-			},
-			{
-				element: "copy-attribute" // TODO move to frontend
-			},
+			}
 		]
 	}],
 	"option": [{

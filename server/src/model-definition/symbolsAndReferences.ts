@@ -46,6 +46,11 @@ export enum ModelElementTypes {
 	Style = "Style",
 	Toolbar = "Toolbar",
 	Tree = "Tree",
+	Button = "Button",
+	Event = "Event",
+	Events = "Events",
+	Appearance = "Appearance",
+	AppearanceClass = "AppearanceClass", // this could be a list of all classes from the scss files (it can be filtered by the type of mixin it's using)
 }
 
 export enum ValidationLevels {
@@ -184,7 +189,7 @@ export type Definition = {
 	checkObsolete?: boolean,
 	attributes?: ElementAttribute[],
 	childs?: ChildDefinition[] | ChildReference,
-	parent?: any,
+	ancestor?: ModelElementTypes | string,			// used to filter what definition should be chosen
 	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
 	type?: ModelElementTypes,
 	prefixNameSpace?: boolean,
@@ -213,6 +218,7 @@ export type ElementAttribute = {
 	required?: boolean,
 	autoadd?: boolean,						// mark attribute to auto add when (parent) element is created
 	deprecated?: boolean,
+	deprecationMessage?: string,
 	visibilityConditions?: ValidationMatches[],
 	requiredConditions?: ValidationMatches[],
 	type?: AttributeType,

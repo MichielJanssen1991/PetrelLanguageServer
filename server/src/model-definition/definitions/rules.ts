@@ -582,7 +582,7 @@ export const RULE_DEFINITION: Definitions = {
 					type: AttributeTypes.Enum,
 					options: [
 						{
-							name: "Is",
+							name: "==",
 							"default": true
 						},
 						{
@@ -601,7 +601,7 @@ export const RULE_DEFINITION: Definitions = {
 							name: "SmallerOrEqual",
 						},
 						{
-							name: "Not",
+							name: "!=",
 						},
 						{
 							name: "StartsWith",

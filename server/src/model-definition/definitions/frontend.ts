@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, include_blocks_element, include_element, model_condition_element, target_element, target_namespace_attribute, view_argument_element } from './shared';
+import { decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, model_condition_element, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
 
 export const FRONTEND_DEFINITION: Definitions = {
 	"root": [{
@@ -322,6 +322,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		]
 	}],
 	"view": [{
+		type: ModelElementTypes.View,
 		description: "Defines a lay-out frame (e.g. for displaying objects of a specified backend type).",
 		attributes: [
 			{
@@ -1181,6 +1182,330 @@ export const FRONTEND_DEFINITION: Definitions = {
 					}
 				]
 			},
+			{
+				name: "appearance",
+				description: "The style of this view.",
+				deprecated: true,	// appearance is something that is hardly used, so it should be deprecated
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Appearance
+				}
+			},
+			{
+				name: "appearance-class",
+				description: "A specific style for the view element.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.AppearanceClass
+				}
+			},
+			{
+				name: "float",
+				description: "Whether the view is floated",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "none"
+						},
+						{
+							name: "left"
+						},
+						{
+							name: "right"
+						}
+					]
+				}
+			},
+			{
+				name: "clear",
+				description: "Specifies the sides of the view where other floating elements are not allowed.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "both"
+						},
+						{
+							name: "left"
+						},
+						{
+							name: "right"
+						}
+					]
+				}
+			},
+			{
+				name: "active",
+				description: "The active subview.</summary>For view tabbers, specifies the tabber view that starts the default when starting the view.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.TargetView // TODO filter on childs/siblings
+				},
+				visibilityConditions: [
+					{
+						attribute: "control",
+						condition: "==",
+						value: "Tabber"
+					}
+				]
+			},
+			{
+				name: "enabled",
+				description: "If this view is enabled. Only usefull when this view is a tab. For view tabber tabs, determines whether the view tab is visible or not.",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "parent-control",	// TODO fix parent check
+						condition: "==",
+						value: "Tabber"
+					}
+				]
+			},
+			{
+				name: "render",
+				description: "If this view is loaded immediately when starting up the page.</summary>For view tabber tabs, this can be used for lazy loading of tabs. The view is loaded when the tab is clicked.",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "parent-control",	// TODO fix parent check
+						condition: "==",
+						value: "Tabber"
+					}
+				]
+			},
+			{
+				name: "tab-appearance",
+				description: "The target identifier for the item used in frontend actions, etcetera.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.AppearanceClass
+				},
+				visibilityConditions: [
+					{
+						attribute: "parent-control",	// TODO fix parent check
+						condition: "==",
+						value: "Tabber"
+					}
+				]
+			},
+			{
+				name: "expand-by-hover",
+				description: "Expands the view when hovering over it.",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "parent-control",	// TODO fix parent check
+						condition: "==",
+						value: "ViewContainer"
+					}
+				]
+			},
+			{
+				name: "collapsable",
+				description: "Makes the view collapsable.",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "parent-control",	// TODO fix parent check
+						condition: "==",
+						value: "ViewContainer"
+					}
+				]
+			},
+			{
+				name: "collapsed",
+				description: "Shows the view initially collapsed.",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "parent-control",	// TODO fix parent check
+						condition: "==",
+						value: "ViewContainer"
+					},
+					{
+						operator: "and",
+						attribute: "collapsable",
+						condition: "==",
+						value: "yes"
+					}
+				]
+			},
+			{
+				name: "background-image",
+				description: "A background image for the view. (TIP: use SCSS instead of this attribute)"
+			},
+			{
+				name: "background-position",
+				description: "Background position for the view. See: http://www.w3.org/TR/CSS2/colors.html (TIP: use SCSS instead of this attribute)"
+			},
+			{
+				name: "detail-height",
+				description: "The height of the view in object view. Useful when object view is of different height than the list view.",
+				visibilityConditions: [
+					{
+						attribute: "control",
+						condition: "==",
+						value: "ListView"
+					},
+					{
+						operator: "or",
+						attribute: "control",
+						condition: "==",
+						value: "ObjectView"
+					}
+				]
+			},
+			{
+				name: "skip-history",
+				description: "If set to true, the Back button will skip this view.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "readonly",
+				description: "Set yes if view suppose to be view only is. No data can be saved from this view.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "help-code",
+				description: "The tag of the Help page to show when displaying help. When not specified, the view name is used as tag."
+			},
+			{
+				name: "save-to-parent",
+				description: "",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "control",
+						condition: "==",
+						value: "ObjectView"
+					}
+				]
+			},
+			{
+				name: "src",
+				description: "",
+				visibilityConditions: [
+					{
+						attribute: "control",
+						condition: "==",
+						value: "Iframe"
+					}
+				]
+			},
+			{
+				name: "designable",
+				description: "Whether the view is designable by a user having designer rights.",
+				deprecated: true,
+				deprecationMessage: "This shouldn't be a feature",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "designable",
+				description: "If set to true, the Back button will skip this view.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "lookup-width",
+				description: "The width of the view in lookup dialog state."
+			},
+			{
+				name: "lookup-height",
+				description: "The height of the view in lookup dialog state."
+			},
+			{
+				name: "lookup-top",
+				description: "The vertical position of the view in lookup dialog state."
+			},
+			{
+				name: "lookup-left",
+				description: "The horizontal position of the view in lookup dialog state."
+			},
+			{
+				name: "position",
+				description: "Positioning of the view",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "absolute",
+							description: "absolute (relative to parent)"
+						},
+						{
+							name: "fixed",
+							description: "fixed (relative to document.body)"
+						},
+					]
+				}
+			},
+			{
+				name: "top",
+				description: "",
+				visibilityConditions: [
+					{
+						attribute: "position",
+						condition: "!=",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "right",
+				description: "",
+				visibilityConditions: [
+					{
+						attribute: "position",
+						condition: "!=",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "bottom",
+				description: "",
+				visibilityConditions: [
+					{
+						attribute: "position",
+						condition: "!=",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "left",
+				description: "",
+				visibilityConditions: [
+					{
+						attribute: "position",
+						condition: "!=",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "width",
+				description: ""
+			},
+			{
+				name: "height",
+				description: ""
+			},
+			{
+				name: "log-access",
+				description: "Determines whether all access that is requested for this view (at runtime) has to be logged or not.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "log-attributes",
+				description: "A pipe-separated list of attributes (from the arguments or the data of the view) to log with access logging.",
+				visibilityConditions: [
+					{
+						attribute: "log-access",
+						condition: "==",
+						value: "yes"
+					}
+				]
+			},
 			dev_comment_attribute
 		],
 		childs: [
@@ -1302,12 +1627,948 @@ export const FRONTEND_DEFINITION: Definitions = {
 		]
 	}],
 	"argument": [view_argument_element],
-	"events": [{}],
-	"server-events": [{}],
-	"event": [{}],
-	"attribute": [{}],
-	"group": [{}],
-	"button": [{}],
+	"events": [
+		{
+			type: ModelElementTypes.Events,
+			description: "Frontend event registrations.\"Events\":[EventsAndActions_ActionsOverview] are the predefined events at the client side. These trigger a server side or client side action, as a result of which an operation (on the server or in the screen) is initiated.",
+			attributes: [dev_comment_attribute],
+			childs: [
+				{
+					element: "event",
+					occurence: "at-least-once"
+				}
+			]
+		}
+	],
+	"server-events": [{
+		description: "A server event registration.",
+		attributes: [dev_comment_attribute],
+		childs: [
+			{
+				element: "server-event"
+			}
+		]
+	}],
+	"event": [
+		{
+			type: ModelElementTypes.Event,
+			ancestor: ModelElementTypes.Attribute,
+			description: "A specific event registration.",
+			attributes: [
+				{
+					name: "event",
+					description: "The type of event to listen to.",
+					required: true,
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "onchange",
+								description: "When the field changes",
+								default: true
+							},
+							{
+								name: "onlookup",
+								description: "When the lookup button is clicked"
+							},
+							{
+								name: "onkeyup",
+								description: "When a key is pressed"
+							},
+							{
+								name: "onclick",
+								description: "When the field is clicked (image/input)"
+							},
+							{
+								name: "onfocus",
+								description: "When the field has focus(string)"
+							},
+							{
+								name: "onerror",
+								description: "When an error occurs in the field"
+							}
+						]						
+					},
+				},
+				dev_override_rights_attribute,
+				dev_ignore_modelcheck_attribute,
+				dev_ignore_modelcheck_justification_attribute,
+				dev_comment_attribute
+			],
+			childs: event_childs
+		},
+		{
+			type: ModelElementTypes.Event,
+			ancestor: ModelElementTypes.Button,
+			description: "A specific event registration.",
+			attributes: [
+				{
+					name: "event",
+					description: "The type of event to listen to.",
+					required: true,
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "onclick",
+								description: "When clicked",
+								default: true
+							},
+							{
+								name: "onmouseover",
+								description: "On mouseover"
+							}
+						]						
+					},
+				},
+				dev_override_rights_attribute,
+				dev_ignore_modelcheck_attribute,
+				dev_ignore_modelcheck_justification_attribute,
+				dev_comment_attribute
+			],
+			childs: event_childs
+		},
+		{
+			type: ModelElementTypes.Event,
+			ancestor: "node",
+			description: "A specific event registration.",
+			attributes: [
+				{
+					name: "event",
+					description: "The type of event to listen to.",
+					required: true,
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "onclick",
+								description: "When the node is clicked",
+								default: true
+							}
+						]						
+					},
+				},
+				dev_override_rights_attribute,
+				dev_ignore_modelcheck_attribute,
+				dev_ignore_modelcheck_justification_attribute,
+				dev_comment_attribute
+			],
+			childs: event_childs
+		},
+		{
+			type: ModelElementTypes.Event,
+			ancestor: ModelElementTypes.Group,
+			description: "A specific event registration.",
+			attributes: [
+				{
+					name: "event",
+					description: "The type of event to listen to.",
+					required: true,
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "oncollapsegroup",
+								description: "When the group is collapsed",
+								default: true
+							},
+							{
+								name: "onexpandgroup",
+								description: "When the group is expanded"
+							},
+						]						
+					},
+				},
+				dev_override_rights_attribute,
+				dev_ignore_modelcheck_attribute,
+				dev_ignore_modelcheck_justification_attribute,
+				dev_comment_attribute
+			],
+			childs: event_childs
+		},
+		{
+			type: ModelElementTypes.Event,
+			ancestor: "tab",
+			description: "A specific event registration.",
+			attributes: [
+				{
+					name: "event",
+					description: "The type of event to listen to.",
+					required: true,
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "onactivatetab",
+								description: "On activating the tab",
+								default: true
+							},
+							{
+								name: "ondeactivatetab",
+								description: "On deactivating the tab"
+							},
+						]						
+					},
+				},
+				dev_override_rights_attribute,
+				dev_ignore_modelcheck_attribute,
+				dev_ignore_modelcheck_justification_attribute,
+				dev_comment_attribute
+			],
+			childs: event_childs
+		},
+		{
+			type: ModelElementTypes.Event,
+			ancestor: ModelElementTypes.Action,
+			description: "A specific event registration.",
+			attributes: [
+				{
+					name: "event",
+					description: "The type of event to listen to.",
+					required: true,
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "ontick",
+								description: "On timer tick"
+							}
+						]						
+					},
+				},
+				dev_override_rights_attribute,
+				dev_ignore_modelcheck_attribute,
+				dev_ignore_modelcheck_justification_attribute,
+				dev_comment_attribute
+			],
+			childs: event_childs
+		},
+		{
+			type: ModelElementTypes.Event,
+			ancestor: "menuitem",
+			description: "A specific event registration.",
+			attributes: [
+				{
+					name: "event",
+					description: "The type of event to listen to.",
+					required: true,
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "onclick",
+								description: "When clicked"
+							}
+						]						
+					},
+				},
+				dev_override_rights_attribute,
+				dev_ignore_modelcheck_attribute,
+				dev_ignore_modelcheck_justification_attribute,
+				dev_comment_attribute
+			],
+			childs: event_childs
+		},
+		{
+			type: ModelElementTypes.Event,
+			ancestor: ModelElementTypes.View,
+			description: "A specific event registration.",
+			attributes: [
+				{
+					name: "event",
+					description: "The type of event to listen to.",
+					required: true,
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "onbeforesave",
+								description: "Before save"
+							},
+							{
+								name: "onaftersave",
+								description: "After save"
+							},
+							{
+								name: "onbeforenewmode",
+								description: "Before going to New mode"
+							},
+							{
+								name: "onafterback",
+								description: "When view is placed back from history"
+							},
+							{
+								name: "onafternewmode",
+								description: "After going to New mode"
+							},
+							{
+								name: "onbeforedelete",
+								description: "Before delete"
+							},
+							{
+								name: "onafterdelete",
+								description: "After delete"
+							},
+							{
+								name: "onbeforeinsert",
+								description: "Before saving a new record"
+							},
+							{
+								name: "onafterinsert",
+								description: "After saving a new record"
+							},
+							{
+								name: "onbeforeeditmode",
+								description: "Before going to Edit mode"
+							},
+							{
+								name: "onbeforeloaddata",
+								description: "Before loading the data"
+							},
+							{
+								name: "onafterloaddata",
+								description: "After loading the data"
+							},
+							{
+								name: "oninitializedview",
+								description: "When view is initialized"
+							},
+							{
+								name: "onunloadview",
+								description: "When unloading the view"
+							},
+							{
+								name: "onselectediidchange",
+								description: "When selecting an item in the list"
+							},
+							{
+								name: "onlisttodetailmode",
+								description: "When the list goes to object view"
+							},
+							{
+								name: "onlisttonewmode",
+								description: "When the list goes to New mode"
+							},
+							{
+								name: "ontoviewmode",
+								description: "When a view is going from Edit to View mode."
+							},
+							{
+								name: "onunload",
+								description: "When closing a popup, fires on the first view in de popup"
+							},
+							{
+								name: "ontick",
+								description: "On timer ticks"
+							},
+							{
+								name: "onslidein",
+								description: "On slide in"
+							},
+							{
+								name: "onslideout",
+								description: "On slide out"
+							},
+							{
+								name: "onactivatetab",
+								description: "On activating the view tab"
+							},
+							{
+								name: "ondeactivatetab",
+								description: "On deactivating the view tab"
+							},
+							{
+								name: "onchange",
+								description: "When an object changes"
+							},
+							{
+								name: "onkeyup",
+								description: "When a key is pressed"
+							},
+							{
+								name: "onkeypress",
+								description: "When a certain key combination is pressed"
+							},
+							{
+								name: "onclick",
+								description: "When input is clicked"
+							},
+							{
+								name: "onnewappointment",
+								description: "On new appointment"
+							},
+							{
+								name: "oneditappointment",
+								description: "On edit appointment"
+							},
+							{
+								name: "onfocus",
+								description: "On focus"
+							},
+							{
+								name: "onclientwindowmessage",
+								description: "On window message"
+							},
+							{
+								name: "onannotationtooldrawingcreated",
+								description: "Annotation tool - On drawing created"
+							},
+							{
+								name: "onannotationtoolobjectselected",
+								description: "Annotation tool - on object selected"
+							},
+							{
+								name: "onannotationtoolbeforeobjectremoved",
+								description: "Annotation tool - On before object removed"
+							},
+							{
+								name: "onannotationtoolobjectremoved",
+								description: "Annotation tool - On object removed"
+							},
+							{
+								name: "onannotationtoollayercreated",
+								description: "Annotation tool - On layer created"
+							},
+							{
+								name: "onannotationtoollayerselected",
+								description: "Annotation tool - On layer selected"
+							},
+							{
+								name: "onannotationtoollayerremoved",
+								description: "Annotation tool - On layer removed"
+							},
+							{
+								name: "onannotationtoollayerchanged",
+								description: "Annotation tool - On layer changed"
+							},
+							{
+								name: "onannotationtoolmodechanged",
+								description: "Annotation tool - On mode changed"
+							}
+						]						
+					}					
+				},
+				{
+					name: "key",
+					description: "The key combination to listen to (case insensitive). It can be any combination of Ctrl, Alt and Shift, combined with 0-9, a-z, or F1-F12, e.g. \"Ctrl+F1\"",
+					visibilityConditions: [
+						{
+							attribute: "event",
+							condition: "==",
+							value: "onkeypress"
+						}
+					],
+					requiredConditions: [
+						{
+							attribute: "event",
+							condition: "==",
+							value: "onkeypress"
+						}
+					],
+				},
+				dev_override_rights_attribute,
+				dev_ignore_modelcheck_attribute,
+				dev_ignore_modelcheck_justification_attribute,
+				dev_comment_attribute
+			],
+			childs: event_childs
+		},
+	],
+	"attribute": [{
+		type: ModelElementTypes.Attribute,
+		detailLevel: ModelDetailLevel.Declarations,
+		description: "Describes an attribute of this type.",
+		attributes: [
+			{
+				name: "name",
+				required: true,
+				description: "The name for the field. If the view is data bound, the fields with names corresponding to backend type attribute names will be data bound.",
+				validations: [
+					{
+						type: "regex",
+						value: /^[a-zA-Z]+[a-zA-Z0-9_]*$/,
+						message: "Mathematical symbols and punctuation are not allowed in sub model object identifiers. Use '_' for namespacing."
+					}
+				]
+			},
+			{
+				name: "caption",
+				description: ""
+			},
+			{
+				name: "bounded",
+				description: "This indicates whether the field corresponds with a field from the related type. If the field is \"data bound\":[Model_Frontend_Bounded] (saved in the data). Useful when displaying values not in the persistence. A non-data bound field is a free form field that is not linked to a database attribute.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "type",
+				description: "Determines field type and the saved attribute value.",
+				type:
+				{
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "string",
+						},
+						{
+							name: "enum",
+						},
+						{
+							name: "radio",
+						},
+						{
+							name: "boolset",
+						},
+						{
+							name: "segmentedbutton",
+						},
+						{
+							name: "listbox",
+						},
+						{
+							name: "numeric",
+						},
+						{
+							name: "slidebar",
+						},
+						{
+							name: "bool",
+						},
+						{
+							name: "switch",
+						},
+						{
+							name: "datetime",
+						},
+						{
+							name: "date",
+						},
+						{
+							name: "time",
+						},
+						{
+							name: "text",
+						},
+						{
+							name: "richtext",
+						},
+						{
+							name: "richtextdisplay",
+						},
+						{
+							name: "color",
+						},
+						{
+							name: "color-swatch",
+						},
+						{
+							name: "password",
+						},
+						{
+							name: "passwordstrength",
+						},
+						{
+							name: "email",
+						},
+						{
+							name: "autofield",
+						},
+						{
+							name: "none",
+							description: "Only the label is displayed"
+						},
+						{
+							name: "image",
+						},
+						{
+							name: "attachment",
+						},
+						{
+							name: "drawing",
+						},
+						{
+							name: "multiselect",
+						},
+						{
+							name: "sparkline",
+						},
+					]
+				},
+				visibilityConditions: [
+					{
+						attribute: "relation-type",
+						condition: "==",
+						value: ""
+					},
+					{
+						operator: "and",
+						attribute: "relation-field",
+						condition: "==",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "empty-allowed",
+				description: "If the attribute or field can be left empty.",
+				type:
+				{
+					type: AttributeTypes.Enum,
+					"options": [
+						{
+							name: "yes",
+							default: true
+						},
+						{
+							name: "no"
+						}
+					]
+				},
+				visibilityConditions: [
+					{
+						attribute: "type",
+						condition: "!=",
+						value: "bool"
+					}
+				]
+			},
+			{
+				name: "key",
+				description: "One or more attributes of a type can be defined as key. These attributes together determine the primary key, which allows for a default sort order and ensures uniqueness of the fields.",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "relation-field",
+						condition: "!=",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "attribute",
+				description: "An attribute to inherit all properties from.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute // TODO: add Context of current type
+				}
+			},
+			{
+				name: "attribute-template",		// TODO: check if platform still supports this
+				description: "A template this attribute is based on.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute // TODO: change this to AttributeTemplates once it's clear that platform it still supports
+				}
+			},
+			{
+				name: "sort",
+				description: "A consecutive numeric value (starting with 1) which indicates the sort order index.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
+			},
+			{
+				name: "sort-type",
+				description: "If the sorting on this field should be ascending or descending.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "ASC",
+							description: "Ascending"
+						},
+						{
+							name: "DESC",
+							description: "Descending"
+						}
+					]
+				},
+				visibilityConditions: [
+					{
+						attribute: "sort",
+						condition: "!=",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "relation-type",
+				description: "Set relation type to let this attribute represent a relation to an object of this type. For example, the attribute 'Patient' in a type 'Consults per patient' has as relation type value 'Patients'. When the relation type is specified, the attribute can have linked relation attributes using the relation field property (see below).",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Type
+				},
+				visibilityConditions: [
+					{
+						attribute: "type",
+						condition: "==",
+						value: "multiselect"
+					},
+					{
+						operator: "or",
+						attribute: "type",
+						condition: "==",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "list-relation-type",	
+				description: "",
+				visibilityConditions: [
+					{
+						attribute: "relation-type",
+						condition: "==",
+						value: "Platform.Lists"
+					}
+				]
+			},
+			{
+				name: "relation-type-multiple",	
+				description: "The relation type for the multiple relation.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Type
+				},
+				visibilityConditions: [
+					{
+						attribute: "type",
+						condition: "==",
+						value: "multiselect"
+					}
+				]
+			},
+			{
+				name: "relation-field",
+				description: "Set relation field to let this attribute represent another attribute of a related type. This type of attribute is called a \"relation attribute\". Relation attributes *must* be defined in the backend because the backend otherwise will not send data to the frontend.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute
+				},
+				visibilityConditions: [
+					{
+						attribute: "type",
+						condition: "==",
+						value: ""
+					},
+					{
+						operator: "and",
+						attribute: "relation-type",
+						condition: "==",
+						value: ""
+					},
+				]
+			},
+			{
+				name: "allow-new",
+				description: "If it is allowed to enter a new not existing item as relation. This relation will be saved then to the related type.</summary>To this end it is necessary that the compulsory fields are present as not-read-only relation attributes, otherwise the record can not be saved.",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "relation-type-multiple",
+						condition: "!=",
+						value: ""
+					},
+					{
+						operator: "or",
+						attribute: "relation-type",
+						condition: "!=",
+						value: ""
+					},
+				]
+			},
+			{
+				name: "display-as",
+				description: "An attribute of the related type to display. Display-as can only be used when a relation type or relation field is specified.",
+				type:
+				{
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute	// TODO add specification what attributes need to be displayed. Filter on parent type name OR related type attribute
+				},
+				visibilityConditions: [
+					{
+						attribute: "relation-type",
+						condition: "!=",
+						value: ""
+					},
+					{
+						operator: "or",
+						attribute: "relation-field",
+						condition: "!=",
+						value: ""
+					},
+					{
+						operator: "or",
+						attribute: "relation-type-multiple",
+						condition: "!=",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "display-length",
+				description: "Specifies the field width, defined in number of characters displayed.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
+			},
+			{
+				name: "max-length",
+				description: "Specifies the field width, defined in number of characters displayed.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
+			},
+			{
+				name: "allowed-file-extensions",
+				description: "The extensions that are allowed for uploading, separated by pipes ('|'). E.g.,\".txt|.rtf|.doc|.docx|.odt|.pdf\".",
+				visibilityConditions: [
+					{
+						attribute: "type",
+						condition: "==",
+						value: "image"
+					},
+					{
+						operator: "or",
+						attribute: "type",
+						condition: "==",
+						value: "attachment"
+					}
+				]
+			},
+			{
+				name: "max-list-items",
+				description: "Limit the enum list to a maximum",
+				type: {
+					type: AttributeTypes.Numeric
+				},
+				visibilityConditions: [
+					{
+						attribute: "type",
+						condition: "==",
+						value: "enum"
+					}
+				]
+			},
+			{
+				name: "show-colorfield",
+				description: "Show the field with the color value",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "type",
+						condition: "==",
+						value: "color"
+					}
+				]
+			},
+			{
+				name: "show-color-picker",
+				description: "Show the extra button to pick a color from the colorpicker.",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "type",
+						condition: "==",
+						value: "color-swatch"
+					}
+				]
+			},
+			{
+				name: "field",	// TODO check if this is still available in the platform
+				description: "The password field to check the strength of.",
+				visibilityConditions: [
+					{
+						attribute: "type",
+						condition: "==",
+						value: "passwordstrength"
+					}
+				]
+			},
+			{
+				name: "username-field", // TODO check if this is still available in the platform
+				description: "The username field that belongs to the password field. Used to check username occurances in the password",
+				visibilityConditions: [
+					{
+						attribute: "type",
+						condition: "==",
+						value: "passwordstrength"
+					}
+				]
+			},
+			{
+				name: "translatable",
+				description: "If this attribute is multilingual. If so, the attribute will store a translation ID. The attribute will be translated before sending it to the front-end. See [Multilingual data]",
+				type: default_yes_no_attribute_type
+			}
+		],
+		childs: [
+			{
+				element: "option"
+			},
+			{
+				element: "validations",
+				occurence: "once"
+			},
+			{
+				element: "events",
+				occurence: "once"
+			},
+			{
+				element: "format",
+				occurence: "once"
+			},
+			{
+				element: "include"
+			},
+			{
+				element: "copy-attribute" // TODO still in use?
+			},
+		]
+	}],
+	"group": [
+		{
+			ancestor: ModelElementTypes.Group,
+			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
+			attributes: view_group_attributes,
+			childs: view_group_childs
+		},
+		{
+			ancestor: ModelElementTypes.View,
+			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
+			attributes: view_group_attributes,
+			childs: view_group_childs
+		},
+		{
+			ancestor: ModelElementTypes.Condition,
+			description: "A group set, used to filter.",
+			childs: [
+				{
+					element: "group"
+				},
+				{
+					element: "if"
+				},
+				{
+					element: "and"
+				},
+				{
+					element: "or"
+				}
+			]
+		},
+	],
+	"button": [
+		{
+			ancestor: ModelElementTypes.View	// buttons on view
+		},
+		{
+			ancestor: "titlebar"				// titlebar buttons
+		},
+		{
+			ancestor: ModelElementTypes.Action	// questions
+		},
+	],
 	"tabber": [{}],
 	"tab": [{}],
 	"titlebar": [{}],
