@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_condition_options_attribute_type, search_childs, search_attributes, input_element } from './shared';
+import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_condition_options_attribute_type, search_childs, search_attributes, input_element, default_true_false_attribute_type } from './shared';
 export const INFOSET_DEFINITION: Definitions = {
 	"infosets": [{
 		description: "Collection of infosets.",
@@ -142,7 +142,11 @@ export const INFOSET_DEFINITION: Definitions = {
 		attributes: [
 			{
 				name: "type",
-				description: "The data type of the query."
+				description: "The data type of the query.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Type
+				},
 			},
 			{
 				name: "sort",
@@ -154,8 +158,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				type: {
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Attribute
-				}
-				,
+				},
 				visibilityConditions: [
 					{
 						attribute: "sort",
@@ -290,7 +293,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				name: "search-relation-iids",
 				description: "Only applicable to relation searchcolumns. Decides if the type will be searched by the specified display-as attribute (search-relation-iids = false) or by IId (search-relation-iids = true).",
-				type: default_yes_no_attribute_type
+				type: default_true_false_attribute_type
 			},
 			{
 				name: "condition",

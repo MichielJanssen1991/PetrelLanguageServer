@@ -37,6 +37,7 @@ export const RULE_DEFINITION: Definitions = {
 	}],
 	"module": [{
 		type: ModelElementTypes.Module,
+		detailLevel: ModelDetailLevel.Declarations,
 		description: "Used for grouping model entities and model namespacing.",
 		attributes: [
 			{

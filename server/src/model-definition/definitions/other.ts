@@ -109,7 +109,7 @@ export const OTHER_DEFINITION: Definitions =
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"module": [{
-		type: ModelElementTypes.NameSpace,
+		type: ModelElementTypes.Module,
 		detailLevel: ModelDetailLevel.Declarations,
 	}],
 	"attribute": [{
