@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
+import { action_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, model_condition_element, search_condition_options_attribute_type, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
 
 export const FRONTEND_DEFINITION: Definitions = {
 	"root": [{
@@ -57,10 +57,82 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "resources",
 				occurence: "once"
+			},
+			{
+				element: "include"
+			},
+			{
+				element: "include-blocks"
+			},
+			{
+				element: "include-block"
 			}
 		]
 	}],
-	"include-block": [include_blocks_element],
+	"include-blocks": [include_blocks_element],
+	"include-block": [{
+		type: ModelElementTypes.IncludeBlock,
+		detailLevel: ModelDetailLevel.Declarations,
+		description: "A model fragment that is included by includes.",
+		attributes: [
+			{
+				name: "name",
+				description: "Unique identifier",
+				required: true,
+				autoadd: true,
+			},
+			{
+				name: "meta-name",
+				description: "For which element to apply rules.",
+				required: true,
+				autoadd: true,
+				type:
+				{
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: ModelElementTypes.Module
+						},
+						{
+							name: ModelElementTypes.View
+						},
+						{
+							name: ModelElementTypes.Attribute
+						},
+						{
+							name: ModelElementTypes.Group
+						},
+						{
+							name: ModelElementTypes.Button
+						},
+						{
+							name: ModelElementTypes.Action
+						},
+						{
+							name: "events"
+						},
+						{
+							name: "event"
+						},
+						{
+							name: "server-events"
+						},
+						{
+							name: "server-event"
+						}						
+					]
+				}
+			},
+			{
+				name: "meta-index",
+				description: "For which element to apply rules."
+			},
+			dev_comment_attribute
+		],
+		childs: {
+			matchElementFromAttribute: "meta-name"
+		}
+	}],
 	"include": [include_element],
 	"main-view": [{
 		description: "A page framework in which views are to be rendered.",
@@ -117,6 +189,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "merge-instruction"
 			},
 			{
+				element: "toolbar"
+			},
+			{
 				element: "view"
 			},
 			{
@@ -124,6 +199,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			}			
 		]
 	}],
+	"model-condition": [model_condition_element],
 	"trees": [{
 		description: "Used to group navigation trees.",
 		childs: [
@@ -304,7 +380,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "dropdown"
 			},
+			{
+				element: "model-condition"
+			}
 		]
+	}],
+	"toolbarbutton":[{
+		description: "Client side scripting predefined tool."
 	}],
 	"views": [{
 		description: "Used for grouping views.",
@@ -328,7 +410,6 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "name",
 				description: "Unique name for the view.</summary>The name is in most cases the outside identifier (views can be retrieved by name). For nested views, the name is not used as an outside identifier, but only for inner identifier. Using same inner identifiers merges subviews on inheritance.",
-				required: true,
 				validations: [
 					{
 						type: "regex",
@@ -3021,27 +3102,417 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 		]
 	}],
-	"output": [{
-
+	"output": [
+		action_output_element,
+		{
+			ancestor: ModelElementTypes.Function,
+			attributes: [
+				{
+					name: "name",
+					required: true
+				},
+				dev_ignore_modelcheck_attribute,
+				dev_ignore_modelcheck_justification_attribute,
+				dev_comment_attribute
+			]
+		}
+	],
+	"condition": [{
+		description: "The code beneath this condition will be executed conditionally, i.e., when the condition succeeds.</summary>To restrict further (logical 'and'), nest conditions (by adding an extra condition under this condition).",
+		attributes: [
+			{
+				name: "description"
+			},
+			{
+				name: "mode",
+				description: "The mode of the view as a condition. The values may be split by bars, e.g. \"new|edit\". When used in a function, the mode of the target view of the function (which is default the calling view) will be compared.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "new"
+						},
+						{
+							name: "edit"
+						},
+						{
+							name: "view"
+						},
+					]
+				}
+			},
+			{
+				name: "control",
+				description: "The control type of the view as a condition. The values may be split by bars, e.g. \"ListView|ObjectView\". When used in a function, the mode of the target view of the function (which is default the calling view) will be compared.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "DataTree"
+						},
+						{
+							name: "Empty"
+						},
+						{
+							name: "Graph"
+						},
+						{
+							name: "HtmlFile"
+						},
+						{
+							name: "ListView"
+						},
+						{
+							name: "ObjectView"
+						},
+						{
+							name: "Tabber"
+						},
+						{
+							name: "Tree"
+						},
+						{
+							name: "ViewContainer"
+						}
+					]
+				}
+			},
+			{
+				name: "sal",
+				description: "The SAL access of the user accessing the view as a condition.</summary>When used in a function, the SAL of the target view of the function (which is default the calling view) will be compared.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "all"
+						},
+						{
+							name: "read"
+						},
+						{
+							name: "update"
+						},
+						{
+							name: "create"
+						},
+						{
+							name: "delete"
+						}
+					]
+				}
+			},
+			dev_override_rights_attribute,
+			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "action"
+			},
+			{
+				element: "condition"
+			},
+			{
+				element: "field"
+			},
+			{
+				element: "then",
+				occurence: "once"
+			},
+			{
+				element: "else",
+				occurence: "once"
+			},
+			{
+				element: "or"
+			},
+			{
+				element: "and"
+			}
+		]
 	}],
-	"condition": [{}],
-	"field": [{}],
-	"or": [{}],
-	"and": [{}],
-	"then": [{}],
-	"else": [{}],
-	"option": [{}],
-	"validations": [{}],
-	"validation": [{}],
-	"sort": [{}],
-	"list": [{}],
-	"attachments": [{}],
-	"layout": [{}],
-	"column": [{}],
-	"row": [{}],
-	"IconConditions": [{}],
-	"IconCondition": [{}],
-	"design": [{}],
+	"field": [{
+		description: "A boolean condition to check.</summary>Add more fields to strengthen the condition (logical 'and'). The 'equal to', 'contains' and 'does not contain' operators are also accepting a piped list of values.",
+		attributes: [
+			{
+				name: "name",
+				description: "The name of an attribute or of a local variable.",
+				required: true
+			},
+			{
+				name: "condition",
+				description: "",
+				required: true,
+				type: search_condition_options_attribute_type
+			},
+			{
+				name: "value",
+				description: "Value to compare with."
+			},
+			{
+				name: "bounded",
+				description: "Determines if the field is got from the bound data.",
+				type: default_yes_no_attribute_type
+			}
+		]
+	}],
+	"or": [{
+		description: "The or-operator between search columns. Use the group element to specify brackets."
+	}],
+	"and": [{
+		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted."
+	}],
+	"then": [{
+		description: "The actions in the then will only be executed if the conditions succeed.",
+		attributes: [dev_override_rights_attribute],
+		childs: [
+			{
+				element: "action"
+			},
+			{
+				element: "condition"
+			},
+		]
+	}],
+	"else": [{
+		description: "The actions in or after the else will only be executed if the conditions fail.",
+		attributes: [dev_override_rights_attribute],
+		childs: [
+			{
+				element: "action"
+			},
+			{
+				element: "condition"
+			},
+		]
+	}],
+	"option": [{
+		description: "",
+		attributes: [
+			{
+				name: "value"
+			},
+			{
+				name: "caption"
+			},
+			{
+				name: "show",
+				description: "If the option is initially visible.",
+				type: default_yes_no_attribute_type
+			},
+		]
+	}],
+	"validations": [{
+		description: "This will allow validating the fields etc.",
+		attributes: [dev_comment_attribute],
+		childs: [{
+			element: "validation"
+		}]
+	}],
+	"validation": [{
+		description: "Validations on fields are things like: Required, Email.",
+		attributes: [
+			{
+				name: "name",
+				description: "The name of the validation.", 
+				required: true
+			},
+			{
+				name: "message",
+				description: "The validation message."
+			},
+			{
+				name: "function",
+				description: "A reference to a frontend function which validates the value of the field."
+			},
+			{
+				name: "regular-expression",
+				description: "A regular expression to validate the value of the field."
+			},
+		]
+	}],
+	"sort": [{
+		description: "Defines an ordering over a property of objects of a certain type. Multiple property orderings may be stacked.",
+		attributes: [
+			{
+				name: "name",
+				description: "Specifies an attribute of the type to order by."
+			},
+			{
+				name: "order",
+				description: "The type of ordering over the values of the property to order by.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "asc",
+							description: "Ascending"
+						},
+						{
+							name: "desc",
+							description: "Descending"
+						},
+					]
+				}
+			},
+		]
+	}],
+	"list": [{
+		description: "Datatree list definition.",
+		attributes: [
+			{
+				name: "infoset",
+				description: "The data set loaded in the data tree."
+			},
+			{
+				name: "target-view",
+				description: "The target view for the actions fired by the nodes created by this list."
+			},
+			{
+				name: "display-as",
+				description: "Which attribute of the items of the infoset is displayed in the tree."
+			},
+			{
+				name: "filter",
+				description: "The name of the infoset argument with which the IId of the parent context node (if any) is passed."
+			},
+			{
+				name: "node-icon",
+				description: "The icon for the nodes in this list."
+			},
+			{
+				name: "nodeselected-icon",
+				description: "The icon for selected nodes in this list."
+			},
+			{
+				name: "open",
+				description: "if the list is expanded initially.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "display-appearance",
+				description: ""
+			},
+		]
+	}],
+	"attachments": [{
+		description: "A list of all attachments of the current object.",
+		attributes: [
+			{
+				name: "appearance-class",
+				description: "The appearance of the attachments."
+			},
+			dev_comment_attribute
+		]
+	}],
+	"layout": [{
+		description: "",
+		attributes: [
+			{
+				name: "removable",
+				description: "If it is possible to remove portlets from the portal by clicking the close button.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "sortable",
+				description: "If it is possible to sort the portlets by dragging and dropping.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "add-viewlet-function",
+				description: ""
+			},
+			{
+				name: "resizable",
+				description: "Possible values: 'yes', 'no' or some number. If set to 'yes' the user can resize portlets. If the value is a number, this will be the width/height ratio. E.g. ratio 2 will cause that the portlet's width is always twice as much as the height."
+			},
+		]
+	}],
+	"column": [{
+		description: "",
+		attributes: [
+			{
+				name: "width",
+				description: "The width of the column."
+			}
+		],
+		childs: [
+			{
+				element: "view"
+			}
+		]
+	}],
+	"row": [{
+		description: "",
+		attributes: [
+			{
+				name: "height",
+				description: "The height of the row."
+			}
+		],
+		childs: [
+			{
+				element: "view"
+			}
+		]
+	}],
+	"IconConditions": [{
+		childs: [
+			{
+				element: "IconCondition"
+			}
+		]
+	}],
+	"IconCondition": [{
+		attributes: [
+			{
+				name: "Value"
+			},			
+			{
+				name: "IconPath"
+			}
+		]
+	}],
+	"design": [{
+		attributes: [
+			{
+				name: "design-base-view",
+				description: "The view to inherit from, when going to design mode. Currently the only suited view in the platform model is Platform.Designer.StartLayoutSidebar (but one could inherit or create another view)."
+			},
+			{
+				name: "draggable",
+				description: "If set to \"no\" the components cannot be moved",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "multiselect",
+				description: "If set to \"no\" only single selection is possible",
+				type: default_yes_no_attribute_type
+			},
+		]
+	}],
+	"source": [{
+		attributes: [
+			{
+				name: "name"
+			},
+			{
+				name: "content"
+			},
+			{
+				name: "apply-templating",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "type"
+			},
+			{
+				name: "iid"
+			},
+			{
+				name: "field"
+			},
+		]
+	}],
 	"units": [{}],
 	"appointments": [{}],
 	"filters": [{}],
@@ -3052,18 +3523,159 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"units-view": [{}],
 	"week-view": [{}],
 	"year-view": [{}],
-	"report-parameters": [{}],
-	"report-parameter": [{}],
-	"style-variable": [{}],
-	"functions": [{}],
+	"report-parameters": [{
+		description: "Parameters to pass to the report.",
+		childs: [
+			{
+				element: "report-parameter",
+				occurence: "at-least-once"
+			}
+		]
+	}],
+	"report-parameter": [{
+		description: "A parameter to pass to the report.",
+		attributes: [
+			{
+				name: "name",
+				description: "Name of a destination field or variable in the report."
+			},
+			{
+				name: "argument-name",
+				description: "The argument name within the view, if the value is not constant."
+			},
+			{
+				name: "value",
+				description: "A constant value to pass instead of an argument."
+			}
+		]
+	}],
+	"style-variables": [{
+		description: "Apply style variables to the view HTML element",
+		attributes: [
+			{
+				name: "rule",
+				description: "The name of the rule to retrieve the style variables from."
+			},
+			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "argument"
+			}
+		]
+	}],
+	"functions": [{
+		description: "Frontend function definitions.",
+		attributes: [
+			{
+				name: "name"
+			},
+			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "function"
+			},
+			{
+				element: "functions"
+			},
+			{
+				element: "module"
+			}
+		]
+	}],
 	"function": [{
+		description: "A frontend function, that can be called by a single action call.",
 		type: ModelElementTypes.Function,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
+		attributes: [
+			{
+				name: "name",
+				description: "Unique identifier of the function."
+			},
+			dev_override_rights_attribute,
+			dev_ignore_modelcheck_attribute,
+			dev_ignore_modelcheck_justification_attribute,
+			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "input"
+			},
+			{
+				element: "output"
+			},
+			{
+				element: "condition"
+			},
+			{
+				element: "action"
+			},
+		]
 	}],
-	"resources": [{}],
-	"script": [{}],
-	"stylesheet": [{}],
+	"resources": [{
+		description: "References to include in the frontend.",
+		childs: [
+			{
+				element: "script"
+			},
+			{
+				element: "stylesheet"
+			}
+		]
+	}],
+	"script": [{
+		description: "A script reference to include in the frontend.",
+		attributes: [
+			{
+				name: "src",
+				description: "Project relative file path.",
+				required: true
+			},
+			{
+				name: "client-mode",
+				description: "If this resource should only be loaded by a specific client mode, specify the client mode here. WARNING: loading too much scripts for mobile will result in a performance drop!",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "mobile"
+						},
+						{
+							name: "all"
+						},
+					]
+				}
+			}
+		]
+
+	}],
+	"stylesheet": [{
+		description: "A stylesheet reference to include in the frontend.",
+		attributes: [
+			{
+				name: "src",
+				description: "Project relative file path.",
+				required: true
+			},
+			{
+				name: "client-mode",
+				description: "If this resource should only be loaded by a specific client mode, specify the client mode here. WARNING: loading too much scripts for mobile will result in a performance drop!",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "mobile"
+						},
+						{
+							name: "all"
+						},
+					]
+				}
+			}
+		]
+	}],
 	"decorations": [decorations_element],
 	"decoration": [decoration_element],
 	"decoration-argument": [decoration_argument_element],
