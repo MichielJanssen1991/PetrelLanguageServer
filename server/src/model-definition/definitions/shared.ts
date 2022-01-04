@@ -1,5 +1,5 @@
 import { NAMES } from '../constants';
-import { AttributeTypes, ElementAttribute, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType, ChildReference, ChildDefinition, Attribute } from '../symbolsAndReferences';
+import { AttributeTypes, ElementAttribute, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType, ChildDefinition } from '../symbolsAndReferences';
 
 export const default_yes_no_attribute_type: AttributeType =
 	{
@@ -90,6 +90,13 @@ export const dev_obsolete_message_attribute: ElementAttribute =
 		description: "May be used to have a metadata item which only specifies override rights and not specifies an instance.",
 		type: default_yes_no_attribute_type
 	};
+
+	export const dev_is_public_attribute: ElementAttribute =
+	{
+		name: "is-public",
+		description: "Indicates whether this entity is part of the public API and exposed to other models using it. NOTE: There is currently no validation of the contract, and this property is only used for the unused entities model check, but features may be added later.",
+		type: default_yes_no_attribute_type
+	};
 	
 
 export const dev_description_attribute: ElementAttribute =
@@ -123,7 +130,21 @@ export const search_condition_options_attribute_type: AttributeType =
 		options: [
 			{
 				name: "Is",
-				description: "= (equal to)"
+				description: "= (equal to)",
+				obsolete: true
+			},
+			{
+				name: "==",
+				description: "== (equal to)"
+			},
+			{
+				name: "Not",
+				description: "≠ (not equal to)",
+				obsolete: true
+			},
+			{
+				name: "!=",
+				description: "!= (not equal to)"
 			},
 			{
 				name: "Like",
@@ -144,10 +165,6 @@ export const search_condition_options_attribute_type: AttributeType =
 			{
 				name: "SmallerOrEqual",
 				description: "≤ (smaller than or equal to)"
-			},
-			{
-				name: "Not",
-				description: "≠ (not equal to)"
 			},
 			{
 				name: "StartsWith",
@@ -484,12 +501,22 @@ export const model_condition_element: Definition =
 					options: [
 						{
 							name: "",
+							description: "Equals (default)",
+							obsolete: true
+						},
+						{
+							name: "==",
 							description: "Equals",
 							default: true
 						},
 						{
-							name: "Unequal",
+							name: "!=",
 							description: "Unequal"
+						},
+						{
+							name: "Unequal",
+							description: "Unequal",
+							obsolete: true
 						},
 						{
 							name: "StartsWith",
@@ -867,33 +894,156 @@ export const action_definition_argument_element: Definition = {
 };
 
 export const view_argument_element: Definition = {
+	description: "Filter arguments for the view.",
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
+	ancestor: ModelElementTypes.View,
 	matchCondition: (nodeContext) => !isViewArgument(nodeContext),
-	attributes: [{
-		name: NAMES.ATTRIBUTE_REMOTENAME,
-	},
-	{
-		name: NAMES.ATTRIBUTE_LOCALNAME,
-	}]
+	attributes: [
+		{
+			name: NAMES.ATTRIBUTE_REMOTENAME,
+			description: "Name for a destination field or variable."
+		},
+		{
+			name: NAMES.ATTRIBUTE_LOCALNAME,
+			description: "Name for a local field or variable."
+		},
+		{
+			name: "value",
+			description: "The value for the argument. For output arguments, this is the default value."
+		},
+		{
+			name: "parseType",
+			description: "The type to which the argument value should be parsed.",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "Petrel.ModelPath",
+						default: true
+					}
+				]
+			}
+		},
+		{
+			name: "precondition",
+			description: "A condition to check the value with.",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "is not empty",
+						default: true
+					}
+				]
+			}
+		},
+		{
+			name: "bounded",
+			description: "This indicates whether the field corresponds with a field from the related type.</summary> If the field is \"data bound\":[Model_Frontend_Bounded] (saved in the data). Useful when displaying values not in the persistence. A non-data bound field is a free form field that is not linked to a database attribute.",
+			type: default_yes_no_attribute_type			
+		},
+		{
+			name: "search",
+			description: "If the argument has to be used as a filter on the corresponding attribute. Default = yes.",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "condition",
+			description: "The search condition",
+			type: search_condition_options_attribute_type,
+			visibilityConditions: [
+				{
+					attribute: "search",
+					condition: "==",
+					value: "yes"
+				}
+			]
+		},
+		{
+			name: "search-when-empty",
+			description: "If the filter argument has to be used when null.",
+			type: default_yes_no_attribute_type,
+			visibilityConditions: [
+				{
+					attribute: "search",
+					condition: "==",
+					value: "yes"
+				}
+			]
+		},
+		{
+			name: "fill-as-default",
+			description: "If the argument has to be used as a default value for attribute with that name. Default = yes.",
+			type: default_yes_no_attribute_type
+		},
+		dev_ignore_modelcheck_attribute,
+		dev_ignore_modelcheck_justification_attribute,
+		dev_comment_attribute
+	]
 };
 
 export const action_argument_element: Definition = {
+	description: "An argument to pass to the action.",
 	name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
+	ancestor: ModelElementTypes.Action,
 	matchCondition: (nodeContext) => !isViewArgument(nodeContext),
-	attributes: [{
-		name: NAMES.ATTRIBUTE_REMOTENAME,
-	},
-	{
-		name: NAMES.ATTRIBUTE_LOCALNAME,
-	}]
+	attributes: [
+		{
+			name: NAMES.ATTRIBUTE_REMOTENAME,
+			description: "Name for a destination field or variable."
+		},
+		{
+			name: NAMES.ATTRIBUTE_LOCALNAME,
+			description: "Name for a local field or variable."
+		},
+		{
+			name: "value",
+			description: "The value for the argument. For output arguments, this is the default value."
+		},
+		{
+			name: "parseType",
+			description: "The type to which the argument value should be parsed.",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "Petrel.ModelPath",
+						default: true
+					}
+				]
+			}
+		},
+		{
+			name: "precondition",
+			description: "A condition to check the value with.",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "is not empty",
+						default: true
+					}
+				]
+			}
+		},
+		{
+			name: "bounded",
+			description: "This indicates whether the field corresponds with a field from the related type.</summary> If the field is \"data bound\":[Model_Frontend_Bounded] (saved in the data). Useful when displaying values not in the persistence. A non-data bound field is a free form field that is not linked to a database attribute.",
+			type: default_yes_no_attribute_type			
+		},
+		dev_ignore_modelcheck_attribute,
+		dev_ignore_modelcheck_justification_attribute,
+		dev_comment_attribute
+	]
 };
 
 export const action_output_element: Definition =
 {
 	description: "Output of the action.",
+	ancestor: ModelElementTypes.Action,
 	matchCondition: (nodeContext) => !isOutputDeclaration(nodeContext),
 	type: ModelElementTypes.ActionOutput,
 	detailLevel: ModelDetailLevel.SubReferences,
@@ -996,6 +1146,197 @@ export const search_attributes: ElementAttribute[] =
 	dev_comment_attribute
 ];
 
+export const view_group_attributes: ElementAttribute[] =
+[
+	{
+		name: "name",
+		description: "A unique identifier to refer to this group. The name of a group is required because a grouping of fields has a semantical reason.This attribute can be used for inheritance from identically named groups.",
+		required: true
+	},
+	{
+		name: "caption",
+		description: "The caption of the group."
+	},
+	{
+		name: "show",
+		description: "If the group is initially visible.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "show-in-listview",
+		description: "If the group should be visible as a group in the list view.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "sortable",
+		description: "If the column should be sortable by the specified sort field.",
+		type: default_yes_no_attribute_type,
+		visibilityConditions: [
+			{
+				attribute: "show-in-listview",
+				condition: "==",
+				value: "yes"
+			}
+		]
+	},
+	{
+		name: "sort-field",
+		description: "The field to sort by if the column showed in the list view is sortable.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Attribute // filter current view
+		},
+		visibilityConditions: [
+			{
+				attribute: "sortable",
+				condition: "==",
+				value: "yes"
+			}
+		],
+		requiredConditions: [
+			{
+				attribute: "sortable",
+				condition: "==",
+				value: "yes"
+			}
+		]
+	},
+	{
+		name: "accesskey",
+		description: "A key to access the field set."
+	},
+	{
+		name: "appearance-class",
+		description: "A specific style for the view element.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.AppearanceClass
+		}
+	},
+	{
+		name: "float",
+		description: "Whether the view is floated",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "none"
+				},
+				{
+					name: "left"
+				},
+				{
+					name: "right"
+				}
+			]
+		}
+	},
+	{
+		name: "clear",
+		description: "Specifies the sides of the view where other floating elements are not allowed.",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "both"
+				},
+				{
+					name: "left"
+				},
+				{
+					name: "right"
+				}
+			]
+		}
+	},
+	{
+		name: "background-image",
+		description: "A background image for the view. (TIP: use SCSS instead of this attribute)"
+	},
+	{
+		name: "background-position",
+		description: "Background position for the view. See: http://www.w3.org/TR/CSS2/colors.html (TIP: use SCSS instead of this attribute)"
+	},
+	{
+		name: "collapsable",
+		description: "Whether the user should be able to expand and collapse the field set box.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "collapsed",
+		description: "If the field set is initially expanded. Collapsed will make the fieldset visible by title only (and expandable by a button).",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "collapsed",
+					default: true
+				},
+				{
+					name: "expanded"
+				}
+			]
+		},
+		visibilityConditions: [
+			{
+				attribute: "collapsable",
+				condition: "==",
+				value: "yes"
+			}
+		]
+	},
+	{
+		name: "page-break-before",
+		description: "",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "auto"
+				},
+				{
+					name: "always"
+				},
+				{
+					name: "avoid"
+				}
+			]
+		}
+	},
+	dev_override_rights_attribute,
+	dev_ignore_modelcheck_attribute,
+	dev_ignore_modelcheck_justification_attribute,
+	dev_comment_attribute
+];
+
+export const view_group_childs: ChildDefinition[] =
+[
+	{
+		element: "group"
+	},
+	{
+		element: "attribute"
+	},
+	{
+		element: "events"
+	},
+	{
+		element: "view"
+	},
+	{
+		element: "tabber"
+	},
+	{
+		element: "button"
+	},
+	{
+		element: "include"
+	},
+	{
+		element: "decorations"
+	}
+];
+
 export const search_childs: ChildDefinition[] = 
 [
 	{
@@ -1022,6 +1363,19 @@ export const search_childs: ChildDefinition[] =
 	{
 		element: "include"
 	},
+];
+
+export const event_childs: ChildDefinition[] = 
+[
+	{
+		element: "action"
+	},
+	{
+		element: "condition"
+	},
+	{
+		element: "include"
+	}
 ];
 
 export function isViewArgument(nodeContext: IXmlNodeContext): boolean {

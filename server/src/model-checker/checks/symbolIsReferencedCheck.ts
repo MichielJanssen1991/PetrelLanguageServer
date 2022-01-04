@@ -1,4 +1,4 @@
-import { ModelDetailLevel, ModelElementTypes, IsSymbolOrReference, SymbolDeclaration, TreeNode } from '../../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes, SymbolDeclaration, TreeNode } from '../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';

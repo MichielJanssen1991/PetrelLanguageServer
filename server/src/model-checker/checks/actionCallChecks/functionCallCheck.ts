@@ -14,7 +14,7 @@ export class FunctionCallCheck extends ActionCallCheck {
 
 	protected verifyActionCall(node: TreeNode, options: ModelCheckerOptions) {
 		let valid = true;
-		valid = this.verifyFunctionCall(node, options);
+		valid = this.verifyFunctionCall(node/* , options */);
 
 		if (valid && options.detailLevel >= ModelDetailLevel.SubReferences) {
 			this.verifyInputsAreKnownInReferencedObjects(node);
@@ -27,7 +27,7 @@ export class FunctionCallCheck extends ActionCallCheck {
 		}
 	}
 
-	private verifyFunctionCall(reference: TreeNode, options: ModelCheckerOptions) {
+	private verifyFunctionCall(reference: TreeNode/* , options: ModelCheckerOptions */) {
 		const functionNameNotSpecified = this.verifyMandatoryAttributeProvided(reference, NAMES.ATTRIBUTE_FUNCTION, false);
 		if (functionNameNotSpecified) {
 			this.addError(reference.range, CHECKS_MESSAGES.RULECALL_WITHOUT_NAME());
@@ -35,6 +35,6 @@ export class FunctionCallCheck extends ActionCallCheck {
 		return !functionNameNotSpecified;
 	}
 
-	protected getAdditionalInputsForSpecificAction(node: TreeNode) { return []; }
-	protected getAdditionalOutputsForSpecificAction(node: TreeNode) { return []; }
+	protected getAdditionalInputsForSpecificAction() { return []; }
+	protected getAdditionalOutputsForSpecificAction() { return []; }
 }

@@ -37,11 +37,20 @@ export enum ModelElementTypes {
 	SetVar = "SetVar",
 	Switch = "Switch",
 	Target = "Target",
+	TargetView = "TargetView",	// this is not a list of elements of TargetViews, but a list of Views filled with attribute "TargetName"
 	Type = "Type",
 	TypeFilter = "TypeFilter",
 	Unknown = "Unknown",
 	Variable = "Variable",
 	View = "View",
+	Style = "Style",
+	Toolbar = "Toolbar",
+	Tree = "Tree",
+	Button = "Button",
+	Event = "Event",
+	Events = "Events",
+	Appearance = "Appearance",
+	AppearanceClass = "AppearanceClass", // this could be a list of all classes from the scss files (it can be filtered by the type of mixin it's using)
 }
 
 export enum ValidationLevels {
@@ -55,7 +64,9 @@ export enum ValidationLevels {
 export enum AttributeTypes {
 	Enum = "enum",
 	Reference = "reference",
-	Numeric = "numeric"
+	Numeric = "numeric",
+	URL = "url",	// base-location = wwwroot
+	Date = "date"
 }
 
 export type ContextQualifiers = {
@@ -176,9 +187,9 @@ export type Definition = {
 	name?: (x: any) => string,
 	description?: string,
 	checkObsolete?: boolean,
-	attributes?: ElementAttribute[],
 	childs?: ChildDefinition[] | ChildReference,
-	parent?: any,
+	attributes?: ElementAttribute[],
+	ancestor?: ModelElementTypes | string,			// used to filter what definition should be chosen
 	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
 	type?: ModelElementTypes,
 	prefixNameSpace?: boolean,
@@ -207,6 +218,7 @@ export type ElementAttribute = {
 	required?: boolean,
 	autoadd?: boolean,						// mark attribute to auto add when (parent) element is created
 	deprecated?: boolean,
+	deprecationMessage?: string,
 	visibilityConditions?: ValidationMatches[],
 	requiredConditions?: ValidationMatches[],
 	type?: AttributeType,
@@ -236,7 +248,8 @@ export type ChildValidation = {
 export type AttributeOption = {
 	name: string,
 	description?: string,
-	default?: boolean
+	default?: boolean,
+	obsolete?: boolean
 }
 
 export type ValidationMatches = {
@@ -250,6 +263,6 @@ export type AttributeType = {
 	type: AttributeTypes,
 	relatedTo?: ModelElementTypes,
 	options?: AttributeOption[],
-	pathHints?: AttributeOption[]
-
+	pathHints?: AttributeOption[],
+	default?: string
 }

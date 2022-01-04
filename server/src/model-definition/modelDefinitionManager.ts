@@ -58,6 +58,9 @@ export class ModelDefinitionManager {
 	 */
 	public getModelDefinitionForTagAndType(context: ModelFileContext, tag: string, type: ModelElementTypes) {
 		const definitionsForTag = this.getModelDefinition(context)[tag] || [];
-		return definitionsForTag.find(def => (def.type == type)||type==ModelElementTypes.All);
+		if (definitionsForTag.length > 1){
+			return definitionsForTag.find(def => (def.ancestor == type) ||type==ModelElementTypes.All);
+		}
+		return definitionsForTag[0];
 	}
 }

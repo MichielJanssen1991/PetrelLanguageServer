@@ -1,5 +1,5 @@
 import * as LSP from 'vscode-languageserver';
-import { ModelDetailLevel, ModelElementTypes, newSymbolDeclaration, Reference, SymbolDeclaration } from '../../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes, newSymbolDeclaration, SymbolDeclaration } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
 
 export class JavascriptParser extends FileParser {

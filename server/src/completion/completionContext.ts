@@ -1,6 +1,5 @@
 import { Range } from 'vscode-languageserver-types';
-import { XmlNode } from '../file-analyzer/parser/saxParserExtended';
-import { Attribute, IXmlNodeContext, IsSymbolOrReference, ModelElementTypes, Reference, TreeNode, newSymbolDeclaration, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
+import { Attribute, ModelElementTypes, Reference, TreeNode, newSymbolDeclaration, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
 
 export type RuleContext = {
 	name: string,
@@ -77,7 +76,7 @@ export class CompletionContext {
 		return res;	
 	}
 
-	private symbolOrReferenceToXmlNode(symbolOrReference: TreeNode): XmlNode {
+	/* private symbolOrReferenceToXmlNode(symbolOrReference: TreeNode): XmlNode {
 		const attributes = symbolOrReference.attributes;
 		const attributesSimplified = Object.keys(attributes).
 			reduce((result: Record<string, string>, att) => {
@@ -87,7 +86,7 @@ export class CompletionContext {
 			name: symbolOrReference.tag,
 			attributes: attributesSimplified
 		};
-	}
+	} */
 
 	//Returns the first predecessor of the given type
 	public getPredecessorOfType(type: ModelElementTypes, isSymbolDeclaration: boolean) {

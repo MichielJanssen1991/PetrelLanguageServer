@@ -14,7 +14,7 @@ export class CompletionProvider {
 	}
 
 	public getCompletionItems(context: CompletionContext): CompletionItem[] {
-		const { word, inTag, inAttribute, uri, attribute } = context;
+		const { word, inTag, inAttribute, uri/*,  attribute */ } = context;
 		const modelFileContext = this.symbolAndReferenceManager.getModelFileContextForFile(uri);
 		const currentNode = context.currentNode;
 
@@ -52,7 +52,8 @@ export class CompletionProvider {
 		const node = context.currentNode;
 		if (node) {
 			// get default attributes based on model definition
-			const modelDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, node.tag, node.type);
+			//const modelDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, node.tag, node.type);
+			const modelDefinition = this.getElementDefinition(modelFileContext, node, node);
 
 			// get a lit of nonvisible elements (attributes which should not appear in the completion list because they do not apply )
 			const attributesForTag = this.getVisibleAttributes(modelDefinition, node);
@@ -78,10 +79,12 @@ export class CompletionProvider {
 			allAttributes = allAttributes.filter(item => !existingAttributes.includes(item.name));
 
 			attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);
-
-			return attributeCompletions;
+if (attributeCompletions.length > 0) {
+	return attributeCompletions;
+} 
+        return [{label: "no attribute options found for " + node.tag}];
 		}
-		return [];
+		return [{label: "no attribute options found"}];
 	}
 
 	/**
@@ -180,7 +183,7 @@ export class CompletionProvider {
 
 	private getAttributeValueCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
 		const node = context.currentNode as TreeNode;
-		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, node.tag, node.type);
+		const elementDefinition = this.getElementDefinition(modelFileContext, node, node);
 		const attribute = context.attribute;
 		let symbols = [{ label: "no posibilities found" }];
 		if (attribute && elementDefinition && elementDefinition.attributes) {
@@ -212,13 +215,20 @@ export class CompletionProvider {
 							break;
 					}
 				} else if (type.type == AttributeTypes.Enum && type.options) {
-					symbols = type.options.map(option => ({ label: option.name }));
+					symbols = type.options.filter(option=>!option.obsolete).map(option => ({ label: option.name }));
 				}
 			}
 		}
 		return symbols;
 	}
 
+private getElementDefinition(modelFileContext: ModelFileContext, searchFor: TreeNode , searchIn: TreeNode, depth = 0): Definition | undefined{
+	const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, searchFor.tag, searchIn.type);
+	if (!elementDefinition && searchIn.parent && depth < 4 ){
+		return this.getElementDefinition(modelFileContext, searchFor, searchIn.parent, depth++);
+	}
+	return elementDefinition;
+}
 	/**
 	 * Get the possible children of an element. 
 	 * ModelDefinition.childs could contain:
@@ -232,8 +242,8 @@ export class CompletionProvider {
 	 */
 	private getChildElementCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
 		const node = context.currentNode as TreeNode;
-		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, node.tag, node.type);
-		let childCompletions: CompletionItem[] = [];
+		const elementDefinition = this.getElementDefinition(modelFileContext, node, node);
+		let childCompletions: CompletionItem[] = [{label: "no child options found for " + node.tag }];
 		if (elementDefinition) {
 			const children = elementDefinition.childs;
 			// if the definition contains an array of children

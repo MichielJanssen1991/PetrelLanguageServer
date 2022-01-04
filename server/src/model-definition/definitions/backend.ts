@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { action_argument_element, action_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_element } from './shared';
+import { action_argument_element, action_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_element, dev_description_attribute } from './shared';
 export const BACKEND_DEFINITION: Definitions = {
 	"root": [{
 		attributes: [
@@ -60,10 +60,12 @@ export const BACKEND_DEFINITION: Definitions = {
 		attributes: [
 			{
 				name: "name",
-				description: "The name of the module"
+				description: "The module name.",
+				autoadd: true
 			},
 			target_namespace_attribute,
-			dev_comment_attribute
+			dev_description_attribute,
+			dev_comment_attribute,
 		],
 		childs: [
 			{
@@ -177,6 +179,10 @@ export const BACKEND_DEFINITION: Definitions = {
 						{
 							name: "Cache",
 							description: ""
+						},
+						{
+							name: "*",
+							description: "Any other type of persistence (just type)"
 						},
 
 					]
@@ -385,6 +391,10 @@ export const BACKEND_DEFINITION: Definitions = {
 				description: "",
 			},
 			{
+				name: "caption",
+				description: "",
+			},
+			{
 				name: "type",
 				description: "Determines field type and the saved attribute value.",
 				type:
@@ -582,32 +592,6 @@ export const BACKEND_DEFINITION: Definitions = {
 				]
 			},
 			{
-				name: "list-relation-type",	// TODO: move to frontend
-				description: "",
-				visibilityConditions: [
-					{
-						attribute: "relation-type",
-						condition: "==",
-						value: "Platform.Lists"
-					}
-				]
-			},
-			{
-				name: "relation-type-multiple",			// TODO: move to frontend
-				description: "The relation type for the multiple relation.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Type
-				},
-				visibilityConditions: [
-					{
-						attribute: "type",
-						condition: "==",
-						value: "multiselect"
-					}
-				]
-			},
-			{
 				name: "relation-field",
 				description: "Set relation field to let this attribute represent another attribute of a related type. This type of attribute is called a \"relation attribute\". Relation attributes *must* be defined in the backend because the backend otherwise will not send data to the frontend.",
 				type: {
@@ -687,6 +671,13 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			{
 				name: "max-length",
+				description: "Specifies the field width, defined in number of characters displayed.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
+			},
+			{
+				name: "display-length",
 				description: "Specifies the field width, defined in number of characters displayed.",
 				type: {
 					type: AttributeTypes.Numeric
@@ -811,10 +802,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				element: "auto-field-filter",
 				occurence: "once"
-			},
-			{
-				element: "copy-attribute" // TODO move to frontend
-			},
+			}
 		]
 	}],
 	"option": [{

@@ -1,5 +1,4 @@
-import { NAMES } from '../constants';
-import { AttributeTypes, ModelElementTypes, Definition, Definitions, ValidationLevels, ModelDetailLevel } from '../symbolsAndReferences';
+import { AttributeTypes, ModelElementTypes, Definitions, ValidationLevels, ModelDetailLevel } from '../symbolsAndReferences';
 import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_output_element, backend_action_element, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_is_declaration_attribute, dev_override_rights_attribute, input_element } from './shared';
 export const RULE_DEFINITION: Definitions = {
 	"rules": [{
@@ -582,26 +581,30 @@ export const RULE_DEFINITION: Definitions = {
 					type: AttributeTypes.Enum,
 					options: [
 						{
-							name: "Is",
-							"default": true
+							name: "==",
+							default: true
+						},
+						{
+							name: "=",
+							obsolete: true
 						},
 						{
 							name: "Like",
 						},
 						{
-							name: "Greater",
+							name: ">",
 						},
 						{
-							name: "Smaller",
+							name: "<",
 						},
 						{
-							name: "GreaterOrEqual",
+							name: ">=",
 						},
 						{
-							name: "SmallerOrEqual",
+							name: "<=",
 						},
 						{
-							name: "Not",
+							name: "!=",
 						},
 						{
 							name: "StartsWith",

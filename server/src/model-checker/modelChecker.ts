@@ -43,7 +43,7 @@ export class ModelChecker {
 		this.checks.push(new InfosetDeclarationCheck(modelManager));
 		this.checks.push(new ReferencedObjectExistsCheck(modelManager));
 		this.checks.push(new SymbolIsReferencedCheck(modelManager));
-		this.checks.push(new ModelDefinitionCheck(modelManager, modelDefinitionManager));
+		this.checks.push(new ModelDefinitionCheck(modelManager, this.modelDefinitionManager));
 		this.checks.push(new RuleDeclarationCheck(modelManager));
 	}
 
@@ -93,12 +93,12 @@ export class ModelChecker {
 	}
 
 
-	private addInformation(range: LSP.Range, message: string) {
+	/* private addInformation(range: LSP.Range, message: string) {
 		this.addDiagnostics(range, message, LSP.DiagnosticSeverity.Information);
 	}
 	private addWarning(range: LSP.Range, message: string) {
 		this.addDiagnostics(range, message, LSP.DiagnosticSeverity.Warning);
-	}
+	} */
 	private addError(range: LSP.Range, message: string) {
 		this.addDiagnostics(range, message, LSP.DiagnosticSeverity.Error);
 	}

@@ -6,6 +6,15 @@
 		"moduleResolution": "node",
 		"sourceMap": true,
 		"strict": true,
+		"noImplicitAny": true,
+		"alwaysStrict": true,
+		"strictNullChecks": true,
+		"allowJs": false,
+		"strictPropertyInitialization": true,
+		"noFallthroughCasesInSwitch": false,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+
 		"outDir": "out",
 		"rootDir": "src"
 	},

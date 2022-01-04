@@ -39,7 +39,7 @@ export class InfosetCallCheck extends ActionCallCheck {
 		return !infosetNameNotSpecified;
 	}
 
-	protected getAdditionalInputsForSpecificAction(node: TreeNode) { return []; }
+	protected getAdditionalInputsForSpecificAction() { return []; }
 
 	protected getAdditionalOutputsForSpecificAction(node: TreeNode) {
 		const infosetRef = node.attributes[NAMES.ATTRIBUTE_INFOSET];
