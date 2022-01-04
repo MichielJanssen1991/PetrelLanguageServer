@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { action_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, model_condition_element, search_condition_options_attribute_type, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
+import { action_argument_element, action_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
 
 export const FRONTEND_DEFINITION: Definitions = {
 	"root": [{
@@ -109,6 +109,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 							name: ModelElementTypes.Action
 						},
 						{
+							name: "node"
+						},
+						{
 							name: "events"
 						},
 						{
@@ -192,6 +195,18 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "toolbar"
 			},
 			{
+				element: "functions"
+			},
+			{
+				element: "function"
+			},
+			{
+				element: "tree"
+			},
+			{
+				element: "views"
+			},
+			{
 				element: "view"
 			},
 			{
@@ -239,9 +254,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 		],
 		childs: [
 			{
-				element: "node",
-				occurence: "at-least-once",
-				required: true
+				element: "node"
+			},
+			{
+				element: "include"
 			}
 		]
 	}],
@@ -296,6 +312,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 		childs: [
 			{
 				element: "node"
+			},
+			{
+				element: "model-condition"
 			},
 			{
 				element: "events",
@@ -1705,9 +1724,12 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "style-variables",
 				occurence: "once"
 			},
+			{
+				element: "merge-instruction"
+			}
 		]
 	}],
-	"argument": [view_argument_element],
+	"argument": [view_argument_element, action_argument_element],
 	"events": [
 		{
 			type: ModelElementTypes.Events,
@@ -2296,6 +2318,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 				{
 					type: AttributeTypes.Enum,
 					"options": [
+						{
+							name: "", // empty = yes
+							obsolete: true
+						},
 						{
 							name: "yes",
 							default: true
@@ -3117,6 +3143,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			]
 		}
 	],
+	"input": [input_element],
 	"condition": [{
 		description: "The code beneath this condition will be executed conditionally, i.e., when the condition succeeds.</summary>To restrict further (logical 'and'), nest conditions (by adding an extra condition under this condition).",
 		attributes: [
@@ -3683,5 +3710,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"decorator": [decorator_element],
 	"decorator-input": [decorator_input_element],
 	"target": [target_element],
-	"decorator-context-entity": [decorator_context_entity_element]
+	"decorator-context-entity": [decorator_context_entity_element],
+	"merge-instruction": [merge_instruction_element],
+	
 };

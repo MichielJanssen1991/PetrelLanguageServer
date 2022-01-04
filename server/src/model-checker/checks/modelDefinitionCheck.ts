@@ -113,7 +113,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 			
 			switch(da.type?.type){
 				case AttributeTypes.Enum:
-					if (da.type?.options && !da.type?.options?.map(o=>o.name.toLowerCase()).includes(attrValue.toLowerCase())){
+					if (da.type?.options && !da.type?.options?.map(o=>o.name.toLowerCase()).some(o=>o==attrValue.toLowerCase() || o=="*")){
 						this.addError(element.range, `Invalid value for '${da.name}': '${attrValue}' is not a valid option`);
 					}
 					break;

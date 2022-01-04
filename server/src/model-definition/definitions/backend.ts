@@ -180,6 +180,10 @@ export const BACKEND_DEFINITION: Definitions = {
 							name: "Cache",
 							description: ""
 						},
+						{
+							name: "*",
+							description: "Any other type of persistence (just type)"
+						},
 
 					]
 				}

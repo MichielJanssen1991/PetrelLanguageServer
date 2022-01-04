@@ -130,7 +130,21 @@ export const search_condition_options_attribute_type: AttributeType =
 		options: [
 			{
 				name: "Is",
-				description: "= (equal to)"
+				description: "= (equal to)",
+				obsolete: true
+			},
+			{
+				name: "==",
+				description: "== (equal to)"
+			},
+			{
+				name: "Not",
+				description: "≠ (not equal to)",
+				obsolete: true
+			},
+			{
+				name: "!=",
+				description: "!= (not equal to)"
 			},
 			{
 				name: "Like",
@@ -151,10 +165,6 @@ export const search_condition_options_attribute_type: AttributeType =
 			{
 				name: "SmallerOrEqual",
 				description: "≤ (smaller than or equal to)"
-			},
-			{
-				name: "Not",
-				description: "≠ (not equal to)"
 			},
 			{
 				name: "StartsWith",
@@ -491,12 +501,22 @@ export const model_condition_element: Definition =
 					options: [
 						{
 							name: "",
+							description: "Equals (default)",
+							obsolete: true
+						},
+						{
+							name: "==",
 							description: "Equals",
 							default: true
 						},
 						{
-							name: "Unequal",
+							name: "!=",
 							description: "Unequal"
+						},
+						{
+							name: "Unequal",
+							description: "Unequal",
+							obsolete: true
 						},
 						{
 							name: "StartsWith",
@@ -877,6 +897,7 @@ export const view_argument_element: Definition = {
 	description: "Filter arguments for the view.",
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
+	ancestor: ModelElementTypes.View,
 	matchCondition: (nodeContext) => !isViewArgument(nodeContext),
 	attributes: [
 		{
@@ -967,6 +988,7 @@ export const action_argument_element: Definition = {
 	name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
+	ancestor: ModelElementTypes.Action,
 	matchCondition: (nodeContext) => !isViewArgument(nodeContext),
 	attributes: [
 		{

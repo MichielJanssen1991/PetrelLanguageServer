@@ -215,7 +215,7 @@ if (attributeCompletions.length > 0) {
 							break;
 					}
 				} else if (type.type == AttributeTypes.Enum && type.options) {
-					symbols = type.options.map(option => ({ label: option.name }));
+					symbols = type.options.filter(option=>!option.obsolete).map(option => ({ label: option.name }));
 				}
 			}
 		}

@@ -582,22 +582,26 @@ export const RULE_DEFINITION: Definitions = {
 					options: [
 						{
 							name: "==",
-							"default": true
+							default: true
+						},
+						{
+							name: "=",
+							obsolete: true
 						},
 						{
 							name: "Like",
 						},
 						{
-							name: "Greater",
+							name: ">",
 						},
 						{
-							name: "Smaller",
+							name: "<",
 						},
 						{
-							name: "GreaterOrEqual",
+							name: ">=",
 						},
 						{
-							name: "SmallerOrEqual",
+							name: "<=",
 						},
 						{
 							name: "!=",
