@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, model_condition_element, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
+import { decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
 
 export const FRONTEND_DEFINITION: Definitions = {
 	"root": [{
@@ -2569,16 +2569,461 @@ export const FRONTEND_DEFINITION: Definitions = {
 			ancestor: ModelElementTypes.Action	// questions
 		},
 	],
-	"tabber": [{}],
-	"tab": [{}],
-	"titlebar": [{}],
-	"dropdown": [{}],
-	"menu": [{}],
-	"text": [{}],
-	"icon": [{}],
-	"format": [{}],
-	"action": [{}],
-	"output": [{}],
+	"tabber": [{
+		description: "A tabber control by which fields can be tabbed.",
+		attributes:[
+			{
+				name: "name",
+				description: "identifier",
+				required: true
+			},
+			{
+				name: "active",
+				description: "If the tab is default active in this tabber",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "left",
+				description: "if in volatile mode, this means the left of the bar",
+				visibilityConditions: [
+					{
+						attribute: "volatile",
+						condition: "==",
+						value: "yes"
+					}
+				]
+			},
+			{
+				name: "top",
+				description: "if in volatile mode, this means the top of the bar",
+				visibilityConditions: [
+					{
+						attribute: "volatile",
+						condition: "==",
+						value: "yes"
+					}
+				]
+			},
+			{
+				name: "width",
+				description: ""
+			},
+			{
+				name: "height",
+				description: ""
+			},
+			dev_override_rights_attribute,
+			dev_comment_attribute
+		],
+		childs:[
+			{
+				element: "tab",
+				occurence: "at-least-once",
+				required: true
+			}
+		]
+	}],
+	"tab": [{
+		description: "",
+		attributes: [
+			{
+				name: "name",
+				description: "The Identifier of the tab",
+				required: true
+			},
+			{
+				name: "caption",
+				description: "The caption of the tab",
+				required: true
+			},
+			{
+				name: "enabled",
+				description: "if the tab is enabled by default",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "show",
+				description: "If the tab is visible by default",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "volatile",
+				description: "Make the tab position:absolute",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "left",
+				description: "if in volatile mode, this means the left of the bar",
+				visibilityConditions: [
+					{
+						attribute: "volatile",
+						condition: "==",
+						value: "yes"
+					}
+				]
+			},
+			{
+				name: "top",
+				description: "if in volatile mode, this means the top of the bar",
+				visibilityConditions: [
+					{
+						attribute: "volatile",
+						condition: "==",
+						value: "yes"
+					}
+				]
+			},
+			{
+				name: "detail-height",
+				description: "The height of the tab, when volatile",
+				visibilityConditions: [
+					{
+						attribute: "volatile",
+						condition: "==",
+						value: "yes"
+					}
+				]
+			},
+			{
+				name: "width",
+				description: ""
+			},
+			{
+				name: "height",
+				description: ""
+			},
+			dev_override_rights_attribute,
+			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "events",
+				occurence: "once"
+			},
+			{
+				element: "attribute"
+			},
+			{
+				element: "group"
+			},
+			{
+				element: "button"
+			},
+			{
+				element: "tabber"
+			},
+			{
+				element: "view"
+			},
+		]	
+	}],
+	"titlebar": [{
+		description: "Definition of the titlebar of the view, in which title buttons can be added. When loaded in a popup, the elements are added to the header.",
+		attributes: [dev_comment_attribute],
+		childs: [
+			{
+				element: "button"
+			},
+			{
+				element: "dropdown"
+			}
+		]
+	}],
+	"dropdown": [{
+		description: "A dropdown menu. Typically it contains a text element. It also contains a menu definition.",
+		attributes: [
+			{
+				name: "name",
+				description: "Name of the dropdown.",
+				required: true
+			}
+		],
+		childs: [
+			{
+				element: "menu",
+				occurence: "once"
+			},
+			{
+				element: "text",
+			},
+			{
+				element: "icon",
+			},
+			{
+				element: "button",
+			}
+		]
+	}],
+	"menu": [{
+		description: "The menu displayed when the dropdown opens.",
+		childs: [
+			{
+				element: "menuitem"
+			},
+			{
+				element: "menuheader"
+			},
+			{
+				element: "menudivider"
+			},
+		]
+	}],
+	"menuitem": [{
+		description: "A menu item. Typically this will contain a button element.",
+		childs: [
+			{
+				element: "text",
+			},
+			{
+				element: "icon",
+			},
+			{
+				element: "button"
+			}
+		]
+	}],
+	"menuheader": [{
+		description: "A menu header, that can be placed above a set of items to group them. Typically this will contain a text element.",
+		childs: [
+			{
+				element: "text",
+			},
+			{
+				element: "icon",
+			},
+			{
+				element: "button"
+			}
+		]
+	}],
+	"menudivider": [{
+		description: "A menu divider that can be used to separate groups of menu items."
+	}],
+	"text": [{
+		description: "Adds text.",
+		attributes: [
+			{
+				name: "text",
+				description: "The text rendered.",
+				required: true
+			},
+			{
+				name: "appearance-class",
+				description: "A style class applied to the element."
+			},
+		]
+	}],
+	"icon": [{
+		description: "Adds an icon.",
+		attributes: [
+			{
+				name: "ref",
+				description: "ID reference to a theme icon, e.g. p-icon-user."
+			},
+			{
+				name: "bg-image",
+				description: "Path to a background image to use as icon."
+			},
+		]
+	}],
+	"format": [{
+		description: "Defines a lay-out.",
+		childs: [
+			{
+				element: "image"
+			},
+			{
+				element: "text"
+			}
+		]
+	}],
+	"image": [{
+		description: "Displays the option images.",
+		attributes: [
+			{
+				name: "width",
+				description: "The width of the option images."
+			},
+			{
+				name: "height",
+				description: "The height of the option images. The default value is 16px."
+			},
+		]
+	}],
+	"action": [{
+		description: "An Action",
+		attributes: [
+			{
+				name: "name",
+				description: "The action to perform.",
+				required: true
+			},
+			{	name: "input-all",
+				description: "If yes, all available local variables (in the frontend, the non-data bound as well as the data bound variables) will be passed to the action. Default is no.",
+				type: default_yes_no_attribute_type
+			},
+			{	name: "output-all",
+				description: "If yes, all outputs returned by the action will be made available locally (in the frontend as non-data bound variables). Default is no.",
+				type: default_yes_no_attribute_type
+			},			
+			{
+				name: "dataless",
+				description: "If the standard added data argument should be left out. It is now left out by default for performance (unless input-all is set). (Currently, only applicable for frontend calls to server actions.)",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "bounded",
+				description: "If the action arguments are bound to the data, or just to local variables.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "record",
+				description: "A piped list of IIDs on which the action should be executed. This could be useful in a ListView context, especially when calling an action from a function"
+			},
+			{
+				name: "merge",
+				description: "",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "merge-key",
+				description: "the key which is used to merge the function calls, defaults to the function name",
+				visibilityConditions: [
+					{
+						attribute: "merge",
+						condition: "==",
+						value: "yes"
+					}
+				],
+			},
+			{
+				name: "tabber",
+				description: "",
+				visibilityConditions: [
+					{
+						attribute: "target",
+						condition: "==",
+						value: "tab"
+					}
+				],
+				requiredConditions: [
+					{
+						attribute: "target",
+						condition: "==",
+						value: "tab"
+					}
+				]
+			},
+			{
+				name: "tab",
+				description: "",
+				visibilityConditions: [
+					{
+						attribute: "target",
+						condition: "==",
+						value: "tab"
+					}
+				],
+				requiredConditions: [
+					{
+						attribute: "target",
+						condition: "==",
+						value: "tab"
+					}
+				]
+			},
+			{
+				name: "button",
+				description: "",
+				visibilityConditions: [
+					{
+						attribute: "target",
+						condition: "==",
+						value: "button"
+					}
+				],
+				requiredConditions: [
+					{
+						attribute: "target",
+						condition: "==",
+						value: "button"
+					}
+				]
+			},
+			{
+				name: "field",
+				description: "",
+				visibilityConditions: [
+					{
+						attribute: "target",
+						condition: "==",
+						value: "field"
+					},
+					{
+						operator: "or",
+						attribute: "target",
+						condition: "==",
+						value: "label"
+					}
+				],
+				requiredConditions: [
+					{
+						attribute: "target",
+						condition: "==",
+						value: "tab"
+					},
+					{
+						operator: "or",
+						attribute: "target",
+						condition: "==",
+						value: "label"
+					}
+				]
+			},
+			{
+				name: "user-created",
+				description: "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "name",
+						condition: "==",
+						value: "rule"
+					}
+				]
+			},
+			dev_ignore_modelcheck_attribute,
+			dev_ignore_modelcheck_justification_attribute,
+			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "graph-params",
+				occurence: "once"
+			},
+			{
+				element: "argument"
+			},
+			{
+				element: "output"
+			},
+			{
+				element: "condition"	// TODO: WHY?? This should not be possible
+			},
+			{
+				element: "view"			
+			},
+			{
+				element: "events"	
+			},
+			{
+				element: "button"		
+			},
+		]
+	}],
+	"output": [{
+
+	}],
 	"condition": [{}],
 	"field": [{}],
 	"or": [{}],
