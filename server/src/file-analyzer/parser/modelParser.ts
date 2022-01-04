@@ -1,7 +1,7 @@
 import { Range } from 'vscode-languageserver-types';
 import { isNonPetrelModelTag } from '../../model-definition/definitions/other';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, IXmlNodeContext, TreeNode, Definition, ModelElementTypes, ChildDefinition, Attribute, Definitions, ElementAttribute, newTreeNode } from '../../model-definition/symbolsAndReferences';
+import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, IXmlNodeContext, TreeNode, Definition, ModelElementTypes, ChildDefinition, Attribute, ElementAttribute, newTreeNode } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
 import { ISaxParserExtended, newSaxParserExtended, XmlNode, ProcessingInstruction } from './saxParserExtended';
 

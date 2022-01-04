@@ -1,5 +1,5 @@
 import { NAMES } from '../constants';
-import { AttributeTypes, ElementAttribute, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType, ChildReference, ChildDefinition, Attribute } from '../symbolsAndReferences';
+import { AttributeTypes, ElementAttribute, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType, ChildDefinition } from '../symbolsAndReferences';
 
 export const default_yes_no_attribute_type: AttributeType =
 	{

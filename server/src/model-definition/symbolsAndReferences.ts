@@ -187,8 +187,8 @@ export type Definition = {
 	name?: (x: any) => string,
 	description?: string,
 	checkObsolete?: boolean,
-	attributes?: ElementAttribute[],
 	childs?: ChildDefinition[] | ChildReference,
+	attributes?: ElementAttribute[],
 	ancestor?: ModelElementTypes | string,			// used to filter what definition should be chosen
 	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
 	type?: ModelElementTypes,

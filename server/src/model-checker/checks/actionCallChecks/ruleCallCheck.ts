@@ -35,6 +35,6 @@ export class RuleCallCheck extends ActionCallCheck {
 		return !ruleNameNotSpecified;
 	}
 
-	protected getAdditionalInputsForSpecificAction(node: TreeNode) { return []; }
-	protected getAdditionalOutputsForSpecificAction(node: TreeNode) { return []; }
+	protected getAdditionalInputsForSpecificAction() { return []; }
+	protected getAdditionalOutputsForSpecificAction() { return []; }
 }

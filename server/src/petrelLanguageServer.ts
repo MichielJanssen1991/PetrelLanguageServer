@@ -5,7 +5,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
-import { ModelDetailLevel, IsSymbolOrReference, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
+import { ModelDetailLevel, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
 import { CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
 
@@ -148,7 +148,6 @@ export default class PetrelLanguageServer {
 		let symbols: SymbolDeclaration[] = [];
 		if (nodes.length > 0 && attribute?.isReference) {
 			const reference = attribute as Reference;
-			const lastNode = context.nodes[nodes.length - 1];
 			const symbol = this.modelManager.getReferencedObject(reference);
 			symbols = symbol ? [symbol] : [];
 		} else {

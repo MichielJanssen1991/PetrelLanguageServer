@@ -21,7 +21,7 @@ export function wordAtPoint(textDocument: TextDocument, pos: Position):string {
 	});
 
 	const words = lineText.split(new RegExp("[^\\w-.]"));
-	const word = words.reduce((result: any, item: string, index: number) => {
+	const word = words.reduce((result: any, item: string) => {
 		if (result.pos <= pos.character) {
 			result.pos += item.length + 1;
 			result.word = item;

@@ -14,7 +14,7 @@ export class CompletionProvider {
 	}
 
 	public getCompletionItems(context: CompletionContext): CompletionItem[] {
-		const { word, inTag, inAttribute, uri, attribute } = context;
+		const { word, inTag, inAttribute, uri/*,  attribute */ } = context;
 		const modelFileContext = this.symbolAndReferenceManager.getModelFileContextForFile(uri);
 		const currentNode = context.currentNode;
 
