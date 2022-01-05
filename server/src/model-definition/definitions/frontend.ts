@@ -343,7 +343,6 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "name",
 				description: "Unique identifier of the toolbar.",
-				required: true
 			},
 			{
 				name: "toolbar",
@@ -406,6 +405,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"toolbarbutton":[{
 		description: "Client side scripting predefined tool."
+	}],
+	"pagenumbers":[{
+		description: "Toolbar item for paged navigation."
 	}],
 	"views": [{
 		description: "Used for grouping views.",
@@ -2661,6 +2663,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "include"
 			},
 			{
+				element: "decorations"
+			},
+			{
 				element: "copy-attribute" // TODO still in use?
 			},
 		]
@@ -2697,6 +2702,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 				{
 					element: "include"
 				},
+				{
+					element: "field"
+				}
 
 			]
 		},

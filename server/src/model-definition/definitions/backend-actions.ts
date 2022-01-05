@@ -81,7 +81,6 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			{
 				name: "assembly",
 				description: "Name of DLL where action is located",
-				required: true
 			},
 			{
 				name: "rulename",	// TODO: check with platform if this is still used
@@ -97,7 +96,6 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			},
 			{
 				name: "classname",
-				required: true
 			},
 			{
 				name: "name",
