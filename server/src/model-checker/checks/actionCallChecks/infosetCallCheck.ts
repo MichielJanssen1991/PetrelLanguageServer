@@ -1,8 +1,7 @@
 import { NAMES } from '../../../model-definition/constants';
-import { TreeNode, ModelDetailLevel, Reference } from '../../../model-definition/symbolsAndReferences';
+import { TreeNode, Reference } from '../../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
 import { CHECKS_MESSAGES } from '../../messages';
-import { ModelCheckerOptions } from '../../modelChecker';
 import { ActionCallCheck } from './actionCallCheck';
 
 export class InfosetCallCheck extends ActionCallCheck {
@@ -12,15 +11,15 @@ export class InfosetCallCheck extends ActionCallCheck {
 		super(modelManager);
 	}
 
-	protected checkInternal(node: TreeNode, options: ModelCheckerOptions) {
-		this.verifyActionCall(node, options);
+	protected checkInternal(node: TreeNode,/*  options: ModelCheckerOptions */) {
+		this.verifyActionCall(node);
 	}
 
-	protected verifyActionCall(reference: TreeNode, options: ModelCheckerOptions) {
+	protected verifyActionCall(reference: TreeNode) {
 		let valid = true;
-		valid = this.verifyInfosetCall(reference, options);
+		valid = this.verifyInfosetCall(reference);
 		
-		if (valid && options.detailLevel >= ModelDetailLevel.SubReferences) {
+		if (valid) {
 			this.verifyInputsAreKnownInReferencedObjects(reference);
 			this.verifyOutputsAreKnownInReferencedObjects(reference);
 
@@ -31,9 +30,9 @@ export class InfosetCallCheck extends ActionCallCheck {
 		}
 	}
 
-	private verifyInfosetCall(reference: TreeNode, options: ModelCheckerOptions) {
+	private verifyInfosetCall(reference: TreeNode) {
 		const infosetNameNotSpecified = this.verifyMandatoryAttributeProvided(reference, NAMES.ATTRIBUTE_INFOSET, true);
-		if (infosetNameNotSpecified && options.detailLevel >= ModelDetailLevel.SubReferences) {
+		if (infosetNameNotSpecified) {
 			this.addWarning(reference.range, CHECKS_MESSAGES.INFOSETCALL_WITHOUT_NAME());
 		}
 		return !infosetNameNotSpecified;

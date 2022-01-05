@@ -19,7 +19,7 @@ import { ModelDefinitionManager } from '../model-definition/modelDefinitionManag
 export type ModelCheckerOptions = {
 	maxNumberOfProblems?: number,
 	detailLevel: ModelDetailLevel,
-	skipFolders: string[],
+	skipFolders?: string[],
 }
 /**
  * The ModelChecker verifies the model and returns a list of diagnostics 
@@ -84,7 +84,7 @@ export class ModelChecker {
 
 	private verifyNode(node: TreeNode, options: ModelCheckerOptions) {
 		try {
-			const applicableChecks = this.checks.filter(c=> c.isApplicable(node));
+			const applicableChecks = this.checks.filter(c=> c.isApplicable(node, options));
 			this.diagnostics = this.diagnostics.concat(applicableChecks.flatMap(c=> c.check(node, options)));
 		}
 		catch (error: any) {

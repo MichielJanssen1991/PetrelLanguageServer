@@ -1,6 +1,6 @@
 import * as LSP from 'vscode-languageserver';
 import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
-import { ModelElementTypes, TreeNode } from '../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes, TreeNode } from '../model-definition/symbolsAndReferences';
 import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 import { ModelCheckerOptions } from './modelChecker';
 
@@ -8,7 +8,9 @@ export abstract class ModelCheck {
 	private diagnostics: LSP.Diagnostic[] = [];
 	protected modelManager: ModelManager;
 	protected modelDefinitionManager: ModelDefinitionManager;
+	//Applicablility of the check is determined by the below conditions
 	protected abstract modelElementType: ModelElementTypes;
+	protected abstract detailLevel: ModelDetailLevel;
 	protected abstract matchCondition?: (node: TreeNode) => boolean;
 
 	constructor(modelManager: ModelManager, modelDefinitionManager? : ModelDefinitionManager) {
@@ -22,9 +24,10 @@ export abstract class ModelCheck {
 		return this.diagnostics;
 	}
 
-	public isApplicable(node: TreeNode): boolean {
-		const isApplicable = (node?.type == this.modelElementType || this.modelElementType == ModelElementTypes.All)
-			&& (this.matchCondition ? this.matchCondition(node) : true);
+	public isApplicable(node: TreeNode, options: ModelCheckerOptions): boolean {
+		let isApplicable = (node.type == this.modelElementType || this.modelElementType == ModelElementTypes.All);
+		isApplicable = isApplicable && (this.matchCondition ? this.matchCondition(node) : true);
+		isApplicable = isApplicable && (options.detailLevel >= this.detailLevel);
 		return isApplicable;
 	}
 

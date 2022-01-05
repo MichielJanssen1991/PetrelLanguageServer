@@ -1,10 +1,11 @@
-import { Attribute, AttributeTypes, Definition, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
+import { Attribute, AttributeTypes, Definition, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
 import { ModelCheck } from '../modelCheck';
 
 export class ModelDefinitionCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.All;
 	protected matchCondition?: ((node: TreeNode) => boolean) | undefined;
 	private allNodeAttributes: Attribute[] = [];
+	protected detailLevel: ModelDetailLevel = ModelDetailLevel.All;
 
 	protected checkInternal(node: TreeNode,/*  options: ModelCheckerOptions */): void {
 		const modelFileContext = this.modelManager.getModelFileContextForFile(node.uri);

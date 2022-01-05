@@ -101,7 +101,7 @@ export default class PetrelLanguageServer {
 		const parsingDiagnostics = this.analyzer.analyze(uri, textDocument, ModelDetailLevel.All);
 
 		time("Verifying references");
-		const referenceChecksDiagnostics = this.modelChecker.checkFile(uri);
+		const referenceChecksDiagnostics = this.modelChecker.checkFile(uri, {detailLevel: ModelDetailLevel.All});
 		timeEnd("Verifying references");
 
 		return [...parsingDiagnostics, ...referenceChecksDiagnostics];

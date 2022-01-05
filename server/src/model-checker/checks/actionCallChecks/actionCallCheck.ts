@@ -1,4 +1,4 @@
-import { ModelElementTypes, TreeNode, SymbolDeclaration, Reference } from '../../../model-definition/symbolsAndReferences';
+import { ModelElementTypes, TreeNode, SymbolDeclaration, Reference, ModelDetailLevel } from '../../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
 import { flattenArray } from '../../../util/array';
 import { ModelCheck } from '../../modelCheck';
@@ -7,6 +7,7 @@ import { ModelCheckerOptions } from '../../modelChecker';
 
 export abstract class ActionCallCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.ActionCall
+	protected detailLevel: ModelDetailLevel = ModelDetailLevel.SubReferences;
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);

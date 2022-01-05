@@ -1,8 +1,7 @@
 import { NAMES } from '../../../model-definition/constants';
-import { ModelElementTypes, TreeNode, Reference, ModelDetailLevel, SymbolDeclaration } from '../../../model-definition/symbolsAndReferences';
+import { ModelElementTypes, TreeNode, Reference, SymbolDeclaration } from '../../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
 import { CHECKS_MESSAGES } from '../../messages';
-import { ModelCheckerOptions } from '../../modelChecker';
 import { ActionCallCheck } from './actionCallCheck';
 
 export class RuleLoopActionCallCheck extends ActionCallCheck {
@@ -12,7 +11,7 @@ export class RuleLoopActionCallCheck extends ActionCallCheck {
 		super(modelManager);
 	}
 
-	protected verifyActionCall(node: TreeNode, options: ModelCheckerOptions) {
+	protected verifyActionCall(node: TreeNode, /*  options: ModelCheckerOptions */) {
 		const ruleNameNotSpecified = this.verifyMandatoryAttributeProvided(node, NAMES.ATTRIBUTE_RULE, true);
 		if (ruleNameNotSpecified) {
 			this.addError(node.range, CHECKS_MESSAGES.RULELOOPACTIONCALL_WITHOUT_NAME());
@@ -21,12 +20,10 @@ export class RuleLoopActionCallCheck extends ActionCallCheck {
 		this.verifyInputsAreKnownInReferencedObjects(node);
 		this.verifyOutputsAreKnownInReferencedObjects(node);
 
-		if (options.detailLevel >= ModelDetailLevel.SubReferences) {
-			const references = Object.values(node.attributes).filter(x=>x.isReference) as Reference[];
-			references.forEach(subRef => {
-				this.verifyReferencedObjectsMandatoryInputsProvidedForRuleLoop(node, subRef);
-			});
-		}
+		const references = Object.values(node.attributes).filter(x=>x.isReference) as Reference[];
+		references.forEach(subRef => {
+			this.verifyReferencedObjectsMandatoryInputsProvidedForRuleLoop(node, subRef);
+		});
 
 		return !ruleNameNotSpecified;
 	}

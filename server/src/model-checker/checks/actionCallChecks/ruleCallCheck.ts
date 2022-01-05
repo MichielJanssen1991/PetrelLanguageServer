@@ -1,8 +1,7 @@
 import { NAMES } from '../../../model-definition/constants';
-import { TreeNode, Reference, ModelDetailLevel } from '../../../model-definition/symbolsAndReferences';
+import { TreeNode, Reference } from '../../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
 import { CHECKS_MESSAGES } from '../../messages';
-import { ModelCheckerOptions } from '../../modelChecker';
 import { ActionCallCheck } from './actionCallCheck';
 
 export class RuleCallCheck extends ActionCallCheck {
@@ -12,11 +11,11 @@ export class RuleCallCheck extends ActionCallCheck {
 		super(modelManager);
 	}
 
-	protected verifyActionCall(node: TreeNode, options: ModelCheckerOptions) {
+	protected verifyActionCall(node: TreeNode,/*  options: ModelCheckerOptions */) {
 		let valid = true;
-		valid = this.verifyRuleCall(node, options);
+		valid = this.verifyRuleCall(node);
 
-		if (valid && options.detailLevel >= ModelDetailLevel.SubReferences) {
+		if (valid) {
 			this.verifyInputsAreKnownInReferencedObjects(node);
 			this.verifyOutputsAreKnownInReferencedObjects(node);
 
@@ -27,9 +26,9 @@ export class RuleCallCheck extends ActionCallCheck {
 		}
 	}
 
-	private verifyRuleCall(node: TreeNode, options: ModelCheckerOptions) {
+	private verifyRuleCall(node: TreeNode) {
 		const ruleNameNotSpecified = this.verifyMandatoryAttributeProvided(node, NAMES.ATTRIBUTE_RULE, true);
-		if (ruleNameNotSpecified && options.detailLevel >= ModelDetailLevel.SubReferences) { //Subreferences need to exists to avoid false positivies when rulename is provided as an argument
+		if (ruleNameNotSpecified) {
 			this.addError(node.range, CHECKS_MESSAGES.RULECALL_WITHOUT_NAME());
 		}
 		return !ruleNameNotSpecified;

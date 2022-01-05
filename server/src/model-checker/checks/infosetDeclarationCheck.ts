@@ -1,5 +1,5 @@
 import { NAMES } from '../../model-definition/constants';
-import { ModelElementTypes, IsSymbolOrReference, SymbolDeclaration, TreeNode, Reference } from '../../model-definition/symbolsAndReferences';
+import { ModelElementTypes, IsSymbolOrReference, SymbolDeclaration, TreeNode, Reference, ModelDetailLevel } from '../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
@@ -11,6 +11,7 @@ export class InfosetDeclarationCheck extends ModelCheck {
 	protected objectType = IsSymbolOrReference.Symbol
 	protected matchCondition = undefined
 	private infosetInputs: string[] = [];
+	protected detailLevel: ModelDetailLevel = ModelDetailLevel.Declarations;
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);

@@ -9,6 +9,7 @@ import { standaloneObjectTypes } from '../../model-definition/definitions/other'
 export class ReferencedObjectExistsCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.All
 	protected matchCondition = undefined
+	detailLevel: ModelDetailLevel = ModelDetailLevel.Declarations;
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);

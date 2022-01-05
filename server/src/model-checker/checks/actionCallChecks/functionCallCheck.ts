@@ -1,8 +1,7 @@
 import { NAMES } from '../../../model-definition/constants';
-import { TreeNode, Reference, ModelDetailLevel } from '../../../model-definition/symbolsAndReferences';
+import { TreeNode, Reference } from '../../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
 import { CHECKS_MESSAGES } from '../../messages';
-import { ModelCheckerOptions } from '../../modelChecker';
 import { ActionCallCheck } from './actionCallCheck';
 
 export class FunctionCallCheck extends ActionCallCheck {
@@ -12,11 +11,11 @@ export class FunctionCallCheck extends ActionCallCheck {
 		super(modelManager);
 	}
 
-	protected verifyActionCall(node: TreeNode, options: ModelCheckerOptions) {
+	protected verifyActionCall(node: TreeNode, /*  options: ModelCheckerOptions */) {
 		let valid = true;
 		valid = this.verifyFunctionCall(node/* , options */);
 
-		if (valid && options.detailLevel >= ModelDetailLevel.SubReferences) {
+		if (valid) {
 			this.verifyInputsAreKnownInReferencedObjects(node);
 			this.verifyOutputsAreKnownInReferencedObjects(node);
 

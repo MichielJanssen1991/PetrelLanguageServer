@@ -1,7 +1,6 @@
 import { NAMES } from '../../../model-definition/constants';
-import { TreeNode, ModelDetailLevel, Reference } from '../../../model-definition/symbolsAndReferences';
+import { TreeNode, Reference } from '../../../model-definition/symbolsAndReferences';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
-import { ModelCheckerOptions } from '../../modelChecker';
 import { ActionCallCheck } from './actionCallCheck';
 
 export class DataActionCallCheck extends ActionCallCheck {
@@ -12,16 +11,14 @@ export class DataActionCallCheck extends ActionCallCheck {
 		super(modelManager);
 	}
 
-	protected verifyActionCall(node: TreeNode, options: ModelCheckerOptions) {
-		if (options.detailLevel >= ModelDetailLevel.SubReferences) {
-			this.verifyInputsAreKnownInReferencedObjects(node);
-			this.verifyOutputsAreKnownInReferencedObjects(node);
+	protected verifyActionCall(node: TreeNode,/*  options: ModelCheckerOptions */) {
+		this.verifyInputsAreKnownInReferencedObjects(node);
+		this.verifyOutputsAreKnownInReferencedObjects(node);
 
-			const references = Object.values(node.attributes).filter(x=>x.isReference) as Reference[];
-			references.forEach(subRef => {
-				this.verifyReferencedObjectsMandatoryInputsProvided(node, subRef);
-			});
-		}
+		const references = Object.values(node.attributes).filter(x=>x.isReference) as Reference[];
+		references.forEach(subRef => {
+			this.verifyReferencedObjectsMandatoryInputsProvided(node, subRef);
+		});
 	}
 
 	protected getAdditionalInputsForSpecificAction(node: TreeNode) {
