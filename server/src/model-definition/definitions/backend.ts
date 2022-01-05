@@ -874,7 +874,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				validations: [
 					{
 						type: "regex",
-						value: /^[a-zA-Z0-9\s\-_.]*$/,
+						value: /^[a-zA-Z0-9\s\-_./]*$/,
 						message: "The value can only contain letters, numbers, spaces, dashes, underscores or dots."
 					}
 				]

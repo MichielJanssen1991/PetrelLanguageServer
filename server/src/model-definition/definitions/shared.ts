@@ -10,20 +10,15 @@ export const default_yes_no_attribute_type: AttributeType =
 			},
 			{
 				name: "no",
-			}						
-		]
-	} as AttributeType;
-
-	export const default_true_false_attribute_type: AttributeType =
-	{
-		type: AttributeTypes.Enum,
-		"options": [
+			},					
 			{
-				name: "true"
-			},
+				name: "true",
+				obsolete: true
+			},					
 			{
 				name: "false",
-			}						
+				obsolete: true
+			},					
 		]
 	} as AttributeType;
 

@@ -82,7 +82,7 @@ export default class PetrelLanguageServer {
 		const diagnosticsPerFile = this.modelChecker.checkAllFiles({
 			maxNumberOfProblems: this.settings.maxNumberOfProblems,
 			detailLevel: ModelDetailLevel.References,
-			skipFolders: this.settings.skipFolders
+			skipFolders: this.settings.skipFoldersForChecks
 		});
 
 		Object.keys(diagnosticsPerFile).forEach(key =>

@@ -7,7 +7,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 	private allNodeAttributes: Attribute[] = [];
 	protected detailLevel: ModelDetailLevel = ModelDetailLevel.All;
 
-	protected checkInternal(node: TreeNode,/*  options: ModelCheckerOptions */): void {
+	protected checkInternal(node: TreeNode): void {
 		const modelFileContext = this.modelManager.getModelFileContextForFile(node.uri);
 		// TODO: change call to getModelDefinitionForCurrentNode and pass the context to make sure context specific items get validated properly
 		// Another idea is to add 'parent' to TreeNode. Type 'Definition' could have an extra item 'context', which could indicate the type of parent. 

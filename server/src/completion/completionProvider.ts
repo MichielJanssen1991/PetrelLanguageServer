@@ -79,10 +79,10 @@ export class CompletionProvider {
 			allAttributes = allAttributes.filter(item => !existingAttributes.includes(item.name));
 
 			attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);
-if (attributeCompletions.length > 0) {
-	return attributeCompletions;
-} 
-        return [{label: "no attribute options found for " + node.tag}];
+			if (attributeCompletions.length > 0) {
+				return attributeCompletions;
+			} 
+			return [{label: "no attribute options found for " + node.tag}];
 		}
 		return [{label: "no attribute options found"}];
 	}
