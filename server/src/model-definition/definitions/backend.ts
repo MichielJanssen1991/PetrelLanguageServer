@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { action_argument_element, action_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_element, dev_description_attribute } from './shared';
+import { action_argument_element, action_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_element, dev_description_attribute, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function } from './shared';
 export const BACKEND_DEFINITION: Definitions = {
 	"root": [{
 		attributes: [
@@ -360,6 +360,10 @@ export const BACKEND_DEFINITION: Definitions = {
 				occurence: "once"
 			},
 			{
+				element: "virtual-filter",
+				occurence: "once"
+			},
+			{
 				element: "file-categories",
 				occurence: "once"
 			},
@@ -377,6 +381,54 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "model-condition"
+			}
+		]
+	}],
+	"virtual-filter":[{
+		description: "A filter on the base type that is defined here. The other way to set the virtual-filter is to select one of the filters defined at the base type using the attribute virtual-filter.",
+		childs: [
+			{
+				element: "search",
+				occurence: "once",
+				required: true
+			}
+		]
+	}],
+	"single-aggregate-query": [infoset_single_aggregate_query],
+	"aggregate-attribute": [infoset_aggregate_attribute],
+	"aggregate-function": [infoset_aggregate_function],
+	"one-to-many":[{
+		description: "A 1-to-n relation that maps another type that has a foreign relation to this type.",
+		attributes: [
+			{
+				name: "name",
+				required: true,
+				description: "Name of the relational mapping.",
+				validations: [
+					{
+						type: "regex",
+						value: /^[A-Za-z_][A-Za-z0-9_-]{0,29}$/,
+						message: "Invalid name of relational mapping"
+					}
+				]
+			},
+			{
+				name: "relation-type",
+				required: true,
+				description: "The related type containing the foreign relation.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Type
+				}
+			},
+			{
+				name: "foreign-relation-field",
+				required: true,
+				description: "The simple relation field that refers to this type.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute
+				}
 			}
 		]
 	}],
@@ -446,6 +498,14 @@ export const BACKEND_DEFINITION: Definitions = {
 						},
 						{
 							name: "drawing",
+						},
+						{
+							name: "password",
+							obsolete: true // is this correct?
+						},
+						{
+							name: "radio",
+							obsolete: true
 						},
 					]
 				},
@@ -814,8 +874,8 @@ export const BACKEND_DEFINITION: Definitions = {
 				validations: [
 					{
 						type: "regex",
-						value: /^[a-zA-Z]+[a-zA-Z0-9\s\-_.]*$/,
-						message: "The value can only contain 'letters, numbers, spaces, dashes, underscores or dots. The value must begin with a letter'."
+						value: /^[a-zA-Z0-9\s\-_.]*$/,
+						message: "The value can only contain letters, numbers, spaces, dashes, underscores or dots."
 					}
 				]
 			},
@@ -1055,6 +1115,9 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "clear-var"
+			},
+			{
+				element: "model-condition"
 			}
 		]
 	}],

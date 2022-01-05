@@ -420,6 +420,12 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "main-view"
 			},
+			{
+				element: "include-blocks"
+			},
+			{
+				element: "include"
+			},
 		]
 	}],
 	"view": [{
@@ -636,7 +642,27 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "favorites-column-position",
 				description: "Where the favorites column is located. Can be 'begin', 'end', or a column number.",
-				type: default_yes_no_attribute_type
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "",
+							description: "use default"
+						},
+						{
+							name: "begin",
+							description: "Put column at the begin of the listview"
+						},
+						{
+							name: "end",
+							description: "Put column at the end of the listview"
+						},
+						{
+							name: "*",
+							description: "any number"
+						},
+					]
+				}
 			},
 			{
 				name: "slide-position",
@@ -1729,7 +1755,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 			}
 		]
 	}],
-	"argument": [view_argument_element, action_argument_element],
+	"argument": [
+		view_argument_element, 
+		action_argument_element
+	],
 	"events": [
 		{
 			type: ModelElementTypes.Events,
@@ -2626,6 +2655,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 				occurence: "once"
 			},
 			{
+				element: "argument"
+			},
+			{
 				element: "include"
 			},
 			{
@@ -2654,14 +2686,18 @@ export const FRONTEND_DEFINITION: Definitions = {
 					element: "group"
 				},
 				{
-					element: "if"
-				},
-				{
 					element: "and"
 				},
 				{
 					element: "or"
-				}
+				},
+				{
+					element: "field"
+				},
+				{
+					element: "include"
+				},
+
 			]
 		},
 	],
@@ -3254,7 +3290,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "and"
-			}
+			},
+			{
+				element: "group"
+			},
+			{
+				element: "include"
+			},
 		]
 	}],
 	"field": [{
@@ -3298,6 +3340,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "condition"
 			},
+			{
+				element: "include"
+			}
 		]
 	}],
 	"else": [{
@@ -3310,6 +3355,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "condition"
 			},
+			{
+				element: "include"
+			}
 		]
 	}],
 	"option": [{
@@ -3712,5 +3760,28 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"target": [target_element],
 	"decorator-context-entity": [decorator_context_entity_element],
 	"merge-instruction": [merge_instruction_element],
+	"metadata-initialize": [{
+		description: "Modifies the metadata just before it is used.",
+		attributes: [
+			{
+				name: "use-xml",
+				description: "Use XML actions (improves performance but limits actions).",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "is-metadata-loaded",
+				description: "By default, the current metadata is inserted and can be accessed. For performance reasons it can be better to not insert the current metadata but just generate new metadata that is merged with the current metadata.",
+				type: default_yes_no_attribute_type
+			},
+		],
+		childs: [
+			{
+				element: "action"
+			},
+			{
+				element: "clear-var"
+			}
+		]
+	}],
 	
 };

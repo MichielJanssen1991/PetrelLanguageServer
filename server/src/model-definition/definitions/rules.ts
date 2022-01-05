@@ -774,6 +774,9 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "switch"
 			},
+			{
+				element: "include"
+			}
 		]
 	}],
 	"transaction": [{
@@ -918,6 +921,9 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "switch"
 			},
+			{
+				element: "include"
+			}
 		]
 	}],
 	"default": [{

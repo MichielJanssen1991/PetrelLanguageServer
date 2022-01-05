@@ -173,7 +173,11 @@ export const search_condition_options_attribute_type: AttributeType =
 			{
 				name: "WildCard",
 				description: "Any wildcard search that is supported by the persistence, e.g., \"%[A-Z]_[0-9]\""
-			}
+			},
+			{
+				name: "misses",
+				description: ""
+			},
 		]
 	};
 
@@ -277,6 +281,107 @@ export const merge_instruction_element: Definition =
 
 	};
 
+export const infoset_single_aggregate_query: Definition = 
+	{
+		description: "Specifies an aggregate query that returns a single aggregate result object.",
+		attributes: [
+			{
+				name: "type",
+				description: "The type of the objects to apply the query to.",
+				required: true
+			},
+			{
+				name: "filter",
+				description: "A reference to a filter on the type being queryed. May also be defined inline.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.TypeFilter // TODO: should not be visible if child group is added
+				}
+			},
+			{
+				name: "result-type",
+				description: "The result type of the aggregate results. If not specified, returns results of the Platform.AggregateResults type.</summary>Define a type inheriting from Platform.AggregateResults. Relation attributes may be added to this type, and views can be created for it.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Type
+				}
+			}
+		],
+		childs: [
+			{
+				element: "aggregate-attribute",
+				occurence: "at-least-once",
+				required: true
+			},
+			{
+				element: "filter",
+				occurence: "once"
+			}
+		]
+	};
+
+export const infoset_aggregate_attribute: Definition = 
+	{
+		description: "Specifies an aggregate result.",
+		attributes: [
+			{
+				name: "name",
+				required: true,
+				description: "Unique identifer. This name is used as output name."
+			}
+		], 
+		childs: [
+			{
+				element: "aggregate-function"
+			}
+		]
+	};
+
+export const infoset_aggregate_function: Definition = 
+	{
+		description: "Specifies the value of an aggregate.",
+		attributes: [
+			{
+				name: "name",
+				description: "The function to apply.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "",
+							description: "common value"
+						},
+						{
+							name: "sum"
+						},
+						{
+							name: "maximum"
+						},
+						{
+							name: "minimum"
+						},
+						{
+							name: "average"
+						},
+						{
+							name: "count"
+						},
+					]
+				}
+			},
+			{
+				name: "attribute",
+				description: "The attribute parameter to the function.",
+				requiredConditions: [
+					{
+						attribute: "name",
+						condition: "==",
+						value: "count"
+					}
+				]
+			}
+		]
+	};
 export const backend_action_element: Definition =
 	{
 		type: ModelElementTypes.ActionCall,
@@ -896,9 +1001,9 @@ export const action_definition_argument_element: Definition = {
 export const view_argument_element: Definition = {
 	description: "Filter arguments for the view.",
 	type: ModelElementTypes.Argument,
-	detailLevel: ModelDetailLevel.SubReferences,
+	//detailLevel: ModelDetailLevel.SubReferences,
 	ancestor: ModelElementTypes.View,
-	matchCondition: (nodeContext) => !isViewArgument(nodeContext),
+	//matchCondition: (nodeContext) => !isViewArgument(nodeContext),
 	attributes: [
 		{
 			name: NAMES.ATTRIBUTE_REMOTENAME,
@@ -1115,7 +1220,6 @@ export const search_attributes: ElementAttribute[] =
 	{
 		name: "field",
 		description: "Attribute of the data to scalar.",
-		required: true,
 		type: {
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.Attribute // TODO: filter attributes on type
