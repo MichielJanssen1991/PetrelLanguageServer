@@ -64,7 +64,11 @@ export default class PetrelLanguageServer {
 	}
 
 	private static getConfigSettings(rootPath: string): DocumentSettings {
-		const configFile = path.join(rootPath, "petrel-language-server.config.json");
+		let configFile = path.join(rootPath, "petrel-language-server.config.json");
+		if (!fs.existsSync(configFile)){
+			configFile = path.join(rootPath, ".modeler/petrel-language-server.config.json");
+		}
+				
 		if (fs.existsSync(configFile)) {
 			const rawdata = fs.readFileSync(configFile, { encoding: 'utf8' });
 			return JSON.parse(rawdata);
@@ -78,7 +82,7 @@ export default class PetrelLanguageServer {
 		const diagnosticsPerFile = this.modelChecker.checkAllFiles({
 			maxNumberOfProblems: this.settings.maxNumberOfProblems,
 			detailLevel: ModelDetailLevel.References,
-			skipFolders: this.settings.skipFoldersForChecks
+			skipFolders: this.settings.skipFolders
 		});
 
 		Object.keys(diagnosticsPerFile).forEach(key =>

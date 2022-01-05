@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_condition_options_attribute_type, search_childs, search_attributes, input_element, default_true_false_attribute_type } from './shared';
+import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_condition_options_attribute_type, search_childs, search_attributes, input_element, default_true_false_attribute_type, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function } from './shared';
 export const INFOSET_DEFINITION: Definitions = {
 	"infosets": [{
 		description: "Collection of infosets.",
@@ -512,11 +512,12 @@ export const INFOSET_DEFINITION: Definitions = {
 					type: AttributeTypes.Enum,
 					options: [
 						{
-							name: "is included in",
-							default: true
+							name: "",
+							description: "is included in"
 						},
 						{
-							name: "is not included in"
+							name: "not",
+							description: "is not included in"
 						}
 					]
 				}
@@ -694,104 +695,15 @@ export const INFOSET_DEFINITION: Definitions = {
 				element: "filter",
 				occurence: "once"
 			},
-		]
-	}],
-	"single-aggregate-query": [{
-		description: "Specifies an aggregate query that returns a single aggregate result object.",
-		attributes: [
 			{
-				name: "type",
-				description: "The type of the objects to apply the query to.",
-				required: true
-			},
-			{
-				name: "filter",
-				description: "A reference to a filter on the type being queryed. May also be defined inline.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.TypeFilter // TODO: should not be visible if child group is added
-				}
-			},
-			{
-				name: "result-type",
-				description: "The result type of the aggregate results. If not specified, returns results of the Platform.AggregateResults type.</summary>Define a type inheriting from Platform.AggregateResults. Relation attributes may be added to this type, and views can be created for it.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Type
-				}
-			}
-		],
-		childs: [
-			{
-				element: "aggregate-attribute",
-				occurence: "at-least-once",
-				required: true
-			},
-			{
-				element: "filter",
+				element: "search",
 				occurence: "once"
-			}
-		]
-	}],
-	"aggregate-attribute": [{
-		description: "Specifies an aggregate result.",
-		attributes: [
-			{
-				name: "name",
-				required: true,
-				description: "Unique identifer. This name is used as output name."
-			}
-		], 
-		childs: [
-			{
-				element: "aggregate-function"
-			}
-		]
-	}],
-	"aggregate-function": [{
-		description: "Specifies the value of an aggregate.",
-		attributes: [
-			{
-				name: "name",
-				description: "The function to apply.",
-				required: true,
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "common value"
-						},
-						{
-							name: "sum"
-						},
-						{
-							name: "maximum"
-						},
-						{
-							name: "minimum"
-						},
-						{
-							name: "average"
-						},
-						{
-							name: "count"
-						},
-					]
-				}
 			},
-			{
-				name: "attribute",
-				description: "The attribute parameter to the function.",
-				requiredConditions: [
-					{
-						attribute: "name",
-						condition: "==",
-						value: "count"
-					}
-				]
-			}
 		]
 	}],
+	"single-aggregate-query": [infoset_single_aggregate_query],
+	"aggregate-attribute": [infoset_aggregate_attribute],
+	"aggregate-function": [infoset_aggregate_function],
 	"ordering": [{
 		description: "An ordering over sets of objects of a certain type.",
 		childs: [
@@ -833,13 +745,6 @@ export const INFOSET_DEFINITION: Definitions = {
 					]
 				}
 			},
-		],
-		childs: [
-			{
-				element: "sort",
-				occurence: "at-least-once",
-				required: true
-			}
 		]
 	}],
 	"grouping": [{
@@ -899,6 +804,10 @@ export const INFOSET_DEFINITION: Definitions = {
 						{
 							name: "PIPEDLIST",
 							description: "piped list, the values of ''attribute'' in the records found as a piped list ('''1|2|3|4|'''), which can subsequently be used in another query"
+						},
+						{
+							name: "COUNT",
+							obsolete: true
 						},
 					]
 				},
@@ -1062,6 +971,15 @@ export const INFOSET_DEFINITION: Definitions = {
 		description: "Select a page or a single object.",
 		attributes: [
 			{
+				name: "type",
+				required: true,
+				description: "The type of the data object to delete.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Type
+				}
+			},
+			{
 				name: "iid",
 				description: "The instance identifier of the data object to fetch.",
 				visibilityConditions: [
@@ -1090,7 +1008,136 @@ export const INFOSET_DEFINITION: Definitions = {
 					}
 				]
 			},
+			{
+				name: "add-relations",
+				description: "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "pagesize",
+				description: "The number of occurrences in a page.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
+			},
+			{
+				name: "pagenumber",
+				description: "The page number to be retrieved.",
+				type: {
+					type: AttributeTypes.Numeric
+				}
+			},
+			{
+				name: "sort-column",
+				description: "A single column on which the result is sorted.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Attribute
+				}
+			},
+			{
+				name: "sort-order",
+				description: "The order how the sort-column is ordered.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "ASC",
+							description: "Ascending"
+						},
+						{
+							name: "DESC",
+							description: "Descending"
+						},
+					]
+				},
+				visibilityConditions: [
+					{
+						attribute: "sort-column",
+						condition: "!=",
+						value: ""
+					}
+				]
+			},
 			dev_comment_attribute
+		]
+	}],
+	"delete": [{
+		description: "Delete a data object.",
+		attributes: [
+			{
+				name: "type",
+				required: true,
+				description: "The type of the data object to delete."
+			},
+			{
+				name: "iid",
+				description: "The instance identifier of the data object to fetch.",
+				visibilityConditions: [
+					{
+						attribute: "iids",
+						condition: "==",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "iids",
+				description: "A piped list to fetch a list of records.",
+				visibilityConditions: [
+					{
+						attribute: "iid",
+						condition: "==",
+						value: ""
+					}
+				]
+			},
+			{
+				name: "all-when-empty-filter",
+				description: "If 'no' the search returns nothing (matches no record) when the filter is empty or if all the parameter based search columns are left out; if 'yes' it returns all records (matches all records).",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "add-relations",
+				description: "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "filter",
+				description: "The type filter to apply for search.",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Type
+				}
+			},
+			{
+				name: "alias",
+				description: "An internal name for the search query which is available to use for 'match search field' purposes."
+			},
+			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "searchcolumn"
+			},
+			{
+				element: "searchcolumn-submatch"
+			},
+			{
+				element: "or"
+			},
+			{
+				element: "and"
+			},
+			{
+				element: "group"
+			},
+			{
+				element: "in"
+			},
+			{
+				element: "full-text-query"
+			},
 		]
 	}],
 	"input": [input_element]
