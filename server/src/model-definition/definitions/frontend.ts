@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition } from '../symbolsAndReferences';
-import { action_argument_element, action_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
+import { action_argument_element, action_output_element, child_include, child_merge_instruction, child_model_condition, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
 
 const button_attributes: ElementAttribute[] = 
 [
@@ -147,7 +147,10 @@ const button_childs: ChildDefinition[] =
 	},
 	{
 		element: "format"
-	}
+	},
+	child_include,
+	child_merge_instruction,
+	child_model_condition
 ];
 
 export const FRONTEND_DEFINITION: Definitions = {
@@ -212,14 +215,14 @@ export const FRONTEND_DEFINITION: Definitions = {
 				occurence: "once"
 			},
 			{
-				element: "include"
-			},
-			{
 				element: "include-blocks"
 			},
 			{
 				element: "include-block"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"include-blocks": [include_blocks_element],
@@ -316,6 +319,18 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_attribute,
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
+		],
+		childs: [
+			{
+				element: "view"
+			},
+			{
+				element: "style-variables",
+				occurence: "once"
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"module": [{
@@ -343,15 +358,6 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "include-block"
 			},
 			{
-				element: "include"
-			},
-			{
-				element: "model-condition"
-			},
-			{
-				element: "merge-instruction"
-			},
-			{
 				element: "toolbar"
 			},
 			{
@@ -371,7 +377,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "main-view"
-			}			
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition	
 		]
 	}],
 	"model-condition": [model_condition_element],
@@ -390,9 +399,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "include-block"
 			},
-			{
-				element: "include"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"tree": [{
@@ -427,13 +436,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "node"
 			},
-			{
-				element: "include"
-			},			
-			{
-				element: "model-condition"
-			}
-
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"node": [{
@@ -490,9 +495,6 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "node"
 			},
 			{
-				element: "model-condition"
-			},
-			{
 				element: "events",
 				occurence: "once"
 			},
@@ -500,9 +502,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "view",
 				occurence: "once"
 			},
-			{
-				element: "include"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"toolbars": [{
@@ -514,9 +516,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "module"
 			},
-			{
-				element: "include"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"toolbar": [{
@@ -582,15 +584,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "dropdown"
 			},
-			{
-				element: "model-condition"
-			},
-			{
-				element: "merge-instruction"
-			},
-			{
-				element: "include"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"toolbarbutton":[{
@@ -751,14 +747,14 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "format"
 			},
 			{
-				element: "include"
-			},
-			{
 				element: "icon"
 			},
 			{
 				element: "text"
 			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"pagenumbers":[{
@@ -780,9 +776,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "include-blocks"
 			},
-			{
-				element: "include"
-			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"view": [{
@@ -2111,12 +2107,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "style-variables",
 				occurence: "once"
 			},
-			{
-				element: "merge-instruction"
-			},
-			{
-				element: "include"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
+			
 		]
 	}],
 	"argument": [
@@ -2133,9 +2127,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 					element: "event",
 					occurence: "at-least-once"
 				},
-				{
-					element: "include"
-				}
+				child_include,
+				child_merge_instruction,
+				child_model_condition
 			]
 		}
 	],
@@ -2146,9 +2140,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "server-event"
 			},
-			{
-				element: "include"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"server-event": [{
@@ -2173,9 +2167,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "server-event"
 			},
-			{
-				element: "include"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"event": [
@@ -2604,6 +2598,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 							{
 								name: "onannotationtoolmodechanged",
 								description: "Annotation tool - On mode changed"
+							},
+							{
+								name: "onbeforeunloadview",
+								description: "before unloading the view"
 							}
 						]						
 					}					
@@ -3087,14 +3085,14 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "argument"
 			},
 			{
-				element: "include"
-			},
-			{
 				element: "decorations"
 			},
 			{
 				element: "copy-attribute" // TODO still in use?
 			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"group": [
@@ -3225,7 +3223,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "tab",
 				occurence: "at-least-once",
 				required: true
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"tab": [{
@@ -3320,6 +3321,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "view"
 			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]	
 	}],
 	"titlebar": [{
@@ -3331,7 +3335,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "dropdown"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"dropdown": [{
@@ -3356,7 +3363,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "button",
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"menu": [{
@@ -3371,6 +3381,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "menudivider"
 			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"menuitem": [{
@@ -3384,7 +3397,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "button"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"menuheader": [{
@@ -3398,7 +3414,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "button"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"menudivider": [{
@@ -3625,6 +3644,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "button"		
 			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"output": [
@@ -3764,9 +3786,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "group"
 			},
-			{
-				element: "include"
-			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"field": [{
@@ -3810,9 +3832,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "condition"
 			},
-			{
-				element: "include"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"else": [{
@@ -3825,12 +3847,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "condition"
 			},
-			{
-				element: "include"
-			},
-			{
-				element: "model-condition"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"option": [{
@@ -4161,6 +4180,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "action"
 			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"resources": [{

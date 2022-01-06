@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { action_argument_element, action_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_element, dev_description_attribute, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function } from './shared';
+import { action_argument_element, action_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_element, dev_description_attribute, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition } from './shared';
 export const BACKEND_DEFINITION: Definitions = {
 	"root": [{
 		attributes: [
@@ -36,21 +36,15 @@ export const BACKEND_DEFINITION: Definitions = {
 				element: "include-block"
 			},
 			{
-				element: "include"
-			},
-			{
-				element: "model-condition"
-			},
-			{
-				element: "merge-instruction"
-			},
-			{
 				element: "decorators"
 			},
 			{
 				element: "decorations",
 				occurence: "once"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"module": [{
@@ -81,18 +75,12 @@ export const BACKEND_DEFINITION: Definitions = {
 				element: "include-block"
 			},
 			{
-				element: "include"
-			},
-			{
-				element: "model-condition"
-			},
-			{
-				element: "merge-instruction"
-			},
-			{
 				element: "decorations",
 				occurence: "once"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"type": [{
@@ -376,12 +364,9 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				element: "one-to-many"
 			},
-			{
-				element: "include"
-			},
-			{
-				element: "model-condition"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"virtual-filter":[{
@@ -391,7 +376,10 @@ export const BACKEND_DEFINITION: Definitions = {
 				element: "search",
 				occurence: "once",
 				required: true
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"single-aggregate-query": [infoset_single_aggregate_query],
@@ -863,7 +851,10 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				element: "auto-field-filter",
 				occurence: "once"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"option": [{
@@ -945,7 +936,10 @@ export const BACKEND_DEFINITION: Definitions = {
 				element: "key",
 				required: true,
 				occurence: "at-least-once"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"key": [{
@@ -974,7 +968,10 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				element: "keyfield",
 				occurence: "at-least-once"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"keyfield": [{
@@ -999,7 +996,10 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "text"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"image": [{
@@ -1032,7 +1032,10 @@ export const BACKEND_DEFINITION: Definitions = {
 				element: "server-event",
 				required: true,
 				occurence: "at-least-once"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"server-event": [{
@@ -1117,9 +1120,9 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				element: "clear-var"
 			},
-			{
-				element: "model-condition"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"decorations": [decorations_element],
@@ -1237,7 +1240,10 @@ export const BACKEND_DEFINITION: Definitions = {
 		childs: [
 			{
 				element: "search"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"search": [{
@@ -1283,12 +1289,12 @@ export const BACKEND_DEFINITION: Definitions = {
 				element: "in"
 			},
 			{
-				element: "include"
-			},
-			{
 				element: "full-text-query",
 				occurence: "once"
 			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"searchcolumn": [{}],

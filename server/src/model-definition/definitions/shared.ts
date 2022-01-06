@@ -193,6 +193,10 @@ export const search_condition_options_attribute_type: AttributeType =
 				name: "contains",
 				description: ""
 			},
+			{
+				name: "regexp",
+				description: ""
+			},
 		]
 	};
 
@@ -1430,6 +1434,20 @@ export const view_group_attributes: ElementAttribute[] =
 	dev_comment_attribute
 ];
 
+export const child_merge_instruction: ChildDefinition = 
+{
+	element: "merge-instruction",
+	occurence: "once"
+};
+export const child_include: ChildDefinition = 
+{
+	element: "include"
+};
+export const child_model_condition: ChildDefinition = 
+{
+	element: "model-condition"
+};
+
 export const view_group_childs: ChildDefinition[] =
 [
 	{
@@ -1451,14 +1469,11 @@ export const view_group_childs: ChildDefinition[] =
 		element: "button"
 	},
 	{
-		element: "include"
-	},
-	{
-		element: "model-condition"
-	},
-	{
 		element: "decorations"
-	}
+	},
+	child_include,
+	child_merge_instruction,
+	child_model_condition
 ];
 
 export const search_childs: ChildDefinition[] = 
@@ -1484,12 +1499,9 @@ export const search_childs: ChildDefinition[] =
 	{
 		element: "full-text-query"
 	},
-	{
-		element: "include"
-	},
-	{
-		element: "model-condition"
-	}
+	child_include,
+	child_merge_instruction,
+	child_model_condition
 ];
 
 export const event_childs: ChildDefinition[] = 
@@ -1501,16 +1513,13 @@ export const event_childs: ChildDefinition[] =
 		element: "condition"
 	},
 	{
-		element: "include"
-	},
-	{
-		element: "merge-instruction"
-	},
-	{
 		element: "include-block",
 		obsolete: true,
 		obsoleteMessage: "Place include-block on a location where all include-blocks are grouped"
-	}
+	},
+	child_include,
+	child_merge_instruction,
+	child_model_condition
 ];
 
 export function isViewArgument(nodeContext: IXmlNodeContext): boolean {

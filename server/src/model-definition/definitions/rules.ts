@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ValidationLevels, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_output_element, backend_action_element, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_is_declaration_attribute, dev_override_rights_attribute, input_element } from './shared';
+import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, isOutputDeclaration, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_output_element, backend_action_element, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_is_declaration_attribute, dev_override_rights_attribute, input_element, child_include, child_merge_instruction, child_model_condition } from './shared';
 export const RULE_DEFINITION: Definitions = {
 	"rules": [{
 		type: ModelElementTypes.Rule,
@@ -23,15 +23,9 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "include-block"
 			},
-			{
-				element: "include"
-			},
-			{
-				element: "model-condition"
-			},
-			{
-				element: "merge-instruction"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"module": [{
@@ -61,15 +55,9 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "include-block"
 			},
-			{
-				element: "include"
-			},
-			{
-				element: "model-condition"
-			},
-			{
-				element: "merge-instruction"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"rule": [{
@@ -211,12 +199,9 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "switch"
 			},
-			{
-				element: "include"
-			},
-			{
-				element: "model-condition"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"action": [backend_action_element],
@@ -423,6 +408,9 @@ export const RULE_DEFINITION: Definitions = {
 				element: "else",
 				occurence: "once"
 			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"elseif": [{
@@ -454,6 +442,9 @@ export const RULE_DEFINITION: Definitions = {
 				element: "else",
 				occurence: "once"
 			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"condition": [{
@@ -724,12 +715,9 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "switch"
 			},
-			{
-				element: "include"
-			},
-			{
-				element: "model-condition"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"else": [{
@@ -775,9 +763,9 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "switch"
 			},
-			{
-				element: "include"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"transaction": [{
@@ -834,6 +822,9 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "switch"
 			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"switch": [{
@@ -881,7 +872,10 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "default",
 				occurence: "once"
-			}
+			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"case": [{
@@ -922,9 +916,9 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "switch"
 			},
-			{
-				element: "include"
-			}
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"default": [{
@@ -958,6 +952,9 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "switch"
 			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"forloop": [{
@@ -1017,6 +1014,9 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "switch"
 			},
+			child_include,
+			child_merge_instruction,
+			child_model_condition
 		]
 	}],
 	"break": [{
