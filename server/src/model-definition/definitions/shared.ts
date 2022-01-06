@@ -150,15 +150,31 @@ export const search_condition_options_attribute_type: AttributeType =
 				description: "> (greater than)"
 			},
 			{
+				name: ">",
+				description: "> (greater than)"
+			},
+			{
 				name: "Smaller",
-				description: "< (smaller than)>"
+				description: "< (smaller than)"
+			},
+			{
+				name: "<",
+				description: "< (smaller than)"
 			},
 			{
 				name: "GreaterOrEqual",
 				description: "≥ (greater than or equal to)"
 			},
 			{
+				name: ">=",
+				description: "≥ (greater than or equal to)"
+			},
+			{
 				name: "SmallerOrEqual",
+				description: "≤ (smaller than or equal to)"
+			},
+			{
+				name: "<=",
 				description: "≤ (smaller than or equal to)"
 			},
 			{
@@ -171,6 +187,10 @@ export const search_condition_options_attribute_type: AttributeType =
 			},
 			{
 				name: "misses",
+				description: ""
+			},
+			{
+				name: "contains",
 				description: ""
 			},
 		]
@@ -195,6 +215,7 @@ export const input_element: Definition =
 {
 	type: ModelElementTypes.Input,
 	isSymbolDeclaration:true,
+	detailLevel: ModelDetailLevel.Declarations,
 	description: "Specifies an input argument.",
 	attributes: [
 		{
@@ -697,7 +718,7 @@ export const include_element: Definition =
 			{
 				name: "precedence",
 				description: "If the included block has import precedence. Default, included XML has no import precedence (thus the included XML can be overridden by the includer). When setting precedence to an include, the present XML is overridden by the included.",
-				deprecated: true,
+				obsolete: true,
 				type: default_yes_no_attribute_type,
 				visibilityConditions: [
 					{
@@ -779,6 +800,8 @@ export const decorations_element: Definition =
 export const decoration_element: Definition = 
 {
 	description: "Apply a decorator to this target element.",
+	isSymbolDeclaration: true,
+	detailLevel: ModelDetailLevel.Declarations,
 	attributes: [
 		{
 			name: "name",
@@ -1144,8 +1167,7 @@ export const action_output_element: Definition =
 {
 	description: "Output of the action.",
 	ancestor: ModelElementTypes.Action,
-	matchCondition: (nodeContext) => !isOutputDeclaration(nodeContext),
-	type: ModelElementTypes.ActionOutput,
+	type: ModelElementTypes.Output,
 	detailLevel: ModelDetailLevel.SubReferences,
 	attributes:[
 		{
@@ -1432,6 +1454,9 @@ export const view_group_childs: ChildDefinition[] =
 		element: "include"
 	},
 	{
+		element: "model-condition"
+	},
+	{
 		element: "decorations"
 	}
 ];
@@ -1462,6 +1487,9 @@ export const search_childs: ChildDefinition[] =
 	{
 		element: "include"
 	},
+	{
+		element: "model-condition"
+	}
 ];
 
 export const event_childs: ChildDefinition[] = 
@@ -1474,6 +1502,14 @@ export const event_childs: ChildDefinition[] =
 	},
 	{
 		element: "include"
+	},
+	{
+		element: "merge-instruction"
+	},
+	{
+		element: "include-block",
+		obsolete: true,
+		obsoleteMessage: "Place include-block on a location where all include-blocks are grouped"
 	}
 ];
 

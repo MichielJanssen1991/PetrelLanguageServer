@@ -22,6 +22,7 @@ export const INFOSET_DEFINITION: Definitions = {
 		description: "A data query description.",
 		type: ModelElementTypes.Infoset,
 		prefixNameSpace: true,
+		isSymbolDeclaration: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		attributes: [
 			{
@@ -769,6 +770,7 @@ export const INFOSET_DEFINITION: Definitions = {
 	"variable": [{
 		description: "An infoset can be based on one or more variables. The values of the contained infoset variables will be collected into the infoset. You can assign a fixed value to a variable, base it upon an aggregation, or base it upon a query.",
 		type: ModelElementTypes.Output,
+		isSymbolDeclaration: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		attributes: [
 			{
@@ -891,6 +893,7 @@ export const INFOSET_DEFINITION: Definitions = {
 	"include-block": [{
 		type: ModelElementTypes.IncludeBlock,
 		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true,
 		description: "A model fragment that is included by includes.",
 		attributes: [
 			{
@@ -1140,6 +1143,5 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 		]
 	}],
-	"input": [input_element]
-	
+	"input": [input_element]	
 };

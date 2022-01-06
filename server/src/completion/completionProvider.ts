@@ -222,13 +222,13 @@ export class CompletionProvider {
 		return symbols;
 	}
 
-private getElementDefinition(modelFileContext: ModelFileContext, searchFor: TreeNode , searchIn: TreeNode, depth = 0): Definition | undefined{
-	const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, searchFor.tag, searchIn.type);
-	if (!elementDefinition && searchIn.parent && depth < 4 ){
-		return this.getElementDefinition(modelFileContext, searchFor, searchIn.parent, depth++);
+	private getElementDefinition(modelFileContext: ModelFileContext, searchFor: TreeNode , searchIn: TreeNode, depth = 0): Definition | undefined{
+		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, searchFor.tag, searchIn.type);
+		if (!elementDefinition && searchIn.parent && depth < 4 ){
+			return this.getElementDefinition(modelFileContext, searchFor, searchIn.parent, depth++);
+		}
+		return elementDefinition;
 	}
-	return elementDefinition;
-}
 	/**
 	 * Get the possible children of an element. 
 	 * ModelDefinition.childs could contain:

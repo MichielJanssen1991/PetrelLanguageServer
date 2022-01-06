@@ -1,4 +1,5 @@
-import { Attribute, AttributeTypes, Definition, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
+import { ModelFileContext } from '../../model-definition/modelDefinitionManager';
+import { Attribute, AttributeTypes, ChildReference, Definition, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
 import { ModelCheck } from '../modelCheck';
 
 export class ModelDefinitionCheck extends ModelCheck {
@@ -9,25 +10,47 @@ export class ModelDefinitionCheck extends ModelCheck {
 
 	protected checkInternal(node: TreeNode): void {
 		const modelFileContext = this.modelManager.getModelFileContextForFile(node.uri);
-		// TODO: change call to getModelDefinitionForCurrentNode and pass the context to make sure context specific items get validated properly
-		// Another idea is to add 'parent' to TreeNode. Type 'Definition' could have an extra item 'context', which could indicate the type of parent. 
-		// In that case it is not needed to pass the tag context/location to the check parent context.
-		// 
-		// I think I still prefer the checks in the 'check' classes and the 'parse' functions in the parse classes and not mix them together.
-		// (The parse function has some checks currently)
-		const tagDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, node.tag, node.type);
+		const tagDefinition = this.getElementDefinition(modelFileContext, node, node);
 		
 		this.allNodeAttributes = Object.values(node.attributes);
-		// Skip the document root node (ModelElementType: Document)
-		if (tagDefinition && !(node.type==ModelElementTypes.Document)){
-			this.checkChildOccurrences(node, tagDefinition);
-			this.checkAttributeOccurrences(node, tagDefinition);
-			this.checkAttributeValues(node, tagDefinition);
+		
+		if (!(node.type==ModelElementTypes.Document || node.tag == ModelElementTypes.Document.toLowerCase())){
+			if (tagDefinition){
+				this.checkChildOccurrences(node, tagDefinition);
+				this.checkAttributeOccurrences(node, tagDefinition);
+				this.checkAttributeValues(node, tagDefinition);
+			} else {
+				this.addError(node.range, `No definition found for tag: '${node.tag}'`);
+			}
 		}
+		
+	}
+
+	private getElementDefinition(modelFileContext: ModelFileContext, searchFor: TreeNode , searchIn: TreeNode, depth = 0): Definition | undefined{
+		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, searchFor.tag, searchIn.type);
+		if (!elementDefinition && searchIn.parent && depth < 4 ){
+			// get the definition of the parent tag without specific filtering
+			const parentElementDef = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, searchIn.parent.tag, ModelElementTypes.All);
+			
+			// if parent is something else than the definition prescribes (for example include-block), the tag will be changed to the referred element
+			const childDef: ChildReference = (parentElementDef?.childs && !Array.isArray(parentElementDef?.childs)) ? parentElementDef?.childs : {};
+			if (childDef && childDef.matchElementFromAttribute){
+				const newTagName =searchIn.parent.attributes[childDef.matchElementFromAttribute].value;
+				if (newTagName){
+					const newParentElementDef = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, newTagName, ModelElementTypes.All);
+					if (newParentElementDef && newParentElementDef.type){
+						searchIn.parent.type = newParentElementDef.type;
+					}
+					searchIn.parent.tag = newTagName;
+				}				
+			}
+			return this.getElementDefinition(modelFileContext, searchFor, searchIn.parent, depth++);
+		}
+		return elementDefinition;
 	}
 
 	private checkChildOccurrences(element: TreeNode, definition: Definition): void {
-		// check element on invalid child nodes (TODO: merge with ModelParser class)
+		// check element on invalid child nodes
 		element.children.forEach(child => {
 			if (Array.isArray(definition.childs) && !definition.childs?.map(x=>x.element.toLowerCase()).includes(child.tag.toLowerCase())){
 				this.addError(element.range, `Invalid child node '${child.tag}' for element '${element.tag}'`);

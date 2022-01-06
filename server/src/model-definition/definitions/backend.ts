@@ -435,6 +435,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"attribute": [{
 		type: ModelElementTypes.Attribute,
 		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true,
 		description: "Describes an attribute of this type.",
 		attributes: [
 			{
@@ -1135,6 +1136,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"include-block": [{
 		type: ModelElementTypes.IncludeBlock,
 		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true,
 		description: "A model fragment that is included by includes.",
 		attributes: [
 			{
@@ -1221,13 +1223,13 @@ export const BACKEND_DEFINITION: Definitions = {
 	"input": [{
 		type: ModelElementTypes.Input,
 		isSymbolDeclaration: true,
+		detailLevel: ModelDetailLevel.Declarations,
 		attributes: [
 			{
 				name: "required",
 				detailLevel: ModelDetailLevel.Declarations
 			}
-		],
-		detailLevel: ModelDetailLevel.Declarations
+		]
 	}],
 	"output": [action_output_element],
 	"filters": [{

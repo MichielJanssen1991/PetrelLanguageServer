@@ -1,5 +1,154 @@
-import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
+import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition } from '../symbolsAndReferences';
 import { action_argument_element, action_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
+
+const button_attributes: ElementAttribute[] = 
+[
+	{
+		name: "name",
+		description: "Unique, required identifier.",
+		required: true
+	},
+	{
+		name: "catpion",
+		description: "The text to display on the button."
+	},
+	{
+		name: "info",
+		description: "Will appear as tooltip of the button."
+	},
+	{
+		name: "url",
+		description: "An URL to go to when the button is clicked."
+	},
+	{
+		name: "width",
+		description: "Width of the button."
+	},
+	{
+		name: "height",
+		description: "Height of the button."
+	},
+	{
+		name: "appearance-class",
+		description: "The appearance of the button or link."
+	},
+	{
+		name: "accesskey",
+		description: "A key to access the button."
+	},
+	{
+		name: "enabled",
+		description: "If the button is initially enabled.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "show",
+		description: "If the button is initially visible.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "show-in-listview",
+		description: "Specify to show the button in the list view.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "disablable",
+		description: "Specify to enable/disable the button according to the view mode.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "submit",
+		description: "If true, the event of this button is fired when the 'Enter' is pressed on the form.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "top",
+		description: "The vertical position of the button in volatile mode."
+	},
+	{
+		name: "vertical",
+		description: "The horizontal position of the button in volatile mode."
+	},
+	{
+		name: "icon",
+		description: "The icon to display on the button. If omitted, only the caption is displayed."
+	},
+	{
+		name: "icon-width",
+		description: "Width of the button icon."
+	},
+	{
+		name: "icon-position",
+		description: "The position of the button icon.",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "left"
+				},
+				{
+					name: "right"
+				},
+			]
+		}
+	},
+	{
+		name: "float",
+		description: "Whether the button is floated",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "none"
+				},
+				{
+					name: "left"
+				},
+				{
+					name: "right"
+				}
+			]
+		}
+	},
+	{
+		name: "clear",
+		description: "Specifies the sides of the view where other floating elements are not allowed.",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "both"
+				},
+				{
+					name: "left"
+				},
+				{
+					name: "right"
+				}
+			]
+		}
+	},
+	dev_override_rights_attribute,
+	dev_ignore_modelcheck_attribute,
+	dev_ignore_modelcheck_justification_attribute,
+	dev_comment_attribute
+];
+
+const button_childs: ChildDefinition[] =
+[
+	{
+		element: "icon"
+	},
+	{
+		element: "text"
+	},
+	{
+		element: "events"
+	},
+	{
+		element: "format"
+	}
+];
 
 export const FRONTEND_DEFINITION: Definitions = {
 	"root": [{
@@ -59,6 +208,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 				occurence: "once"
 			},
 			{
+				element: "decorators",
+				occurence: "once"
+			},
+			{
 				element: "include"
 			},
 			{
@@ -73,6 +226,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"include-block": [{
 		type: ModelElementTypes.IncludeBlock,
 		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true,
 		description: "A model fragment that is included by includes.",
 		attributes: [
 			{
@@ -107,6 +261,12 @@ export const FRONTEND_DEFINITION: Definitions = {
 						},
 						{
 							name: ModelElementTypes.Action
+						},
+						{
+							name: ModelElementTypes.Tree
+						},
+						{
+							name: "condition"
 						},
 						{
 							name: "node"
@@ -223,11 +383,22 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "module"
+			},
+			{
+				element: "include-blocks"
+			},
+			{
+				element: "include-block"
+			},
+			{
+				element: "include"
 			}
 		]
 	}],
 	"tree": [{
 		description: "Navigation tree.",
+		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true,
 		attributes: [
 			{
 				name: "name",
@@ -258,11 +429,16 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "include"
+			},			
+			{
+				element: "model-condition"
 			}
+
 		]
 	}],
 	"node": [{
 		description: "Navigation tree node, which may be expandable into more nodes.",
+		type: ModelElementTypes.Node,
 		attributes: [
 			{
 				name: "name",
@@ -324,6 +500,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "view",
 				occurence: "once"
 			},
+			{
+				element: "include"
+			}
 		]
 	}],
 	"toolbars": [{
@@ -335,10 +514,15 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "module"
 			},
+			{
+				element: "include"
+			}
 		]
 	}],
 	"toolbar": [{
 		description: "View toolbar.",
+		isSymbolDeclaration: true,
+		detailLevel: ModelDetailLevel.Declarations,
 		attributes: [
 			{
 				name: "name",
@@ -400,11 +584,179 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "model-condition"
+			},
+			{
+				element: "merge-instruction"
+			},
+			{
+				element: "include"
 			}
 		]
 	}],
 	"toolbarbutton":[{
-		description: "Client side scripting predefined tool."
+		description: "Client side scripting predefined tool.",
+		type: ModelElementTypes.ToolbarButton,
+		attributes: [
+			{
+				name: "name",
+				description: "Unique identifier of the toolbar item."
+			},
+			{
+				name: "caption",
+				description: "Caption of the button."
+			},
+			{
+				name: "icon",
+				description: "Icon of the button."
+			},
+			{
+				name: "disabled-icon",
+				description: "Icon to show when the button is disabled."
+			},
+			{
+				name: "info",
+				description: "Tooltip text."
+			},
+			{
+				name: "width",
+				description: "Width of the button icon."
+			},
+			{
+				name: "border-right",
+				description: "Whether there is a border at the right of the button.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "",
+							description: "default"
+						},
+						{
+							name: "none",
+
+						},
+					]
+				}
+			},
+			{
+				name: "border-left",
+				description: "Whether there is a border at the left of the button.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "",
+							description: "default"
+						},
+						{
+							name: "none",
+
+						},
+					]
+				}
+			},
+			{
+				name: "float",
+				description: "If the button is floated right or left in the toolbar.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "",
+							description: "none"
+						},
+						{
+							name: "left"
+						},
+						{
+							name: "right"
+						}
+					]
+				}
+			},
+			{
+				name: "icon-position",
+				description: "Position of the icon. Left is default.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "",
+							description: "none"
+						},
+						{
+							name: "left"
+						},
+						{
+							name: "right"
+						}
+					]
+				}
+			},
+			{
+				name: "action",
+				description: "The tool function."
+			},
+			{
+				name: "accesskey",
+				description: "A key to access the button."
+			},
+			{
+				name: "show",
+				description: "If the button is initially visible.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "more",
+				description: "If a \"more\" button has to be added, calling a drop down menu for this toolbarbutton.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "enabled",
+				description: "If the button should be enabled or not",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "fire-ondatachange",
+				description: "If this toolbarbutton is dependent on the data loaded in the view which belongs to this toolbar. This can be usefull by e.g. FileLinks and Remarks",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "data-dependent",
+				description: "If the button is dependent on the selected data of the control.",
+				type: default_yes_no_attribute_type
+			},
+			{
+				name: "single-record",
+				description: "If the button is dependent on one and only one data record.",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "data-dependent",
+						condition: "==",
+						value: "yes"
+					}
+				]
+			},
+			dev_override_rights_attribute,
+			dev_ignore_modelcheck_attribute,
+			dev_ignore_modelcheck_justification_attribute,
+			dev_comment_attribute
+		],
+		childs:[
+			{
+				element: "events"
+			},
+			{
+				element: "format"
+			},
+			{
+				element: "include"
+			},
+			{
+				element: "icon"
+			},
+		]
 	}],
 	"pagenumbers":[{
 		description: "Toolbar item for paged navigation."
@@ -433,6 +785,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"view": [{
 		type: ModelElementTypes.View,
 		description: "Defines a lay-out frame (e.g. for displaying objects of a specified backend type).",
+		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true,
 		attributes: [
 			{
 				name: "name",
@@ -1313,7 +1667,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "appearance",
 				description: "The style of this view.",
-				deprecated: true,	// appearance is something that is hardly used, so it should be deprecated
+				obsolete: true,	// appearance is something that is hardly used, so it should be deprecated
+				obsoleteMessage: "use something else :)",
 				type: {
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Appearance
@@ -1524,8 +1879,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "designable",
 				description: "Whether the view is designable by a user having designer rights.",
-				deprecated: true,
-				deprecationMessage: "This shouldn't be a feature",
+				obsolete: true,
+				obsoleteMessage: "This shouldn't be a feature",
 				type: default_yes_no_attribute_type
 			},
 			{
@@ -1754,6 +2109,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "merge-instruction"
+			},
+			{
+				element: "include"
 			}
 		]
 	}],
@@ -1770,16 +2128,49 @@ export const FRONTEND_DEFINITION: Definitions = {
 				{
 					element: "event",
 					occurence: "at-least-once"
+				},
+				{
+					element: "include"
 				}
 			]
 		}
 	],
 	"server-events": [{
-		description: "A server event registration.",
+		description: "",
 		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "server-event"
+			},
+			{
+				element: "include"
+			}
+		]
+	}],
+	"server-event": [{
+		description: "A server event registration.",
+		attributes: [
+			{
+				name: "name",
+				required: true,
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "oninitializedview",
+							description: "When the view is initialized on the server",
+							default: true
+						}
+					]
+				}
+			}
+		],
+		childs: [
+			{
+				element: "server-event"
+			},
+			{
+				element: "include"
 			}
 		]
 	}],
@@ -1790,7 +2181,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "A specific event registration.",
 			attributes: [
 				{
-					name: "event",
+					name: "name",
 					description: "The type of event to listen to.",
 					required: true,
 					type: {
@@ -1837,7 +2228,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "A specific event registration.",
 			attributes: [
 				{
-					name: "event",
+					name: "name",
 					description: "The type of event to listen to.",
 					required: true,
 					type: {
@@ -1864,11 +2255,11 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event,
-			ancestor: "node",
+			ancestor: ModelElementTypes.Node,
 			description: "A specific event registration.",
 			attributes: [
 				{
-					name: "event",
+					name: "name",
 					description: "The type of event to listen to.",
 					required: true,
 					type: {
@@ -1895,7 +2286,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "A specific event registration.",
 			attributes: [
 				{
-					name: "event",
+					name: "name",
 					description: "The type of event to listen to.",
 					required: true,
 					type: {
@@ -1926,7 +2317,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "A specific event registration.",
 			attributes: [
 				{
-					name: "event",
+					name: "name",
 					description: "The type of event to listen to.",
 					required: true,
 					type: {
@@ -1957,7 +2348,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "A specific event registration.",
 			attributes: [
 				{
-					name: "event",
+					name: "name",
 					description: "The type of event to listen to.",
 					required: true,
 					type: {
@@ -1983,7 +2374,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "A specific event registration.",
 			attributes: [
 				{
-					name: "event",
+					name: "name",
 					description: "The type of event to listen to.",
 					required: true,
 					type: {
@@ -2009,7 +2400,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "A specific event registration.",
 			attributes: [
 				{
-					name: "event",
+					name: "name",
 					description: "The type of event to listen to.",
 					required: true,
 					type: {
@@ -2211,6 +2602,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"attribute": [{
 		type: ModelElementTypes.Attribute,
 		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true,
 		description: "Describes an attribute of this type.",
 		attributes: [
 			{
@@ -2672,19 +3064,16 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"group": [
 		{
-			ancestor: ModelElementTypes.Group,
-			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
-			attributes: view_group_attributes,
-			childs: view_group_childs
-		},
-		{
 			ancestor: ModelElementTypes.View,
+			type: ModelElementTypes.Group,
+			isSymbolDeclaration: true,
 			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
 			attributes: view_group_attributes,
 			childs: view_group_childs
 		},
 		{
 			ancestor: ModelElementTypes.Condition,
+			type: ModelElementTypes.Group,
 			description: "A group set, used to filter.",
 			childs: [
 				{
@@ -2711,15 +3100,45 @@ export const FRONTEND_DEFINITION: Definitions = {
 	],
 	"button": [
 		{
-			ancestor: ModelElementTypes.View	// buttons on view
+			description: "A button or link.",
+			type: ModelElementTypes.Button,
+			ancestor: ModelElementTypes.View,
+			isSymbolDeclaration: true,
+			attributes: button_attributes,
+			childs: button_childs
 		},
 		{
-			ancestor: "titlebar"				// titlebar buttons
+			ancestor: "titlebar",
+			type: ModelElementTypes.Button,
+			isSymbolDeclaration: true,
+			attributes: button_attributes,
+			childs: button_childs
 		},
 		{
-			ancestor: ModelElementTypes.Action	// questions
+			ancestor: "menuitem",
+			attributes: button_attributes,
+			childs: button_childs
+		},
+		{
+			ancestor: ModelElementTypes.Action,
+			attributes: [
+				{
+					name: "name"
+				},
+				{
+					name: "caption",
+					required: true
+				},
+				{
+					name: "value",
+					required: true
+				},
+			]
 		},
 	],
+	"separator":[{
+		description: "Separates nodes by a horizontal space."
+	}],
 	"tabber": [{
 		description: "A tabber control by which fields can be tabbed.",
 		attributes:[
@@ -2731,7 +3150,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "active",
 				description: "If the tab is default active in this tabber",
-				type: default_yes_no_attribute_type
+				required: true
 			},
 			{
 				name: "left",
@@ -2956,7 +3375,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "text",
 				description: "The text rendered.",
-				required: true
+				autoadd: true
 			},
 			{
 				name: "appearance-class",
@@ -3003,6 +3422,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"action": [{
 		description: "An Action",
+		type: ModelElementTypes.Action,
 		attributes: [
 			{
 				name: "name",
@@ -3176,6 +3596,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 		action_output_element,
 		{
 			ancestor: ModelElementTypes.Function,
+			detailLevel: ModelDetailLevel.Declarations,
+			isSymbolDeclaration: true,
 			attributes: [
 				{
 					name: "name",
@@ -3190,6 +3612,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"input": [input_element],
 	"condition": [{
 		description: "The code beneath this condition will be executed conditionally, i.e., when the condition succeeds.</summary>To restrict further (logical 'and'), nest conditions (by adding an extra condition under this condition).",
+		type: ModelElementTypes.Condition,
 		attributes: [
 			{
 				name: "description"
@@ -3200,6 +3623,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 				type: {
 					type: AttributeTypes.Enum,
 					options: [
+						{
+							name: "",
+							description: "overwrite or use default"
+						},
 						{
 							name: "new"
 						},
@@ -3365,6 +3792,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "include"
+			},
+			{
+				element: "model-condition"
 			}
 		]
 	}],
@@ -3670,6 +4100,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"function": [{
 		description: "A frontend function, that can be called by a single action call.",
 		type: ModelElementTypes.Function,
+		isSymbolDeclaration: true,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		attributes: [
@@ -3759,6 +4190,54 @@ export const FRONTEND_DEFINITION: Definitions = {
 			}
 		]
 	}],
+	"search": [{
+		description: "Toolbar search field.",
+		attributes: [
+			{
+				name: "float",
+				description: "Whether the field is floated.",
+				type: {
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "left"
+						},
+						{
+							name: "right"
+						},
+						{
+							name: "",
+							description: "none"
+						},
+					]
+				}
+			},
+			{
+				name: "icon",
+				description: "The icon of the button in the toolbar that the user has to click for displaying the search field."
+			},
+			{
+				name: "hide-extended-icon",
+				description: "Link to an image for the search field in “open” form."
+			},
+			{
+				name: "show-extended-icon",
+				description: "Link to an image for the search field in “closed” form."
+			},
+			{
+				name: "disabled-icon",
+				description: "The icon of the button when the item is disabled."
+			},
+			{
+				name: "width",
+				description: "The icon of the button when the item is disabled."
+			},
+			{
+				name: "extend-width",
+				description: "The width of the search field in \"closed\" form."
+			},
+		]
+	}],
 	"decorations": [decorations_element],
 	"decoration": [decoration_element],
 	"decoration-argument": [decoration_argument_element],
@@ -3790,6 +4269,6 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "clear-var"
 			}
 		]
-	}],
-	
+	}],	
 };
+

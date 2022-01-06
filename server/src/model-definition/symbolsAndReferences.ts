@@ -49,6 +49,8 @@ export enum ModelElementTypes {
 	Button = "Button",
 	Event = "Event",
 	Events = "Events",
+	Node = "Node",
+	ToolbarButton = "Toolbarbutton",
 	Appearance = "Appearance",
 	AppearanceClass = "AppearanceClass", // this could be a list of all classes from the scss files (it can be filtered by the type of mixin it's using)
 }
@@ -203,7 +205,9 @@ export type ChildDefinition = {
 	occurence?: "once" | "at-least-once",
 	required?: boolean,
 	validations?: ChildValidation[],
-	type?:ModelElementTypes
+	type?:ModelElementTypes,
+	obsolete?: boolean,
+	obsoleteMessage?: string
 }
 
 export type ChildReference = {
@@ -217,12 +221,12 @@ export type ElementAttribute = {
 	validations?: AttributeValidation[],
 	required?: boolean,
 	autoadd?: boolean,						// mark attribute to auto add when (parent) element is created
-	deprecated?: boolean,
-	deprecationMessage?: string,
 	visibilityConditions?: ValidationMatches[],
 	requiredConditions?: ValidationMatches[],
 	type?: AttributeType,
-	detailLevel?: ModelDetailLevel
+	detailLevel?: ModelDetailLevel,
+	obsolete?: boolean,
+	obsoleteMessage?: string
 }
 
 export type AttributeValidation = {

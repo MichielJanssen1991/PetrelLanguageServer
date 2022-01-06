@@ -84,7 +84,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			},
 			{
 				name: "rulename",	// TODO: check with platform if this is still used
-				deprecated: true,
+				obsolete: true,
 				description: "Links an action to a rule.",
 				visibilityConditions: [
 					{

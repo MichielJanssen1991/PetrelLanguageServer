@@ -1,7 +1,7 @@
 import { Range } from 'vscode-languageserver-types';
 import { isNonPetrelModelTag } from '../../model-definition/definitions/other';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, IXmlNodeContext, TreeNode, Definition, ModelElementTypes, ChildDefinition, Attribute, ElementAttribute, newTreeNode } from '../../model-definition/symbolsAndReferences';
+import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, IXmlNodeContext, TreeNode, Definition, ModelElementTypes, Attribute, ElementAttribute, newTreeNode } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
 import { ISaxParserExtended, newSaxParserExtended, XmlNode, ProcessingInstruction } from './saxParserExtended';
 
@@ -11,11 +11,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	private context: ModelFileContext = ModelFileContext.Unknown;
 	private modelDefinitionManager: ModelDefinitionManager;
 	private attributeRanges: Record<string, { range: Range, fullRange: Range }> = {};
-	private static MESSAGES: any = {
-		NO_DEFINITION_FOUND_FOR_TAG: (tagName: string) => `No definition found for tag: '${tagName}'`,
-		INVALID_CHILD_TAG: (tagName: string, tagNameParent: string, validChildren: ChildDefinition[]) => `Invalid child: Tag ${tagName} not known for parent: '${tagNameParent}'. Valid children are: ${validChildren.map(x => x.element)}`,
-	}
-
+	
 	constructor(uri: string, detailLevel: ModelDetailLevel, modelDefinitionManager: ModelDefinitionManager) {
 		super(uri, detailLevel);
 		this.setModelFileContext(ModelFileContext.Unknown);
@@ -95,11 +91,6 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		this.deduceContextFromTag(tagName);
 		const definition = this.getModelDefinitionForCurrentNode();
 		let object;
-
-		// Validate node using new definition structure (To be removed when these checks are included in ModelDefinitionCheck)
-		if (this.context != ModelFileContext.Unknown) {
-			this.validateNode(node, definition);
-		}
 
 		//Parse object for definition
 		if (definition) {
@@ -202,27 +193,6 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		return undefined;
 	}
 
-	private validateNode(node: XmlNode, definition?: Definition) {
-		const tagName = node.name;
-		if (!definition) {
-			this.addError(this.getTagRange(), ModelParser.MESSAGES.NO_DEFINITION_FOUND_FOR_TAG(tagName, node));
-		} else {
-			const parentNode = this.parser.getFirstParent();
-			const parentDefinition = this.getModelDefinitionForParentNode();
-			if (parentNode && parentDefinition) {
-				if (parentDefinition?.childs) {
-					const tagNameParent = parentNode.name;
-					if (Array.isArray(parentDefinition.childs)){
-						const childSelected = parentDefinition.childs.find(x => x.element == tagName);
-						if (!childSelected) {
-							this.addError(this.getTagRange(), ModelParser.MESSAGES.INVALID_CHILD_TAG(tagName, tagNameParent, parentDefinition.childs));
-						}
-					}					
-				}
-			}
-		}
-	}
-
 	private parseAttributes(definition: Definition, node: XmlNode):  Record<string, Reference|Attribute> {
 		let attributes: Record<string, Attribute|Reference> = {};
 		if (definition.attributes) {
@@ -304,12 +274,5 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 
 	private getModelDefinitionForCurrentNode() {
 		return this.modelDefinitionManager.getModelDefinitionForCurrentNode(this.context, this);
-	}
-
-	private getModelDefinitionForParentNode() {
-		const numberOfParsedParents = this.parsedObjectStack.length;
-		if (numberOfParsedParents > 0) {
-			return this.parsedObjectStack[numberOfParsedParents - 1].definition;
-		}
 	}
 }

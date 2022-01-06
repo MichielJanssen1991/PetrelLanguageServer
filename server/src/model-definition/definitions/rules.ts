@@ -224,6 +224,7 @@ export const RULE_DEFINITION: Definitions = {
 	"output": [{
 		type: ModelElementTypes.Output,
 		matchCondition: (nodeContext) => isOutputDeclaration(nodeContext),
+		isSymbolDeclaration: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		description: "Output of the rule. The rule will return (name, expression) as one of its value pairs. Any valid C# expression can be used; the syntax for parameters is {..}.",
 		attributes: [
@@ -341,6 +342,7 @@ export const RULE_DEFINITION: Definitions = {
 	"set-var": [{
 		type: ModelElementTypes.SetVar,
 		description: "A variable assignment.",
+		isSymbolDeclaration: true,
 		attributes: [
 			{
 				name: "name",
@@ -1030,6 +1032,7 @@ export const RULE_DEFINITION: Definitions = {
 	"include-block": [{
 		type: ModelElementTypes.IncludeBlock,
 		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true,
 		description: "A model fragment that is included by includes.",
 		attributes: [
 			{
