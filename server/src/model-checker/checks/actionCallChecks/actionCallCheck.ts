@@ -4,6 +4,7 @@ import { flattenArray } from '../../../util/array';
 import { ModelCheck } from '../../modelCheck';
 import { CHECKS_MESSAGES } from '../../messages';
 import { ModelCheckerOptions } from '../../modelChecker';
+import { NAMES } from '../../../model-definition/constants';
 
 export abstract class ActionCallCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.ActionCall
@@ -60,10 +61,10 @@ export abstract class ActionCallCheck extends ModelCheck {
 		this.getAdditionalOutputsForActions(actionCall).forEach(x => outputNames.add(x));
 
 		this.modelManager.getActionOutputs(actionCall).forEach(output => {
-			const outputName = (output as SymbolDeclaration).name;
-			if (!outputNames.has(outputName)) {
+			const localName = output.attributes[NAMES.ATTRIBUTE_LOCALNAME];
+			if (localName && !outputNames.has(localName.value)) {
 				this.addWarning(
-					output.range, CHECKS_MESSAGES.OUTPUT_NOT_FOUND(outputName, referenceAndSubReferences)
+					output.range, CHECKS_MESSAGES.OUTPUT_NOT_FOUND(localName.value, referenceAndSubReferences)
 				);
 			}
 		});

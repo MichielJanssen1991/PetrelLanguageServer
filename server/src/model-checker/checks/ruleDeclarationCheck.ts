@@ -45,29 +45,16 @@ export class RuleDeclarationCheck extends ModelCheck {
 		//Add output to local name references
 		ruleOutputs.forEach(output => {
 			const attribute = output.attributes[NAMES.ATTRIBUTE_ATTRIBUTE];
-			if (attribute) {
-				const localNameRefInOutput = {
-					name: "name",
-					value: output.attributes[NAMES.ATTRIBUTE_ATTRIBUTE].value,
-					range: output.range,
-					fullRange: output.fullRange
-				};
-				this.ruleLocalNameReferences.push(localNameRefInOutput);
-			}
+			this.processLocalNameReference(attribute);
+
+			const expression = output.attributes[NAMES.ATTRIBUTE_EXPRESSION];
+			this.processExpression(expression);
 		});
 
-		//Check all localNames where referenced?
+		//Check all localNames were referenced?
 		this.ruleLocalNames.forEach(localName => {
 			if (!this.ruleLocalNameReferences.find(x => x.value == localName.value)) {
-				this.addWarning(localName.range, CHECKS_MESSAGES.RULE_LOCALNAME_NOT_REFERENCED(localName.value));
-			}
-		});
-
-		//Check all outputs are defined?
-		ruleOutputs.forEach(output => {
-			const outputAttributeName = output.attributes[NAMES.ATTRIBUTE_ATTRIBUTE].value;
-			if (!this.ruleLocalNames.find(x => x.value == outputAttributeName)) {
-				this.addWarning(output.range, CHECKS_MESSAGES.RULE_OUTPUT_ATTRIBUTE_NOT_FOUND(outputAttributeName));
+				this.addInformation(localName.range, CHECKS_MESSAGES.RULE_LOCALNAME_NOT_REFERENCED(localName.value));
 			}
 		});
 	}
