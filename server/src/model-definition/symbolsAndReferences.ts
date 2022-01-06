@@ -50,7 +50,7 @@ export enum ModelElementTypes {
 	Event = "Event",
 	Events = "Events",
 	Node = "Node",
-	ToolbarButton = "Toolbarbutton",
+	ToolbarButton = "ToolbarButton",
 	Appearance = "Appearance",
 	AppearanceClass = "AppearanceClass", // this could be a list of all classes from the scss files (it can be filtered by the type of mixin it's using)
 }

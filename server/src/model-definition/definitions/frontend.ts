@@ -756,6 +756,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "icon"
 			},
+			{
+				element: "text"
+			},
 		]
 	}],
 	"pagenumbers":[{
@@ -787,6 +790,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		description: "Defines a lay-out frame (e.g. for displaying objects of a specified backend type).",
 		detailLevel: ModelDetailLevel.Declarations,
 		isSymbolDeclaration: true,
+		prefixNameSpace: true,
 		attributes: [
 			{
 				name: "name",
@@ -2225,6 +2229,37 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			type: ModelElementTypes.Event,
 			ancestor: ModelElementTypes.Button,
+			description: "A specific event registration.",
+			attributes: [
+				{
+					name: "name",
+					description: "The type of event to listen to.",
+					required: true,
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "onclick",
+								description: "When clicked",
+								default: true
+							},
+							{
+								name: "onmouseover",
+								description: "On mouseover"
+							}
+						]						
+					},
+				},
+				dev_override_rights_attribute,
+				dev_ignore_modelcheck_attribute,
+				dev_ignore_modelcheck_justification_attribute,
+				dev_comment_attribute
+			],
+			childs: event_childs
+		},
+		{
+			type: ModelElementTypes.Event,
+			ancestor: ModelElementTypes.ToolbarButton,
 			description: "A specific event registration.",
 			attributes: [
 				{
