@@ -66,7 +66,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 		//Check all outputs are defined?
 		ruleOutputs.forEach(output => {
 			const outputAttributeName = output.attributes[NAMES.ATTRIBUTE_ATTRIBUTE].value;
-			if (!this.ruleLocalNameReferences.find(x => x.value == outputAttributeName)) {
+			if (!this.ruleLocalNames.find(x => x.value == outputAttributeName)) {
 				this.addWarning(output.range, CHECKS_MESSAGES.RULE_OUTPUT_ATTRIBUTE_NOT_FOUND(outputAttributeName));
 			}
 		});
@@ -83,7 +83,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 					this.processExpression(expression);
 					break;
 				}
-			case ModelElementTypes.Output:
+			case ModelElementTypes.ActionOutput:
 				{
 					const localName = node.attributes[NAMES.ATTRIBUTE_LOCALNAME];
 					this.processLocalNameDefinition(localName);
