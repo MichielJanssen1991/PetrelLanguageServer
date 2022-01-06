@@ -404,7 +404,7 @@ export const infoset_aggregate_function: Definition =
 	};
 export const backend_action_element: Definition =
 	{
-		type: ModelElementTypes.ActionCall,
+		type: ModelElementTypes.Action,
 		detailLevel: ModelDetailLevel.References,
 		description: "An action.",
 		checkObsolete: true,
