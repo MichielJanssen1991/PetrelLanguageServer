@@ -342,7 +342,6 @@ export const RULE_DEFINITION: Definitions = {
 	"set-var": [{
 		type: ModelElementTypes.SetVar,
 		description: "A variable assignment.",
-		isSymbolDeclaration: true,
 		attributes: [
 			{
 				name: "name",
