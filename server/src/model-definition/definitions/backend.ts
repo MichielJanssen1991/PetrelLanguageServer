@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { action_argument_element, action_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_element, dev_description_attribute, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition } from './shared';
+import { action_argument_element, action_call_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_call_element, dev_description_attribute, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition } from './shared';
 export const BACKEND_DEFINITION: Definitions = {
 	"root": [{
 		attributes: [
@@ -1134,7 +1134,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"target": [target_element],
 	"decorator-context-entity": [decorator_context_entity_element],
 	"argument": [action_argument_element],
-	"action": [backend_action_element],
+	"action": [backend_action_call_element],
 	"include-blocks": [include_blocks_element],
 	"include-block": [{
 		type: ModelElementTypes.IncludeBlock,
@@ -1234,7 +1234,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			}
 		]
 	}],
-	"output": [action_output_element],
+	"output": [action_call_output_element],
 	"filters": [{
 		description: "Defines search filters for this type.",
 		childs: [

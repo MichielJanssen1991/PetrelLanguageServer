@@ -1,6 +1,6 @@
 import { ModelDetailLevel, ModelElementTypes, IXmlNodeContext, Definitions, AttributeTypes } from '../symbolsAndReferences';
 import { NAMES } from '../constants';
-import { action_argument_element, action_output_element, isOutputDeclaration, view_argument_element } from './shared';
+import { action_argument_element, action_call_output_element, isOutputDeclaration, view_argument_element } from './shared';
 
 //Defines a list of possible refrerences and declarations for each opening tag
 export const OTHER_DEFINITION: Definitions =
@@ -132,7 +132,7 @@ export const OTHER_DEFINITION: Definitions =
 		type: ModelElementTypes.Output,
 		detailLevel: ModelDetailLevel.Declarations
 	},
-		action_output_element],
+		action_call_output_element],
 	"variable": [{
 		matchCondition: (nodeContext) => isInfosetOutput(nodeContext),
 		type: ModelElementTypes.Output,

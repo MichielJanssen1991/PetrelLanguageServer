@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ValidationLevels, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_output_element, backend_action_element, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_is_declaration_attribute, dev_override_rights_attribute, input_element, child_include, child_merge_instruction, child_model_condition } from './shared';
+import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_element, backend_action_call_element, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_is_declaration_attribute, dev_override_rights_attribute, input_element, child_include, child_merge_instruction, child_model_condition } from './shared';
 export const RULE_DEFINITION: Definitions = {
 	"rules": [{
 		type: ModelElementTypes.Rule,
@@ -204,7 +204,7 @@ export const RULE_DEFINITION: Definitions = {
 			child_model_condition
 		]
 	}],
-	"action": [backend_action_element],
+	"action": [backend_action_call_element],
 	"input": [input_element],
 	"output": [{
 		type: ModelElementTypes.Output,
@@ -281,7 +281,7 @@ export const RULE_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		]},
-		action_output_element
+		action_call_output_element
 	],
 	"argument": [{
 		type: ModelElementTypes.Argument,

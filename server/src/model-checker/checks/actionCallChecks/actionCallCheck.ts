@@ -60,7 +60,7 @@ export abstract class ActionCallCheck extends ModelCheck {
 		const outputNames = new Set(flattenArray(referencedSymbolOutputs as SymbolDeclaration[][]).map(x => x.name));
 		this.getAdditionalOutputsForActions(actionCall).forEach(x => outputNames.add(x));
 
-		this.modelManager.getActionOutputs(actionCall).forEach(output => {
+		this.modelManager.getActionCallOutputs(actionCall).forEach(output => {
 			const localName = output.attributes[NAMES.ATTRIBUTE_LOCALNAME];
 			if (localName && !outputNames.has(localName.value)) {
 				this.addWarning(

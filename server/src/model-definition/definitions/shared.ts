@@ -1167,11 +1167,11 @@ export const action_argument_element: Definition = {
 	]
 };
 
-export const action_output_element: Definition =
+export const action_call_output_element: Definition =
 {
 	description: "Output of the action.",
 	ancestor: ModelElementTypes.Action,
-	type: ModelElementTypes.Output,
+	type: ModelElementTypes.ActionCallOutput,
 	detailLevel: ModelDetailLevel.SubReferences,
 	attributes:[
 		{

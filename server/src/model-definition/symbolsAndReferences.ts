@@ -4,7 +4,7 @@ import { XmlNode } from '../file-analyzer/parser/saxParserExtended';
 export enum ModelElementTypes {
 	Action = "Action",
 	ActionCall = "ActionCall",
-	ActionOutput = "ActionOutput",
+	ActionCallOutput = "ActionCallOutput",
 	Aggregate = "Aggregate",
 	All = "All",
 	Argument = "Argument",

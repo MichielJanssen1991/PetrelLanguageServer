@@ -30,8 +30,8 @@ export class ModelManager extends SymbolAndReferenceManager {
 	public getActionArgumentLocalName(actionArgument: TreeNode) {
 		return actionArgument.attributes[NAMES.ATTRIBUTE_LOCALNAME]?.value || "";
 	}
-	public getActionOutputs(actionCall: TreeNode) {
-		return this.getChildrenOfType(actionCall, ModelElementTypes.Output);
+	public getActionCallOutputs(actionCall: TreeNode) {
+		return this.getChildrenOfType(actionCall, ModelElementTypes.ActionCallOutput);
 	}
 	public getSymbolInputs(symbol: SymbolDeclaration) {
 		return symbol.children.filter(x => (x.type == ModelElementTypes.Input));

@@ -38,7 +38,8 @@ export class RuleDeclarationCheck extends ModelCheck {
 		});
 
 		//Walk over child nodes which are not inputs or outputs
-		rule.children.filter(child => child.type != ModelElementTypes.Input && child.type != ModelElementTypes.Output).forEach(child => {
+		const nonRuleInputOutputChildren = rule.children.filter(child => child.type != ModelElementTypes.Input && child.type != ModelElementTypes.Output);
+		nonRuleInputOutputChildren.forEach(child => {
 			this.walkNodesAndCheck(child, options);
 		});
 
@@ -70,7 +71,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 					this.processExpression(expression);
 					break;
 				}
-			case ModelElementTypes.ActionOutput:
+			case ModelElementTypes.ActionCallOutput:
 				{
 					const localName = node.attributes[NAMES.ATTRIBUTE_LOCALNAME];
 					this.processLocalNameDefinition(localName);
@@ -135,8 +136,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 	private getExpressionVariablesAsAttributes(expression: Attribute) {
 		const expressionVariables = Array.from(expression.value.matchAll(/\{([\w]+)\}/g));
 		return expressionVariables?.map(expressionVariableMatch => {
-			const groups = expressionVariableMatch.groups;
-			const variableName = groups ? groups[0] : "";
+			const variableName = expressionVariableMatch[1] || "";
 			return {
 				name: "ExpressionVariable",
 				value: variableName,
