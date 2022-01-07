@@ -49,7 +49,7 @@ export class ModelDefinitionManager {
 			? def.matchCondition(nodeContext)
 			: true;
 		//TODO: Maybe this condition should be improved to allow for ancestors instead of parents. Or the name should be changed to parent
-		const ancestorOk = def.ancestor ? nodeContext.getFirstParent().name == def.ancestor : true;
+		const ancestorOk = def.ancestor ? nodeContext.getFirstParent().type == def.ancestor : true;
 		return matchConditionOk && ancestorOk;
 	}
 

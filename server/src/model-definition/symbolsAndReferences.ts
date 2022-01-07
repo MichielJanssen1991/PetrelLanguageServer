@@ -84,7 +84,7 @@ export type ContextQualifiers = {
  */
 export interface IXmlNodeContext {
 	getCurrentXmlNode: () => XmlNode
-	getFirstParent: () => any,
+	getFirstParent: () => XmlNode,
 	hasParentTag: (name: string) => boolean
 }
 

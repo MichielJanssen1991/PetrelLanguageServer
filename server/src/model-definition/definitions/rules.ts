@@ -208,7 +208,7 @@ export const RULE_DEFINITION: Definitions = {
 	"input": [input_element],
 	"output": [{
 		type: ModelElementTypes.Output,
-		ancestor: "rule",
+		ancestor: ModelElementTypes.Rule,
 		//matchCondition: (nodeContext) => isOutputDeclaration(nodeContext),
 		isSymbolDeclaration: true,
 		detailLevel: ModelDetailLevel.Declarations,

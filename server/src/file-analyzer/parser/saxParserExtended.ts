@@ -1,4 +1,5 @@
 import * as LSP from 'vscode-languageserver';
+import { ModelElementTypes } from '../../model-definition/symbolsAndReferences';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const sax = require("../../../node_modules/sax/lib/sax");
 
@@ -31,6 +32,7 @@ export type ProcessingInstruction = {
 export type XmlNode = {
 	name: string
 	attributes: Record<string, string>
+	type: ModelElementTypes
 }
 
 
@@ -43,6 +45,7 @@ export interface ISaxParserExtended extends ISaxParser {
 	getTagRange: () => LSP.Range;
 	getAttributeRange: (attribute: { name: string, value: string }) => LSP.Range;
 	getAttributeValueRange: (attribute: { name: string, value: string }) => LSP.Range;
+	enrichTagWithType: (type: ModelElementTypes) => void;
 }
 
 
@@ -120,6 +123,10 @@ export function newSaxParserExtended(
 			this.line,
 			this.column,
 		);
+	};
+
+	parser.enrichTagWithType = function (type:ModelElementTypes) {
+		this.tag.type = type; 
 	};
 
 	return parser;

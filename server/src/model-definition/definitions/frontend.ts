@@ -2236,7 +2236,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"event": [
 		{
 			type: ModelElementTypes.Event,
-			ancestor: "attribute",
+			ancestor: ModelElementTypes.Attribute,
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2283,7 +2283,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event,
-			ancestor: "button",
+			ancestor: ModelElementTypes.Button,
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2314,7 +2314,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event,
-			ancestor: "toolbarbutton",
+			ancestor: ModelElementTypes.ToolbarButton,
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2345,7 +2345,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event,
-			ancestor: "node",
+			ancestor: ModelElementTypes.Node,
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2372,7 +2372,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event,
-			ancestor: "group",
+			ancestor: ModelElementTypes.Group,
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2434,7 +2434,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event,
-			ancestor: "action",
+			ancestor: ModelElementTypes.Action,
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2486,7 +2486,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event,
-			ancestor: "view",
+			ancestor: ModelElementTypes.View,
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -3158,7 +3158,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"group": [
 		{
-			ancestor: "view",
+			ancestor: ModelElementTypes.View,
 			type: ModelElementTypes.Group,
 			isSymbolDeclaration: true,
 			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
@@ -3166,7 +3166,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			childs: view_group_childs
 		},
 		{
-			ancestor: "condition",
+			ancestor: ModelElementTypes.Condition,
 			type: ModelElementTypes.Group,
 			description: "A group set, used to filter.",
 			childs: [
@@ -3196,7 +3196,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			description: "A button or link.",
 			type: ModelElementTypes.Button,
-			ancestor: "view",
+			ancestor: ModelElementTypes.View,
 			isSymbolDeclaration: true,
 			attributes: button_attributes,
 			childs: button_childs
@@ -3214,7 +3214,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			childs: button_childs
 		},
 		{
-			ancestor: "action",
+			ancestor: ModelElementTypes.Action,
 			attributes: [
 				{
 					name: "name"
@@ -3713,7 +3713,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"output": [
 		action_call_output_element,
 		{
-			ancestor: "function",
+			ancestor: ModelElementTypes.Function,
 			detailLevel: ModelDetailLevel.Declarations,
 			isSymbolDeclaration: true,
 			attributes: [

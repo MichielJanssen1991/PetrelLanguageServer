@@ -1024,7 +1024,7 @@ export const view_argument_element: Definition = {
 	description: "Filter arguments for the view.",
 	type: ModelElementTypes.Argument,
 	//detailLevel: ModelDetailLevel.SubReferences,
-	ancestor: "view",
+	ancestor: ModelElementTypes.View,
 	//matchCondition: (nodeContext) => !isViewArgument(nodeContext),
 	attributes: [
 		{
@@ -1115,7 +1115,7 @@ export const action_argument_element: Definition = {
 	name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
-	ancestor: "action",
+	ancestor: ModelElementTypes.Action,
 	matchCondition: (nodeContext) => !isViewArgument(nodeContext),
 	attributes: [
 		{
@@ -1170,7 +1170,7 @@ export const action_argument_element: Definition = {
 export const action_call_output_element: Definition =
 {
 	description: "Output of the action.",
-	ancestor: "action",
+	ancestor: ModelElementTypes.Action,
 	type: ModelElementTypes.ActionCallOutput,
 	detailLevel: ModelDetailLevel.SubReferences,
 	attributes:[
