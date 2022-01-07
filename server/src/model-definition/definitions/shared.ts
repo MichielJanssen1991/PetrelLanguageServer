@@ -402,7 +402,7 @@ export const infoset_aggregate_function: Definition =
 			}
 		]
 	};
-export const backend_action_element: Definition =
+export const backend_action_call_element: Definition =
 	{
 		type: ModelElementTypes.Action,
 		detailLevel: ModelDetailLevel.References,
