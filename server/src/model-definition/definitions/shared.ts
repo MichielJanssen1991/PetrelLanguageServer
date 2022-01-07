@@ -402,9 +402,9 @@ export const infoset_aggregate_function: Definition =
 			}
 		]
 	};
-export const backend_action_element: Definition =
+export const backend_action_call_element: Definition =
 	{
-		type: ModelElementTypes.Action,
+		type: ModelElementTypes.ActionCall,
 		detailLevel: ModelDetailLevel.References,
 		description: "An action.",
 		checkObsolete: true,
@@ -1024,7 +1024,7 @@ export const view_argument_element: Definition = {
 	description: "Filter arguments for the view.",
 	type: ModelElementTypes.Argument,
 	//detailLevel: ModelDetailLevel.SubReferences,
-	ancestor: ModelElementTypes.View,
+	ancestor: "view",
 	//matchCondition: (nodeContext) => !isViewArgument(nodeContext),
 	attributes: [
 		{
@@ -1115,7 +1115,7 @@ export const action_argument_element: Definition = {
 	name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
-	ancestor: ModelElementTypes.Action,
+	ancestor: "action",
 	matchCondition: (nodeContext) => !isViewArgument(nodeContext),
 	attributes: [
 		{
@@ -1170,7 +1170,7 @@ export const action_argument_element: Definition = {
 export const action_call_output_element: Definition =
 {
 	description: "Output of the action.",
-	ancestor: ModelElementTypes.Action,
+	ancestor: "action",
 	type: ModelElementTypes.ActionCallOutput,
 	detailLevel: ModelDetailLevel.SubReferences,
 	attributes:[
