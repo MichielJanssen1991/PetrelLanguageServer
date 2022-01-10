@@ -19,6 +19,7 @@ export enum ModelElementTypes {
 	Document = "Document",
 	ElseIf = "ElseIf",
 	Exists = "Exists",
+	Field = "Field",
 	Function = "Function",
 	Group = "Group",
 	Infoset = "Infoset",
@@ -29,6 +30,7 @@ export enum ModelElementTypes {
 	Module = "Module",
 	NameSpace = "NameSpace",
 	Rule = "Rule",
+	Rules = "Rules",
 	RuleContext = "RuleContext",
 	Output = "Output",
 	Profile = "Profile",
@@ -84,7 +86,8 @@ export type ContextQualifiers = {
  */
 export interface IXmlNodeContext {
 	getCurrentXmlNode: () => XmlNode
-	getFirstParent: () => XmlNode,
+	getFirstParent: () => XmlNode|undefined,
+	getAncestor: (level: number) => XmlNode|undefined,
 	hasParentTag: (name: string) => boolean
 }
 
@@ -191,13 +194,16 @@ export type Definition = {
 	checkObsolete?: boolean,
 	childs?: ChildDefinition[] | ChildReference,
 	attributes?: ElementAttribute[],
-	ancestor?: string,			// used to filter what definition should be chosen
-	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
 	type?: ModelElementTypes,
 	prefixNameSpace?: boolean,
 	isSymbolDeclaration?: boolean,
 	detailLevel?: ModelDetailLevel,
 	contextQualifiers?: (nodeContext: IXmlNodeContext) => ContextQualifiers
+	// matchCondition and ancestor are used to distinguish same tag definitions with different ModelElementTypes (for example action call output or rule output)
+	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
+	ancestor?: string,
+	// isGroupingElement is used as a signal to the parser that the element can be skipped when looking for the parent (for example rule in a module within rules, module is a grouping element) 
+	isGroupingElement?: boolean
 }
 
 export type ChildDefinition = {

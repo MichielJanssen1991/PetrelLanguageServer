@@ -3,6 +3,7 @@ import { action_definition_argument_element, default_yes_no_attribute_type, dev_
 
 export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	"module": [{
+		isGroupingElement:true,
 		description: "Group action definitions",
 		attributes: [
 			{

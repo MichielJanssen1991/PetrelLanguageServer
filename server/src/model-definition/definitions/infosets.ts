@@ -101,6 +101,7 @@ export const INFOSET_DEFINITION: Definitions = {
 	}],
 	"module": [{
 		type: ModelElementTypes.Module,
+		isGroupingElement:true,
 		description: "Used for grouping model entities and model namespacing.",
 		attributes: [
 			{
@@ -485,6 +486,7 @@ export const INFOSET_DEFINITION: Definitions = {
 		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted."
 	}],
 	"group": [{
+		isGroupingElement:true,
 		description: "",
 		childs: search_childs
 	}],

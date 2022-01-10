@@ -1,3 +1,4 @@
+import { XmlNode } from '../file-analyzer/parser/saxParserExtended';
 import { BACKEND_DEFINITION } from './definitions/backend';
 import { BACKEND_ACTIONS_DEFINITION } from './definitions/backend-actions';
 import { FRONTEND_DEFINITION } from './definitions/frontend';
@@ -41,16 +42,32 @@ export class ModelDefinitionManager {
 	 */
 	public getModelDefinitionForCurrentNode(modelFileContext: ModelFileContext, nodeContext: IXmlNodeContext) {
 		const definitionsForTag = this.getModelDefinition(modelFileContext)[nodeContext.getCurrentXmlNode().name] || [];
-		return definitionsForTag.find(def => this.conditionMatches(def, nodeContext));
+		switch (definitionsForTag.length) {
+			case 0: { return; }
+			case 1: { return definitionsForTag[0]; }
+			default: { return definitionsForTag.find(def => this.conditionMatches(modelFileContext, def, nodeContext));	}
+		}
 	}
 
-	private conditionMatches(def: Definition, nodeContext: IXmlNodeContext): unknown {
+	private conditionMatches(modelFileContext: ModelFileContext, def: Definition, nodeContext: IXmlNodeContext): unknown {
 		const matchConditionOk = def.matchCondition && nodeContext
 			? def.matchCondition(nodeContext)
 			: true;
 		//TODO: Maybe this condition should be improved to allow for ancestors instead of parents. Or the name should be changed to parent
-		const ancestorOk = def.ancestor ? nodeContext.getFirstParent().type == def.ancestor : true;
+		const ancestorOk = def.ancestor ? this.getFirstNonGroupingElementAncestor(modelFileContext, nodeContext)?.type == def.ancestor : true;
 		return matchConditionOk && ancestorOk;
+	}
+
+	private getFirstNonGroupingElementAncestor(modelFileContext: ModelFileContext, nodeContext: IXmlNodeContext, ancestorIndex = 1): XmlNode | undefined {
+		const ancestor = nodeContext.getAncestor(ancestorIndex);
+		if (ancestor) {
+			const ancestorDefinition = this.getModelDefinitionForTagAndType(modelFileContext, ancestor.name, ancestor.type);
+			if (ancestorDefinition?.isGroupingElement) {
+				return this.getFirstNonGroupingElementAncestor(modelFileContext, nodeContext, ancestorIndex + 1);
+			} else {
+				return ancestor;
+			}
+		}
 	}
 
 	/**
@@ -63,6 +80,10 @@ export class ModelDefinitionManager {
 	 */
 	public getModelDefinitionForTagAndType(context: ModelFileContext, tag: string, type: ModelElementTypes) {
 		const definitionsForTag = this.getModelDefinition(context)[tag] || [];
-		return definitionsForTag.find(def => (def.type == type) || type == ModelElementTypes.All);
+		switch (definitionsForTag.length) {
+			case 0: { return; }
+			case 1: { return definitionsForTag[0]; }
+			default: { return definitionsForTag.find(def => (def.type == type) || type == ModelElementTypes.All);	}
+		}
 	}
 }

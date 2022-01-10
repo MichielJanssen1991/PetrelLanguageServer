@@ -15,7 +15,7 @@ export const CHECKS_MESSAGES = {
 	SEARCHCOLUMN_ATTRIBUTE_VARIABLE_NOT_FOUND: (attributeName: string) => `Attribute variable '${attributeName}' not found in infoset.`,
 	VALIDATION_ERROR: (error: string, node: SymbolDeclaration) => `Error occured when trying to validate ${node.type} with name '${node.name}':${error}.`,
 	RULE_LOCALNAME_NOT_FOUND: (localName: string) => `Local name '${localName}' is not defined.`,
-	RULE_LOCALNAME_NOT_REFERENCED: (localName: string) => `Local name '${localName}' is not referenced.`,
+	RULE_LOCALNAME_NOT_REFERENCED: (localName: string) => `Local name '${localName}' is not used in this rule.`,
 	RULE_OUTPUT_ATTRIBUTE_NOT_FOUND: (name: string) => `Attribute '${name}' is not defined.`
 };
 

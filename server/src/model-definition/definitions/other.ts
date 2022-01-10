@@ -109,6 +109,7 @@ export const OTHER_DEFINITION: Definitions =
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"module": [{
+		isGroupingElement:true,
 		type: ModelElementTypes.Module,
 		detailLevel: ModelDetailLevel.Declarations,
 	}],
@@ -367,7 +368,7 @@ export function isNonPetrelModelTag(tagName: string) {
 
 
 export function isInfosetOutput(nodeContext: IXmlNodeContext): boolean {
-	return ("infoset" == nodeContext.getFirstParent().name);
+	return ("infoset" == nodeContext.getFirstParent()?.name);
 }
 
 export function isActionDefinition(nodeContext: IXmlNodeContext): boolean {
@@ -395,11 +396,11 @@ export function isModelCheckRuleAction(nodeContext: IXmlNodeContext): boolean {
 }
 
 export function isViewDeclaration(nodeContext: IXmlNodeContext): boolean {
-	return !(nodeContext.getFirstParent().name == "action" || nodeContext.getFirstParent().name == "view") && (nodeContext.getCurrentXmlNode().attributes.name != undefined);
+	return !(nodeContext.getFirstParent()?.name == "action" || nodeContext.getFirstParent()?.name == "view") && (nodeContext.getCurrentXmlNode().attributes.name != undefined);
 }
 
 export function isViewControl(nodeContext: IXmlNodeContext, controlType: string): boolean {
-	return nodeContext.getCurrentXmlNode().attributes?.control.toLowerCase() == controlType.toLowerCase();
+	return nodeContext.getCurrentXmlNode().attributes?.control?.toLowerCase() == controlType.toLowerCase();
 }
 
 //Objects which can be referenced without requiring the context

@@ -36,7 +36,11 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 
 	//INodeContext implementation
 	public getFirstParent() {
-		return this.parser.getFirstParent();
+		return this.parser.getParent();
+	}
+	
+	public getAncestor(level: number) {
+		return this.parser.getAncestor(level);
 	}
 
 	public hasParentTag(name: string) {

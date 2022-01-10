@@ -1,5 +1,4 @@
-import { ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { Attribute, AttributeTypes, ChildReference, Definition, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
+import { Attribute, AttributeTypes, Definition, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
 import { ModelCheck } from '../modelCheck';
 
 export class ModelDefinitionCheck extends ModelCheck {
@@ -10,7 +9,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 
 	protected checkInternal(node: TreeNode): void {
 		const modelFileContext = this.modelManager.getModelFileContextForFile(node.uri);
-		const tagDefinition = this.getElementDefinition(modelFileContext, node, node);
+		const tagDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, node.tag, node.type);
 		
 		this.allNodeAttributes = Object.values(node.attributes);
 		
@@ -24,29 +23,6 @@ export class ModelDefinitionCheck extends ModelCheck {
 			}
 		}
 		
-	}
-
-	private getElementDefinition(modelFileContext: ModelFileContext, searchFor: TreeNode , searchIn: TreeNode, depth = 0): Definition | undefined{
-		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, searchFor.tag, searchIn.type);
-		if (!elementDefinition && searchIn.parent && depth < 4 ){
-			// get the definition of the parent tag without specific filtering
-			const parentElementDef = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, searchIn.parent.tag, ModelElementTypes.All);
-			
-			// if parent is something else than the definition prescribes (for example include-block), the tag will be changed to the referred element
-			const childDef: ChildReference = (parentElementDef?.childs && !Array.isArray(parentElementDef?.childs)) ? parentElementDef?.childs : {};
-			if (childDef && childDef.matchElementFromAttribute){
-				const newTagName =searchIn.parent.attributes[childDef.matchElementFromAttribute].value;
-				if (newTagName){
-					const newParentElementDef = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, newTagName, ModelElementTypes.All);
-					if (newParentElementDef && newParentElementDef.type){
-						searchIn.parent.type = newParentElementDef.type;
-					}
-					searchIn.parent.tag = newTagName;
-				}				
-			}
-			return this.getElementDefinition(modelFileContext, searchFor, searchIn.parent, depth++);
-		}
-		return elementDefinition;
 	}
 
 	private checkChildOccurrences(element: TreeNode, definition: Definition): void {

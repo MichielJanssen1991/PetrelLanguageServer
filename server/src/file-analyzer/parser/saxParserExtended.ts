@@ -39,7 +39,8 @@ export type XmlNode = {
 // Extend with own functionality used for parsing model xml
 export interface ISaxParserExtended extends ISaxParser {
 	uri: string,
-	getFirstParent: () => XmlNode,
+	getParent: () => XmlNode|undefined,
+	getAncestor: (level: number) => XmlNode|undefined,
 	hasParentTag: (name: string) => boolean,
 	getCurrentXmlNode: () => XmlNode,
 	getTagRange: () => LSP.Range;
@@ -80,10 +81,15 @@ export function newSaxParserExtended(
 		onprocessinginstruction(instruction);
 	};
 
-	parser.getFirstParent = function () {
-		const parentNodeStack = this.tags;
-		return parentNodeStack[parentNodeStack.length - 2];
+	parser.getParent = function () {
+		return this.getAncestor(1);
 	};
+	
+	parser.getAncestor = function (level: number) {
+		const parentNodeStack = this.tags;
+		return parentNodeStack[parentNodeStack.length - 1 - level];
+	};
+
 	parser.getCurrentXmlNode = function () {
 		return this.tag;
 	};

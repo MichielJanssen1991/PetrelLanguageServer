@@ -823,8 +823,6 @@ export const FRONTEND_DEFINITION: Definitions = {
 		type: ModelElementTypes.View,
 		matchCondition: (nodeContext) => isViewControl(nodeContext, "ObjectView") && !isViewDeclaration(nodeContext),
 		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
 		attributes: [
 			...default_reference_view_atttributes,
 			attribute_detail_height,	// object/list
@@ -1729,6 +1727,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"module": [{
 		type:ModelElementTypes.Module,
 		detailLevel: ModelDetailLevel.Declarations,
+		isGroupingElement:true,
 		description: "Used for grouping model entities and model namespacing.",
 		attributes: [
 			{
@@ -3160,7 +3159,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			ancestor: ModelElementTypes.View,
 			type: ModelElementTypes.Group,
-			isSymbolDeclaration: true,
+			isGroupingElement: true,
 			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
 			attributes: view_group_attributes,
 			childs: view_group_childs
@@ -3854,6 +3853,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"field": [{
 		description: "A boolean condition to check.</summary>Add more fields to strengthen the condition (logical 'and'). The 'equal to', 'contains' and 'does not contain' operators are also accepting a piped list of values.",
+		type: ModelElementTypes.Field,
 		attributes: [
 			{
 				name: "name",

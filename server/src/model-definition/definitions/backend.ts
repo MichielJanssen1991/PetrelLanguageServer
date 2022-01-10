@@ -50,6 +50,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"module": [{
 		type: ModelElementTypes.Module,
 		detailLevel: ModelDetailLevel.Declarations,
+		isGroupingElement: true,
 		description: "Used for grouping model entities and model namespacing.",
 		attributes: [
 			{
@@ -369,7 +370,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			child_model_condition
 		]
 	}],
-	"virtual-filter":[{
+	"virtual-filter": [{
 		description: "A filter on the base type that is defined here. The other way to set the virtual-filter is to select one of the filters defined at the base type using the attribute virtual-filter.",
 		childs: [
 			{
@@ -385,7 +386,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"single-aggregate-query": [infoset_single_aggregate_query],
 	"aggregate-attribute": [infoset_aggregate_attribute],
 	"aggregate-function": [infoset_aggregate_function],
-	"one-to-many":[{
+	"one-to-many": [{
 		description: "A 1-to-n relation that maps another type that has a foreign relation to this type.",
 		attributes: [
 			{
@@ -1301,7 +1302,9 @@ export const BACKEND_DEFINITION: Definitions = {
 	"searchcolumn-submatch": [{}],
 	"or": [{}],
 	"and": [{}],
-	"group": [{}],
+	"group": [{
+		isGroupingElement: true
+	}],
 	"in": [{}],
 	"full-text-query": [{}],
 };
