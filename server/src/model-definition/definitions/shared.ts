@@ -402,9 +402,9 @@ export const infoset_aggregate_function: Definition =
 			}
 		]
 	};
-export const backend_action_element: Definition =
+export const backend_action_call_element: Definition =
 	{
-		type: ModelElementTypes.Action,
+		type: ModelElementTypes.ActionCall,
 		detailLevel: ModelDetailLevel.References,
 		description: "An action.",
 		checkObsolete: true,

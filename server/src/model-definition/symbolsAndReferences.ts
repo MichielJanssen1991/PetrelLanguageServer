@@ -84,7 +84,7 @@ export type ContextQualifiers = {
  */
 export interface IXmlNodeContext {
 	getCurrentXmlNode: () => XmlNode
-	getFirstParent: () => any,
+	getFirstParent: () => XmlNode,
 	hasParentTag: (name: string) => boolean
 }
 
@@ -191,7 +191,7 @@ export type Definition = {
 	checkObsolete?: boolean,
 	childs?: ChildDefinition[] | ChildReference,
 	attributes?: ElementAttribute[],
-	ancestor?: ModelElementTypes | string,			// used to filter what definition should be chosen
+	ancestor?: string,			// used to filter what definition should be chosen
 	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
 	type?: ModelElementTypes,
 	prefixNameSpace?: boolean,

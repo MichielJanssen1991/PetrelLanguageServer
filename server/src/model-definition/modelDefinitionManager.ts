@@ -4,7 +4,7 @@ import { FRONTEND_DEFINITION } from './definitions/frontend';
 import { INFOSET_DEFINITION } from './definitions/infosets';
 import { OTHER_DEFINITION } from './definitions/other';
 import { RULE_DEFINITION } from './definitions/rules';
-import { IXmlNodeContext, Definitions, ModelElementTypes } from './symbolsAndReferences';
+import { IXmlNodeContext, Definitions, ModelElementTypes, Definition } from './symbolsAndReferences';
 
 export enum ModelFileContext {
 	Backend,
@@ -41,11 +41,16 @@ export class ModelDefinitionManager {
 	 */
 	public getModelDefinitionForCurrentNode(modelFileContext: ModelFileContext, nodeContext: IXmlNodeContext) {
 		const definitionsForTag = this.getModelDefinition(modelFileContext)[nodeContext.getCurrentXmlNode().name] || [];
-		return definitionsForTag.find(def =>
-			def.matchCondition && nodeContext
-				? def.matchCondition(nodeContext)
-				: true
-		);
+		return definitionsForTag.find(def => this.conditionMatches(def, nodeContext));
+	}
+
+	private conditionMatches(def: Definition, nodeContext: IXmlNodeContext): unknown {
+		const matchConditionOk = def.matchCondition && nodeContext
+			? def.matchCondition(nodeContext)
+			: true;
+		//TODO: Maybe this condition should be improved to allow for ancestors instead of parents. Or the name should be changed to parent
+		const ancestorOk = def.ancestor ? nodeContext.getFirstParent().type == def.ancestor : true;
+		return matchConditionOk && ancestorOk;
 	}
 
 	/**
@@ -58,9 +63,6 @@ export class ModelDefinitionManager {
 	 */
 	public getModelDefinitionForTagAndType(context: ModelFileContext, tag: string, type: ModelElementTypes) {
 		const definitionsForTag = this.getModelDefinition(context)[tag] || [];
-		if (definitionsForTag.length > 1){
-			return definitionsForTag.find(def => def.ancestor == type || type==ModelElementTypes.All);
-		}
-		return definitionsForTag[0];
+		return definitionsForTag.find(def => (def.type == type) || type == ModelElementTypes.All);
 	}
 }
