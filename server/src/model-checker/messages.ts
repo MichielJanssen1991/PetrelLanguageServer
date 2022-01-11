@@ -3,7 +3,7 @@ import { Reference, SymbolDeclaration} from '../model-definition/symbolsAndRefer
 export const CHECKS_MESSAGES = {
 	RULECALL_WITHOUT_NAME: () => "Rule call without rule name specified.",
 	RULELOOPACTIONCALL_WITHOUT_NAME: () => "RuleLoopAction call without rule name specified.",
-	INFOSETCALL_WITHOUT_NAME: () => "Infoset call without infoset name specified.",
+	INFOSETCALL_WITHOUT_NAME: () => "Infoset call without infoset-name specified.",
 	INPUT_NOT_FOUND: (argumentName: string, references: Reference[]) => `Input '${argumentName}' not found for ${formatReferenceEnumeration(references)}.`,
 	OUTPUT_NOT_FOUND: (outputName: string, references: Reference[]) => `Output '${outputName}' not found for ${formatReferenceEnumeration(references)}.`,
 	REFERENCE_NOT_FOUND: (reference: Reference) => `${reference.type} with name '${reference.value}' not found.`,

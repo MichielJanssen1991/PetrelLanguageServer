@@ -101,6 +101,7 @@ export const INFOSET_DEFINITION: Definitions = {
 	}],
 	"module": [{
 		type: ModelElementTypes.Module,
+		detailLevel: ModelDetailLevel.Declarations,
 		isGroupingElement:true,
 		description: "Used for grouping model entities and model namespacing.",
 		attributes: [
