@@ -207,6 +207,10 @@ export class CompletionProvider {
 						case ModelElementTypes.Action:
 						case ModelElementTypes.IncludeBlock:
 						case ModelElementTypes.Type:
+						case ModelElementTypes.View:
+						case ModelElementTypes.Infoset:
+						case ModelElementTypes.Function:
+						case ModelElementTypes.Decorator:
 							symbols = this.symbolAndReferenceManager.getAllSymbolsForType(type.relatedTo).map((x) => ({ label: x.name })) || [
 								{ label: "no " + type.relatedTo + "s found" }];
 							break;
@@ -288,7 +292,7 @@ export class CompletionProvider {
 	private mapChildrenToCompletionItems(children: ChildDefinition[], modelFileContext: ModelFileContext): CompletionItem[] {
 		return children.map(
 			(child: ChildDefinition) => {
-				const childsOwnDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, child.element, ModelElementTypes.All);//TODO: should pass node and context of child
+				const childsOwnDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, child.element, child.type||ModelElementTypes.All, child.subtype);
 				const snippet = this.buildChildElementSnippet(modelFileContext, child, childsOwnDefinition);
 				return {
 					label: child.element,

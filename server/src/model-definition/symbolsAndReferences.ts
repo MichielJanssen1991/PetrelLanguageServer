@@ -249,6 +249,7 @@ export type ChildDefinition = {
 	required?: boolean,
 	validations?: ChildValidation[],
 	type?:ModelElementTypes,
+	subtype?:ModelElementTypes,
 	obsolete?: boolean,
 	obsoleteMessage?: string
 }
