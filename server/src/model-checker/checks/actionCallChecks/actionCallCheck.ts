@@ -61,7 +61,7 @@ export abstract class ActionCallCheck extends ModelCheck {
 		this.getAdditionalOutputsForActions(actionCall).forEach(x => outputNames.add(x));
 
 		this.modelManager.getActionCallOutputs(actionCall).forEach(output => {
-			const localName = output.attributes[NAMES.ATTRIBUTE_LOCALNAME];
+			const localName = output.attributes[NAMES.ATTRIBUTE_REMOTENAME] || output.attributes[NAMES.ATTRIBUTE_LOCALNAME];
 			if (localName && !outputNames.has(localName.value)) {
 				this.addWarning(
 					output.range, CHECKS_MESSAGES.OUTPUT_NOT_FOUND(localName.value, referenceAndSubReferences)
@@ -88,7 +88,7 @@ export abstract class ActionCallCheck extends ModelCheck {
 	protected getAdditionalInputsForAction(actionCall: TreeNode) {
 		let inputNames: string[] = [];
 		this.getAdditionalInputsForSpecificAction(actionCall).forEach(x => inputNames.push(x));
-		const actionRef = actionCall.attributes["name"] as Reference;
+		const actionRef = actionCall.attributes.name as Reference;
 		const referencedAction = this.modelManager.getReferencedObject(actionRef);
 		if (referencedAction) {
 			const actionAttributes = this.modelManager.getChildrenOfType(referencedAction, ModelElementTypes.Attribute) as SymbolDeclaration[];

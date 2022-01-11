@@ -50,6 +50,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"module": [{
 		type: ModelElementTypes.Module,
 		detailLevel: ModelDetailLevel.Declarations,
+		isGroupingElement: true,
 		description: "Used for grouping model entities and model namespacing.",
 		attributes: [
 			{
@@ -369,8 +370,9 @@ export const BACKEND_DEFINITION: Definitions = {
 			child_model_condition
 		]
 	}],
-	"virtual-filter":[{
+	"virtual-filter": [{
 		description: "A filter on the base type that is defined here. The other way to set the virtual-filter is to select one of the filters defined at the base type using the attribute virtual-filter.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "search",
@@ -385,7 +387,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"single-aggregate-query": [infoset_single_aggregate_query],
 	"aggregate-attribute": [infoset_aggregate_attribute],
 	"aggregate-function": [infoset_aggregate_function],
-	"one-to-many":[{
+	"one-to-many": [{
 		description: "A 1-to-n relation that maps another type that has a foreign relation to this type.",
 		attributes: [
 			{
@@ -990,6 +992,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	}],
 	"format": [{
 		description: "Defines a lay-out.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "image"
@@ -1237,6 +1240,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"output": [action_call_output_element],
 	"filters": [{
 		description: "Defines search filters for this type.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "search"
@@ -1297,11 +1301,26 @@ export const BACKEND_DEFINITION: Definitions = {
 			child_model_condition
 		]
 	}],
-	"searchcolumn": [{}],
-	"searchcolumn-submatch": [{}],
-	"or": [{}],
-	"and": [{}],
-	"group": [{}],
-	"in": [{}],
-	"full-text-query": [{}],
+	"searchcolumn": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"searchcolumn-submatch": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"or": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"and": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"group": [{
+		attributes: [dev_comment_attribute],
+		isGroupingElement: true
+	}],
+	"in": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"full-text-query": [{
+		attributes: [dev_comment_attribute],
+	}],
 };

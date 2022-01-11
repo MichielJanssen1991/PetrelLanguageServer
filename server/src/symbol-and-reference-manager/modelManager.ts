@@ -51,12 +51,11 @@ export class ModelManager extends SymbolAndReferenceManager {
 	public getTypeAttributes(type: SymbolDeclaration): string[] {
 		let attributeNames = this.getChildrenOfType(type, ModelElementTypes.Attribute).map(x => (x as SymbolDeclaration).name);
 		const basedOnTypeRef = type.attributes["type"] as Reference;
-		if (basedOnTypeRef) {
-			const basedOnType = this.getReferencedObject(basedOnTypeRef);
-			if (basedOnType) {
-				attributeNames = attributeNames.concat(this.getTypeAttributes(basedOnType));
-			}
-		} else {
+		const basedOnType = basedOnTypeRef ? this.getReferencedObject(basedOnTypeRef) : undefined;
+		if (basedOnType) {
+			attributeNames = attributeNames.concat(this.getTypeAttributes(basedOnType));
+		}
+		else {
 			attributeNames.push(NAMES.RESERVEDINPUT_IID); //Only for lowest level in inheritance to avoid adding iid each time
 		}
 		return attributeNames;

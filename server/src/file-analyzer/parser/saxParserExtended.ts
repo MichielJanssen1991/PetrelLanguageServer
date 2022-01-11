@@ -1,4 +1,5 @@
 import * as LSP from 'vscode-languageserver';
+import { ModelElementTypes } from '../../model-definition/symbolsAndReferences';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const sax = require("../../../node_modules/sax/lib/sax");
 
@@ -31,18 +32,21 @@ export type ProcessingInstruction = {
 export type XmlNode = {
 	name: string
 	attributes: Record<string, string>
+	type: ModelElementTypes
 }
 
 
 // Extend with own functionality used for parsing model xml
 export interface ISaxParserExtended extends ISaxParser {
 	uri: string,
-	getFirstParent: () => XmlNode,
+	getParent: () => XmlNode|undefined,
+	getAncestor: (level: number) => XmlNode|undefined,
 	hasParentTag: (name: string) => boolean,
 	getCurrentXmlNode: () => XmlNode,
 	getTagRange: () => LSP.Range;
 	getAttributeRange: (attribute: { name: string, value: string }) => LSP.Range;
 	getAttributeValueRange: (attribute: { name: string, value: string }) => LSP.Range;
+	enrichTagWithType: (type: ModelElementTypes) => void;
 }
 
 
@@ -77,10 +81,15 @@ export function newSaxParserExtended(
 		onprocessinginstruction(instruction);
 	};
 
-	parser.getFirstParent = function () {
-		const parentNodeStack = this.tags;
-		return parentNodeStack[parentNodeStack.length - 2];
+	parser.getParent = function () {
+		return this.getAncestor(1);
 	};
+	
+	parser.getAncestor = function (level: number) {
+		const parentNodeStack = this.tags;
+		return parentNodeStack[parentNodeStack.length - 1 - level];
+	};
+
 	parser.getCurrentXmlNode = function () {
 		return this.tag;
 	};
@@ -120,6 +129,10 @@ export function newSaxParserExtended(
 			this.line,
 			this.column,
 		);
+	};
+
+	parser.enrichTagWithType = function (type:ModelElementTypes) {
+		this.tag.type = type; 
 	};
 
 	return parser;

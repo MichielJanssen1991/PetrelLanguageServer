@@ -1,5 +1,4 @@
-import { ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { Attribute, AttributeTypes, ChildReference, Definition, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
+import { Attribute, AttributeTypes, Definition, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
 import { ModelCheck } from '../modelCheck';
 
 export class ModelDefinitionCheck extends ModelCheck {
@@ -10,7 +9,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 
 	protected checkInternal(node: TreeNode): void {
 		const modelFileContext = this.modelManager.getModelFileContextForFile(node.uri);
-		const tagDefinition = this.getElementDefinition(modelFileContext, node, node);
+		const tagDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
 		
 		this.allNodeAttributes = Object.values(node.attributes);
 		
@@ -24,29 +23,6 @@ export class ModelDefinitionCheck extends ModelCheck {
 			}
 		}
 		
-	}
-
-	private getElementDefinition(modelFileContext: ModelFileContext, searchFor: TreeNode , searchIn: TreeNode, depth = 0): Definition | undefined{
-		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, searchFor.tag, searchIn.type);
-		if (!elementDefinition && searchIn.parent && depth < 4 ){
-			// get the definition of the parent tag without specific filtering
-			const parentElementDef = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, searchIn.parent.tag, ModelElementTypes.All);
-			
-			// if parent is something else than the definition prescribes (for example include-block), the tag will be changed to the referred element
-			const childDef: ChildReference = (parentElementDef?.childs && !Array.isArray(parentElementDef?.childs)) ? parentElementDef?.childs : {};
-			if (childDef && childDef.matchElementFromAttribute){
-				const newTagName =searchIn.parent.attributes[childDef.matchElementFromAttribute].value;
-				if (newTagName){
-					const newParentElementDef = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, newTagName, ModelElementTypes.All);
-					if (newParentElementDef && newParentElementDef.type){
-						searchIn.parent.type = newParentElementDef.type;
-					}
-					searchIn.parent.tag = newTagName;
-				}				
-			}
-			return this.getElementDefinition(modelFileContext, searchFor, searchIn.parent, depth++);
-		}
-		return elementDefinition;
 	}
 
 	private checkChildOccurrences(element: TreeNode, definition: Definition): void {
@@ -90,7 +66,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 		}
 
 		// check required attribute is added
-		definition.attributes?.forEach(attr=>{
+		definition.attributes.forEach(attr=>{
 			// based on required:true attribute
 			if (attr.required && !this.allNodeAttributes.map(x=>x.name.toLowerCase()).includes(attr.name.toLowerCase())){
 				this.addError(element.range, `Missing required attribute '${attr.name}' for element '${element.tag}'`);
@@ -119,7 +95,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 
 	private checkAttributeValues(element: TreeNode, definition: Definition): void {
 		// check attribute validations
-		definition.attributes?.filter(da=>da.validations && this.allNodeAttributes.map(x=>x.name.toLowerCase()).includes(da.name.toLowerCase())).forEach(da=>{
+		definition.attributes.filter(da=>da.validations && this.allNodeAttributes.map(x=>x.name.toLowerCase()).includes(da.name.toLowerCase())).forEach(da=>{
 			da.validations?.forEach(dv=>{
 				if (dv.type == "regex"){
 					const attrElement: Attribute = element.attributes[da.name];
@@ -132,7 +108,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 		});
 
 		// check attribute types
-		definition.attributes?.filter(da=>da.type && this.allNodeAttributes.map(x=>x.name).includes(da.name)).forEach(da=>{
+		definition.attributes.filter(da=>da.type && this.allNodeAttributes.map(x=>x.name).includes(da.name)).forEach(da=>{
 			const attrValue: string = this.allNodeAttributes.filter(x=>x.name==da.name).map(x=>x.value)[0] || "";
 			
 			switch(da.type?.type){

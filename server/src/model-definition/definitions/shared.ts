@@ -404,7 +404,7 @@ export const infoset_aggregate_function: Definition =
 	};
 export const backend_action_call_element: Definition =
 	{
-		type: ModelElementTypes.Action,
+		type: ModelElementTypes.ActionCall,
 		detailLevel: ModelDetailLevel.References,
 		description: "An action.",
 		checkObsolete: true,
@@ -842,6 +842,7 @@ export const decorators_element: Definition =
 {
 	type: ModelElementTypes.Decorators,
 	description: "Use to group decorator definitions.",
+	attributes: [dev_comment_attribute],
 	childs: [
 		{
 			element: "decorator"
@@ -1023,9 +1024,8 @@ export const action_definition_argument_element: Definition = {
 export const view_argument_element: Definition = {
 	description: "Filter arguments for the view.",
 	type: ModelElementTypes.Argument,
-	//detailLevel: ModelDetailLevel.SubReferences,
-	ancestor: ModelElementTypes.View,
-	//matchCondition: (nodeContext) => !isViewArgument(nodeContext),
+	detailLevel: ModelDetailLevel.SubReferences,
+	ancestors: [ModelElementTypes.View],
 	attributes: [
 		{
 			name: NAMES.ATTRIBUTE_REMOTENAME,
@@ -1112,10 +1112,9 @@ export const view_argument_element: Definition = {
 
 export const action_argument_element: Definition = {
 	description: "An argument to pass to the action.",
-	name: ((x: any) => (x.attributes[NAMES.ATTRIBUTE_REMOTENAME] || x.attributes[NAMES.ATTRIBUTE_LOCALNAME] || "")),
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
-	ancestor: ModelElementTypes.Action,
+	ancestors: [ModelElementTypes.ActionCall],
 	matchCondition: (nodeContext) => !isViewArgument(nodeContext),
 	attributes: [
 		{
@@ -1170,7 +1169,7 @@ export const action_argument_element: Definition = {
 export const action_call_output_element: Definition =
 {
 	description: "Output of the action.",
-	ancestor: ModelElementTypes.Action,
+	ancestors: [ModelElementTypes.ActionCall],
 	type: ModelElementTypes.ActionCallOutput,
 	detailLevel: ModelDetailLevel.SubReferences,
 	attributes:[
@@ -1523,10 +1522,10 @@ export const event_childs: ChildDefinition[] =
 ];
 
 export function isViewArgument(nodeContext: IXmlNodeContext): boolean {
-	return nodeContext.getFirstParent().name == "view";
+	return nodeContext.getFirstParent()?.name == "view";
 }
 
 export function isOutputDeclaration(nodeContext: IXmlNodeContext): boolean {
-	return (["rule", "infoset", "function"].includes(nodeContext.getFirstParent().name))
-		|| (nodeContext.getFirstParent().name == "action" && nodeContext.hasParentTag("actions"));
+	return (["rule", "infoset", "function"].includes(nodeContext.getFirstParent()?.name||"NONE"))
+		|| (nodeContext.getFirstParent()?.name == "action" && nodeContext.hasParentTag("actions"));
 }

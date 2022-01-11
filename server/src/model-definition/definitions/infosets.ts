@@ -101,6 +101,8 @@ export const INFOSET_DEFINITION: Definitions = {
 	}],
 	"module": [{
 		type: ModelElementTypes.Module,
+		detailLevel: ModelDetailLevel.Declarations,
+		isGroupingElement:true,
 		description: "Used for grouping model entities and model namespacing.",
 		attributes: [
 			{
@@ -136,6 +138,7 @@ export const INFOSET_DEFINITION: Definitions = {
 	}],
 	"search": [{
 		type: ModelElementTypes.Search,
+		detailLevel: ModelDetailLevel.Declarations,
 		description: "Data query.",
 		attributes: [
 			{
@@ -479,13 +482,17 @@ export const INFOSET_DEFINITION: Definitions = {
 		]
 	}],
 	"or": [{
-		description: "The or-operator between search columns. Use the group element to specify brackets."
+		description: "The or-operator between search columns. Use the group element to specify brackets.",
+		attributes: [dev_comment_attribute]
 	}],
 	"and": [{
-		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted."
+		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted.",
+		attributes: [dev_comment_attribute]
 	}],
 	"group": [{
+		isGroupingElement:true,
 		description: "",
+		attributes: [dev_comment_attribute],
 		childs: search_childs
 	}],
 	"in": [{
@@ -560,6 +567,7 @@ export const INFOSET_DEFINITION: Definitions = {
 	}],
 	"query": [{
 		description: "A specific data query command.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "select",
@@ -716,6 +724,7 @@ export const INFOSET_DEFINITION: Definitions = {
 	"aggregate-function": [infoset_aggregate_function],
 	"ordering": [{
 		description: "An ordering over sets of objects of a certain type.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "sort",
@@ -759,6 +768,7 @@ export const INFOSET_DEFINITION: Definitions = {
 	}],
 	"grouping": [{
 		description: "A grouping over sets of objects of a certain type.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "grouping-item",

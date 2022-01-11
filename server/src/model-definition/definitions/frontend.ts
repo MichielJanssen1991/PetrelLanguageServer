@@ -1,158 +1,158 @@
-import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption } from '../symbolsAndReferences';
+import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption, Definition } from '../symbolsAndReferences';
 import { isViewControl, isViewDeclaration } from './other';
 import { action_argument_element, action_call_output_element, child_include, child_merge_instruction, child_model_condition, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
 
-const button_attributes: ElementAttribute[] = 
-[
-	{
-		name: "name",
-		description: "Unique, required identifier.",
-		required: true
-	},
-	{
-		name: "catpion",
-		description: "The text to display on the button."
-	},
-	{
-		name: "info",
-		description: "Will appear as tooltip of the button."
-	},
-	{
-		name: "url",
-		description: "An URL to go to when the button is clicked."
-	},
-	{
-		name: "width",
-		description: "Width of the button."
-	},
-	{
-		name: "height",
-		description: "Height of the button."
-	},
-	{
-		name: "appearance-class",
-		description: "The appearance of the button or link."
-	},
-	{
-		name: "accesskey",
-		description: "A key to access the button."
-	},
-	{
-		name: "enabled",
-		description: "If the button is initially enabled.",
-		type: default_yes_no_attribute_type
-	},
-	{
-		name: "show",
-		description: "If the button is initially visible.",
-		type: default_yes_no_attribute_type
-	},
-	{
-		name: "show-in-listview",
-		description: "Specify to show the button in the list view.",
-		type: default_yes_no_attribute_type
-	},
-	{
-		name: "disablable",
-		description: "Specify to enable/disable the button according to the view mode.",
-		type: default_yes_no_attribute_type
-	},
-	{
-		name: "submit",
-		description: "If true, the event of this button is fired when the 'Enter' is pressed on the form.",
-		type: default_yes_no_attribute_type
-	},
-	{
-		name: "top",
-		description: "The vertical position of the button in volatile mode."
-	},
-	{
-		name: "vertical",
-		description: "The horizontal position of the button in volatile mode."
-	},
-	{
-		name: "icon",
-		description: "The icon to display on the button. If omitted, only the caption is displayed."
-	},
-	{
-		name: "icon-width",
-		description: "Width of the button icon."
-	},
-	{
-		name: "icon-position",
-		description: "The position of the button icon.",
-		type: {
-			type: AttributeTypes.Enum,
-			options: [
-				{
-					name: "left"
-				},
-				{
-					name: "right"
-				},
-			]
-		}
-	},
-	{
-		name: "float",
-		description: "Whether the button is floated",
-		type: {
-			type: AttributeTypes.Enum,
-			options: [
-				{
-					name: "none"
-				},
-				{
-					name: "left"
-				},
-				{
-					name: "right"
-				}
-			]
-		}
-	},
-	{
-		name: "clear",
-		description: "Specifies the sides of the view where other floating elements are not allowed.",
-		type: {
-			type: AttributeTypes.Enum,
-			options: [
-				{
-					name: "both"
-				},
-				{
-					name: "left"
-				},
-				{
-					name: "right"
-				}
-			]
-		}
-	},
-	dev_override_rights_attribute,
-	dev_ignore_modelcheck_attribute,
-	dev_ignore_modelcheck_justification_attribute,
-	dev_comment_attribute
-];
+const button_attributes: ElementAttribute[] =
+	[
+		{
+			name: "name",
+			description: "Unique, required identifier.",
+			required: true
+		},
+		{
+			name: "catpion",
+			description: "The text to display on the button."
+		},
+		{
+			name: "info",
+			description: "Will appear as tooltip of the button."
+		},
+		{
+			name: "url",
+			description: "An URL to go to when the button is clicked."
+		},
+		{
+			name: "width",
+			description: "Width of the button."
+		},
+		{
+			name: "height",
+			description: "Height of the button."
+		},
+		{
+			name: "appearance-class",
+			description: "The appearance of the button or link."
+		},
+		{
+			name: "accesskey",
+			description: "A key to access the button."
+		},
+		{
+			name: "enabled",
+			description: "If the button is initially enabled.",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "show",
+			description: "If the button is initially visible.",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "show-in-listview",
+			description: "Specify to show the button in the list view.",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "disablable",
+			description: "Specify to enable/disable the button according to the view mode.",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "submit",
+			description: "If true, the event of this button is fired when the 'Enter' is pressed on the form.",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "top",
+			description: "The vertical position of the button in volatile mode."
+		},
+		{
+			name: "vertical",
+			description: "The horizontal position of the button in volatile mode."
+		},
+		{
+			name: "icon",
+			description: "The icon to display on the button. If omitted, only the caption is displayed."
+		},
+		{
+			name: "icon-width",
+			description: "Width of the button icon."
+		},
+		{
+			name: "icon-position",
+			description: "The position of the button icon.",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "left"
+					},
+					{
+						name: "right"
+					},
+				]
+			}
+		},
+		{
+			name: "float",
+			description: "Whether the button is floated",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "none"
+					},
+					{
+						name: "left"
+					},
+					{
+						name: "right"
+					}
+				]
+			}
+		},
+		{
+			name: "clear",
+			description: "Specifies the sides of the view where other floating elements are not allowed.",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "both"
+					},
+					{
+						name: "left"
+					},
+					{
+						name: "right"
+					}
+				]
+			}
+		},
+		dev_override_rights_attribute,
+		dev_ignore_modelcheck_attribute,
+		dev_ignore_modelcheck_justification_attribute,
+		dev_comment_attribute
+	];
 
 const button_childs: ChildDefinition[] =
-[
-	{
-		element: "icon"
-	},
-	{
-		element: "text"
-	},
-	{
-		element: "events"
-	},
-	{
-		element: "format"
-	},
-	child_include,
-	child_merge_instruction,
-	child_model_condition
-];
+	[
+		{
+			element: "icon"
+		},
+		{
+			element: "text"
+		},
+		{
+			element: "events"
+		},
+		{
+			element: "format"
+		},
+		child_include,
+		child_merge_instruction,
+		child_model_condition
+	];
 
 const view_attribute_name_required: ElementAttribute = {
 	name: "name",
@@ -169,7 +169,8 @@ const view_attribute_name_required: ElementAttribute = {
 
 const view_attribute_target_uri: ElementAttribute = {
 	name: "target-uri",
-	description: "The target identifier for the item used in frontend actions, etcetera."			
+	description: "The target identifier for the item used in frontend actions, etcetera.",
+	autoadd: true
 };
 
 const view_control_options: AttributeOption[] = [
@@ -221,7 +222,7 @@ const view_attribute_control_required: ElementAttribute = {
 	type: {
 		type: AttributeTypes.Enum,
 		options: view_control_options
-	}	
+	}
 };
 
 const view_attribute_control: ElementAttribute = {
@@ -230,7 +231,7 @@ const view_attribute_control: ElementAttribute = {
 	type: {
 		type: AttributeTypes.Enum,
 		options: view_control_options
-	}	
+	}
 };
 
 const view_attribute_title: ElementAttribute = {
@@ -248,7 +249,7 @@ const view_attribute_title: ElementAttribute = {
 			condition: "!=",
 			value: "Empty"
 		},
-	]				
+	]
 };
 
 const view_attribute_type: ElementAttribute = {
@@ -587,7 +588,7 @@ const attribute_right: ElementAttribute = {
 	]
 };
 
-const attribute_bottom: ElementAttribute ={
+const attribute_bottom: ElementAttribute = {
 	name: "bottom",
 	description: "",
 	visibilityConditions: [
@@ -639,7 +640,7 @@ const attribute_log_attributes: ElementAttribute = {
 	]
 };
 
-const default_view_atttributes: ElementAttribute[] = [
+const default_view_attributes: ElementAttribute[] = [
 	view_attribute_title,
 	view_attribute_type,
 	view_attribute_view,
@@ -674,19 +675,17 @@ const default_view_atttributes: ElementAttribute[] = [
 	attribute_width,
 	attribute_height,
 	attribute_log_access,
-	attribute_log_attributes	
+	attribute_log_attributes
 ];
 
-const default_definition_view_atttributes: ElementAttribute[] = [
+const default_definition_view_attributes: ElementAttribute[] = [
 	view_attribute_name_required,
 	view_attribute_control_required,
-	...default_view_atttributes,
 ];
 
-const default_reference_view_atttributes: ElementAttribute[] = [
+const default_reference_view_attributes: ElementAttribute[] = [
 	view_attribute_target_uri,
 	view_attribute_control,
-	...default_view_atttributes,
 ];
 
 const default_view_childs: ChildDefinition[] = [
@@ -709,8 +708,8 @@ const default_view_childs: ChildDefinition[] = [
 	{
 		element: "metadata-initialize",
 		occurence: "once"
-	},	
-	
+	},
+
 ];
 
 // const default_view_unknown_childs: ChildDefinition[] = [
@@ -761,794 +760,806 @@ const default_view_record_childs: ChildDefinition[] = [
 	},
 ];
 
+const frontend_events_base_definition: Definition = {
+	description: "Frontend event registrations.\"Events\":[EventsAndActions_ActionsOverview] are the predefined events at the client side. These trigger a server side or client side action, as a result of which an operation (on the server or in the screen) is initiated.",
+	attributes: [dev_comment_attribute],
+	childs: [
+		{
+			element: "event",
+			occurence: "at-least-once"
+		},
+		child_include,
+		child_merge_instruction,
+		child_model_condition
+	]
+};
+
+const objectview_base_definition: Definition = {
+	subtype: ModelElementTypes.View_ObjectView, 
+	attributes: [
+		...default_view_attributes,
+		attribute_detail_height,	// object/list
+		{
+			name: "layoutable",
+			description: "Whether or not a layout can be created by the Inspector. If set to 'yes' then the view should also have a name.",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "layout",
+			description: "The explicit name of the layout in the layout.xml file. Usually this value is empty, because layoutable='yes' will compute a name automatically. If the layout is set then the view should also have a name."
+		},
+		{
+			name: "focus-field",
+			description: "The field to give initial focus when the object view loads.",
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Attribute	// TODO: filter attributes current view
+			}
+		},
+		{
+			name: "save-to-parent",
+			description: "",
+			type: default_yes_no_attribute_type
+		},
+	],
+	childs: [
+		...default_view_childs,
+		...default_view_record_childs,
+		{
+			element: "separator"
+		},
+		{
+			element: "tabber"
+		},
+	]
+};
+
 export const FRONTEND_DEFINITION: Definitions = {
 	"view": [
-	{ // General (no control type)
-		type: ModelElementTypes.View,
-		description: "Add new view",
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "x"),
-		attributes: [
-			...default_definition_view_atttributes,
-		],
-		childs: [
-			...default_view_childs
-		]
-	},
-	{ // ObjectView
-		type: ModelElementTypes.View,
-		description: "ObjectView as a definition",
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "ObjectView") && isViewDeclaration(nodeContext),
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		attributes: [
-			...default_definition_view_atttributes,
-			attribute_detail_height,	// object/list
-			{
-				name: "layoutable",
-				description: "Whether or not a layout can be created by the Inspector. If set to 'yes' then the view should also have a name.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "layout",
-				description: "The explicit name of the layout in the layout.xml file. Usually this value is empty, because layoutable='yes' will compute a name automatically. If the layout is set then the view should also have a name."
-			},
-			{
-				name: "focus-field",
-				description: "The field to give initial focus when the object view loads.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute	// TODO: filter attributes current view
-				}
-			},
-			{
-				name: "save-to-parent",
-				description: "",
-				type: default_yes_no_attribute_type
-			},
-		],
-		childs: [
-			...default_view_childs,
-			...default_view_record_childs,
-			{
-				element: "separator"
-			},
-			{
-				element: "tabber"
-			},
-		]
-	},
-	{ // ObjectView ref
-		description: "ObjectView as a child",
-		type: ModelElementTypes.View,
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "ObjectView") && !isViewDeclaration(nodeContext),
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		attributes: [
-			...default_reference_view_atttributes,
-			attribute_detail_height,	// object/list
-			{
-				name: "focus-field",
-				description: "The field to give initial focus when the object view loads.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute	// TODO: filter attributes current view
-				}
-			},
-			{
-				name: "save-to-parent",
-				description: "",
-				type: default_yes_no_attribute_type
-			},
-		],
-		childs: [
-			...default_view_childs,
-			...default_view_record_childs,
-			{
-				element: "separator"
-			},
-			{
-				element: "tabber"
-			},
-		]
-	},
-	{ // ListView
-		type: ModelElementTypes.View,
-		description: "ListView as a definition",
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "ListView") && isViewDeclaration(nodeContext),
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		attributes: [
-			...default_view_atttributes,
-			attribute_detail_height,	// object/list
-			{ 
-				name: "show-favorites-column",
-				description: "Whether to show a favorites column.",
-				type: default_yes_no_attribute_type
-			},
-			{ 
-				name: "favorites-column-position",
-				description: "Where the favorites column is located. Can be 'begin', 'end', or a column number.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
+		{ // General (no control type)
+			type: ModelElementTypes.View,
+			description: "Add new view",
+			matchCondition: (nodeContext) => isViewControl(nodeContext, ""),
+			attributes: [
+				...default_view_attributes,
+				...default_definition_view_attributes,
+			],
+			childs: [
+				...default_view_childs
+			]
+		},
+		{ // ObjectView
+			...objectview_base_definition,
+			type: ModelElementTypes.View,
+			detailLevel: ModelDetailLevel.Declarations,
+			description: "ObjectView as a definition",
+			matchCondition: (nodeContext) => isViewControl(nodeContext, "ObjectView"),
+			ancestors: [ModelElementTypes.Views],
+			isSymbolDeclaration: true,
+			prefixNameSpace: true,
+			attributes: [
+				...objectview_base_definition.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // ObjectView ref
+			...objectview_base_definition,
+			description: "ObjectView as a child",
+			type: ModelElementTypes.SubView,
+			matchCondition: (nodeContext) => isViewControl(nodeContext, "ObjectView"),
+			ancestors: [ModelElementTypes.View, ModelElementTypes.Action, ModelElementTypes.MainView],
+			attributes: [
+				...objectview_base_definition.attributes,
+				...default_reference_view_attributes
+			]
+		},
+		{ // ListView
+			type: ModelElementTypes.View,
+			subtype: ModelElementTypes.View_ListView,
+			description: "ListView as a definition",
+			matchCondition: (nodeContext) => isViewControl(nodeContext, "ListView") && isViewDeclaration(nodeContext),
+			detailLevel: ModelDetailLevel.Declarations,
+			isSymbolDeclaration: true,
+			prefixNameSpace: true,
+			attributes: [
+				...default_view_attributes,
+				attribute_detail_height,	// object/list
+				{
+					name: "show-favorites-column",
+					description: "Whether to show a favorites column.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "favorites-column-position",
+					description: "Where the favorites column is located. Can be 'begin', 'end', or a column number.",
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "",
+								description: "use default"
+							},
+							{
+								name: "begin",
+								description: "Put column at the begin of the listview"
+							},
+							{
+								name: "end",
+								description: "Put column at the end of the listview"
+							},
+							{
+								name: "*",
+								description: "any number"
+							},
+						]
+					}
+				},
+				{
+					name: "page-size",
+					description: "The number of rows per page. If the value is 'auto' then the number of records shown will depend on the specified height.</summary>Only applicable to list control views.",
+					type: {
+						type: AttributeTypes.Numeric
+					}
+				},
+				{
+					name: "multiple-select",
+					description: "Enables/disables selecting more records in a list view.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "searchcolumn",
+					description: "The default attribute to start list search with.</summary>Only applicable for list control views.",
+					type: {
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.Attribute
+					}
+				},
+				{
+					name: "objectview",
+					description: "To change the view that is opened when this list view changes to object view.",
+					type: {
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.View	// TODO filter on type object views
+					}
+				},
+				{
+					name: "objectview-toolbar",
+					description: "To change the toolbar when this view changes to object view.",
+					type: {
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.Toolbar
+					}
+				},
+				{
+					name: "all-when-empty-filter",
+					description: "If yes and all filter arguments are empty it will show all the data (paged), if no, it will show nothing in that case.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "show-new-record-in-listview",
+					description: "Whether a row has to be displayed in the list view for entering a new record.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "list-height",
+					description: "The height of textareas in the list.",
+					type: {
+						type: AttributeTypes.Numeric
+					}
+				},
+				{
+					name: "more-pagination",
+					description: "If the list view has a paging record at the bottom (showing the text 'More...') which can be clicked to get the next page of the list and append it to the bottom.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "row-details-view",
+					description: "The view to show row details with. See [Row details in a list view].",
+					type: {
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.View
+					}
+				},
+				{
+					name: "style",
+					description: "The style of the list view.",
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "vertical"
+							}
+						]
+					}
+				},
+				{
+					name: "no-results-found-row",
+					description: "Show a row if no result are found. It will display the text as specified with the option 'no result found text'.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "no-results-found-text",
+					description: "The text to show when no results are found. Defaults to 'No results found'. This value will be translated.",
+					visibilityConditions: [
 						{
-							name: "",
-							description: "use default"
-						},
-						{
-							name: "begin",
-							description: "Put column at the begin of the listview"
-						},
-						{
-							name: "end",
-							description: "Put column at the end of the listview"
-						},
-						{
-							name: "*",
-							description: "any number"
-						},
+							operator: "and",
+							attribute: "no-results-found-text",
+							condition: "==",
+							value: "yes"
+						}
 					]
+				},
+
+			],
+			childs: [
+				...default_view_childs,
+				...default_view_record_childs,
+				{
+					element: "sort"
 				}
-			},
-			{ 
-				name: "page-size",
-				description: "The number of rows per page. If the value is 'auto' then the number of records shown will depend on the specified height.</summary>Only applicable to list control views.",
-				type: {
-					type: AttributeTypes.Numeric
+			]
+		},
+		{ // Tree
+			type: ModelElementTypes.View,
+			subtype: ModelElementTypes.View_Tree,
+			description: "Tree as a definition",
+			matchCondition: (nodeContext) => isViewControl(nodeContext, "Tree") && isViewDeclaration(nodeContext),
+			detailLevel: ModelDetailLevel.Declarations,
+			isSymbolDeclaration: true,
+			prefixNameSpace: true,
+			attributes: [
+				...default_definition_view_attributes,
+				{
+					name: "tree",
+					description: "The navigation tree to display. Only applicable for tree control views.",
+					type: {
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.Tree
+					}
 				}
-			},
-			{ 
-				name: "multiple-select",
-				description: "Enables/disables selecting more records in a list view.",
-				type: default_yes_no_attribute_type
-			},
-			{ 
-				name: "searchcolumn",
-				description: "The default attribute to start list search with.</summary>Only applicable for list control views.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute
+			],
+			childs: [
+				...default_view_childs
+			]
+		},
+		{ // DataTree
+			type: ModelElementTypes.View,
+			subtype: ModelElementTypes.View_DataTree,
+			description: "DataTree as a definition",
+			matchCondition: (nodeContext) => isViewControl(nodeContext, "DataTree") && isViewDeclaration(nodeContext),
+			detailLevel: ModelDetailLevel.Declarations,
+			isSymbolDeclaration: true,
+			prefixNameSpace: true,
+			attributes: [
+				...default_definition_view_attributes
+			],
+			childs: [
+				...default_view_childs,
+				{
+					element: "list",
+					occurence: "once"
+				},
+				{
+					element: "node",
+					occurence: "once"
 				}
-			},
-			{ 
-				name: "objectview",
-				description: "To change the view that is opened when this list view changes to object view.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.View	// TODO filter on type object views
-				}
-			},
-			{
-				name: "objectview-toolbar",
-				description: "To change the toolbar when this view changes to object view.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Toolbar
-				}
-			},
-			{
-				name: "all-when-empty-filter",
-				description: "If yes and all filter arguments are empty it will show all the data (paged), if no, it will show nothing in that case.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "show-new-record-in-listview",
-				description: "Whether a row has to be displayed in the list view for entering a new record.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "list-height",
-				description: "The height of textareas in the list.",
-				type: {
-					type: AttributeTypes.Numeric
-				}
-			},
-			{
-				name: "more-pagination",
-				description: "If the list view has a paging record at the bottom (showing the text 'More...') which can be clicked to get the next page of the list and append it to the bottom.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "row-details-view",
-				description: "The view to show row details with. See [Row details in a list view].",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.View
-				}
-			},
-			{
-				name: "style",
-				description: "The style of the list view.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
+			]
+		},
+		{ // HtmlFile
+			type: ModelElementTypes.View,
+			subtype: ModelElementTypes.View_HTML,
+			description: "HTMLFile as a definition",
+			matchCondition: (nodeContext) => isViewControl(nodeContext, "HtmlFile") && isViewDeclaration(nodeContext),
+			detailLevel: ModelDetailLevel.Declarations,
+			isSymbolDeclaration: true,
+			prefixNameSpace: true,
+			attributes: [
+				...default_definition_view_attributes,
+				{
+					name: "file",
+					description: "The HTML file rendered. Only applicable for HTML control views.",
+					visibilityConditions: [
 						{
-							name: "vertical"
+							attribute: "control",
+							condition: "==",
+							value: "HtmlFile"
 						}
 					]
 				}
-			},
-			{
-				name: "no-results-found-row",
-				description: "Show a row if no result are found. It will display the text as specified with the option 'no result found text'.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "no-results-found-text",
-				description: "The text to show when no results are found. Defaults to 'No results found'. This value will be translated.",
-				visibilityConditions: [
-					{
-						operator: "and",
-						attribute: "no-results-found-text",
-						condition: "==",
-						value: "yes"
+			],
+			childs: [
+				...default_view_childs
+			]
+		},
+		{ // Organizer
+			type: ModelElementTypes.View,
+			subtype: ModelElementTypes.View_Organizer,
+			description: "Organizer as a definition",
+			matchCondition: (nodeContext) => isViewControl(nodeContext, "Organizer") && isViewDeclaration(nodeContext),
+			detailLevel: ModelDetailLevel.Declarations,
+			isSymbolDeclaration: true,
+			prefixNameSpace: true,
+			attributes: [
+				...default_definition_view_attributes,
+				{
+					name: "organizer-mode",
+					description: "Name of initial view.",
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "agenda"
+							},
+							{
+								name: "day"
+							},
+							{
+								name: "month"
+							},
+							{
+								name: "week"
+							},
+							{
+								name: "year"
+							},
+							{
+								name: "timeline"
+							},
+							{
+								name: "unit"
+							}
+						]
 					}
-				]
-			},
-			
-		],
-		childs: [
-			...default_view_childs,
-			...default_view_record_childs,
-			{
-				element: "sort"
-			}
-		]
-	},
-	{ // Tree
-		type: ModelElementTypes.View,
-		description: "Tree as a definition",
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "Tree") && isViewDeclaration(nodeContext),
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		attributes: [
-			...default_definition_view_atttributes,
-			{
-				name: "tree",
-				description: "The navigation tree to display. Only applicable for tree control views.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Tree
-				}
-			}				
-		],
-		childs: [
-			...default_view_childs
-		]
-	},
-	{ // DataTree
-		type: ModelElementTypes.View,
-		description: "DataTree as a definition",
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "DataTree") && isViewDeclaration(nodeContext),
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		attributes: [
-			...default_definition_view_atttributes			
-		],
-		childs: [
-			...default_view_childs,
-			{
-				element: "list",
-				occurence: "once"
-			},
-			{
-				element: "node",
-				occurence: "once"
-			}
-		]
-	},
-	{ // HtmlFile
-		type: ModelElementTypes.View,
-		description: "HTMLFile as a definition",
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "HtmlFile") && isViewDeclaration(nodeContext),
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		attributes: [
-			...default_definition_view_atttributes,
-			{
-				name: "file",
-				description: "The HTML file rendered. Only applicable for HTML control views.",
-				visibilityConditions: [
-					{
-						attribute: "control",
-						condition: "==",
-						value: "HtmlFile"
-					}
-				]
-			}		
-		],
-		childs: [
-			...default_view_childs
-		]
-	},
-	{ // Organizer
-		type: ModelElementTypes.View,
-		description: "Organizer as a definition",
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "Organizer") && isViewDeclaration(nodeContext),
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		attributes: [
-			...default_definition_view_atttributes,
-			{
-				name: "organizer-mode",
-				description: "Name of initial view.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "agenda"
-						},
-						{
-							name: "day"
-						},
-						{
-							name: "month"
-						},
-						{
-							name: "week"
-						},
-						{
-							name: "year"
-						},
-						{
-							name: "timeline"
-						},
-						{
-							name: "unit"
-						}
-					]
-				}
-			},
-			{
-				name: "start-day",
-				description: "The date of the day to start with. It's the initial day.",
-				type: {
-					type: AttributeTypes.Date
-				}
-			},
-			{
-				name: "first-hour",
-				description: "Minimum value for the hour scale. Default 0.",
-				type: {
-					type: AttributeTypes.Numeric
 				},
-				validations: [
-					{
-						type: "regex",
-						value: /^(?:[0-9]|1[0-9]|2[0-3])$/,
-						message: "Only numbers from 0-23 are allowed"
+				{
+					name: "start-day",
+					description: "The date of the day to start with. It's the initial day.",
+					type: {
+						type: AttributeTypes.Date
 					}
-				]
-			},
-			{
-				name: "last-hour",
-				description: "Maximum value for the hour scale. Default 24.",
-				type: {
-					type: AttributeTypes.Numeric
 				},
-				validations: [
-					{
-						type: "regex",
-						value: /^(?:[0-9]|1[0-9]|2[0-3])$/,
-						message: "Only numbers from 0-23 are allowed"
-					}
-				]
-			},
-			{
-				name: "scroll-hour",
-				description: "Initial position vertical scroll. Default '0'",
-				type: {
-					type: AttributeTypes.Numeric
-				},
-				validations: [
-					{
-						type: "regex",
-						value: /^(?:[0-9]|1[0-9]|2[0-3])$/,
-						message: "Only numbers from 0-23 are allowed"
-					}
-				]
-			},
-			{
-				name: "hour-scale",
-				description: "Hour scale. Specifies minutes per vertical compartment. Default 30.",
-				type: {
-					type: AttributeTypes.Numeric
-				},
-				validations: [
-					{
-						type: "regex",
-						value: /^([1-9]|[1-5][0-9]|60)$/,
-						message: "Only numbers from 1-60 are allowed"
-					}
-				]
-			},
-			{
-				name: "time-step",
-				description: "Time step in minutes. Default 5.",
-				type: {
-					type: AttributeTypes.Numeric
-				},
-				validations: [
-					{
-						type: "regex",
-						value: /^([1-9]|[1-5][0-9]|60)$/,
-						message: "Only numbers from 1-60 are allowed"
-					}
-				]
-			},
-			{
-				name: "hour-format",
-				description: "Hours in 12 or 24-hour format.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "12"
-						},
-						{
-							name: "24"
-						}
-					]
-				}
-			},
-			{
-				name: "mark-now",
-				description: "Marker displaying current time.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "create",
-				description: "Possibility to disable adding appointments.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "day-tab-visible",
-				description: "Shows day tab.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "week-tab-visible",
-				description: "Shows week tab.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "next-button-visible",
-				description: "Shows next button.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "previous-button-visible",
-				description: "Shows previous button.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "today-button-visible",
-				description: "Shows today button.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "meridian",
-				description: "Meridian (AM/PM notation).",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "%a",
-							description: "am/pm"
-						},
-						{
-							name: "%A",
-							description: "AM/PM"
-						},
-					]
-				},
-				visibilityConditions: [
-					{
-						attribute: "hour-format",
-						condition: "==",
-						value: "12"
-					}
-				]
-			},
-			{
-				name: "multi-day",
-				description: "Enables rendering multi-day events.",
-				type: default_yes_no_attribute_type
-			},
-		],
-		childs: [
-			...default_view_childs,
-			{
-				element: "units",
-				occurence: "once"
-			},
-			{
-				element: "appointments",
-				occurence: "once"
-			},
-			{
-				element: "agenda-view",
-				occurence: "once"
-			},
-			{
-				element: "month-view",
-				occurence: "once"
-			},
-			{
-				element: "timeline-view",
-				occurence: "once"
-			},
-			{
-				element: "units-view",
-				occurence: "once"
-			},
-			{
-				element: "week-view",
-				occurence: "once"
-			},
-			{
-				element: "year-view",
-				occurence: "once"
-			}
-		]
-	},
-	{ // MediaPlayer
-		type: ModelElementTypes.View,
-		description: "MediaPlayer as a definition",
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "MediaPlayer") && isViewDeclaration(nodeContext),
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		attributes: [
-			...default_definition_view_atttributes,
-			{
-				name: "video",
-				description: "",
-				visibilityConditions: [
-					{
-						attribute: "control",
-						condition: "==",
-						value: "MediaPlayer"
-					}
-				],
-				requiredConditions: [
-					{
-						attribute: "control",
-						condition: "==",
-						value: "MediaPlayer"
-					}
-				]
-			},
-			{
-				name: "posterpath",
-				description: "",
-				visibilityConditions: [
-					{
-						attribute: "control",
-						condition: "==",
-						value: "MediaPlayer"
-					}
-				]
-			},
-		],
-		childs: [
-			...default_view_childs
-		]
-	},
-	{ // AnnotationTool
-		type: ModelElementTypes.View,
-		description: "AnnotationTool as a definition",
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "AnnotationTool") && isViewDeclaration(nodeContext),
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		attributes: [
-			...default_definition_view_atttributes,
-			{
-				name: "annotation-tool-background-image",
-				description: "Annotation tool background image url",
-				visibilityConditions: [
-					{
-						attribute: "control",
-						condition: "==",
-						value: "AnnotationTool"
-					}
-				]
-			},
-			{
-				name: "annotation-tool-selection-shadow",
-				description: "The shadow color of the selected object in the annotation tool.",
-				visibilityConditions: [
-					{
-						attribute: "control",
-						condition: "==",
-						value: "AnnotationTool"
-					}
-				]
-			},
-		],
-		childs: [
-			...default_view_childs
-		]
-	},
-	{ // Tabber
-		type: ModelElementTypes.View,
-		description: "Tabber as a definition",
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "Tabber") && isViewDeclaration(nodeContext),
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		attributes: [
-			...default_definition_view_atttributes,
-			{
-				name: "overflow-dropdown",
-				description: "Move components to a dropdown when they do not fit.",
-				type: default_yes_no_attribute_type,
-				visibilityConditions: [
-					{
-						attribute: "control",
-						condition: "==",
-						value: "Tabber"
-					}
-				]
-			},
-			{
-				name: "active",
-				description: "The active subview.</summary>For view tabbers, specifies the tabber view that starts the default when starting the view.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.TargetView // TODO filter on childs/siblings
-				},
-				visibilityConditions: [
-					{
-						attribute: "control",
-						condition: "==",
-						value: "Tabber"
-					}
-				]
-			},
-			{
-				name: "enabled",
-				description: "If this view is enabled. Only usefull when this view is a tab. For view tabber tabs, determines whether the view tab is visible or not.",
-				type: default_yes_no_attribute_type,
-				visibilityConditions: [
-					{
-						attribute: "parent-control",	// TODO fix parent check
-						condition: "==",
-						value: "Tabber"
-					}
-				]
-			},
-			{
-				name: "render",
-				description: "If this view is loaded immediately when starting up the page.</summary>For view tabber tabs, this can be used for lazy loading of tabs. The view is loaded when the tab is clicked.",
-				type: default_yes_no_attribute_type,
-				visibilityConditions: [
-					{
-						attribute: "parent-control",	// TODO fix parent check
-						condition: "==",
-						value: "Tabber"
-					}
-				]
-			},
-			{
-				name: "tab-appearance",
-				description: "The target identifier for the item used in frontend actions, etcetera.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.AppearanceClass
-				},
-				visibilityConditions: [
-					{
-						attribute: "parent-control",	// TODO fix parent check
-						condition: "==",
-						value: "Tabber"
-					}
-				]
-			},
-		],
-		childs: [
-			...default_view_childs
-		]
-	},
-	{ // ViewContainer
-		type: ModelElementTypes.View,
-		description: "ViewContainer as a definition",
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "ViewContainer") && isViewDeclaration(nodeContext),
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		attributes: [
-			...default_definition_view_atttributes,
-			{
-				name: "expand-by-hover",
-				description: "Expands the view when hovering over it.",
-				type: default_yes_no_attribute_type,
-				visibilityConditions: [
-					{
-						attribute: "parent-control",	// TODO fix parent check
-						condition: "==",
-						value: "ViewContainer"
-					}
-				]
-			},
-			{
-				name: "collapsable",
-				description: "Makes the view collapsable.",
-				type: default_yes_no_attribute_type,
-				visibilityConditions: [
-					{
-						attribute: "parent-control",	// TODO fix parent check
-						condition: "==",
-						value: "ViewContainer"
-					}
-				]
-			},
-			{
-				name: "collapsed",
-				description: "Shows the view initially collapsed.",
-				type: default_yes_no_attribute_type,
-				visibilityConditions: [
-					{
-						attribute: "parent-control",	// TODO fix parent check
-						condition: "==",
-						value: "ViewContainer"
+				{
+					name: "first-hour",
+					description: "Minimum value for the hour scale. Default 0.",
+					type: {
+						type: AttributeTypes.Numeric
 					},
-					{
-						operator: "and",
-						attribute: "collapsable",
-						condition: "==",
-						value: "yes"
+					validations: [
+						{
+							type: "regex",
+							value: /^(?:[0-9]|1[0-9]|2[0-3])$/,
+							message: "Only numbers from 0-23 are allowed"
+						}
+					]
+				},
+				{
+					name: "last-hour",
+					description: "Maximum value for the hour scale. Default 24.",
+					type: {
+						type: AttributeTypes.Numeric
+					},
+					validations: [
+						{
+							type: "regex",
+							value: /^(?:[0-9]|1[0-9]|2[0-3])$/,
+							message: "Only numbers from 0-23 are allowed"
+						}
+					]
+				},
+				{
+					name: "scroll-hour",
+					description: "Initial position vertical scroll. Default '0'",
+					type: {
+						type: AttributeTypes.Numeric
+					},
+					validations: [
+						{
+							type: "regex",
+							value: /^(?:[0-9]|1[0-9]|2[0-3])$/,
+							message: "Only numbers from 0-23 are allowed"
+						}
+					]
+				},
+				{
+					name: "hour-scale",
+					description: "Hour scale. Specifies minutes per vertical compartment. Default 30.",
+					type: {
+						type: AttributeTypes.Numeric
+					},
+					validations: [
+						{
+							type: "regex",
+							value: /^([1-9]|[1-5][0-9]|60)$/,
+							message: "Only numbers from 1-60 are allowed"
+						}
+					]
+				},
+				{
+					name: "time-step",
+					description: "Time step in minutes. Default 5.",
+					type: {
+						type: AttributeTypes.Numeric
+					},
+					validations: [
+						{
+							type: "regex",
+							value: /^([1-9]|[1-5][0-9]|60)$/,
+							message: "Only numbers from 1-60 are allowed"
+						}
+					]
+				},
+				{
+					name: "hour-format",
+					description: "Hours in 12 or 24-hour format.",
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "12"
+							},
+							{
+								name: "24"
+							}
+						]
 					}
-				]
-			},
-		],
-		childs: [
-			...default_view_childs,
-			{
-				element: "view"
-			}
-		]
-	},
-	{ // Iframe
-		type: ModelElementTypes.View,
-		description: "Iframe as a definition",
-		matchCondition: (nodeContext) => isViewControl(nodeContext, "Iframe") && isViewDeclaration(nodeContext),
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		attributes: [
-			...default_definition_view_atttributes,
-			{
-				name: "src",
-				description: "",
-				visibilityConditions: [
-					{
-						attribute: "control",
-						condition: "==",
-						value: "Iframe"
-					}
-				]
-			}
-		],
-		childs: [
-			{
-				element: "style-variables",
-				occurence: "once"
-			},
-			...default_view_childs,
-			
-		]
-	}],
+				},
+				{
+					name: "mark-now",
+					description: "Marker displaying current time.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "create",
+					description: "Possibility to disable adding appointments.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "day-tab-visible",
+					description: "Shows day tab.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "week-tab-visible",
+					description: "Shows week tab.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "next-button-visible",
+					description: "Shows next button.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "previous-button-visible",
+					description: "Shows previous button.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "today-button-visible",
+					description: "Shows today button.",
+					type: default_yes_no_attribute_type
+				},
+				{
+					name: "meridian",
+					description: "Meridian (AM/PM notation).",
+					type: {
+						type: AttributeTypes.Enum,
+						options: [
+							{
+								name: "%a",
+								description: "am/pm"
+							},
+							{
+								name: "%A",
+								description: "AM/PM"
+							},
+						]
+					},
+					visibilityConditions: [
+						{
+							attribute: "hour-format",
+							condition: "==",
+							value: "12"
+						}
+					]
+				},
+				{
+					name: "multi-day",
+					description: "Enables rendering multi-day events.",
+					type: default_yes_no_attribute_type
+				},
+			],
+			childs: [
+				...default_view_childs,
+				{
+					element: "units",
+					occurence: "once"
+				},
+				{
+					element: "appointments",
+					occurence: "once"
+				},
+				{
+					element: "agenda-view",
+					occurence: "once"
+				},
+				{
+					element: "month-view",
+					occurence: "once"
+				},
+				{
+					element: "timeline-view",
+					occurence: "once"
+				},
+				{
+					element: "units-view",
+					occurence: "once"
+				},
+				{
+					element: "week-view",
+					occurence: "once"
+				},
+				{
+					element: "year-view",
+					occurence: "once"
+				}
+			]
+		},
+		{ // MediaPlayer
+			type: ModelElementTypes.View,
+			subtype: ModelElementTypes.View_MediaPlayer,
+			description: "MediaPlayer as a definition",
+			matchCondition: (nodeContext) => isViewControl(nodeContext, "MediaPlayer") && isViewDeclaration(nodeContext),
+			detailLevel: ModelDetailLevel.Declarations,
+			isSymbolDeclaration: true,
+			prefixNameSpace: true,
+			attributes: [
+				...default_definition_view_attributes,
+				{
+					name: "video",
+					description: "",
+					visibilityConditions: [
+						{
+							attribute: "control",
+							condition: "==",
+							value: "MediaPlayer"
+						}
+					],
+					requiredConditions: [
+						{
+							attribute: "control",
+							condition: "==",
+							value: "MediaPlayer"
+						}
+					]
+				},
+				{
+					name: "posterpath",
+					description: "",
+					visibilityConditions: [
+						{
+							attribute: "control",
+							condition: "==",
+							value: "MediaPlayer"
+						}
+					]
+				},
+			],
+			childs: [
+				...default_view_childs
+			]
+		},
+		{ // AnnotationTool
+			type: ModelElementTypes.View,
+			subtype: ModelElementTypes.View_AnnotationTool,
+			description: "AnnotationTool as a definition",
+			matchCondition: (nodeContext) => isViewControl(nodeContext, "AnnotationTool") && isViewDeclaration(nodeContext),
+			detailLevel: ModelDetailLevel.Declarations,
+			isSymbolDeclaration: true,
+			prefixNameSpace: true,
+			attributes: [
+				...default_definition_view_attributes,
+				{
+					name: "annotation-tool-background-image",
+					description: "Annotation tool background image url",
+					visibilityConditions: [
+						{
+							attribute: "control",
+							condition: "==",
+							value: "AnnotationTool"
+						}
+					]
+				},
+				{
+					name: "annotation-tool-selection-shadow",
+					description: "The shadow color of the selected object in the annotation tool.",
+					visibilityConditions: [
+						{
+							attribute: "control",
+							condition: "==",
+							value: "AnnotationTool"
+						}
+					]
+				},
+			],
+			childs: [
+				...default_view_childs
+			]
+		},
+		{ // Tabber
+			type: ModelElementTypes.View,
+			subtype: ModelElementTypes.View_Tabber,
+			description: "Tabber as a definition",
+			matchCondition: (nodeContext) => isViewControl(nodeContext, "Tabber") && isViewDeclaration(nodeContext),
+			detailLevel: ModelDetailLevel.Declarations,
+			isSymbolDeclaration: true,
+			prefixNameSpace: true,
+			attributes: [
+				...default_definition_view_attributes,
+				{
+					name: "overflow-dropdown",
+					description: "Move components to a dropdown when they do not fit.",
+					type: default_yes_no_attribute_type,
+					visibilityConditions: [
+						{
+							attribute: "control",
+							condition: "==",
+							value: "Tabber"
+						}
+					]
+				},
+				{
+					name: "active",
+					description: "The active subview.</summary>For view tabbers, specifies the tabber view that starts the default when starting the view.",
+					type: {
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.TargetView // TODO filter on childs/siblings
+					},
+					visibilityConditions: [
+						{
+							attribute: "control",
+							condition: "==",
+							value: "Tabber"
+						}
+					]
+				},
+				{
+					name: "enabled",
+					description: "If this view is enabled. Only usefull when this view is a tab. For view tabber tabs, determines whether the view tab is visible or not.",
+					type: default_yes_no_attribute_type,
+					visibilityConditions: [
+						{
+							attribute: "parent-control",	// TODO fix parent check
+							condition: "==",
+							value: "Tabber"
+						}
+					]
+				},
+				{
+					name: "render",
+					description: "If this view is loaded immediately when starting up the page.</summary>For view tabber tabs, this can be used for lazy loading of tabs. The view is loaded when the tab is clicked.",
+					type: default_yes_no_attribute_type,
+					visibilityConditions: [
+						{
+							attribute: "parent-control",	// TODO fix parent check
+							condition: "==",
+							value: "Tabber"
+						}
+					]
+				},
+				{
+					name: "tab-appearance",
+					description: "The target identifier for the item used in frontend actions, etcetera.",
+					type: {
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.AppearanceClass
+					},
+					visibilityConditions: [
+						{
+							attribute: "parent-control",	// TODO fix parent check
+							condition: "==",
+							value: "Tabber"
+						}
+					]
+				},
+			],
+			childs: [
+				...default_view_childs
+			]
+		},
+		{ // ViewContainer
+			type: ModelElementTypes.View,
+			subtype: ModelElementTypes.View_Container,
+			description: "ViewContainer as a definition",
+			matchCondition: (nodeContext) => isViewControl(nodeContext, "ViewContainer") && isViewDeclaration(nodeContext),
+			detailLevel: ModelDetailLevel.Declarations,
+			isSymbolDeclaration: true,
+			prefixNameSpace: true,
+			attributes: [
+				...default_definition_view_attributes,
+				{
+					name: "expand-by-hover",
+					description: "Expands the view when hovering over it.",
+					type: default_yes_no_attribute_type,
+					visibilityConditions: [
+						{
+							attribute: "parent-control",	// TODO fix parent check
+							condition: "==",
+							value: "ViewContainer"
+						}
+					]
+				},
+				{
+					name: "collapsable",
+					description: "Makes the view collapsable.",
+					type: default_yes_no_attribute_type,
+					visibilityConditions: [
+						{
+							attribute: "parent-control",	// TODO fix parent check
+							condition: "==",
+							value: "ViewContainer"
+						}
+					]
+				},
+				{
+					name: "collapsed",
+					description: "Shows the view initially collapsed.",
+					type: default_yes_no_attribute_type,
+					visibilityConditions: [
+						{
+							attribute: "parent-control",	// TODO fix parent check
+							condition: "==",
+							value: "ViewContainer"
+						},
+						{
+							operator: "and",
+							attribute: "collapsable",
+							condition: "==",
+							value: "yes"
+						}
+					]
+				},
+			],
+			childs: [
+				...default_view_childs,
+				{
+					element: "view"
+				}
+			]
+		},
+		{ // Iframe
+			type: ModelElementTypes.View, 
+			subtype: ModelElementTypes.View_IFrame, 
+			description: "Iframe as a definition",
+			matchCondition: (nodeContext) => isViewControl(nodeContext, "Iframe") && isViewDeclaration(nodeContext),
+			detailLevel: ModelDetailLevel.Declarations,
+			isSymbolDeclaration: true,
+			prefixNameSpace: true,
+			attributes: [
+				...default_definition_view_attributes,
+				{
+					name: "src",
+					description: "",
+					visibilityConditions: [
+						{
+							attribute: "control",
+							condition: "==",
+							value: "Iframe"
+						}
+					]
+				}
+			],
+			childs: [
+				{
+					element: "style-variables",
+					occurence: "once"
+				},
+				...default_view_childs,
+
+			]
+		}],
 	"root": [{
 		description: "Project root of the frontend model.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "application",
@@ -1678,7 +1689,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 						},
 						{
 							name: "server-event"
-						}						
+						}
 					]
 				}
 			},
@@ -1695,6 +1706,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"include": [include_element],
 	"main-view": [{
 		description: "A page framework in which views are to be rendered.",
+		type:ModelElementTypes.MainView,
 		attributes: [
 			{
 				name: "name",
@@ -1727,8 +1739,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 		]
 	}],
 	"module": [{
-		type:ModelElementTypes.Module,
+		type: ModelElementTypes.Module,
 		detailLevel: ModelDetailLevel.Declarations,
+		isGroupingElement: true,
 		description: "Used for grouping model entities and model namespacing.",
 		attributes: [
 			{
@@ -1773,12 +1786,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			child_include,
 			child_merge_instruction,
-			child_model_condition	
+			child_model_condition
 		]
 	}],
 	"model-condition": [model_condition_element],
 	"trees": [{
 		description: "Used to group navigation trees.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "tree"
@@ -1902,6 +1916,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"toolbars": [{
 		description: "Used to group toolbars.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "toolbar"
@@ -1982,7 +1997,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			child_model_condition
 		]
 	}],
-	"toolbarbutton":[{
+	"toolbarbutton": [{
 		description: "Client side scripting predefined tool.",
 		type: ModelElementTypes.ToolbarButton,
 		attributes: [
@@ -2132,7 +2147,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs:[
+		childs: [
 			{
 				element: "events"
 			},
@@ -2150,11 +2165,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			child_model_condition
 		]
 	}],
-	"pagenumbers":[{
-		description: "Toolbar item for paged navigation."
+	"pagenumbers": [{
+		description: "Toolbar item for paged navigation.",
+		attributes: [dev_comment_attribute],
 	}],
 	"views": [{
 		description: "Used for grouping views.",
+		type:ModelElementTypes.Views,
 		attributes: [dev_comment_attribute],
 		childs: [
 			{
@@ -2175,24 +2192,60 @@ export const FRONTEND_DEFINITION: Definitions = {
 		]
 	}],
 	"argument": [
-		view_argument_element, 
+		view_argument_element,
 		action_argument_element
 	],
 	"events": [
 		{
-			type: ModelElementTypes.Events,
-			description: "Frontend event registrations.\"Events\":[EventsAndActions_ActionsOverview] are the predefined events at the client side. These trigger a server side or client side action, as a result of which an operation (on the server or in the screen) is initiated.",
-			attributes: [dev_comment_attribute],
-			childs: [
-				{
-					element: "event",
-					occurence: "at-least-once"
-				},
-				child_include,
-				child_merge_instruction,
-				child_model_condition
-			]
-		}
+			type: ModelElementTypes.Events_Attribute,
+			ancestors: [ModelElementTypes.Attribute],
+			...frontend_events_base_definition
+		},
+		{
+			type: ModelElementTypes.Events_Button,
+			ancestors: [ModelElementTypes.Button],
+			...frontend_events_base_definition
+		},
+		{
+			type: ModelElementTypes.Events_Action,
+			ancestors: [ModelElementTypes.Action],
+			...frontend_events_base_definition
+		},
+		{
+			type: ModelElementTypes.Events_ToolBarButton,
+			ancestors: [ModelElementTypes.ToolbarButton],
+			...frontend_events_base_definition
+		},
+		{
+			type: ModelElementTypes.Events_Group,
+			ancestors: [ModelElementTypes.Event_Group],
+			...frontend_events_base_definition
+		},
+		{
+			type: ModelElementTypes.Events_MenuItem,
+			ancestors: [ModelElementTypes.MenuItem],
+			...frontend_events_base_definition
+		},
+		{
+			type: ModelElementTypes.Events_Node,
+			ancestors: [ModelElementTypes.Node],
+			...frontend_events_base_definition
+		},
+		{
+			type: ModelElementTypes.Events_Tab,
+			ancestors: [ModelElementTypes.Tab],
+			...frontend_events_base_definition
+		},
+		{
+			type: ModelElementTypes.Events_ToolBarButton,
+			ancestors: [ModelElementTypes.ToolbarButton],
+			...frontend_events_base_definition
+		},
+		{
+			type: ModelElementTypes.Events_View,
+			ancestors: [ModelElementTypes.View],
+			...frontend_events_base_definition
+		},
 	],
 	"server-events": [{
 		description: "",
@@ -2235,8 +2288,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"event": [
 		{
-			type: ModelElementTypes.Event,
-			ancestor: ModelElementTypes.Attribute,
+			type: ModelElementTypes.Events_Attribute,
+			ancestors: [ModelElementTypes.Event_Attribute],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2271,7 +2324,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 								name: "onerror",
 								description: "When an error occurs in the field"
 							}
-						]						
+						]
 					},
 				},
 				dev_override_rights_attribute,
@@ -2282,8 +2335,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			childs: event_childs
 		},
 		{
-			type: ModelElementTypes.Event,
-			ancestor: ModelElementTypes.Button,
+			type: ModelElementTypes.Event_Button,
+			ancestors: [ModelElementTypes.Events_Button],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2302,7 +2355,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 								name: "onmouseover",
 								description: "On mouseover"
 							}
-						]						
+						]
 					},
 				},
 				dev_override_rights_attribute,
@@ -2313,8 +2366,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			childs: event_childs
 		},
 		{
-			type: ModelElementTypes.Event,
-			ancestor: ModelElementTypes.ToolbarButton,
+			type: ModelElementTypes.Event_ToolBarButton,
+			ancestors: [ModelElementTypes.Events_ToolBarButton],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2333,7 +2386,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 								name: "onmouseover",
 								description: "On mouseover"
 							}
-						]						
+						]
 					},
 				},
 				dev_override_rights_attribute,
@@ -2344,8 +2397,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			childs: event_childs
 		},
 		{
-			type: ModelElementTypes.Event,
-			ancestor: ModelElementTypes.Node,
+			type: ModelElementTypes.Event_Node,
+			ancestors: [ModelElementTypes.Events_Node],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2360,7 +2413,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 								description: "When the node is clicked",
 								default: true
 							}
-						]						
+						]
 					},
 				},
 				dev_override_rights_attribute,
@@ -2371,8 +2424,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			childs: event_childs
 		},
 		{
-			type: ModelElementTypes.Event,
-			ancestor: ModelElementTypes.Group,
+			type: ModelElementTypes.Event_Group,
+			ancestors: [ModelElementTypes.Events_Group],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2391,7 +2444,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 								name: "onexpandgroup",
 								description: "When the group is expanded"
 							},
-						]						
+						]
 					},
 				},
 				dev_override_rights_attribute,
@@ -2402,8 +2455,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			childs: event_childs
 		},
 		{
-			type: ModelElementTypes.Event,
-			ancestor: "tab",
+			type: ModelElementTypes.Event_Tab,
+			ancestors: [ModelElementTypes.Events_Tab],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2422,7 +2475,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 								name: "ondeactivatetab",
 								description: "On deactivating the tab"
 							},
-						]						
+						]
 					},
 				},
 				dev_override_rights_attribute,
@@ -2433,8 +2486,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			childs: event_childs
 		},
 		{
-			type: ModelElementTypes.Event,
-			ancestor: ModelElementTypes.Action,
+			type: ModelElementTypes.Event_Action,
+			ancestors: [ModelElementTypes.Events_Action],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2448,7 +2501,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 								name: "ontick",
 								description: "On timer tick"
 							}
-						]						
+						]
 					},
 				},
 				dev_override_rights_attribute,
@@ -2459,8 +2512,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			childs: event_childs
 		},
 		{
-			type: ModelElementTypes.Event,
-			ancestor: "menuitem",
+			type: ModelElementTypes.Event_MenuItem,
+			ancestors: [ModelElementTypes.Events_MenuItem],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2474,7 +2527,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 								name: "onclick",
 								description: "When clicked"
 							}
-						]						
+						]
 					},
 				},
 				dev_override_rights_attribute,
@@ -2485,8 +2538,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			childs: event_childs
 		},
 		{
-			type: ModelElementTypes.Event,
-			ancestor: ModelElementTypes.View,
+			type: ModelElementTypes.Event_View,
+			ancestors: [ModelElementTypes.Events_View],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -2664,8 +2717,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 								name: "onbeforeunloadview",
 								description: "before unloading the view"
 							}
-						]						
-					}					
+						]
+					}
 				},
 				{
 					name: "key",
@@ -2937,7 +2990,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				]
 			},
 			{
-				name: "list-relation-type",	
+				name: "list-relation-type",
 				description: "",
 				visibilityConditions: [
 					{
@@ -2948,7 +3001,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				]
 			},
 			{
-				name: "relation-type-multiple",	
+				name: "relation-type-multiple",
 				description: "The relation type for the multiple relation.",
 				type: {
 					type: AttributeTypes.Reference,
@@ -3158,17 +3211,18 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"group": [
 		{
-			ancestor: ModelElementTypes.View,
+			ancestors: [ModelElementTypes.View],
 			type: ModelElementTypes.Group,
-			isSymbolDeclaration: true,
+			isGroupingElement: true,
 			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
 			attributes: view_group_attributes,
 			childs: view_group_childs
 		},
 		{
-			ancestor: ModelElementTypes.Condition,
+			ancestors: [ModelElementTypes.Condition],
 			type: ModelElementTypes.Group,
 			description: "A group set, used to filter.",
+			attributes: [dev_comment_attribute],
 			childs: [
 				{
 					element: "group"
@@ -3196,25 +3250,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			description: "A button or link.",
 			type: ModelElementTypes.Button,
-			ancestor: ModelElementTypes.View,
+			ancestors: [ModelElementTypes.View, ModelElementTypes.TitleBar, ModelElementTypes.MenuItem],
 			isSymbolDeclaration: true,
 			attributes: button_attributes,
 			childs: button_childs
 		},
 		{
-			ancestor: "titlebar",
-			type: ModelElementTypes.Button,
-			isSymbolDeclaration: true,
-			attributes: button_attributes,
-			childs: button_childs
-		},
-		{
-			ancestor: "menuitem",
-			attributes: button_attributes,
-			childs: button_childs
-		},
-		{
-			ancestor: ModelElementTypes.Action,
+			ancestors: [ModelElementTypes.Action],
 			attributes: [
 				{
 					name: "name"
@@ -3230,12 +3272,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			]
 		},
 	],
-	"separator":[{
-		description: "Separates nodes by a horizontal space."
+	"separator": [{
+		description: "Separates nodes by a horizontal space.",
+		attributes: [dev_comment_attribute],
 	}],
 	"tabber": [{
 		description: "A tabber control by which fields can be tabbed.",
-		attributes:[
+		attributes: [
 			{
 				name: "name",
 				description: "identifier",
@@ -3279,7 +3322,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_override_rights_attribute,
 			dev_comment_attribute
 		],
-		childs:[
+		childs: [
 			{
 				element: "tab",
 				occurence: "at-least-once",
@@ -3385,10 +3428,11 @@ export const FRONTEND_DEFINITION: Definitions = {
 			child_include,
 			child_merge_instruction,
 			child_model_condition
-		]	
+		]
 	}],
 	"titlebar": [{
 		description: "Definition of the titlebar of the view, in which title buttons can be added. When loaded in a popup, the elements are added to the header.",
+		type: ModelElementTypes.TitleBar,
 		attributes: [dev_comment_attribute],
 		childs: [
 			{
@@ -3432,6 +3476,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"menu": [{
 		description: "The menu displayed when the dropdown opens.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "menuitem"
@@ -3449,6 +3494,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"menuitem": [{
 		description: "A menu item. Typically this will contain a button element.",
+		attributes: [dev_comment_attribute],
+		type: ModelElementTypes.MenuItem,
 		childs: [
 			{
 				element: "text",
@@ -3466,6 +3513,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"menuheader": [{
 		description: "A menu header, that can be placed above a set of items to group them. Typically this will contain a text element.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "text",
@@ -3482,7 +3530,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 		]
 	}],
 	"menudivider": [{
-		description: "A menu divider that can be used to separate groups of menu items."
+		description: "A menu divider that can be used to separate groups of menu items.",
+		attributes: [dev_comment_attribute],
 	}],
 	"text": [{
 		description: "Adds text.",
@@ -3513,6 +3562,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"format": [{
 		description: "Defines a lay-out.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "image"
@@ -3537,21 +3587,23 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"action": [{
 		description: "An Action",
-		type: ModelElementTypes.Action,
+		type: ModelElementTypes.ActionCall,
 		attributes: [
 			{
 				name: "name",
 				description: "The action to perform.",
 				required: true
 			},
-			{	name: "input-all",
+			{
+				name: "input-all",
 				description: "If yes, all available local variables (in the frontend, the non-data bound as well as the data bound variables) will be passed to the action. Default is no.",
 				type: default_yes_no_attribute_type
 			},
-			{	name: "output-all",
+			{
+				name: "output-all",
 				description: "If yes, all outputs returned by the action will be made available locally (in the frontend as non-data bound variables). Default is no.",
 				type: default_yes_no_attribute_type
-			},			
+			},
 			{
 				name: "dataless",
 				description: "If the standard added data argument should be left out. It is now left out by default for performance (unless input-all is set). (Currently, only applicable for frontend calls to server actions.)",
@@ -3697,13 +3749,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "condition"	// TODO: WHY?? This should not be possible
 			},
 			{
-				element: "view"			
+				element: "view"
 			},
 			{
-				element: "events"	
+				element: "events"
 			},
 			{
-				element: "button"		
+				element: "button"
 			},
 			child_include,
 			child_merge_instruction,
@@ -3713,7 +3765,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"output": [
 		action_call_output_element,
 		{
-			ancestor: ModelElementTypes.Function,
+			ancestors: [ModelElementTypes.Function],
 			detailLevel: ModelDetailLevel.Declarations,
 			isSymbolDeclaration: true,
 			attributes: [
@@ -3854,6 +3906,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"field": [{
 		description: "A boolean condition to check.</summary>Add more fields to strengthen the condition (logical 'and'). The 'equal to', 'contains' and 'does not contain' operators are also accepting a piped list of values.",
+		type: ModelElementTypes.Field,
 		attributes: [
 			{
 				name: "name",
@@ -3878,10 +3931,12 @@ export const FRONTEND_DEFINITION: Definitions = {
 		]
 	}],
 	"or": [{
-		description: "The or-operator between search columns. Use the group element to specify brackets."
+		description: "The or-operator between search columns. Use the group element to specify brackets.",
+		attributes: [dev_comment_attribute],
 	}],
 	"and": [{
-		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted."
+		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted.",
+		attributes: [dev_comment_attribute],
 	}],
 	"then": [{
 		description: "The actions in the then will only be executed if the conditions succeed.",
@@ -3941,7 +3996,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		attributes: [
 			{
 				name: "name",
-				description: "The name of the validation.", 
+				description: "The name of the validation.",
 				required: true
 			},
 			{
@@ -4084,6 +4139,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		]
 	}],
 	"IconConditions": [{
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "IconCondition"
@@ -4094,7 +4150,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		attributes: [
 			{
 				name: "Value"
-			},			
+			},
 			{
 				name: "IconPath"
 			}
@@ -4141,18 +4197,39 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 		]
 	}],
-	"units": [{}],
-	"appointments": [{}],
-	"filters": [{}],
-	"filter": [{}],
-	"agenda-view": [{}],
-	"month-view": [{}],
-	"timeline-view": [{}],
-	"units-view": [{}],
-	"week-view": [{}],
-	"year-view": [{}],
+	"units": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"appointments": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"filters": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"filter": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"agenda-view": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"month-view": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"timeline-view": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"units-view": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"week-view": [{
+		attributes: [dev_comment_attribute],
+	}],
+	"year-view": [{
+		attributes: [dev_comment_attribute],
+	}],
 	"report-parameters": [{
 		description: "Parameters to pass to the report.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "report-parameter",
@@ -4248,6 +4325,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"resources": [{
 		description: "References to include in the frontend.",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "script"
@@ -4387,6 +4465,6 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "clear-var"
 			}
 		]
-	}],	
+	}],
 };
 

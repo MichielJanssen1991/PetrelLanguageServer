@@ -33,7 +33,7 @@ export class InfosetCallCheck extends ActionCallCheck {
 	private verifyInfosetCall(reference: TreeNode) {
 		const infosetNameNotSpecified = this.verifyMandatoryAttributeProvided(reference, NAMES.ATTRIBUTE_INFOSET, true);
 		if (infosetNameNotSpecified) {
-			this.addWarning(reference.range, CHECKS_MESSAGES.INFOSETCALL_WITHOUT_NAME());
+			this.addInformation(reference.range, CHECKS_MESSAGES.INFOSETCALL_WITHOUT_NAME());
 		}
 		return !infosetNameNotSpecified;
 	}

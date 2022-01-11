@@ -3,6 +3,7 @@ import { action_definition_argument_element, default_yes_no_attribute_type, dev_
 
 export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	"module": [{
+		isGroupingElement:true,
 		description: "Group action definitions",
 		attributes: [
 			{
@@ -212,6 +213,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	],
 	"element": [{
 		description: "sharing, prototyping of attributes (refer by name) -- used by xmleditor rules production",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "attribute"
@@ -222,8 +224,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			{
 				element: "variable"
 			}
-		],
-
+		]
 	}],
 	"input": [action_definition_argument_element],
 	"output": [action_definition_argument_element],
@@ -481,8 +482,11 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 		description: "XML Modeler rules additions.",
 		attributes: [dev_comment_attribute]
 	}],	
-	"custom-rule": [{}],	// no documentation available TODO check with platform if it's still in use
+	"custom-rule": [{
+		attributes: [dev_comment_attribute]
+	}],	// no documentation available TODO check with platform if it's still in use
 	"variable": [{
+		attributes: [dev_comment_attribute]
 		// only useful for modeler
 	}],
 

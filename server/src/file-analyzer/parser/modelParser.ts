@@ -36,7 +36,11 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 
 	//INodeContext implementation
 	public getFirstParent() {
-		return this.parser.getFirstParent();
+		return this.parser.getParent();
+	}
+	
+	public getAncestor(level: number) {
+		return this.parser.getAncestor(level);
 	}
 
 	public hasParentTag(name: string) {
@@ -94,6 +98,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 
 		//Parse object for definition
 		if (definition) {
+			this.parser.enrichTagWithType(definition.type || ModelElementTypes.Unknown);
 			object = this.parseNodeForDefinition(node, definition);
 			if (object) {
 				this.pushToParsedObjectStack(object, definition);
@@ -175,11 +180,11 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	private parseNodeForDefinition(node: XmlNode, definition: Definition): TreeNode | undefined {
 		if (this.detailLevel >= (definition.detailLevel != undefined ? definition.detailLevel : ModelDetailLevel.All)) {
 			let object: TreeNode;
-			const comment = node.attributes.comment;
 			const type = definition.type || ModelElementTypes.Unknown;
 			if (definition.isSymbolDeclaration) {
 				const name = this.parseNodeForName(definition, node);
-				object = newSymbolDeclaration(name, node.name, type, this.getTagRange(), this.uri, comment);
+				object = newSymbolDeclaration(name, node.name, type, this.getTagRange(), this.uri, definition.subtype);
+				object.comment = node.attributes.comment;
 			}
 			else {
 				object = newTreeNode(node.name, type, this.getTagRange(), this.uri);
