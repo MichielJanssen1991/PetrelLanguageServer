@@ -8,9 +8,9 @@ suite('Should get diagnostics for infoset call', () => {
 		const docUri = getDocUri('diagnostics\\infoset-call\\without-infoset-name.xml');
 		await testDiagnostics(docUri, [
 			{
-				message: 'Infoset call without infoset name specified.',
+				message: 'Infoset call without infoset-name specified.',
 				range: toRange(2, 5, 2, 27),
-				severity: vscode.DiagnosticSeverity.Warning,
+				severity: vscode.DiagnosticSeverity.Information,
 				source: 'ex'
 			},
 		]);

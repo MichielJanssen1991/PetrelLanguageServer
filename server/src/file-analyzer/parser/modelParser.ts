@@ -187,7 +187,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 				object.comment = node.attributes.comment;
 			}
 			else {
-				object = newTreeNode(node.name, type, this.getTagRange(), this.uri);
+				object = newTreeNode(node.name, type, this.getTagRange(), this.uri, definition.subtype);
 			}
 
 			object.attributes = this.parseAttributes(definition, node);

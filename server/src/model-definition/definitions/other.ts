@@ -106,7 +106,7 @@ export const OTHER_DEFINITION: Definitions =
 	"argument": [view_argument_element, action_argument_element],
 	"input": [{
 		type: ModelElementTypes.Input,
-		isSymbolDeclaration:true,
+		isSymbolDeclaration: true,
 		attributes: [
 			{
 				name: "required",
@@ -116,7 +116,7 @@ export const OTHER_DEFINITION: Definitions =
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"module": [{
-		isGroupingElement:true,
+		isGroupingElement: true,
 		type: ModelElementTypes.Module,
 		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations,
@@ -134,7 +134,7 @@ export const OTHER_DEFINITION: Definitions =
 			}
 		],
 		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration:true
+		isSymbolDeclaration: true
 	}],
 	"output": [{
 		matchCondition: (nodeContext) => isOutputDeclaration(nodeContext),
@@ -147,6 +147,7 @@ export const OTHER_DEFINITION: Definitions =
 		matchCondition: (nodeContext) => isInfosetOutput(nodeContext),
 		type: ModelElementTypes.Output,
 		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true,
 		attributes: [
 			{
 				name: "attribute",
@@ -429,7 +430,7 @@ export function isViewDeclaration(nodeContext: IXmlNodeContext): boolean {
 }
 
 export function isViewControl(nodeContext: IXmlNodeContext, controlType: string): boolean {
-	return (nodeContext.getCurrentXmlNode().attributes.control?.toLowerCase()||"") == controlType.toLowerCase();
+	return (nodeContext.getCurrentXmlNode().attributes.control?.toLowerCase() || "") == controlType.toLowerCase();
 }
 
 //Objects which can be referenced without requiring the context

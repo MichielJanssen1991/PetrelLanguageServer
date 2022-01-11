@@ -6,5 +6,8 @@
 		<action name="Infoset" infoset-name="InfosetDefinition_Test_SearchColumnUnknownType"/>
 		<action name="Infoset" infoset-name="InfosetDefinition_Test_SearchColumnUnknownAttribute"/>
 		<action name="Infoset" infoset-name="InfosetDefinition_Test_SearchColumnUnknownRule"/>
+		<action name="Select" type="test1"/>
+		<action name="Select" type="test2"/>
+		<action name="Select" type="abc"/>
 	</rule>
 </module>

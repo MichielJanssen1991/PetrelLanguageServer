@@ -42,6 +42,6 @@ export class InfosetCallCheck extends ActionCallCheck {
 
 	protected getAdditionalOutputsForSpecificAction(node: TreeNode) {
 		const infosetRef = node.attributes[NAMES.ATTRIBUTE_INFOSET];
-		return [infosetRef.name];
+		return [infosetRef.value];
 	}
 }
