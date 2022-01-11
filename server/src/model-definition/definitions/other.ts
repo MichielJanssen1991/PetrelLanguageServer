@@ -1,12 +1,13 @@
 import { ModelDetailLevel, ModelElementTypes, IXmlNodeContext, Definitions, AttributeTypes } from '../symbolsAndReferences';
 import { NAMES } from '../constants';
-import { action_argument_element, action_call_output_element, isOutputDeclaration, view_argument_element } from './shared';
+import { action_argument_element, action_call_output_element, dev_comment_attribute, isOutputDeclaration, view_argument_element } from './shared';
 
 //Defines a list of possible refrerences and declarations for each opening tag
 export const OTHER_DEFINITION: Definitions =
 {
 	"rule": [{
 		type: ModelElementTypes.Rule,
+		attributes: [dev_comment_attribute],
 		prefixNameSpace: true,
 		isSymbolDeclaration: true,
 		detailLevel: ModelDetailLevel.Declarations,
@@ -15,10 +16,12 @@ export const OTHER_DEFINITION: Definitions =
 	{
 		matchCondition: (nodeContext) => isProfileRule(nodeContext),
 		type: ModelElementTypes.Rule,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.References
 	}],
 	"infoset": [{
 		type: ModelElementTypes.Infoset,
+		attributes: [dev_comment_attribute],
 		isSymbolDeclaration: true,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
@@ -45,10 +48,12 @@ export const OTHER_DEFINITION: Definitions =
 	}],
 	"in": [{
 		type: ModelElementTypes.In,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations,
 	}],
 	"function": [{
 		type: ModelElementTypes.Function,
+		attributes: [dev_comment_attribute],
 		prefixNameSpace: true,
 		isSymbolDeclaration: true,
 		detailLevel: ModelDetailLevel.Declarations,
@@ -73,6 +78,7 @@ export const OTHER_DEFINITION: Definitions =
 	{
 		matchCondition: (nodeContext) => isProfileType(nodeContext),
 		type: ModelElementTypes.Type,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.References
 	}],
 	"view": [{
@@ -94,6 +100,7 @@ export const OTHER_DEFINITION: Definitions =
 	{
 		matchCondition: (nodeContext) => isProfileView(nodeContext),
 		type: ModelElementTypes.View,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.References
 	}],
 	"argument": [view_argument_element, action_argument_element],
@@ -111,6 +118,7 @@ export const OTHER_DEFINITION: Definitions =
 	"module": [{
 		isGroupingElement:true,
 		type: ModelElementTypes.Module,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations,
 	}],
 	"attribute": [{
@@ -131,6 +139,7 @@ export const OTHER_DEFINITION: Definitions =
 	"output": [{
 		matchCondition: (nodeContext) => isOutputDeclaration(nodeContext),
 		type: ModelElementTypes.Output,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	},
 		action_call_output_element],
@@ -152,6 +161,7 @@ export const OTHER_DEFINITION: Definitions =
 	"action": [{
 		matchCondition: (nodeContext: IXmlNodeContext) => isActionDefinition(nodeContext),
 		type: ModelElementTypes.Action,
+		attributes: [dev_comment_attribute],
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		isSymbolDeclaration: true
@@ -210,6 +220,7 @@ export const OTHER_DEFINITION: Definitions =
 	}],
 	"search": [{
 		type: ModelElementTypes.TypeFilter,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations,
 		matchCondition: (nodeContext) => isFilterDeclaration(nodeContext)
 	},
@@ -228,35 +239,42 @@ export const OTHER_DEFINITION: Definitions =
 	}],
 	"set-aggregate-query": [{
 		type: ModelElementTypes.Aggregate,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"include-block": [{
 		type: ModelElementTypes.IncludeBlock,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations,
 		isSymbolDeclaration: true
 	}],
 	"include-block1": [{
 		type: ModelElementTypes.IncludeBlock,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations,
 		isSymbolDeclaration: true
 	}],
 	"decorator": [{
 		type: ModelElementTypes.Decorator,
+		attributes: [dev_comment_attribute],
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		isSymbolDeclaration: true
 	}],
 	"decoration": [{
 		type: ModelElementTypes.Decorator,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.References
 	}],
 	"include": [{
 		name: (x) => x.attributes.block,
 		type: ModelElementTypes.IncludeBlock,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.References,
 	}],
 	"profile": [{
 		type: ModelElementTypes.Profile,
+		attributes: [dev_comment_attribute],
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		isSymbolDeclaration: true
@@ -309,46 +327,57 @@ export const OTHER_DEFINITION: Definitions =
 	}],
 	"Types": [{
 		type: ModelElementTypes.Unknown,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"CForms": [{
 		type: ModelElementTypes.Unknown,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"Views": [{
 		type: ModelElementTypes.Unknown,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"ControllerEvents": [{
 		type: ModelElementTypes.Unknown,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"Functions": [{
 		type: ModelElementTypes.Unknown,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"Function": [{
 		type: ModelElementTypes.Unknown,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"Rules": [{
 		type: ModelElementTypes.Unknown,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"Rule": [{
 		type: ModelElementTypes.Unknown,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"CQueries": [{
 		type: ModelElementTypes.Unknown,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"Infosets": [{
 		type: ModelElementTypes.Unknown,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	}],
 	"Infoset": [{
 		type: ModelElementTypes.Unknown,
+		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	}]
 };
@@ -396,11 +425,11 @@ export function isModelCheckRuleAction(nodeContext: IXmlNodeContext): boolean {
 }
 
 export function isViewDeclaration(nodeContext: IXmlNodeContext): boolean {
-	return !(nodeContext.getFirstParent()?.name == "action" || nodeContext.getFirstParent()?.name == "view") && (nodeContext.getCurrentXmlNode().attributes.name != undefined);
+	return !(nodeContext.getFirstParent()?.name == "action" || nodeContext.getFirstParent()?.name == "view");
 }
 
 export function isViewControl(nodeContext: IXmlNodeContext, controlType: string): boolean {
-	return nodeContext.getCurrentXmlNode().attributes?.control?.toLowerCase() == controlType.toLowerCase();
+	return (nodeContext.getCurrentXmlNode().attributes.control?.toLowerCase()||"") == controlType.toLowerCase();
 }
 
 //Objects which can be referenced without requiring the context

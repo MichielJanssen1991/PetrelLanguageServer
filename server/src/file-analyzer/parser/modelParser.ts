@@ -180,11 +180,11 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	private parseNodeForDefinition(node: XmlNode, definition: Definition): TreeNode | undefined {
 		if (this.detailLevel >= (definition.detailLevel != undefined ? definition.detailLevel : ModelDetailLevel.All)) {
 			let object: TreeNode;
-			const comment = node.attributes.comment;
 			const type = definition.type || ModelElementTypes.Unknown;
 			if (definition.isSymbolDeclaration) {
 				const name = this.parseNodeForName(definition, node);
-				object = newSymbolDeclaration(name, node.name, type, this.getTagRange(), this.uri, comment);
+				object = newSymbolDeclaration(name, node.name, type, this.getTagRange(), this.uri, definition.subtype);
+				object.comment = node.attributes.comment;
 			}
 			else {
 				object = newTreeNode(node.name, type, this.getTagRange(), this.uri);

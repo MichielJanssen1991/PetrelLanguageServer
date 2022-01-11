@@ -9,7 +9,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 
 	protected checkInternal(node: TreeNode): void {
 		const modelFileContext = this.modelManager.getModelFileContextForFile(node.uri);
-		const tagDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, node.tag, node.type);
+		const tagDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
 		
 		this.allNodeAttributes = Object.values(node.attributes);
 		
@@ -66,7 +66,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 		}
 
 		// check required attribute is added
-		definition.attributes?.forEach(attr=>{
+		definition.attributes.forEach(attr=>{
 			// based on required:true attribute
 			if (attr.required && !this.allNodeAttributes.map(x=>x.name.toLowerCase()).includes(attr.name.toLowerCase())){
 				this.addError(element.range, `Missing required attribute '${attr.name}' for element '${element.tag}'`);
@@ -95,7 +95,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 
 	private checkAttributeValues(element: TreeNode, definition: Definition): void {
 		// check attribute validations
-		definition.attributes?.filter(da=>da.validations && this.allNodeAttributes.map(x=>x.name.toLowerCase()).includes(da.name.toLowerCase())).forEach(da=>{
+		definition.attributes.filter(da=>da.validations && this.allNodeAttributes.map(x=>x.name.toLowerCase()).includes(da.name.toLowerCase())).forEach(da=>{
 			da.validations?.forEach(dv=>{
 				if (dv.type == "regex"){
 					const attrElement: Attribute = element.attributes[da.name];
@@ -108,7 +108,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 		});
 
 		// check attribute types
-		definition.attributes?.filter(da=>da.type && this.allNodeAttributes.map(x=>x.name).includes(da.name)).forEach(da=>{
+		definition.attributes.filter(da=>da.type && this.allNodeAttributes.map(x=>x.name).includes(da.name)).forEach(da=>{
 			const attrValue: string = this.allNodeAttributes.filter(x=>x.name==da.name).map(x=>x.value)[0] || "";
 			
 			switch(da.type?.type){

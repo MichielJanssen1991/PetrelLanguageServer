@@ -29,6 +29,7 @@ export enum ModelElementTypes {
 	In = "In",
 	Module = "Module",
 	NameSpace = "NameSpace",
+	MainView = "MainView",
 	Rule = "Rule",
 	Rules = "Rules",
 	RuleContext = "RuleContext",
@@ -41,17 +42,51 @@ export enum ModelElementTypes {
 	Target = "Target",
 	TargetView = "TargetView",	// this is not a list of elements of TargetViews, but a list of Views filled with attribute "TargetName"
 	Type = "Type",
+	TitleBar = "TitleBar",
 	TypeFilter = "TypeFilter",
 	Unknown = "Unknown",
 	Variable = "Variable",
 	View = "View",
+	Views = "Views",
+	SubView = "SubView",
+	View_ObjectView = "ObjectView",
+	View_ListView = "ListView",
+	View_Tree = "TreeView",
+	View_DataTree = "DataTreeView",
+	View_Container = "ContainerView",
+	View_HTML = "HTMLView",
+	View_Organizer = "OrganizerView",
+	View_MediaPlayer = "MediaPlayerView",
+	View_AnnotationTool = "AnnotationToolView",
+	View_Tabber = "TabberView",
+	View_IFrame = "IFrameView",
 	Style = "Style",
 	Toolbar = "Toolbar",
 	Tree = "Tree",
+	Tab = "Tab",
 	Button = "Button",
-	Event = "Event",
 	Events = "Events",
+	Events_Attribute = "AttributeEvents",
+	Events_Action = "ActionEvents",
+	Events_Button = "ButtonEvents",
+	Events_Node = "NodeEvents",
+	Events_Group = "GroupEvents",
+	Events_Tab = "TabEvents",
+	Events_MenuItem = "ButtonEvents",
+	Events_ToolBarButton = "ToolBarButtonEvents",
+	Events_View = "ViewEvents",
+	Event = "Event",
+	Event_Attribute = "AttributeEvent",
+	Event_Action = "ActionEvent",
+	Event_Button = "ButtonEvent",
+	Event_Node = "NodeEvent",
+	Event_Group = "GroupEvent",
+	Event_Tab = "TabEvent",
+	Event_MenuItem = "ButtonEvent",
+	Event_ToolBarButton = "ToolBarButtonEvent",
+	Event_View = "ViewEvent",
 	Node = "Node",
+	MenuItem = "MenuItem",
 	ToolbarButton = "ToolbarButton",
 	Appearance = "Appearance",
 	AppearanceClass = "AppearanceClass", // this could be a list of all classes from the scss files (it can be filtered by the type of mixin it's using)
@@ -106,6 +141,7 @@ export enum ModelDetailLevel {
 export interface TreeNode {
 	tag: string,
 	type: ModelElementTypes,
+	subtype?: ModelElementTypes,
 	range: LSP.Range,
 	fullRange: LSP.Range,
 	uri: string,
@@ -150,9 +186,10 @@ export function newReference(name: string, value: string, type: ModelElementType
 	};
 }
 
-export function newTreeNode(tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, comment?: string): TreeNode {
+export function newTreeNode(tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, subtype?: ModelElementTypes): TreeNode {
 	return {
 		type,
+		subtype,
 		tag,
 		range,
 		fullRange: LSP.Range.create(range.start, range.end),
@@ -160,14 +197,14 @@ export function newTreeNode(tag: string, type: ModelElementTypes, range: LSP.Ran
 		children: [],
 		attributes: {},
 		contextQualifiers: {},
-		comment,
 		isSymbolDeclaration: false
 	};
 }
-export function newSymbolDeclaration(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, comment?: string): SymbolDeclaration {
+export function newSymbolDeclaration(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, subtype?: ModelElementTypes): SymbolDeclaration {
 	return {
 		name,
 		type,
+		subtype,
 		tag,
 		identifier: objectIdentifier(name, type, range),
 		range,
@@ -176,7 +213,6 @@ export function newSymbolDeclaration(name: string, tag: string, type: ModelEleme
 		children: [],
 		attributes: {},
 		contextQualifiers: {},
-		comment,
 		isSymbolDeclaration: true
 	};
 }
@@ -193,15 +229,16 @@ export type Definition = {
 	description?: string,
 	checkObsolete?: boolean,
 	childs?: ChildDefinition[] | ChildReference,
-	attributes?: ElementAttribute[],
+	attributes: ElementAttribute[],
 	type?: ModelElementTypes,
+	subtype?: ModelElementTypes,
 	prefixNameSpace?: boolean,
 	isSymbolDeclaration?: boolean,
 	detailLevel?: ModelDetailLevel,
 	contextQualifiers?: (nodeContext: IXmlNodeContext) => ContextQualifiers
 	// matchCondition and ancestor are used to distinguish same tag definitions with different ModelElementTypes (for example action call output or rule output)
 	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
-	ancestor?: string,
+	ancestors?: ModelElementTypes[],
 	// isGroupingElement is used as a signal to the parser that the element can be skipped when looking for the parent (for example rule in a module within rules, module is a grouping element) 
 	isGroupingElement?: boolean
 }

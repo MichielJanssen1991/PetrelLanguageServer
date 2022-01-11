@@ -209,7 +209,7 @@ export const RULE_DEFINITION: Definitions = {
 	"input": [input_element],
 	"output": [{
 		type: ModelElementTypes.Output,
-		ancestor: ModelElementTypes.Rule,
+		ancestors: [ModelElementTypes.Rule],
 		isSymbolDeclaration: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		description: "Output of the rule. The rule will return (name, expression) as one of its value pairs. Any valid C# expression can be used; the syntax for parameters is {..}.",
@@ -925,6 +925,7 @@ export const RULE_DEFINITION: Definitions = {
 	"default": [{
 		type: ModelElementTypes.Unknown,
 		description: "",
+		attributes: [dev_comment_attribute],
 		childs: [
 			{
 				element: "set-var"
@@ -1023,10 +1024,12 @@ export const RULE_DEFINITION: Definitions = {
 	"break": [{
 		type: ModelElementTypes.Unknown,
 		description: "Terminates the current loop.",
+		attributes: [dev_comment_attribute],
 	}],
 	"return": [{
 		type: ModelElementTypes.Unknown,
 		description: "Terminates the current rule.",
+		attributes: [dev_comment_attribute],
 	}],
 	"include_blocks": [include_blocks_element],
 	"include-block": [{

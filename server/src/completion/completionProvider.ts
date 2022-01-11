@@ -52,8 +52,7 @@ export class CompletionProvider {
 		const node = context.currentNode;
 		if (node) {
 			// get default attributes based on model definition
-			//const modelDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, node.tag, node.type);
-			const modelDefinition = this.getElementDefinition(modelFileContext, node, node);
+			const modelDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
 
 			// get a lit of nonvisible elements (attributes which should not appear in the completion list because they do not apply )
 			const attributesForTag = this.getVisibleAttributes(modelDefinition, node);
@@ -95,12 +94,12 @@ export class CompletionProvider {
 	 */
 	private getVisibleAttributes(modelDefinition: Definition | undefined, node: TreeNode) {
 		// get all attributes without visibilityConditions
-		const a = modelDefinition?.attributes?.filter(
+		const a = modelDefinition?.attributes.filter(
 			attr => !attr.visibilityConditions
 		) || [];
 
 		// get all attributes with visibilityConditions and conditions did match
-		const b = modelDefinition?.attributes?.filter(
+		const b = modelDefinition?.attributes.filter(
 			attr => {
 				let totRetVal: boolean | undefined;
 				const nodeAttributes: any = node.attributes;
@@ -183,7 +182,7 @@ export class CompletionProvider {
 
 	private getAttributeValueCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
 		const node = context.currentNode as TreeNode;
-		const elementDefinition = this.getElementDefinition(modelFileContext, node, node);
+		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
 		const attribute = context.attribute;
 		let symbols = [{ label: "no posibilities found" }];
 		if (attribute && elementDefinition && elementDefinition.attributes) {
@@ -222,13 +221,6 @@ export class CompletionProvider {
 		return symbols;
 	}
 
-	private getElementDefinition(modelFileContext: ModelFileContext, searchFor: TreeNode , searchIn: TreeNode, depth = 0): Definition | undefined{
-		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, searchFor.tag, searchIn.type);
-		if (!elementDefinition && searchIn.parent && depth < 4 ){
-			return this.getElementDefinition(modelFileContext, searchFor, searchIn.parent, depth++);
-		}
-		return elementDefinition;
-	}
 	/**
 	 * Get the possible children of an element. 
 	 * ModelDefinition.childs could contain:
@@ -242,7 +234,7 @@ export class CompletionProvider {
 	 */
 	private getChildElementCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
 		const node = context.currentNode as TreeNode;
-		const elementDefinition = this.getElementDefinition(modelFileContext, node, node);
+		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
 		let childCompletions: CompletionItem[] = [{label: "no child options found for " + node.tag }];
 		if (elementDefinition) {
 			const children = elementDefinition.childs;
@@ -268,7 +260,7 @@ export class CompletionProvider {
 				else if (children?.matchFromParent) {
 					const parent = context.firstParent;
 					if (parent) {
-						const parentElementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, parent.tag, parent.type);
+						const parentElementDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, parent);
 						const parentChildren = parentElementDefinition?.childs;
 						if (Array.isArray(parentChildren) && parentChildren) {
 							childCompletions = this.mapChildrenToCompletionItems(parentChildren, modelFileContext);
