@@ -1,0 +1,5 @@
+<module>
+  <rule name="KnownRuleWithInput">
+  <input name="KnownInput"/>
+  </rule>
+</module>

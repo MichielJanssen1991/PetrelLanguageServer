@@ -1,12 +1,13 @@
 
 import * as vscode from 'vscode';
-import { getDocUri, } from '../helper';
-import { testDiagnostics, toRange } from './common';
+import { getDocUri, } from '../../helper';
+import { testDiagnostics, toRange } from '../common';
 
 suite('Should get diagnostics for ruleloopaction call', () => {
+	const folder = "diagnostics\\action-calls\\ruleloopaction-call\\";
 
 	test('Diagnoses RuleLoopAction call without rulename', async () => {
-		const docUri = getDocUri('diagnostics\\ruleloopaction-call\\without-rule-name.xml');
+		const docUri = getDocUri(folder + 'without-rule-name.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: 'RuleLoopAction call without rule name specified.',
@@ -18,7 +19,7 @@ suite('Should get diagnostics for ruleloopaction call', () => {
 	});
 
 	test('Diagnoses RuleLoopAction call with unknown infoset', async () => {
-		const docUri = getDocUri('diagnostics\\ruleloopaction-call\\unknown-infoset.xml');
+		const docUri = getDocUri(folder + 'unknown-infoset.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: "Infoset with name 'UnknownInfoset' not found.",
@@ -30,7 +31,7 @@ suite('Should get diagnostics for ruleloopaction call', () => {
 	});
 
 	test('Diagnoses RuleLoopAction call with unknown rule', async () => {
-		const docUri = getDocUri('diagnostics\\ruleloopaction-call\\unknown-rule.xml');
+		const docUri = getDocUri(folder + 'unknown-rule.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: "Rule with name 'NotAKnownRule' not found.",
@@ -42,7 +43,7 @@ suite('Should get diagnostics for ruleloopaction call', () => {
 	});
 
 	test('Diagnoses RuleLoopAction call with unknown input', async () => {
-		const docUri = getDocUri('diagnostics\\ruleloopaction-call\\unknown-input.xml');
+		const docUri = getDocUri(folder + 'unknown-input.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: "Input 'UnknownInput' not found for Action: 'RuleLoopAction' or Rule: 'KnownRule' or Infoset: 'KnownInfoset'.",
@@ -54,7 +55,7 @@ suite('Should get diagnostics for ruleloopaction call', () => {
 	});
 
 	test('Diagnoses RuleLoopAction call with missing mandatory rule input', async () => {
-		const docUri = getDocUri('diagnostics\\ruleloopaction-call\\missing-mandatory-rule-input.xml');
+		const docUri = getDocUri(folder + 'missing-mandatory-rule-input.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: "Mandatory input 'MandatoryRuleInput' for Rule with name 'KnownRuleWithMandatoryInput' not provided.",
@@ -66,7 +67,7 @@ suite('Should get diagnostics for ruleloopaction call', () => {
 	});
 
 	test('Diagnoses RuleLoopAction call with missing mandatory infoset input', async () => {
-		const docUri = getDocUri('diagnostics\\ruleloopaction-call\\missing-mandatory-infoset-input.xml');
+		const docUri = getDocUri(folder + 'missing-mandatory-infoset-input.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: "Mandatory input 'MandatoryInfosetInput' for Infoset with name 'KnownInfosetWithMandatoryInput' not provided.",
@@ -77,7 +78,7 @@ suite('Should get diagnostics for ruleloopaction call', () => {
 		]);
 	});
 	test('Diagnoses no errors when mandatory input is infoset type attribute', async () => {
-		const docUri = getDocUri('diagnostics\\ruleloopaction-call\\mandatory-input-from-type.xml');
+		const docUri = getDocUri(folder + 'mandatory-input-from-type.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: "Mandatory input 'UnknownAttribute' for Rule with name 'KnownRuleWithMandatoryInputs' not provided.",
@@ -89,7 +90,7 @@ suite('Should get diagnostics for ruleloopaction call', () => {
 	});
 
 	test('Diagnoses RuleLoopAction call with non preferred capitalization', async () => {
-		const docUri = getDocUri('diagnostics\\ruleloopaction-call\\wrong-capitalization.xml');
+		const docUri = getDocUri(folder + 'wrong-capitalization.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: "Preferred capitalization for Action with name 'ruleLoopAction' is 'RuleLoopAction'.",

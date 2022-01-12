@@ -1,0 +1,16 @@
+<?cp-edit petrel2.5.8/rules?>
+<module>
+  <rule name="ExampleRule">
+    <if description="">
+      <condition variable="UnknownLocalNameUsedInCondition" operator="==" />
+      <then>
+      <action name="Rule" rulename="KnownRuleWithInput"> 
+        <argument local-name="UnknownLocalNameUsedInRuleAction" remote-name="KnownInput" />
+      </action>
+      <set-var name="ExpressionValue" expression="'Something else' + {UnknownLocalNameUsedInExpression}" />
+      </then>
+    </if>
+    <output name="UnknownLocalNameUsedInOutput" attribute="UnknownLocalNameUsedInOutput" />
+    <output name="ExpressionValue" attribute="ExpressionValue" />
+  </rule>
+</module>

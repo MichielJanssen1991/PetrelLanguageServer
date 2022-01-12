@@ -1,0 +1,19 @@
+<?cp-edit petrel2.5.8/rules?>
+<module>
+  <rule name="ExampleRule">
+    <input name="InputNotUsedInRule"/>
+    <input name="InputUsedInCondition"/>
+    <input name="InputUsedInExpression"/>
+    <input name="InputUsedInRuleAction"/>
+    <if description="Condition which uses InputUsedInCondition">
+      <condition variable="InputUsedInCondition" operator="==" />
+      <then>
+      <action name="Rule" rulename="KnownRuleWithInput"> 
+        <argument local-name="InputUsedInRuleAction" remote-name="KnownInput" />
+      </action>
+      <set-var name="RuleOutput" expression="'Something else' + {InputUsedInExpression}" />
+      </then>
+    </if>
+    <output name="RuleOutput" attribute="RuleOutput" />
+  </rule>
+</module>

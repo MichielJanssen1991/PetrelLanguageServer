@@ -1,0 +1,5 @@
+<module>
+  <rule name="KnownRuleWithOutput">
+  <output name="ExampleOutput" attribute="ExampleOutput"/>
+  </rule>
+</module>

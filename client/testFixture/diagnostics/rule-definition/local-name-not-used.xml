@@ -1,0 +1,10 @@
+<?cp-edit petrel2.5.8/rules?>
+<module>
+  <rule name="ExampleRule">
+    <action name="Rule" rulename="KnownRuleWithOutput">
+    <output local-name="LocalNameNotUsed" remote-name="ExampleOutput" />
+    </action>
+    <set-var name="LocalNameUsed" expression="Something" />
+    <output name="RuleOutput" attribute="LocalNameUsed" />
+  </rule>
+</module>

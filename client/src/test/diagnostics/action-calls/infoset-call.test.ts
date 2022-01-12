@@ -1,11 +1,12 @@
 import * as vscode from 'vscode';
-import { getDocUri, } from '../helper';
-import { testDiagnostics, toRange } from './common';
+import { getDocUri, } from '../../helper';
+import { testDiagnostics, toRange } from '../common';
 
 suite('Should get diagnostics for infoset call', () => {
+	const folder = "diagnostics\\action-calls\\infoset-call\\";
 
 	test('Diagnoses infoset call without name', async () => {
-		const docUri = getDocUri('diagnostics\\infoset-call\\without-infoset-name.xml');
+		const docUri = getDocUri(folder + 'without-infoset-name.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: 'Infoset call without infoset-name specified.',
@@ -17,7 +18,7 @@ suite('Should get diagnostics for infoset call', () => {
 	});
 
 	test('Diagnoses infoset call to unknown infoset', async () => {
-		const docUri = getDocUri('diagnostics\\infoset-call\\unknown-infoset.xml');
+		const docUri = getDocUri(folder + 'unknown-infoset.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: "Infoset with name 'NotAKnownInfoset' not found.",
@@ -29,7 +30,7 @@ suite('Should get diagnostics for infoset call', () => {
 	});
 
 	test('Diagnoses infoset call with unknown input', async () => {
-		const docUri = getDocUri('diagnostics\\infoset-call\\unknown-input.xml');
+		const docUri = getDocUri(folder + 'unknown-input.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: "Input 'UnknownInput' not found for Action: 'Infoset' or Infoset: 'KnownInfoset'.",
@@ -41,7 +42,7 @@ suite('Should get diagnostics for infoset call', () => {
 	});
 
 	test('Diagnoses infoset call with missing mandatory input', async () => {
-		const docUri = getDocUri('diagnostics\\infoset-call\\missing-mandatory-input.xml');
+		const docUri = getDocUri(folder + 'missing-mandatory-input.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: "Mandatory input 'MandatoryInfosetInput' for Infoset with name 'KnownInfosetWithMandatoryInput' not provided.",
@@ -53,7 +54,7 @@ suite('Should get diagnostics for infoset call', () => {
 	});
 
 	test('Diagnoses infoset call with non preferred capitalization', async () => {
-		const docUri = getDocUri('diagnostics\\infoset-call\\wrong-capitalization.xml');
+		const docUri = getDocUri(folder + 'wrong-capitalization.xml');
 		await testDiagnostics(docUri, [
 			{
 				message: "Preferred capitalization for Action with name 'infoset' is 'Infoset'.",
@@ -65,7 +66,7 @@ suite('Should get diagnostics for infoset call', () => {
 	});
 
 	test('No diagnoses for valid infoset call', async () => {
-		const docUri = getDocUri('diagnostics\\infoset-call\\valid.xml');
+		const docUri = getDocUri(folder + 'valid.xml');
 		await testDiagnostics(docUri, []);
 	});
 });

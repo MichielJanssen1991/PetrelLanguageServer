@@ -1,0 +1,9 @@
+<?cp-edit petrel/rules?>
+<rules>
+	<rule name="ExampleRuleSameTag">
+    <action name="Rule" rulename="ExampleRule"> 
+      <output remote-name="" />
+    </action>
+    <output name="" />
+  </rule>
+</rules>

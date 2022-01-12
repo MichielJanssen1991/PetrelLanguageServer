@@ -139,6 +139,7 @@ export const OTHER_DEFINITION: Definitions =
 	"output": [{
 		matchCondition: (nodeContext) => isOutputDeclaration(nodeContext),
 		type: ModelElementTypes.Output,
+		isSymbolDeclaration: true,
 		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.Declarations
 	},
