@@ -785,14 +785,13 @@ const view_declaration_definition: Partial<Definition> = {
 
 const subview_definition: Partial<Definition> = {
 	type: ModelElementTypes.SubView,
-	ancestors: [ModelElementTypes.SubView, ModelElementTypes.View, ModelElementTypes.Action, ModelElementTypes.MainView]
+	ancestors: [ModelElementTypes.SubView, ModelElementTypes.View, ModelElementTypes.ActionCall, ModelElementTypes.MainView, ModelElementTypes.Node]
 };
 
 const objectview_base_definition: Definition = {
 	subtype: ModelElementTypes.View_ObjectView,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "ObjectView"),
 	attributes: [
-		...default_view_attributes,
 		attribute_detail_height,	// object/list
 		{
 			name: "layoutable",
@@ -833,7 +832,6 @@ const listview_base_definition: Definition = {
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "ListView"),
 	subtype: ModelElementTypes.View_ListView,
 	attributes: [
-		...default_view_attributes,
 		attribute_detail_height,	// object/list
 		{
 			name: "show-favorites-column",
@@ -975,7 +973,6 @@ const treeview_base_definition: Definition = {
 	subtype: ModelElementTypes.View_Tree,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Tree"),
 	attributes: [
-		...default_definition_view_attributes,
 		{
 			name: "tree",
 			description: "The navigation tree to display. Only applicable for tree control views.",
@@ -994,9 +991,7 @@ const datatree_view_base_definition:Definition = { // DataTree
 	subtype: ModelElementTypes.View_DataTree,
 	description: "DataTree as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "DataTree"),
-	attributes: [
-		...default_definition_view_attributes
-	],
+	attributes: [],
 	childs: [
 		...default_view_childs,
 		{
@@ -1014,7 +1009,6 @@ const htmlfile_view_base_definition:Definition = { // HtmlFile
 	description: "HTMLFile as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "HtmlFile"),
 	attributes: [
-		...default_definition_view_attributes,
 		{
 			name: "file",
 			description: "The HTML file rendered. Only applicable for HTML control views.",
@@ -1036,7 +1030,6 @@ const organizer_view_base_definition:Definition = { // Organizer
 	description: "Organizer as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Organizer"),
 	attributes: [
-		...default_definition_view_attributes,
 		{
 			name: "organizer-mode",
 			description: "Name of initial view.",
@@ -1265,7 +1258,6 @@ const mediaplayer_view_base_definition:Definition = { // MediaPlayer
 	description: "MediaPlayer as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "MediaPlayer"),
 	attributes: [
-		...default_definition_view_attributes,
 		{
 			name: "video",
 			description: "",
@@ -1305,7 +1297,6 @@ const annotationtool_view_base_definition:Definition = { // AnnotationTool
 	description: "AnnotationTool as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "AnnotationTool"),
 	attributes: [
-		...default_definition_view_attributes,
 		{
 			name: "annotation-tool-background-image",
 			description: "Annotation tool background image url",
@@ -1338,7 +1329,6 @@ const tabber_view_base_definition:Definition = { // Tabber
 	description: "Tabber as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Tabber"),
 	attributes: [
-		...default_definition_view_attributes,
 		{
 			name: "overflow-dropdown",
 			description: "Move components to a dropdown when they do not fit.",
@@ -1415,7 +1405,6 @@ const container_view_base_definition:Definition = { // ViewContainer
 	description: "ViewContainer as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "ViewContainer"),
 	attributes: [
-		...default_definition_view_attributes,
 		{
 			name: "expand-by-hover",
 			description: "Expands the view when hovering over it.",
@@ -1471,7 +1460,6 @@ const iframe_view_base_definition:Definition = { // Iframe
 	subtype: ModelElementTypes.View_IFrame,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Iframe"),
 	attributes: [
-		...default_definition_view_attributes,
 		{
 			name: "src",
 			description: "",
@@ -1554,7 +1542,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "ListView as a definition",
 			attributes: [
 				...listview_base_definition.attributes,
-				...default_definition_view_attributes,
+				...default_reference_view_attributes,
 			]
 		},
 		{ // TreeView as definition
@@ -1572,7 +1560,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "TreeView as a definition",
 			attributes: [
 				...treeview_base_definition.attributes,
-				...default_definition_view_attributes,
+				...default_reference_view_attributes,
 			]
 		},
 		{ // DataTree as definition
@@ -1590,7 +1578,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "DataTree as a definition",
 			attributes: [
 				...datatree_view_base_definition.attributes,
-				...default_definition_view_attributes,
+				...default_reference_view_attributes,
 			]
 		},
 		{ // HTMLFile as definition
@@ -1608,7 +1596,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "HTMLFile as a definition",
 			attributes: [
 				...htmlfile_view_base_definition.attributes,
-				...default_definition_view_attributes,
+				...default_reference_view_attributes,
 			]
 		},
 		{ // Organizer as definition
@@ -1626,7 +1614,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "Organizer as a definition",
 			attributes: [
 				...organizer_view_base_definition.attributes,
-				...default_definition_view_attributes,
+				...default_reference_view_attributes,
 			]
 		},
 		{ // MediaPlayer as definition
@@ -1644,7 +1632,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "MediaPlayer as a definition",
 			attributes: [
 				...mediaplayer_view_base_definition.attributes,
-				...default_definition_view_attributes,
+				...default_reference_view_attributes,
 			]
 		},
 		{ // AnnotationTool as definition
@@ -1662,7 +1650,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "AnnotationTool as a definition",
 			attributes: [
 				...annotationtool_view_base_definition.attributes,
-				...default_definition_view_attributes,
+				...default_reference_view_attributes,
 			]
 		},
 		{ // Tabber as definition
@@ -1680,7 +1668,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "Tabber as a definition",
 			attributes: [
 				...tabber_view_base_definition.attributes,
-				...default_definition_view_attributes,
+				...default_reference_view_attributes,
 			]
 		},
 		{ // ViewContainer as definition
@@ -1698,7 +1686,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "ViewContainer as a definition",
 			attributes: [
 				...container_view_base_definition.attributes,
-				...default_definition_view_attributes,
+				...default_reference_view_attributes,
 			]
 		},
 		{ // Iframe as definition
@@ -1716,7 +1704,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "Iframe as a definition",
 			attributes: [
 				...iframe_view_base_definition.attributes,
-				...default_definition_view_attributes,
+				...default_reference_view_attributes,
 			]
 		}],
 	"root": [{
