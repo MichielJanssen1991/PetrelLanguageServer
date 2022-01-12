@@ -1025,7 +1025,7 @@ export const view_argument_element: Definition = {
 	description: "Filter arguments for the view.",
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
-	ancestors: [ModelElementTypes.View],
+	ancestors: [ModelElementTypes.View, ModelElementTypes.SubView],
 	attributes: [
 		{
 			name: NAMES.ATTRIBUTE_REMOTENAME,
