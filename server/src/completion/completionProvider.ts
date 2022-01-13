@@ -211,8 +211,8 @@ export class CompletionProvider {
 						case ModelElementTypes.Infoset:
 						case ModelElementTypes.Function:
 						case ModelElementTypes.Decorator:
-							symbols = this.symbolAndReferenceManager.getAllSymbolsForType(type.relatedTo).map((x) => ({ label: x.name })) || [
-								{ label: "no " + type.relatedTo + "s found" }];
+							symbols = this.symbolAndReferenceManager.getAllSymbolsForType(type.relatedTo).filter(x=>x.name!=undefined).map(x=>({ label: x.name })) || [
+								{ label: `no ${type.relatedTo}s found` }];
 							break;
 						default:
 							break;
