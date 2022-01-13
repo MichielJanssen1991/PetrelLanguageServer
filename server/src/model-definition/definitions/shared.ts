@@ -487,6 +487,7 @@ export const backend_action_call_element: Definition =
 			},
 			{
 				element: "output",
+				type: ModelElementTypes.ActionCallOutput,
 				validations: [
 					{
 						identifier: "RULE00001",

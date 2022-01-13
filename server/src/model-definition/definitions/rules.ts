@@ -171,7 +171,8 @@ export const RULE_DEFINITION: Definitions = {
 				element: "input"
 			},
 			{
-				element: "output"
+				element: "output",
+				type: ModelElementTypes.Output
 			},
 			{
 				element: "action"
