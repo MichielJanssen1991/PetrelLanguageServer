@@ -199,7 +199,7 @@ export class CompletionProvider {
 									ModelElementTypes.Input,
 									ModelElementTypes.SetVar,
 								])
-								?.availableParams.map((param) => ({ label: param })) || [
+								?.availableParams.filter(param=>param!=undefined).map(param => ({ label: param })) || [
 									{ label: "no params found" },
 								];
 							break;

@@ -42,52 +42,6 @@ export class CompletionContext {
 		this.attribute = attribute;
 	}
 
-	// public getAttributeValueByTagAndName(inTag: ModelElementTypes|undefined, searchName: string): string {
-	// 	let value = "";
-	// 	if (inTag) {
-	// 		this.nodes.forEach(n=>{
-	// 			if (value == ""){
-	// 				const res = this.walkChildrenToFindAttributeInTag(n, inTag, searchName);
-	// 				if (res) {
-	// 					const allNodeAttributes: any = res.attributes;
-	// 					value = allNodeAttributes[searchName].value;
-	// 				}
-	// 			}				
-	// 		});
-	// 	}
-	// 	return value;
-	// }
-
-	// private walkChildrenToFindAttributeInTag(node: TreeNode, inTag: ModelElementTypes, searchName: string): TreeNode | undefined{
-	// 	let res;
-	// 	if (node.tag.toLowerCase() == inTag.toLowerCase()){
-	// 		const allNodeAttributes: any = node.attributes;
-	// 		const attrValue = allNodeAttributes[searchName].value;
-	// 		if (attrValue){
-	// 			res = node;
-	// 		}
-	// 	} 
-		
-	// 	if (!res && node.children){
-	// 		node.children.forEach(c=>{
-	// 			res = this.walkChildrenToFindAttributeInTag(c, inTag, searchName);
-	// 		});
-	// 	}
-	// 	return res;	
-	// }
-
-	/* private symbolOrReferenceToXmlNode(symbolOrReference: TreeNode): XmlNode {
-		const attributes = symbolOrReference.attributes;
-		const attributesSimplified = Object.keys(attributes).
-			reduce((result: Record<string, string>, att) => {
-				result[att] = attributes[att].name; return result;
-			}, {});
-		return {
-			name: symbolOrReference.tag,
-			attributes: attributesSimplified
-		};
-	} */
-
 	//Returns the first predecessor of the given type
 	public getPredecessorOfType(type: ModelElementTypes, isSymbolDeclaration: boolean) {
 		return this.nodes.reverse().find(node => node.type == type && node.isSymbolDeclaration == isSymbolDeclaration);
