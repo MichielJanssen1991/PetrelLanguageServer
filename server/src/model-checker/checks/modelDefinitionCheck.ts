@@ -1,4 +1,5 @@
 import { Attribute, AttributeTypes, Definition, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
+import { attributeValueIsAVariable } from '../../util/other';
 import { ModelCheck } from '../modelCheck';
 
 export class ModelDefinitionCheck extends ModelCheck {
@@ -100,7 +101,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 				if (dv.type == "regex"){
 					const attrElement: Attribute = element.attributes[da.name];
 					const regEx = new RegExp(dv.value);
-					if (attrElement && !regEx.test(attrElement.value)){
+					if (attrElement && !regEx.test(attrElement.value) && !attributeValueIsAVariable(attrElement.value)){
 						this.addError(element.range, `Invalid value for '${da.name}': ${dv.message}`);
 					}
 				}
@@ -109,19 +110,21 @@ export class ModelDefinitionCheck extends ModelCheck {
 
 		// check attribute types
 		definition.attributes.filter(da=>da.type && this.allNodeAttributes.map(x=>x.name).includes(da.name)).forEach(da=>{
-			const attrValue: string = this.allNodeAttributes.filter(x=>x.name==da.name).map(x=>x.value)[0] || "";
+			const attrValue: string = this.allNodeAttributes.find(x=>x.name==da.name)?.value || "";
 			
-			switch(da.type?.type){
-				case AttributeTypes.Enum:
-					if (da.type?.options && !da.type?.options?.map(o=>o.name.toLowerCase()).some(o=>o==attrValue.toLowerCase() || o=="*")){
-						this.addError(element.range, `Invalid value for '${da.name}': '${attrValue}' is not a valid option`);
-					}
-					break;
-				case AttributeTypes.Numeric:
-					if (!Number(attrValue)) {
-						this.addError(element.range, `Invalid value for '${da.name}': '${attrValue}' is not a number`);
-					}
-					break;
+			if(!attributeValueIsAVariable(attrValue)){
+				switch(da.type?.type){
+					case AttributeTypes.Enum:
+						if (da.type?.options && !da.type?.options?.map(o=>o.name.toLowerCase()).some(o=>o==attrValue.toLowerCase() || o=="*")){
+							this.addError(element.range, `Invalid value for '${da.name}': '${attrValue}' is not a valid option`);
+						}
+						break;
+					case AttributeTypes.Numeric:
+						if (!Number(attrValue)) {
+							this.addError(element.range, `Invalid value for '${da.name}': '${attrValue}' is not a number`);
+						}
+						break;
+				}
 			}
 		});
 	}
