@@ -58,14 +58,6 @@ export class ModelDefinitionCheck extends ModelCheck {
 	}
 
 	private checkAttributeOccurrences(element: TreeNode, definition: Definition): void {
-		// check attribute uniqueness 
-		// TODO: attributes are always unique in the TreeNode. It is not possible to validate whether attributes are unique or not
-		const uniqueValues = new Set(this.allNodeAttributes.map(x => x.name));
-		if (uniqueValues.size < this.allNodeAttributes.length) {
-			const intersection = this.allNodeAttributes.filter(x => Array.from(uniqueValues).map(x=>x.toLowerCase()).includes(x.name));
-			this.addError(element.range, `Duplicate attribute '${intersection[0].name}' in element '${element.tag}'`);
-		}
-
 		// check required attribute is added
 		definition.attributes.forEach(attr=>{
 			// based on required:true attribute
