@@ -190,7 +190,7 @@ export class CompletionProvider {
 			const attrDefinition = elementDefinition.attributes.find(attr => attr.name == attrName);
 			const type = attrDefinition?.type;
 			if (attrDefinition && type) {
-				if (type.type == AttributeTypes.Reference) {
+				if (type.type == AttributeTypes.Reference && type.relatedTo) {
 					switch (type.relatedTo) {
 						case ModelElementTypes.RuleContext:
 							symbols = context
@@ -203,18 +203,9 @@ export class CompletionProvider {
 									{ label: "no params found" },
 								];
 							break;
-						case ModelElementTypes.Rule:
-						case ModelElementTypes.Action:
-						case ModelElementTypes.IncludeBlock:
-						case ModelElementTypes.Type:
-						case ModelElementTypes.View:
-						case ModelElementTypes.Infoset:
-						case ModelElementTypes.Function:
-						case ModelElementTypes.Decorator:
+						default:
 							symbols = this.symbolAndReferenceManager.getAllSymbolsForType(type.relatedTo).filter(x=>x.name!=undefined).map(x=>({ label: x.name })) || [
 								{ label: `no ${type.relatedTo}s found` }];
-							break;
-						default:
 							break;
 					}
 				} else if (type.type == AttributeTypes.Enum && type.options) {

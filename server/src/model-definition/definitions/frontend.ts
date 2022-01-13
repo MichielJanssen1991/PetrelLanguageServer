@@ -2427,14 +2427,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				}
 			}
 		],
-		childs: [
-			{
-				element: "server-event"
-			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
-		]
+		childs: event_childs
 	}],
 	"event": [
 		{
