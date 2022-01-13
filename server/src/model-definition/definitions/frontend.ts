@@ -705,11 +705,9 @@ const default_view_childs: ChildDefinition[] = [
 		element: "server-events",
 		occurence: "once"
 	},
-	{
-		element: "metadata-initialize",
-		occurence: "once"
-	},
-
+	child_include,
+	child_merge_instruction,
+	child_model_condition
 ];
 
 // const default_view_unknown_childs: ChildDefinition[] = [
@@ -767,6 +765,7 @@ const frontend_events_base_definition: Definition = {
 	childs: [
 		{
 			element: "event",
+			required: true,
 			occurence: "at-least-once"
 		},
 		child_include,
@@ -1481,6 +1480,14 @@ const iframe_view_base_definition:Definition = { // Iframe
 
 	]
 };
+const empty_view_base_definition:Definition = { // Empty
+	subtype: ModelElementTypes.View_IFrame,
+	matchCondition: (nodeContext) => isViewControl(nodeContext, "Empty"),
+	attributes: [],
+	childs: [
+		...default_view_childs
+	]
+};
 
 export const FRONTEND_DEFINITION: Definitions = {
 	"view": [
@@ -1539,7 +1546,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // ListView as subview
 			...subview_definition,
 			...listview_base_definition,
-			description: "ListView as a definition",
+			description: "ListView as a child",
 			attributes: [
 				...listview_base_definition.attributes,
 				...default_reference_view_attributes,
@@ -1557,7 +1564,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // TreeView as subview
 			...subview_definition,
 			...treeview_base_definition,
-			description: "TreeView as a definition",
+			description: "TreeView as a child",
 			attributes: [
 				...treeview_base_definition.attributes,
 				...default_reference_view_attributes,
@@ -1575,7 +1582,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // DataTree as subview
 			...subview_definition,
 			...datatree_view_base_definition,
-			description: "DataTree as a definition",
+			description: "DataTree as a child",
 			attributes: [
 				...datatree_view_base_definition.attributes,
 				...default_reference_view_attributes,
@@ -1593,7 +1600,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // HTMLFile as subview
 			...subview_definition,
 			...htmlfile_view_base_definition,
-			description: "HTMLFile as a definition",
+			description: "HTMLFile as a child",
 			attributes: [
 				...htmlfile_view_base_definition.attributes,
 				...default_reference_view_attributes,
@@ -1611,7 +1618,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // Organizer as subview
 			...subview_definition,
 			...organizer_view_base_definition,
-			description: "Organizer as a definition",
+			description: "Organizer as a child",
 			attributes: [
 				...organizer_view_base_definition.attributes,
 				...default_reference_view_attributes,
@@ -1629,7 +1636,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // MediaPlayer as subview
 			...subview_definition,
 			...mediaplayer_view_base_definition,
-			description: "MediaPlayer as a definition",
+			description: "MediaPlayer as a child",
 			attributes: [
 				...mediaplayer_view_base_definition.attributes,
 				...default_reference_view_attributes,
@@ -1647,7 +1654,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // AnnotationTool as subview
 			...subview_definition,
 			...annotationtool_view_base_definition,
-			description: "AnnotationTool as a definition",
+			description: "AnnotationTool as a child",
 			attributes: [
 				...annotationtool_view_base_definition.attributes,
 				...default_reference_view_attributes,
@@ -1665,7 +1672,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // Tabber as subview
 			...subview_definition,
 			...tabber_view_base_definition,
-			description: "Tabber as a definition",
+			description: "Tabber as a child",
 			attributes: [
 				...tabber_view_base_definition.attributes,
 				...default_reference_view_attributes,
@@ -1683,7 +1690,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // ViewContainer as subview
 			...subview_definition,
 			...container_view_base_definition,
-			description: "ViewContainer as a definition",
+			description: "ViewContainer as a child",
 			attributes: [
 				...container_view_base_definition.attributes,
 				...default_reference_view_attributes,
@@ -1701,12 +1708,31 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // Iframe as subview
 			...subview_definition,
 			...iframe_view_base_definition,
-			description: "Iframe as a definition",
+			description: "Iframe as a child",
 			attributes: [
 				...iframe_view_base_definition.attributes,
 				...default_reference_view_attributes,
 			]
-		}],
+		},
+		{ // Empty as definition (which would be a bad practice...)
+			...view_declaration_definition,
+			...empty_view_base_definition,
+			description: "Empty as a definition",
+			attributes: [
+				...empty_view_base_definition.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // Empty as subview
+			...subview_definition,
+			...iframe_view_base_definition,
+			description: "Empty as a child",
+			attributes: [
+				...empty_view_base_definition.attributes,
+				...default_reference_view_attributes,
+			]
+		}
+	],
 	"root": [{
 		description: "Project root of the frontend model.",
 		attributes: [dev_comment_attribute],
@@ -1850,7 +1876,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_comment_attribute
 		],
 		childs: {
-			matchElementFromAttribute: "meta-name"
+			matchElementFromAttribute: "meta-name",
+			matchSecondaryElementFromAttribute: "meta-index"
 		}
 	}],
 	"include": [include_element],
@@ -2393,7 +2420,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Events_View,
-			ancestors: [ModelElementTypes.View],
+			ancestors: [ModelElementTypes.View, ModelElementTypes.SubView],
 			...frontend_events_base_definition
 		},
 	],
@@ -2431,8 +2458,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"event": [
 		{
-			type: ModelElementTypes.Events_Attribute,
-			ancestors: [ModelElementTypes.Event_Attribute],
+			type: ModelElementTypes.Event_Attribute,
+			ancestors: [ModelElementTypes.Events_Attribute],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -3354,9 +3381,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"group": [
 		{
-			ancestors: [ModelElementTypes.View],
+			ancestors: [ModelElementTypes.View, ModelElementTypes.SubView],
 			type: ModelElementTypes.Group,
-			isGroupingElement: true,
+			subtype: ModelElementTypes.Group_View,
 			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
 			attributes: view_group_attributes,
 			childs: view_group_childs
@@ -3364,6 +3391,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			ancestors: [ModelElementTypes.Condition],
 			type: ModelElementTypes.Group,
+			subtype: ModelElementTypes.Group_Condition,
 			description: "A group set, used to filter.",
 			attributes: [dev_comment_attribute],
 			childs: [
@@ -3393,13 +3421,15 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			description: "A button or link.",
 			type: ModelElementTypes.Button,
-			ancestors: [ModelElementTypes.View, ModelElementTypes.TitleBar, ModelElementTypes.MenuItem],
+			ancestors: [ModelElementTypes.View, ModelElementTypes.TitleBar, ModelElementTypes.MenuItem, ModelElementTypes.Group],
 			isSymbolDeclaration: true,
 			attributes: button_attributes,
 			childs: button_childs
 		},
 		{
-			ancestors: [ModelElementTypes.Action],
+			description: "A message/question answer button",
+			type: ModelElementTypes.Button,
+			ancestors: [ModelElementTypes.ActionCall],
 			attributes: [
 				{
 					name: "name"

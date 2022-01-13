@@ -242,8 +242,10 @@ export class CompletionProvider {
 			else {
 				// match context from an attribute to retrieve the children (e.g. include)
 				if (children?.matchElementFromAttribute) {
-					// const elementName = context.getAttributeValueByTagAndName(elementDefinition.type, children?.matchElementFromAttribute).toLowerCase();
-					const elementName = context.currentNode?.attributes[children.matchElementFromAttribute]?.value.toLowerCase();
+					let elementName = context.currentNode?.attributes[children.matchElementFromAttribute]?.value.toLowerCase();
+					if (!elementName && children.matchSecondaryElementFromAttribute) {
+						elementName = context.currentNode?.attributes[children.matchSecondaryElementFromAttribute]?.value.toLowerCase();
+					}
 					if (elementName) {
 						const childElementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, elementName, ModelElementTypes.All); //TODO: Add the correct ModelElementType
 						const childChildren = childElementDefinition?.childs;

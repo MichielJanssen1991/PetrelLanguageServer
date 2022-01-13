@@ -22,6 +22,8 @@ export enum ModelElementTypes {
 	Field = "Field",
 	Function = "Function",
 	Group = "Group",
+	Group_View = "ViewGroup",
+	Group_Condition = "ConditionGroup",
 	Infoset = "Infoset",
 	Input = "Input",
 	IncludeBlock = "Include-Block",
@@ -256,6 +258,7 @@ export type ChildDefinition = {
 
 export type ChildReference = {
 	matchElementFromAttribute?: string,
+	matchSecondaryElementFromAttribute?: string,
 	matchFromParent?: boolean,
 }
 

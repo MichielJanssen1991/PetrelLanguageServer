@@ -936,7 +936,8 @@ export const target_element: Definition = {
 		}
 	],
 	childs: {
-		matchElementFromAttribute: "meta-name"
+		matchElementFromAttribute: "meta-name",
+			matchSecondaryElementFromAttribute: "meta-index"
 	}
 };
 
@@ -970,7 +971,8 @@ export const decorator_context_entity_element: Definition =
 		}
 	],
 	childs: {
-		matchElementFromAttribute: "meta-name"
+		matchElementFromAttribute: "meta-name",
+		matchSecondaryElementFromAttribute: "meta-index"
 	}
 };
 
@@ -1023,10 +1025,10 @@ export const action_definition_argument_element: Definition = {
 };
 
 export const view_argument_element: Definition = {
-	description: "Filter arguments for the view.",
+	description: "Filter arguments for the view or attribute.",
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
-	ancestors: [ModelElementTypes.View, ModelElementTypes.SubView],
+	ancestors: [ModelElementTypes.View, ModelElementTypes.SubView, ModelElementTypes.Attribute, ModelElementTypes.IncludeBlock],
 	attributes: [
 		{
 			name: NAMES.ATTRIBUTE_REMOTENAME,

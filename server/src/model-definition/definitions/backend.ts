@@ -1194,7 +1194,8 @@ export const BACKEND_DEFINITION: Definitions = {
 			dev_comment_attribute
 		],
 		childs: {
-			matchElementFromAttribute: "meta-name"
+			matchElementFromAttribute: "meta-name",
+			matchSecondaryElementFromAttribute: "meta-index"
 		}
 	}],
 	"include": [include_element],
