@@ -15,12 +15,19 @@ export class SymbolIsReferencedCheck extends ModelCheck {
 
 	protected checkInternal(node: TreeNode,/*  options: ModelCheckerOptions */)
 	{
+		if (!standaloneObjectTypes.has(node.type)) { return; } //Nodes which require context are checked as part of their parent
 		const symbol = node as SymbolDeclaration;
 		const references = this.modelManager.getReferencesForSymbol(symbol);
 		const noReferencesFound = references.length <= 0;
-		if (!standaloneObjectTypes.has(node.type)) { return; } //Nodes which require context are checked as part of their parent
-		if (noReferencesFound && symbol.type != ModelElementTypes.Module) {
-			this.addInformation(symbol.range, CHECKS_MESSAGES.NO_REFERENCES_FOUND(symbol));
+		if (noReferencesFound) {
+			if(node.type == ModelElementTypes.Infoset)
+			{
+				this.addInformation(symbol.range, CHECKS_MESSAGES.NO_REFERENCES_FOUND_INFOSET(symbol));
+			}
+			else
+			{
+				this.addInformation(symbol.range, CHECKS_MESSAGES.NO_REFERENCES_FOUND(symbol));
+			}
 		}
 	}
 

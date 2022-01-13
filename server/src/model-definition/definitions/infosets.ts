@@ -13,6 +13,9 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				element: "infoset"
 			},
+			{
+				element: "include-blocks"
+			},
 			child_include,
 			child_merge_instruction,
 			child_model_condition

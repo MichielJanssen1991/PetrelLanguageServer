@@ -76,7 +76,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				element: "include-block"
 			},
 			{
-				element: "decorations",
+				element: "decorators",
 				occurence: "once"
 			},
 			child_include,
