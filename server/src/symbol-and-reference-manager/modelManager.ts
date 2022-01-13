@@ -15,7 +15,7 @@ export class ModelManager extends SymbolAndReferenceManager {
 
 		const decoratedChildren: (TreeNode | SymbolDeclaration)[] = decoratorsOrIncludeBlocks.flatMap(decoratorOrIncludeBlock => {
 			const decoratorOrIncludeBlockRef = decoratorOrIncludeBlock.attributes["name"] as Reference;
-			const decoratorsOrIncludeBlocks = this.getReferencedObject(decoratorOrIncludeBlockRef);
+			const decoratorsOrIncludeBlocks = decoratorOrIncludeBlockRef ? this.getReferencedObject(decoratorOrIncludeBlockRef) : undefined;
 			return decoratorsOrIncludeBlocks ? this.getChildrenOfType(decoratorsOrIncludeBlocks, type) : [];
 		});
 		return [...directChilren, ...decoratedChildren];
