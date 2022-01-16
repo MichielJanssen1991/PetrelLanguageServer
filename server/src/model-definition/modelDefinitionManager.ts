@@ -5,7 +5,7 @@ import { FRONTEND_DEFINITION } from './definitions/frontend';
 import { INFOSET_DEFINITION } from './definitions/infosets';
 import { OTHER_DEFINITION } from './definitions/other';
 import { RULE_DEFINITION } from './definitions/rules';
-import { IXmlNodeContext, Definitions, ModelElementTypes, Definition, TreeNode } from './symbolsAndReferences';
+import { IXmlNodeContext, Definitions, ModelElementTypes, Definition, TreeNode, ModelElementSubTypes } from './symbolsAndReferences';
 
 export enum ModelFileContext {
 	Backend,
@@ -89,7 +89,7 @@ export class ModelDefinitionManager {
 	 * @param subtype optionally the model element subtype
 	 * @returns definition for the current node
 	 */
-	public getModelDefinitionForTagAndType(context: ModelFileContext, tag: string, type: ModelElementTypes, subtype?: ModelElementTypes) {
+	public getModelDefinitionForTagAndType(context: ModelFileContext, tag: string, type: ModelElementTypes, subtype?: ModelElementSubTypes) {
 		const definitionsForTag = this.getModelDefinition(context)[tag] || [];
 		switch (definitionsForTag.length) {
 			case 0: { return; }
@@ -98,9 +98,9 @@ export class ModelDefinitionManager {
 		}
 	}
 
-	private tagAndTypeMatches(def: Definition, type: ModelElementTypes, subtype?: ModelElementTypes): boolean {
+	private tagAndTypeMatches(def: Definition, type: ModelElementTypes, subtype?: ModelElementSubTypes): boolean {
 		const typeMatches = (def.type == type) || type == ModelElementTypes.All;
-		const subTypeMatchesOrEmpty = (subtype== undefined) || (def.subtype == subtype) || subtype == ModelElementTypes.All;
+		const subTypeMatchesOrEmpty = (subtype== undefined) || (def.subtype == subtype) || subtype == ModelElementSubTypes.All;
 		return typeMatches && subTypeMatchesOrEmpty;
 	}
 }

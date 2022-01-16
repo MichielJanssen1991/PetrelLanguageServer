@@ -22,8 +22,6 @@ export enum ModelElementTypes {
 	Field = "Field",
 	Function = "Function",
 	Group = "Group",
-	Group_View = "ViewGroup",
-	Group_Condition = "ConditionGroup",
 	Infoset = "Infoset",
 	Input = "Input",
 	IncludeBlock = "Include-Block",
@@ -51,17 +49,6 @@ export enum ModelElementTypes {
 	View = "View",
 	Views = "Views",
 	SubView = "SubView",
-	View_ObjectView = "ObjectView",
-	View_ListView = "ListView",
-	View_Tree = "TreeView",
-	View_DataTree = "DataTreeView",
-	View_Container = "ContainerView",
-	View_HTML = "HTMLView",
-	View_Organizer = "OrganizerView",
-	View_MediaPlayer = "MediaPlayerView",
-	View_AnnotationTool = "AnnotationToolView",
-	View_Tabber = "TabberView",
-	View_IFrame = "IFrameView",
 	Style = "Style",
 	Toolbar = "Toolbar",
 	Tree = "Tree",
@@ -92,6 +79,23 @@ export enum ModelElementTypes {
 	ToolbarButton = "ToolbarButton",
 	Appearance = "Appearance",
 	AppearanceClass = "AppearanceClass", // this could be a list of all classes from the scss files (it can be filtered by the type of mixin it's using)
+}
+
+export enum ModelElementSubTypes {
+	All = "All",
+	View_ObjectView = "ObjectView",
+	View_ListView = "ListView",
+	View_Tree = "TreeView",
+	View_DataTree = "DataTreeView",
+	View_Container = "ContainerView",
+	View_HTML = "HTMLView",
+	View_Organizer = "OrganizerView",
+	View_MediaPlayer = "MediaPlayerView",
+	View_AnnotationTool = "AnnotationToolView",
+	View_Tabber = "TabberView",
+	View_IFrame = "IFrameView",
+	Group_View = "ViewGroup",
+	Group_Condition = "ConditionGroup",
 }
 
 export enum ValidationLevels {
@@ -143,7 +147,7 @@ export enum ModelDetailLevel {
 export interface TreeNode {
 	tag: string,
 	type: ModelElementTypes,
-	subtype?: ModelElementTypes,
+	subtype?: ModelElementSubTypes,
 	range: LSP.Range,
 	fullRange: LSP.Range,
 	uri: string,
@@ -188,7 +192,7 @@ export function newReference(name: string, value: string, type: ModelElementType
 	};
 }
 
-export function newTreeNode(tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, subtype?: ModelElementTypes): TreeNode {
+export function newTreeNode(tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, subtype?: ModelElementSubTypes): TreeNode {
 	return {
 		type,
 		subtype,
@@ -202,7 +206,7 @@ export function newTreeNode(tag: string, type: ModelElementTypes, range: LSP.Ran
 		isSymbolDeclaration: false
 	};
 }
-export function newSymbolDeclaration(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, subtype?: ModelElementTypes): SymbolDeclaration {
+export function newSymbolDeclaration(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, subtype?: ModelElementSubTypes): SymbolDeclaration {
 	return {
 		name,
 		type,
@@ -233,7 +237,7 @@ export type Definition = {
 	childs?: ChildDefinition[] | ChildReference,
 	attributes: ElementAttribute[],
 	type?: ModelElementTypes,
-	subtype?: ModelElementTypes,
+	subtype?: ModelElementSubTypes,
 	prefixNameSpace?: boolean,
 	isSymbolDeclaration?: boolean,
 	detailLevel?: ModelDetailLevel,
@@ -251,7 +255,7 @@ export type ChildDefinition = {
 	required?: boolean,
 	validations?: ChildValidation[],
 	type?:ModelElementTypes,
-	subtype?:ModelElementTypes,
+	subtype?:ModelElementSubTypes,
 	obsolete?: boolean,
 	obsoleteMessage?: string
 }

@@ -1,4 +1,4 @@
-import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption, Definition } from '../symbolsAndReferences';
+import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption, Definition, ModelElementSubTypes } from '../symbolsAndReferences';
 import { isViewControl } from './other';
 import { action_argument_element, action_call_output_element, child_include, child_merge_instruction, child_model_condition, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
 
@@ -788,7 +788,7 @@ const subview_definition: Partial<Definition> = {
 };
 
 const objectview_base_definition: Definition = {
-	subtype: ModelElementTypes.View_ObjectView,
+	subtype: ModelElementSubTypes.View_ObjectView,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "ObjectView"),
 	attributes: [
 		attribute_detail_height,	// object/list
@@ -829,7 +829,7 @@ const objectview_base_definition: Definition = {
 
 const listview_base_definition: Definition = {
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "ListView"),
-	subtype: ModelElementTypes.View_ListView,
+	subtype: ModelElementSubTypes.View_ListView,
 	attributes: [
 		attribute_detail_height,	// object/list
 		{
@@ -969,7 +969,7 @@ const listview_base_definition: Definition = {
 };
 
 const treeview_base_definition: Definition = {
-	subtype: ModelElementTypes.View_Tree,
+	subtype: ModelElementSubTypes.View_Tree,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Tree"),
 	attributes: [
 		{
@@ -987,7 +987,7 @@ const treeview_base_definition: Definition = {
 };
 
 const datatree_view_base_definition:Definition = { // DataTree
-	subtype: ModelElementTypes.View_DataTree,
+	subtype: ModelElementSubTypes.View_DataTree,
 	description: "DataTree as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "DataTree"),
 	attributes: [],
@@ -1004,7 +1004,7 @@ const datatree_view_base_definition:Definition = { // DataTree
 	]
 };
 const htmlfile_view_base_definition:Definition = { // HtmlFile
-	subtype: ModelElementTypes.View_HTML,
+	subtype: ModelElementSubTypes.View_HTML,
 	description: "HTMLFile as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "HtmlFile"),
 	attributes: [
@@ -1025,7 +1025,7 @@ const htmlfile_view_base_definition:Definition = { // HtmlFile
 	]
 };
 const organizer_view_base_definition:Definition = { // Organizer
-	subtype: ModelElementTypes.View_Organizer,
+	subtype: ModelElementSubTypes.View_Organizer,
 	description: "Organizer as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Organizer"),
 	attributes: [
@@ -1253,7 +1253,7 @@ const organizer_view_base_definition:Definition = { // Organizer
 	]
 };
 const mediaplayer_view_base_definition:Definition = { // MediaPlayer
-	subtype: ModelElementTypes.View_MediaPlayer,
+	subtype: ModelElementSubTypes.View_MediaPlayer,
 	description: "MediaPlayer as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "MediaPlayer"),
 	attributes: [
@@ -1292,7 +1292,7 @@ const mediaplayer_view_base_definition:Definition = { // MediaPlayer
 	]
 };
 const annotationtool_view_base_definition:Definition = { // AnnotationTool
-	subtype: ModelElementTypes.View_AnnotationTool,
+	subtype: ModelElementSubTypes.View_AnnotationTool,
 	description: "AnnotationTool as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "AnnotationTool"),
 	attributes: [
@@ -1324,7 +1324,7 @@ const annotationtool_view_base_definition:Definition = { // AnnotationTool
 	]
 };
 const tabber_view_base_definition:Definition = { // Tabber
-	subtype: ModelElementTypes.View_Tabber,
+	subtype: ModelElementSubTypes.View_Tabber,
 	description: "Tabber as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Tabber"),
 	attributes: [
@@ -1400,7 +1400,7 @@ const tabber_view_base_definition:Definition = { // Tabber
 	]
 };
 const container_view_base_definition:Definition = { // ViewContainer
-	subtype: ModelElementTypes.View_Container,
+	subtype: ModelElementSubTypes.View_Container,
 	description: "ViewContainer as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "ViewContainer"),
 	attributes: [
@@ -1456,7 +1456,7 @@ const container_view_base_definition:Definition = { // ViewContainer
 };
 
 const iframe_view_base_definition:Definition = { // Iframe
-	subtype: ModelElementTypes.View_IFrame,
+	subtype: ModelElementSubTypes.View_IFrame,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Iframe"),
 	attributes: [
 		{
@@ -1481,7 +1481,7 @@ const iframe_view_base_definition:Definition = { // Iframe
 	]
 };
 const empty_view_base_definition:Definition = { // Empty
-	subtype: ModelElementTypes.View_IFrame,
+	subtype: ModelElementSubTypes.View_IFrame,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Empty"),
 	attributes: [],
 	childs: [
@@ -3383,7 +3383,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			ancestors: [ModelElementTypes.View, ModelElementTypes.SubView],
 			type: ModelElementTypes.Group,
-			subtype: ModelElementTypes.Group_View,
+			subtype: ModelElementSubTypes.Group_View,
 			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
 			attributes: view_group_attributes,
 			childs: view_group_childs
@@ -3391,7 +3391,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			ancestors: [ModelElementTypes.Condition],
 			type: ModelElementTypes.Group,
-			subtype: ModelElementTypes.Group_Condition,
+			subtype: ModelElementSubTypes.Group_Condition,
 			description: "A group set, used to filter.",
 			attributes: [dev_comment_attribute],
 			childs: [
