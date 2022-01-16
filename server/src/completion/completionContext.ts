@@ -16,53 +16,59 @@ export type ParamRuleContext = {
 export class CompletionContext {
 	public inAttribute: boolean;
 	public inTag: boolean;
-	public nodes: TreeNode[];
+	public node: TreeNode;
 	public word: string;
 	public uri: string;
 	public attribute?: Reference | Attribute;
-	public get numberOfNodes(): number {
-		return this.nodes.length;
-	}
 
 	public get currentNode(): TreeNode | undefined {
-		return this.numberOfNodes > 0 ? this.nodes[this.numberOfNodes - 1] : undefined;
+		return this.node;
 	}
 
 	public get firstParent(): TreeNode | undefined {
-		return this.numberOfNodes > 1 ? this.nodes[this.numberOfNodes - 2] : undefined;
+		return this.node ? this.node.parent : undefined;
 	}
 
-	constructor(inAttribute: boolean, inTag: boolean, nodes: TreeNode[], word: string, uri: string, attribute?: Reference | Attribute) {
+	constructor(inAttribute: boolean, inTag: boolean, nodes: TreeNode, word: string, uri: string, attribute?: Reference | Attribute) {
 		this.inAttribute = inAttribute;
 		this.inTag = inTag;
-		this.nodes = nodes;
+		this.node = nodes;
 		this.word = word;
 		this.uri = uri;
 		this.attribute = attribute;
 	}
 
 	//Returns the first predecessor of the given type
-	public getPredecessorOfType(type: ModelElementTypes, isSymbolDeclaration: boolean) {
-		return this.nodes.reverse().find(node => node.type == type && node.isSymbolDeclaration == isSymbolDeclaration);
+	public getPredecessorOfType(type: ModelElementTypes) {
+		return this.getPredecessorOfTypeForNode(this.node, type);
+	}
+	public getPredecessorOfTypeForNode(node: TreeNode, type: ModelElementTypes): TreeNode | undefined {
+		const parent = node.parent;
+		if (!parent) { return undefined; }
+		if (parent.type == type) {
+			return parent;
+		} else {
+			return this.getPredecessorOfTypeForNode(parent, type);
+		}
 	}
 
-	public getFromContext(modelType: ModelElementTypes, matchTags: ModelElementTypes[]){
-		const definition = this.getPredecessorOfType(modelType, true) as SymbolDeclaration;
-		if (definition) {
-			const params = this.findNames(definition.children, matchTags);
-			return { name: definition.name, availableParams: params };
+	public getFromContext(type: ModelElementTypes, matchTypes: ModelElementTypes[]) {
+		const node = this.getPredecessorOfType(type) as SymbolDeclaration;
+		if (node) {
+			const params = this.findNamesForChildrenOfType(node, matchTypes);
+			return { name: node.name, availableParams: params };
 		}
 		return undefined;
 	}
 
-	private findNames(children: any[], matchTags: ModelElementTypes[]): string[] {
+	private findNamesForChildrenOfType(node: TreeNode, matchTypes: ModelElementTypes[]): string[] {
 		let names: string[] = [];
-		children.forEach(child => {
-			if (matchTags.map(tag => tag.toLowerCase()).includes(child.tag)) {
-				names.push(child.name);
+		node.children.forEach(child => {
+			if (matchTypes.includes(child.type)) {
+				names.push((child as SymbolDeclaration).name);
 			}
 			if (child.children && child.children.length > 0) {
-				names = names.concat(this.findNames(child.children, matchTags));
+				names = names.concat(this.findNamesForChildrenOfType(child, matchTypes));
 			}
 		});
 		return names;

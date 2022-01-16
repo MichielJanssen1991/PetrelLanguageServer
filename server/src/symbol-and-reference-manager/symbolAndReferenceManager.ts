@@ -227,22 +227,24 @@ export class SymbolAndReferenceManager {
 	}
 
 	/**
-	 * Get a list of nodes for the current position in the tree. Each node is a child of the previous node
+	 * Get the node for the current position in the tree. Returns
+	 * node: The deepest node representing the xml tag that the position is located in
+	 * inTag: Whether the position is in the opening tag
+	 * attribute: Which attribute the current position is in 
 	 */
-	public getNodesForPosition(uri: string, position: Position) {
-		const nodes = [this.uriToTree[uri]];
-		this.addSubNodesForPosition(nodes, this.uriToTree[uri], position);
-		const lastNode = nodes[nodes.length - 1];
-		const inTag = pointIsInRange(lastNode.range, position);
-		const attribute: Reference | Attribute | undefined = Object.values(lastNode.attributes).find(x => pointIsInRange(x.fullRange, position));
-		return { nodes, inTag, attribute };
+	public getNodeForPosition(uri: string, position: Position) {
+		const node = this.findNodeForPositionInChildNodes(this.uriToTree[uri], position);
+		const inTag = pointIsInRange(node.range, position);
+		const attribute: Reference | Attribute | undefined = Object.values(node.attributes).find(x => pointIsInRange(x.fullRange, position));
+		return { node, inTag, attribute };
 	}
 
-	private addSubNodesForPosition(nodes: TreeNode[], node: TreeNode, position: Position) {
+	private findNodeForPositionInChildNodes(node: TreeNode, position: Position):TreeNode {
 		const childNode = node.children.find(x => pointIsInRange(x.fullRange, position));
 		if (childNode) {
-			nodes.push(childNode);
-			this.addSubNodesForPosition(nodes, childNode, position);
+			return this.findNodeForPositionInChildNodes(childNode, position);
+		} else {
+			return node; //No matching child node, return self
 		}
 	}
 

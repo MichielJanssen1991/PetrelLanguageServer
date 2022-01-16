@@ -65,10 +65,10 @@ export default class PetrelLanguageServer {
 
 	private static getConfigSettings(rootPath: string): DocumentSettings {
 		let configFile = path.join(rootPath, "petrel-language-server.config.json");
-		if (!fs.existsSync(configFile)){
+		if (!fs.existsSync(configFile)) {
 			configFile = path.join(rootPath, ".modeler/petrel-language-server.config.json");
 		}
-				
+
 		if (fs.existsSync(configFile)) {
 			const rawdata = fs.readFileSync(configFile, { encoding: 'utf8' });
 			return JSON.parse(rawdata);
@@ -104,9 +104,9 @@ export default class PetrelLanguageServer {
 		const uri = textDocument.uri;
 		const parsingDiagnostics = this.analyzer.analyze(uri, textDocument, ModelDetailLevel.All);
 
-		time("Verifying references");
-		const referenceChecksDiagnostics = this.modelChecker.checkFile(uri, {detailLevel: ModelDetailLevel.All});
-		timeEnd("Verifying references");
+		time("Checking file");
+		const referenceChecksDiagnostics = this.modelChecker.checkFile(uri, { detailLevel: ModelDetailLevel.All });
+		timeEnd("Checking file");
 
 		return [...parsingDiagnostics, ...referenceChecksDiagnostics];
 	}
@@ -129,8 +129,8 @@ export default class PetrelLanguageServer {
 		const pos = params.position;
 		const inAttribute = this.analyzer.contextFromLine(uri, pos);
 
-		const { nodes, inTag, attribute } = this.modelManager.getNodesForPosition(uri, pos);
-		const context = new CompletionContext(inAttribute, inTag, nodes, word, uri, attribute);
+		const { node, inTag, attribute } = this.modelManager.getNodeForPosition(uri, pos);
+		const context = new CompletionContext(inAttribute, inTag, node, word, uri, attribute);
 
 		return context;
 	}
@@ -147,10 +147,10 @@ export default class PetrelLanguageServer {
 
 	public onDefinition(params: TextDocumentPositionParams) {
 		const context = this.getContext(params);
-		const { nodes, word, attribute } = context;
+		const { node, word, attribute } = context;
 		this.logRequest({ request: 'onDefinition', params, context });
 		let symbols: SymbolDeclaration[] = [];
-		if (nodes.length > 0 && attribute?.isReference) {
+		if (node && attribute?.isReference) {
 			const reference = attribute as Reference;
 			const symbol = this.modelManager.getReferencedObject(reference);
 			symbols = symbol ? [symbol] : [];
@@ -162,13 +162,11 @@ export default class PetrelLanguageServer {
 
 	public onReference(params: TextDocumentPositionParams) {
 		const context = this.getContext(params);
-		const { nodes, word } = context;
+		const { node, word } = context;
 		this.logRequest({ request: 'onReference', params, context });
 		let references: Reference[] = [];
-		if (nodes.length > 0) {
-			const lastNode = context.nodes[nodes.length - 1];
-			const possibleDeclarationsSelected = [lastNode].filter(x => x.isSymbolDeclaration && ((x as SymbolDeclaration).name == word || (x as SymbolDeclaration).name.endsWith(`.${word}`))) as SymbolDeclaration[];
-			references = possibleDeclarationsSelected.flatMap(ref => this.modelManager.getReferencesForSymbol(ref));
+		if (node && node.isSymbolDeclaration && (node as SymbolDeclaration).name.endsWith(`.${word}`)) {
+			references = this.modelManager.getReferencesForSymbol(node as SymbolDeclaration);
 		} else {
 			references = this.modelManager.findReferencesMatchingWord({ exactMatch: true, word });
 		}
@@ -185,21 +183,19 @@ export default class PetrelLanguageServer {
 		params: LSP.TextDocumentPositionParams
 		context?: CompletionContext
 	}) {
-		const nodesSimplified = context?.nodes.map(node => {
-			return {
-				type: node.type,
-				objectType: node.isSymbolDeclaration,
-				tag: node.tag,
-				attributes: node.attributes
-			};
-		}); // Only log essentials to avoid very large log messages (especially caused by chidren)
+		const nodeSimplified = {
+			type: context?.node.type,
+			objectType: context?.node.isSymbolDeclaration,
+			tag: context?.node.tag,
+			attributes: context?.node.attributes
+		}; // Only log essentials to avoid very large log messages (especially caused by chidren)
 		this.connection.console.log(
 			`${request} ${params.position.line}:${params.position.character} 
 			inAttribute=${JSON.stringify(context?.inAttribute)},
 			inTag=${JSON.stringify(context?.inTag)},
 			uri=${JSON.stringify(context?.uri)},
 			word=${JSON.stringify(context?.word)},
-			nodes (simplified)=${JSON.stringify(nodesSimplified)}`
+			nodes (simplified)=${JSON.stringify(nodeSimplified)}`
 		);
 	}
 
