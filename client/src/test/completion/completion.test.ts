@@ -21,7 +21,7 @@ suite('Should do completion', () => {
 		const docUri = getDocUri('completion\\module-children-backend.xml');
 		await testCompletionEquals(docUri, new vscode.Position(2, 0), {
 			items: [
-				{ label: 'decorations', kind: vscode.CompletionItemKind.Snippet },
+				{ label: 'decorators', kind: vscode.CompletionItemKind.Snippet },
 				{ label: 'include', kind: vscode.CompletionItemKind.Snippet },
 				{ label: 'include-block', kind: vscode.CompletionItemKind.Snippet },
 				{ label: 'include-blocks', kind: vscode.CompletionItemKind.Snippet },

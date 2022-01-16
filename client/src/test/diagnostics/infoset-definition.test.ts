@@ -56,7 +56,7 @@ suite('Should get diagnostics for infoset declaration', () => {
 		const docUri = getDocUri('diagnostics\\infoset-definition\\not-referenced.xml');
 		await testDiagnostics(docUri, [
 			{
-				message: "No references found to Infoset with name 'ExampleInfosetWhichIsNotReferenced'.",
+				message: "No references found to Infoset with name 'ExampleInfosetWhichIsNotReferenced'. The infoset could still be used indirectly via it's output variables.",
 				range: toRange(1, 3, 1, 53),
 				severity: vscode.DiagnosticSeverity.Information,
 				source: 'ex'
