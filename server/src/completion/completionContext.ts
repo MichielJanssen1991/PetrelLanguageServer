@@ -1,5 +1,4 @@
-import { Range } from 'vscode-languageserver-types';
-import { Attribute, ModelElementTypes, Reference, TreeNode, newSymbolDeclaration, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
+import { Attribute, ModelElementTypes, Reference, TreeNode, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
 
 export type RuleContext = {
 	name: string,
@@ -67,12 +66,5 @@ export class CompletionContext {
 			}
 		});
 		return names;
-	}
-
-	public createVirtualChildContext(tag: string) {
-		const range = Range.create({ character: 0, line: 0 }, { character: 0, line: 0 });
-		const child = newSymbolDeclaration("", tag, ModelElementTypes.Unknown, range, "");
-		const nodesForChild = { ...this.nodes, child }; //Create copy and add child
-		return new CompletionContext(false, false, nodesForChild, "", this.uri);
 	}
 }
