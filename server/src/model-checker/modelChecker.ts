@@ -15,6 +15,7 @@ import { FunctionCallCheck } from './checks/actionCallChecks/functionCallCheck';
 import { RuleDeclarationCheck } from './checks/ruleDeclarationCheck';
 import { ModelDefinitionCheck } from './checks/modelDefinitionCheck';
 import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
+import { DiagnosticsCollection } from '../generic/diagnosticsCollection';
 
 export type ModelCheckerOptions = {
 	maxNumberOfProblems?: number,
@@ -24,14 +25,14 @@ export type ModelCheckerOptions = {
 /**
  * The ModelChecker verifies the model and returns a list of diagnostics 
  */
-export class ModelChecker {
-	private diagnostics: LSP.Diagnostic[] = [];
+export class ModelChecker extends DiagnosticsCollection {
 	private modelManager: ModelManager;
 	private modelDefinitionManager: ModelDefinitionManager;
 	private static defaultOptions: ModelCheckerOptions = { detailLevel: ModelDetailLevel.SubReferences, skipFolders: [] };
 	private checks: ModelCheck[] = [];
 
 	constructor(modelManager: ModelManager, modelDefinitionManager: ModelDefinitionManager) {
+		super();
 		this.modelManager = modelManager;
 		this.modelDefinitionManager = modelDefinitionManager;
 
@@ -65,13 +66,13 @@ export class ModelChecker {
 	}
 
 	public checkFile(uri: string, options?: ModelCheckerOptions) {
-		this.diagnostics = [];
+		this.clearDiagnostics();
 		const optionsOrDefault: ModelCheckerOptions = options || ModelChecker.defaultOptions;
 
 		const tree = this.modelManager.getTreeForFile(uri);
 		this.walkNodes(tree, optionsOrDefault);
 
-		return this.diagnostics;
+		return this.getDiagnostics();
 	}
 
 	private walkNodes(node: TreeNode, options: ModelCheckerOptions) {
@@ -85,29 +86,11 @@ export class ModelChecker {
 	private verifyNode(node: TreeNode, options: ModelCheckerOptions) {
 		try {
 			const applicableChecks = this.checks.filter(c=> c.isApplicable(node, options));
-			this.diagnostics = this.diagnostics.concat(applicableChecks.flatMap(c=> c.check(node, options)));
+			const diagnosticsForNode = applicableChecks.flatMap(c=> c.check(node, options));
+			this.addDiagnostics(diagnosticsForNode);
 		}
 		catch (error: any) {
 			this.addError(node.range, CHECKS_MESSAGES.VALIDATION_ERROR(error.message, node as SymbolDeclaration));
 		}
 	}
-
-
-	/* private addInformation(range: LSP.Range, message: string) {
-		this.addDiagnostics(range, message, LSP.DiagnosticSeverity.Information);
-	}
-	private addWarning(range: LSP.Range, message: string) {
-		this.addDiagnostics(range, message, LSP.DiagnosticSeverity.Warning);
-	} */
-	private addError(range: LSP.Range, message: string) {
-		this.addDiagnostics(range, message, LSP.DiagnosticSeverity.Error);
-	}
-	private addDiagnostics(range: LSP.Range, message: string, severity: LSP.DiagnosticSeverity) {
-		this.diagnostics.push(
-			LSP.Diagnostic.create(range, message, severity)
-		);
-	}
-
-
-
 }

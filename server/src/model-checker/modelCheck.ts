@@ -1,11 +1,11 @@
 import * as LSP from 'vscode-languageserver';
+import { DiagnosticsCollection } from '../generic/diagnosticsCollection';
 import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
 import { ModelDetailLevel, ModelElementTypes, TreeNode } from '../model-definition/symbolsAndReferences';
 import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 import { ModelCheckerOptions } from './modelChecker';
 
-export abstract class ModelCheck {
-	private diagnostics: LSP.Diagnostic[] = [];
+export abstract class ModelCheck extends DiagnosticsCollection {
 	protected modelManager: ModelManager;
 	protected modelDefinitionManager: ModelDefinitionManager;
 	//Applicablility of the check is determined by the below conditions
@@ -14,14 +14,15 @@ export abstract class ModelCheck {
 	protected abstract matchCondition?: (node: TreeNode) => boolean;
 
 	constructor(modelManager: ModelManager, modelDefinitionManager? : ModelDefinitionManager) {
+		super();
 		this.modelManager = modelManager;
 		this.modelDefinitionManager = modelDefinitionManager || new ModelDefinitionManager();
 	}
 
 	public check(node: TreeNode, options: ModelCheckerOptions): LSP.Diagnostic[] {
-		this.diagnostics = [];
+		this.clearDiagnostics();
 		this.checkInternal(node, options);
-		return this.diagnostics;
+		return this.getDiagnostics();
 	}
 
 	public isApplicable(node: TreeNode, options: ModelCheckerOptions): boolean {
@@ -32,19 +33,4 @@ export abstract class ModelCheck {
 	}
 
 	protected abstract checkInternal(node: TreeNode, options: ModelCheckerOptions): void
-
-	protected addInformation(range: LSP.Range, message: string) {
-		this.addDiagnostics(range, message, LSP.DiagnosticSeverity.Information);
-	}
-	protected addWarning(range: LSP.Range, message: string) {
-		this.addDiagnostics(range, message, LSP.DiagnosticSeverity.Warning);
-	}
-	protected addError(range: LSP.Range, message: string) {
-		this.addDiagnostics(range, message, LSP.DiagnosticSeverity.Error);
-	}
-	protected addDiagnostics(range: LSP.Range, message: string, severity: LSP.DiagnosticSeverity) {
-		this.diagnostics.push(
-			LSP.Diagnostic.create(range, message, severity)
-		);
-	}
 }
