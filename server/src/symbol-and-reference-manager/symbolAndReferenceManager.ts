@@ -1,3 +1,4 @@
+import { time, timeEnd } from 'console';
 import FuzzySearch = require('fuzzy-search');
 import { Position } from 'vscode-languageserver-types';
 import { standaloneObjectTypes } from '../model-definition/definitions/other';
@@ -20,13 +21,17 @@ export class SymbolAndReferenceManager {
 	private uriToModelFileContext: FileContexts = {};
 	private get symbolsByName(): Symbols {
 		if (!this.symbolsByNameCached) {
+			time("Reevaluating symbols by name cache");
 			this.symbolsByNameCached = flattenNestedListObjects(this.uriToSymbols);
+			timeEnd("Reevaluating symbols by name cache");
 		}
 		return this.symbolsByNameCached;
 	}
 	private get referencesByName(): References {
 		if (!this.referencesByNameCached) {
+			time("Reevaluating references by name cache");
 			this.referencesByNameCached = flattenNestedListObjects(this.uriToReferences);
+			timeEnd("Reevaluating references by name cache");
 		}
 		return this.referencesByNameCached;
 	}
@@ -58,7 +63,7 @@ export class SymbolAndReferenceManager {
 	private walkNodes(node: TreeNode) {
 		this.processNode(node);
 		node.children.forEach(x => this.walkNodes(x));
-		
+
 		Object.values(node.attributes).forEach(x => this.processAttribute(x));
 	}
 
@@ -70,9 +75,8 @@ export class SymbolAndReferenceManager {
 		}
 	}
 	private processAttribute(attribute: Attribute) {
-		if(attribute.isReference)
-		{
-			const ref = attribute as Reference; 
+		if (attribute.isReference) {
+			const ref = attribute as Reference;
 			if (standaloneObjectTypes.has(ref.type)) {
 				this.addReference(ref);
 			}
@@ -139,25 +143,6 @@ export class SymbolAndReferenceManager {
 	}
 
 	/**
-	 * Returns the symbols for a given file and popsition
-	 */
-	public getSymbolsForPosition(uri: string, pos: Position) {
-		return this.getSymbolsForFile(uri).filter(ref => pointIsInRange(ref.range, pos));
-	}
-
-	/**
-	 * Returns the references for a given file and popsition
-	 */
-	public getReferencesForPosition(uri: string, pos: Position, useExtendedRange?: boolean) {
-		if (useExtendedRange != true) {
-			return this.getReferencesForFile(uri).filter(ref => pointIsInRange(ref.range, pos));
-		}
-		else {
-			return this.getReferencesForFile(uri).filter(ref => pointIsInRange(ref.fullRange, pos));
-		}
-	}
-
-	/**
 	 * Returns all symbols
 	 */
 	private getAllSymbols(): SymbolDeclaration[] {
@@ -165,11 +150,11 @@ export class SymbolAndReferenceManager {
 	}
 
 	/**
-     * Returns all symbols of a given type
-     */
-	public getAllSymbolsForType(type:ModelElementTypes): SymbolDeclaration[] {
-        return this.getAllSymbols().filter(x=> x.tag.toLowerCase() == type.toLowerCase());
-    }
+	 * Returns all symbols of a given type
+	 */
+	public getAllSymbolsForType(type: ModelElementTypes): SymbolDeclaration[] {
+		return this.getAllSymbols().filter(x => x.type == type);
+	}
 
 	/**
 	 * Returns all references
@@ -182,16 +167,9 @@ export class SymbolAndReferenceManager {
 	 * Find symbols matching the given word.
 	 */
 	public findSymbolsMatchingWord({ exactMatch, word }: { exactMatch: boolean, word: string }): SymbolDeclaration[] {
-		const symbols: SymbolDeclaration[] = [];
-
-		Object.keys(this.uriToSymbols).forEach(uri => {
-			const declarationsInFile = this.uriToSymbols[uri] || {};
-			Object.keys(declarationsInFile).map(name => {
-				const match = exactMatch ? name === word : name.startsWith(word);
-				if (match) {
-					declarationsInFile[name].forEach(symbol => symbols.push(symbol));
-				}
-			});
+		const symbols: SymbolDeclaration[] = Object.keys(this.symbolsByName).flatMap(name => {
+			const match = exactMatch ? name === word : name.startsWith(word);
+			return match ? this.symbolsByName[name] : [];
 		});
 		return symbols;
 	}
@@ -241,16 +219,9 @@ export class SymbolAndReferenceManager {
 	 * Find references matching the given word.
 	 */
 	public findReferencesMatchingWord({ exactMatch, word }: { exactMatch: boolean, word: string }): Reference[] {
-		const references: Reference[] = [];
-
-		Object.keys(this.uriToReferences).forEach(uri => {
-			const declarationsInFile = this.uriToReferences[uri] || {};
-			Object.keys(declarationsInFile).map(name => {
-				const match = exactMatch ? name === word : name.startsWith(word);
-				if (match) {
-					declarationsInFile[name].forEach(ref => references.push(ref));
-				}
-			});
+		const references: Reference[] = Object.keys(this.referencesByName).flatMap(name => {
+			const match = exactMatch ? name === word : name.startsWith(word);
+			return match ? this.referencesByName[name] : [];
 		});
 		return references;
 	}
