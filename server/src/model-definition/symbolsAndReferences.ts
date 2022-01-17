@@ -254,8 +254,8 @@ export type ChildDefinition = {
 	occurence?: "once" | "at-least-once",
 	required?: boolean,
 	validations?: ChildValidation[],
-	type?:ModelElementTypes,
-	subtype?:ModelElementSubTypes,
+	type?: ModelElementTypes,
+	subtype?: ModelElementSubTypes,
 	obsolete?: boolean,
 	obsoleteMessage?: string
 }

@@ -14,7 +14,7 @@ export class RuleLoopActionCallCheck extends ActionCallCheck {
 	protected verifyActionCall(node: TreeNode, /*  options: ModelCheckerOptions */) {
 		const ruleNameNotSpecified = this.verifyMandatoryAttributeProvided(node, NAMES.ATTRIBUTE_RULE, true);
 		if (ruleNameNotSpecified) {
-			this.addError(node.range, CHECKS_MESSAGES.RULELOOPACTIONCALL_WITHOUT_NAME());
+			this.addMessage(node.range, "CC0004",CHECKS_MESSAGES.RULELOOPACTIONCALL_WITHOUT_NAME());
 		}
 
 		this.verifyInputsAreKnownInReferencedObjects(node);
@@ -52,7 +52,7 @@ export class RuleLoopActionCallCheck extends ActionCallCheck {
 			referencedSymbolMandatoryInputs.forEach(input => {
 				const inputName = (input as SymbolDeclaration).name;
 				if (!argumentNames.has(inputName)) {
-					this.addError(node.range, CHECKS_MESSAGES.MANDATORY_INPUT_MISSING(inputName, subRef));
+					this.addMessage(node.range, "CC0006", CHECKS_MESSAGES.MANDATORY_INPUT_MISSING(inputName, subRef));
 				}
 			});
 		}

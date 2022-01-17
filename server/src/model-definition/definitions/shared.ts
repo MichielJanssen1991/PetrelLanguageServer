@@ -682,6 +682,7 @@ export const include_element: Definition =
 	{
 		description: "Includes a file or an include block. The included model fragment is merged with the contents of the parent node of the include.",
 		type: ModelElementTypes.IncludeBlock,
+		detailLevel: ModelDetailLevel.References,	
 		attributes: [
 			{
 				name: "block",

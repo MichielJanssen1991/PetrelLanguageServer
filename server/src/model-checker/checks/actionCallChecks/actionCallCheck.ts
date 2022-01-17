@@ -44,8 +44,8 @@ export abstract class ActionCallCheck extends ModelCheck {
 		this.modelManager.getActionArguments(actionCall).forEach(argument => {
 			const remoteName = this.modelManager.getActionArgumentRemoteName(argument);
 			if (!inputNames.has(remoteName)) {
-				this.addWarning(
-					argument.range, CHECKS_MESSAGES.INPUT_NOT_FOUND(remoteName, referenceAndSubReferences),
+				this.addMessage(
+					argument.range, "CC0001", CHECKS_MESSAGES.INPUT_NOT_FOUND(remoteName, referenceAndSubReferences),
 				);
 			}
 		});
@@ -63,8 +63,8 @@ export abstract class ActionCallCheck extends ModelCheck {
 		this.modelManager.getActionCallOutputs(actionCall).forEach(output => {
 			const localName = output.attributes[NAMES.ATTRIBUTE_REMOTENAME] || output.attributes[NAMES.ATTRIBUTE_LOCALNAME];
 			if (localName && !outputNames.has(localName.value)) {
-				this.addWarning(
-					output.range, CHECKS_MESSAGES.OUTPUT_NOT_FOUND(localName.value, referenceAndSubReferences)
+				this.addMessage(
+					output.range, "CC0002", CHECKS_MESSAGES.OUTPUT_NOT_FOUND(localName.value, referenceAndSubReferences)
 				);
 			}
 		});
@@ -79,7 +79,7 @@ export abstract class ActionCallCheck extends ModelCheck {
 			referencedSymbolMandatoryInputs.forEach(input => {
 				const inputName = (input as SymbolDeclaration).name;
 				if (!argumentNames.has(inputName)) {
-					this.addError(subRef.range, CHECKS_MESSAGES.MANDATORY_INPUT_MISSING(inputName, subRef));
+					this.addMessage(subRef.range, "CC0003", CHECKS_MESSAGES.MANDATORY_INPUT_MISSING(inputName, subRef));
 				}
 			});
 		}

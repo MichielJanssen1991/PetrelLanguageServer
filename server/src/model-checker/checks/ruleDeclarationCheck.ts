@@ -55,7 +55,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 		//Check all localNames were referenced?
 		this.ruleLocalNames.forEach(localName => {
 			if (!this.ruleLocalNameReferences.find(x => x.value == localName.value)) {
-				this.addInformation(localName.range, CHECKS_MESSAGES.RULE_LOCALNAME_NOT_REFERENCED(localName.value));
+				this.addMessage(localName.range, "DC0003",  CHECKS_MESSAGES.RULE_LOCALNAME_NOT_REFERENCED(localName.value));
 			}
 		});
 	}
@@ -129,7 +129,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 
 	private checkLocalNameIsDefined(localName: Attribute) {
 		if (!this.ruleLocalNames.find(x => (x.value == localName.value))) {
-			this.addWarning(localName.range, CHECKS_MESSAGES.RULE_LOCALNAME_NOT_FOUND(localName.value));
+			this.addMessage(localName.range, "DC0004", CHECKS_MESSAGES.RULE_LOCALNAME_NOT_FOUND(localName.value));
 		}
 	}
 
