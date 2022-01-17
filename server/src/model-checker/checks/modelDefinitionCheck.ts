@@ -20,7 +20,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 				this.checkAttributeOccurrences(node, tagDefinition);
 				this.checkAttributeValues(node, tagDefinition);
 			} else {
-				this.addError(node.range, `No definition found for tag: '${node.tag}'`);
+				this.addMessage(node.range, "MDC0001", `No definition found for tag: '${node.tag}'`);
 			}
 		}
 		
@@ -30,7 +30,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 		// check element on invalid child nodes
 		element.children.forEach(child => {
 			if (Array.isArray(definition.childs) && !definition.childs?.map(x=>x.element?.toLowerCase()).includes(child.tag.toLowerCase())){
-				this.addError(element.range, `Invalid child node '${child.tag}' for element '${element.tag}'`);
+				this.addMessage(element.range, "MDC0002", `Invalid child node '${child.tag}' for element '${element.tag}'`);
 			}
 		});
 
@@ -42,14 +42,14 @@ export class ModelDefinitionCheck extends ModelCheck {
 				switch(x.occurence){
 					case "once":
 						if (childOccurrences > 1) {
-							this.addError(element.range, `Invalid child node occurence '${x.element}' for element '${element.tag}'. Element '${x.element}' could only be applied once to parent '${element.tag}'`);
+							this.addMessage(element.range, "MDC0003", `Invalid child node occurence '${x.element}' for element '${element.tag}'. Element '${x.element}' could only be applied once to parent '${element.tag}'`);
 						} else if (childOccurrences == 0 && x.required){
-							this.addError(element.range, `Missing required '${x.element}' for element '${element.tag}'.`);
+							this.addMessage(element.range, "MDC0004", `Missing required '${x.element}' for element '${element.tag}'.`);
 						}
 						break;
 					case "at-least-once":
 						if (childOccurrences == 0){
-							this.addError(element.range, `Invalid child node occurence '${x.element}' for element '${element.tag}'. Element '${x.element}' should be applied at least once to parent '${element.tag}'`);
+							this.addMessage(element.range, "MDC0005", `Invalid child node occurence '${x.element}' for element '${element.tag}'. Element '${x.element}' should be applied at least once to parent '${element.tag}'`);
 						}
 						break;
 				}
@@ -62,7 +62,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 		definition.attributes.forEach(attr=>{
 			// based on required:true attribute
 			if (attr.required && !this.allNodeAttributes.map(x=>x.name.toLowerCase()).includes(attr.name.toLowerCase())){
-				this.addError(element.range, `Missing required attribute '${attr.name}' for element '${element.tag}'`);
+				this.addMessage(element.range, "MDC0006", `Missing required attribute '${attr.name}' for element '${element.tag}'`);
 			} 
 			// based on requiredConditions
 			else if (attr.requiredConditions){ 
@@ -74,7 +74,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 							if (
 								!attrElement && (!attrDefElement || attrDefElement?.value == "") && rc.value == "" ||
 								!attrDefElement && attrElement?.value == rc.value){
-								this.addError(element.range, `Missing required attribute '${attr.name}' for element '${element.tag}'`);
+								this.addMessage(element.range, "MDC0007", `Missing required attribute '${attr.name}' for element '${element.tag}'`);
 							}
 							break;
 						default:
@@ -94,7 +94,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 					const attrElement: Attribute = element.attributes[da.name];
 					const regEx = new RegExp(dv.value);
 					if (attrElement && !regEx.test(attrElement.value) && !attributeValueIsAVariable(attrElement.value)){
-						this.addError(element.range, `Invalid value for '${da.name}': ${dv.message}`);
+						this.addMessage(element.range, "MDC0008", `Invalid value for '${da.name}': ${dv.message}`);
 					}
 				}
 			});
@@ -108,12 +108,12 @@ export class ModelDefinitionCheck extends ModelCheck {
 				switch(da.type?.type){
 					case AttributeTypes.Enum:
 						if (da.type?.options && !da.type?.options?.map(o=>o.name.toLowerCase()).some(o=>o==attrValue.toLowerCase() || o=="*")){
-							this.addError(element.range, `Invalid value for '${da.name}': '${attrValue}' is not a valid option`);
+							this.addMessage(element.range, "MDC0009", `Invalid value for '${da.name}': '${attrValue}' is not a valid option`);
 						}
 						break;
 					case AttributeTypes.Numeric:
 						if (!Number(attrValue)) {
-							this.addError(element.range, `Invalid value for '${da.name}': '${attrValue}' is not a number`);
+							this.addMessage(element.range, "MDC0010", `Invalid value for '${da.name}': '${attrValue}' is not a number`);
 						}
 						break;
 				}
