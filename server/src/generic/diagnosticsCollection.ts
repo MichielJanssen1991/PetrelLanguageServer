@@ -6,19 +6,19 @@ export type DiagnosticDefinition = {
 
 export class DiagnosticsCollection {
 	private diagnostics: Diagnostic[] = [];
-	private diagnosticDefinitions: Record<string, DiagnosticDefinition> = {
+	private diagnosticDefinitions: Record<string, DiagnosticSeverity> = {
 		// STRC = Structure
 		// idea is to have different kind of id's. Start with a string of 3 or 4 letters, then a number of length 5. Reference errors could be REF00001
-		"STRC00001": { "severity": DiagnosticSeverity.Error },
-		"STRC00002": { "severity": DiagnosticSeverity.Error },
-		"STRC00003": { "severity": DiagnosticSeverity.Error },
-		"STRC00004": { "severity": DiagnosticSeverity.Error },
-		"STRC00005": { "severity": DiagnosticSeverity.Error },
-		"STRC00006": { "severity": DiagnosticSeverity.Error },
-		"STRC00007": { "severity": DiagnosticSeverity.Error },
-		"STRC00008": { "severity": DiagnosticSeverity.Error },
-		"STRC00009": { "severity": DiagnosticSeverity.Error },
-		"STRC00010": { "severity": DiagnosticSeverity.Error },
+		"STRC00001": DiagnosticSeverity.Error,
+		"STRC00002": DiagnosticSeverity.Error,
+		"STRC00003": DiagnosticSeverity.Error,
+		"STRC00004": DiagnosticSeverity.Error,
+		"STRC00005": DiagnosticSeverity.Error,
+		"STRC00006": DiagnosticSeverity.Error,
+		"STRC00007": DiagnosticSeverity.Error,
+		"STRC00008": DiagnosticSeverity.Error,
+		"STRC00009": DiagnosticSeverity.Error,
+		"STRC00010": DiagnosticSeverity.Error,
 	}
 
 	public getDiagnostics() {
@@ -42,7 +42,7 @@ export class DiagnosticsCollection {
 	}
 
 	protected addMessage(range: Range, id: string, message: string) {
-		switch(this.diagnosticDefinitions[id].severity){
+		switch(this.diagnosticDefinitions[id]){
 			case DiagnosticSeverity.Error:
 				this.addError(range, message);
 				break;
