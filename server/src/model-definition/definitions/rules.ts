@@ -1055,16 +1055,16 @@ export const RULE_DEFINITION: Definitions = {
 					type: AttributeTypes.Enum,
 					options: [
 						{
-							name: ModelElementTypes.Module
+							name: "module"
 						},
 						{
-							name: ModelElementTypes.Rule
+							name: "rule"
 						},
 						{
-							name: ModelElementTypes.Action
+							name: "action"
 						},
 						{
-							name: ModelElementTypes.If
+							name: "if"
 						},
 						{
 							name: "then"

@@ -1828,25 +1828,25 @@ export const FRONTEND_DEFINITION: Definitions = {
 					type: AttributeTypes.Enum,
 					options: [
 						{
-							name: ModelElementTypes.Module
+							name: "module"
 						},
 						{
-							name: ModelElementTypes.View
+							name: "view"
 						},
 						{
-							name: ModelElementTypes.Attribute
+							name: "attribute"
 						},
 						{
-							name: ModelElementTypes.Group
+							name: "group"
 						},
 						{
-							name: ModelElementTypes.Button
+							name: "button"
 						},
 						{
-							name: ModelElementTypes.Action
+							name: "action"
 						},
 						{
-							name: ModelElementTypes.Tree
+							name: "tree"
 						},
 						{
 							name: "condition"

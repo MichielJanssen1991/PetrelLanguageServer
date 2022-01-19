@@ -843,24 +843,23 @@ export const target_element: Definition = {
 				type: AttributeTypes.Enum,
 				options: [
 					{
-						name: ModelElementTypes.Type
+						name: "type"
 					},
 					{
-						name: ModelElementTypes.View
+						name: "view"
 					},
 					{
-						name: ModelElementTypes.Group
+						name: "group"
 					},
 					{
-						name: ModelElementTypes.Attribute
+						name: "attribute"
 					}
 				]
 			}
 		}
 	],
 	childs: {
-		matchElementFromAttribute: "meta-name",
-			matchSecondaryElementFromAttribute: "meta-index"
+		matchElementFromAttribute: "meta-name"
 	}
 };
 

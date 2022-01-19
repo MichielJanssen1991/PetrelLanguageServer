@@ -935,16 +935,10 @@ export const INFOSET_DEFINITION: Definitions = {
 					type: AttributeTypes.Enum,
 					options: [
 						{
-							name: ModelElementTypes.Module
+							name: "module"
 						},
 						{
-							name: ModelElementTypes.Infoset
-						},
-						{
-							name: ModelElementTypes.Variable
-						},
-						{
-							name: ModelElementTypes.Action
+							name: "infoset"
 						},
 						{
 							name: "search"
