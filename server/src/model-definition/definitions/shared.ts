@@ -215,8 +215,55 @@ export const target_namespace_attribute: ElementAttribute =
 		]
 	};
 
-export const input_element: Definition = 
-{
+export const default_childs: ChildDefinition[] = [
+		{
+			element: "include"
+		},
+		{
+			element: "merge-instruction",
+			occurence: "once"
+		},
+		{
+			element: "model-condition"
+		}
+	];
+
+export const child_merge_instruction: ChildDefinition = 
+	{
+		element: "merge-instruction",
+		occurence: "once"
+	};
+
+export const child_include: ChildDefinition = 
+	{
+		element: "include"
+	};
+export const child_model_condition: ChildDefinition = 
+	{
+		element: "model-condition"
+	};
+
+export const action_call_childs: ChildDefinition[] =[
+	{
+		element: "argument"
+	},
+	{
+		element: "output",
+		type: ModelElementTypes.ActionCallOutput
+	},
+	{
+		element: "graph-params"
+	},
+	{
+		element: "include-blocks"
+	},
+	{
+		element: "include-block"
+	},
+	...default_childs
+];
+
+export const input_element: Definition = {
 	type: ModelElementTypes.Input,
 	isSymbolDeclaration:true,
 	detailLevel: ModelDetailLevel.Declarations,
@@ -250,9 +297,9 @@ export const input_element: Definition =
 		dev_ignore_modelcheck_justification_attribute,
 		dev_comment_attribute
 	],
-};
+	};
 
-export const include_blocks_element: Definition =
+	export const include_blocks_element: Definition =
 	{
 		description: "Use to group include blocks.",
 		attributes: [
@@ -481,132 +528,7 @@ export const backend_action_call_element: Definition =
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: [
-			{
-				element: "argument"
-			},
-			{
-				element: "output",
-				type: ModelElementTypes.ActionCallOutput,
-				validations: [
-					{
-						identifier: "RULE00001",
-						name: "action-outputs-missing",
-						matches: [
-							{
-								attribute: "remote/local)-name",
-								condition: "misses",
-								value: ""//new JsonElementVariable("backend-rules", "/output[@name]")
-							},
-							{
-								operator: "or",
-								attribute: "local-name",
-								condition: "misses",
-								value: ""//new JsonElementVariable("backend-rules", "/output[@name]")
-							}
-						],
-						message: "Missing defined output ${@backend-rules.output[name]} for rule ${@parent[rulename]}",
-						level: ValidationLevels.Info,
-						conditions: [
-							{
-								attribute: "@parent[name]",
-								condition: "==",
-								value: "rule"
-							}
-						]
-					},
-					{
-						identifier: "RULE00002",
-						name: "rule-outputs-notdefined",
-						matches: [
-							{
-								attribute: "remote-name",
-								condition: "not-in",
-								value: ""//new JsonElementVariable("backend-rules", "/output[@name]")
-							},
-							{
-								attribute: "local-name",
-								condition: "not-in",
-								value: ""//new JsonElementVariable("backend-rules", "/output[@name]")
-							}
-						],
-						message: "Output ${@name} is not defined in rule ${@rulename}",
-						level: ValidationLevels.Error,
-						conditions: [
-							{
-								attribute: "@parent[name]",
-								condition: "==",
-								value: "rule"
-							}
-						]
-					},
-					{
-						identifier: "RULE00003",
-						name: "rule-outputs-not-used",
-						matches: [
-							{
-								attribute: "(local/remote)-name",
-								condition: "not-in",
-								value: "@parent-rule-definition.arguments"
-							},
-							{
-								attribute: "(local/remote)-name",
-								condition: "not-in",
-								value: "@parent-rule-definition.condition[variable]"
-							},
-							{
-								attribute: "(local/remote)-name",
-								condition: "not-in-like",
-								value: "@parent-rule-definition.condition[expression]"
-							},
-							{
-								attribute: "(local/remote)-name",
-								condition: "not-in-like",
-								value: "@parent-rule-definition.set-var[expression]"
-							},
-							{
-								attribute: "(local/remote)-name",
-								condition: "not-in",
-								value: "@parent-rule-definition.output[variable]"
-							},
-							{
-								attribute: "(local/remote)-name",
-								condition: "not-in-like",
-								value: "@parent-rule-definition.output[expression]"
-							}
-						],
-						message: "Output ${@name} is outputted, but not used in rule ${@parent-rule-definition[name]}",
-						level: ValidationLevels.Warning,
-						conditions: [
-							{
-								attribute: "@parent[name]",
-								condition: "==",
-								value: "rule"
-							}
-						]
-					}
-				]
-			},
-			{
-				element: "graph-params"
-			},
-			{
-				element: "include-blocks"
-			},
-			{
-				element: "include-block"
-			},
-			{
-				element: "include"
-			},
-			{
-				element: "model-condition"
-			},
-			{
-				element: "merge-instruction"
-			}
-
-		]
+		childs: action_call_childs
 	};
 export const model_condition_element: Definition =
 	{
@@ -1436,20 +1358,6 @@ export const view_group_attributes: ElementAttribute[] =
 	dev_ignore_modelcheck_justification_attribute,
 	dev_comment_attribute
 ];
-
-export const child_merge_instruction: ChildDefinition = 
-{
-	element: "merge-instruction",
-	occurence: "once"
-};
-export const child_include: ChildDefinition = 
-{
-	element: "include"
-};
-export const child_model_condition: ChildDefinition = 
-{
-	element: "model-condition"
-};
 
 export const view_group_childs: ChildDefinition[] =
 [

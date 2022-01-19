@@ -434,6 +434,10 @@ export function isViewControl(nodeContext: IXmlNodeContext, controlType: string)
 	return (nodeContext.getCurrentXmlNode().attributes.control?.toLowerCase() || "") == controlType.toLowerCase();
 }
 
+export function isIncludeBlockOfType(nodeContext: IXmlNodeContext, metaType: string): boolean {
+	return (nodeContext.getCurrentXmlNode().attributes["meta-name"] == metaType || nodeContext.getCurrentXmlNode().attributes["meta-info"] == metaType);
+}
+
 //Objects which can be referenced without requiring the context
 export const standaloneObjectTypes = new Set([
 	ModelElementTypes.View,

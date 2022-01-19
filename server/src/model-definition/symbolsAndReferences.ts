@@ -96,6 +96,14 @@ export enum ModelElementSubTypes {
 	View_IFrame = "IFrameView",
 	Group_View = "ViewGroup",
 	Group_Condition = "ConditionGroup",
+	IncludeBlock_Module = "IncludeBlockModule",
+	IncludeBlock_Type = "IncludeBlockType",
+	IncludeBlock_Attribute = "IncludeBlockAttribute",
+	IncludeBlock_ServerEvents = "IncludeBlockServerEvents",
+	IncludeBlock_ServerEvent = "IncludeBlockServerEvent",
+	IncludeBlock_Keys = "IncludeBlockKeys",
+	IncludeBlock_Key = "IncludeBlockKey",
+	IncludeBlock_Action = "IncludeBlockAction",
 }
 
 export enum ValidationLevels {

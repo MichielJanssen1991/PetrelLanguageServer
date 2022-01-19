@@ -1,5 +1,186 @@
-import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { action_argument_element, action_call_output_element, dev_comment_attribute, default_yes_no_attribute_type, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_call_element, dev_description_attribute, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition } from './shared';
+import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, Definition, AttributeOption, ChildDefinition, ModelElementSubTypes} from '../symbolsAndReferences';
+import { isIncludeBlockOfType } from './other';
+import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, model_condition_element, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_call_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition, default_childs, action_call_childs, dev_comment_attribute, target_namespace_attribute, dev_description_attribute, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute } from './shared';
+
+const include_block_meta_options: AttributeOption[] = [
+	{
+		name: "module"
+	},
+	{
+		name: "type"
+	},
+	{
+		name: "attribute"
+	},
+	{
+		name: "action"
+	},
+	{
+		name: "server-events"
+	},
+	{
+		name: "server-event"
+	},
+	{
+		name: "keys"
+	},
+	{
+		name: "key"
+	}
+];
+
+const keys_childs: ChildDefinition[] = [
+	{
+		element: "key",
+		required: true,
+		occurence: "at-least-once"
+	},
+	...default_childs
+];
+
+const key_childs: ChildDefinition[] = [
+	{
+		element: "keyfield",
+		occurence: "at-least-once",
+		required: true
+	},
+	...default_childs
+];
+
+const server_events_childs: ChildDefinition[] = [
+	{
+		element: "server-event",
+		required: true,
+		occurence: "at-least-once"
+	},
+	...default_childs
+];
+
+const server_event_childs: ChildDefinition[] = [
+	{
+		element: "action"
+	},
+	{
+		element: "clear-var"
+	},
+	...default_childs
+];
+
+const module_childs: ChildDefinition[] = [
+	{
+		element: "module"
+	},
+	{
+		element: "type"
+	},
+	{
+		element: "include-blocks"
+	},
+	{
+		element: "include-block"
+	},
+	{
+		element: "decorators",
+		occurence: "once"
+	},
+	...default_childs
+];
+
+const attribute_childs: ChildDefinition[] =  [
+	{
+		element: "option"
+	},
+	{
+		element: "include"
+	},
+	{
+		element: "format",
+		occurence: "once"
+	},
+	{
+		element: "auto-key",
+		occurence: "once"
+	},
+	{
+		element: "auto-field-filter",
+		occurence: "once"
+	},
+	...default_childs
+];
+
+const type_childs: ChildDefinition[] = [
+	{
+		element: "attribute"
+	},
+	{
+		element: "keys",
+		occurence: "once"
+	},
+	{
+		element: "server-events",
+		occurence: "once"
+	},
+	{
+		element: "messages",
+		occurence: "once"
+	},
+	{
+		element: "filters",
+		occurence: "once"
+	},
+	{
+		element: "virtual-filter",
+		occurence: "once"
+	},
+	{
+		element: "file-categories",
+		occurence: "once"
+	},
+	{
+		element: "decorations"
+	},
+	{
+		element: "one-to-many"
+	},
+	...default_childs
+];
+
+const include_block_declaration_definition: Definition = {
+	type: ModelElementTypes.IncludeBlock,
+	detailLevel: ModelDetailLevel.Declarations,
+	isSymbolDeclaration: true,
+	description: "A model fragment that is included by includes.",
+	attributes: [
+		dev_comment_attribute,
+		{
+			name: "name",
+			description: "Unique identifier",
+			required: true,
+			autoadd: true,
+		},
+		{
+			name: "meta-name",
+			description: "For which element to apply rules.",
+			required: true,
+			autoadd: true,
+			type:
+			{
+				type: AttributeTypes.Enum,
+				options: include_block_meta_options
+			}
+		},
+		{
+			name: "meta-index",
+			description: "For which element to apply rules.",
+			type:
+			{
+				type: AttributeTypes.Enum,
+				options: include_block_meta_options
+			}
+		}		
+	]
+};
+
 export const BACKEND_DEFINITION: Definitions = {
 	"root": [{
 		attributes: [
@@ -42,9 +223,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				element: "decorations",
 				occurence: "once"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"module": [{
@@ -62,27 +241,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			dev_description_attribute,
 			dev_comment_attribute,
 		],
-		childs: [
-			{
-				element: "module"
-			},
-			{
-				element: "type"
-			},
-			{
-				element: "include-blocks"
-			},
-			{
-				element: "include-block"
-			},
-			{
-				element: "decorators",
-				occurence: "once"
-			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
-		]
+		childs: module_childs
 	}],
 	"type": [{
 		type: ModelElementTypes.Type,
@@ -328,47 +487,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: [
-			{
-				element: "attribute"
-			},
-			{
-				element: "keys",
-				occurence: "once"
-			},
-			{
-				element: "server-events",
-				occurence: "once"
-			},
-			{
-				element: "messages",
-				occurence: "once"
-			},
-			{
-				element: "filters",
-				occurence: "once"
-			},
-			{
-				element: "virtual-filter",
-				occurence: "once"
-			},
-			{
-				element: "file-categories",
-				occurence: "once"
-			},
-			{
-				element: "decorations"
-			},
-			{
-				element: "include"
-			},
-			{
-				element: "one-to-many"
-			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
-		]
+		childs: type_childs
 	}],
 	"virtual-filter": [{
 		description: "A filter on the base type that is defined here. The other way to set the virtual-filter is to select one of the filters defined at the base type using the attribute virtual-filter.",
@@ -379,9 +498,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				occurence: "once",
 				required: true
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"single-aggregate-query": [infoset_single_aggregate_query],
@@ -835,29 +952,7 @@ export const BACKEND_DEFINITION: Definitions = {
 
 			}
 		],
-		childs: [
-			{
-				element: "option"
-			},
-			{
-				element: "include"
-			},
-			{
-				element: "format",
-				occurence: "once"
-			},
-			{
-				element: "auto-key",
-				occurence: "once"
-			},
-			{
-				element: "auto-field-filter",
-				occurence: "once"
-			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
-		]
+		childs: attribute_childs
 	}],
 	"option": [{
 		description: "A field value option. Options may be used for enums, radios and boolsets.",
@@ -933,16 +1028,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"keys": [{
 		description: "Database indexing keys. These are the sorting keys for creating (non) unique indices, as a result of which a performance improvement can be realised. Keys are when possible, used for queries. When no suitable key is found, the framework searches for the minimal set (this will however be usually bigger than when with a suitable key). From this set, at the server, those records that not satisfactory with a slower mechanism, are removed.",
 		attributes: [dev_comment_attribute],
-		childs: [
-			{
-				element: "key",
-				required: true,
-				occurence: "at-least-once"
-			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
-		]
+		childs: keys_childs
 	}],
 	"key": [{
 		description: "A database indexing key. Max lenght of 25 letters",
@@ -966,15 +1052,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
-			{
-				element: "keyfield",
-				occurence: "at-least-once"
-			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
-		]
+		childs: key_childs
 	}],
 	"keyfield": [{
 		description: "",
@@ -1000,9 +1078,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				element: "text"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"image": [{
@@ -1030,16 +1106,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"server-events": [{
 		description: "A server event registration.",
 		attributes: [dev_comment_attribute],
-		childs: [
-			{
-				element: "server-event",
-				required: true,
-				occurence: "at-least-once"
-			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
-		]
+		childs: server_events_childs
 	}],
 	"server-event": [{
 		description: "Server side event.",
@@ -1116,17 +1183,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
-			{
-				element: "action"
-			},
-			{
-				element: "clear-var"
-			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
-		]
+		childs: server_event_childs
 	}],
 	"decorations": [decorations_element],
 	"decoration": [decoration_element],
@@ -1139,65 +1196,76 @@ export const BACKEND_DEFINITION: Definitions = {
 	"argument": [action_argument_element],
 	"action": [backend_action_call_element],
 	"include-blocks": [include_blocks_element],
-	"include-block": [{
-		type: ModelElementTypes.IncludeBlock,
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		description: "A model fragment that is included by includes.",
-		attributes: [
-			{
-				name: "name",
-				description: "Unique identifier",
-				required: true,
-				autoadd: true,
-			},
-			{
-				name: "meta-name",
-				description: "For which element to apply rules.",
-				required: true,
-				autoadd: true,
-				type:
-				{
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: ModelElementTypes.Module
-						},
-						{
-							name: ModelElementTypes.Type
-						},
-						{
-							name: ModelElementTypes.Attribute
-						},
-						{
-							name: ModelElementTypes.Action
-						},
-						{
-							name: "server-events"
-						},
-						{
-							name: "server-event"
-						},
-						{
-							name: "keys"
-						},
-						{
-							name: "key"
-						}
-					]
-				}
-			},
-			{
-				name: "meta-index",
-				description: "For which element to apply rules."
-			},
-			dev_comment_attribute
-		],
-		childs: {
-			matchElementFromAttribute: "meta-name",
-			matchSecondaryElementFromAttribute: "meta-index"
+	"include-block": [
+		{ // General
+			...include_block_declaration_definition,
+			matchCondition: (x)=>isIncludeBlockOfType(x, ""),
+		},
+		{ // module
+			...include_block_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Module,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "module"),
+			childs: [
+				...module_childs
+			]
+		},
+		{ // type
+			...include_block_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Type,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "type"),
+			childs: [
+				...type_childs
+			]
+		},
+		{ // attribute
+			...include_block_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Attribute,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "attribute"),
+			childs: [
+				...attribute_childs
+			]
+		},
+		{ // server-events
+			...include_block_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_ServerEvents,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "server-events"),
+			childs: [
+				...server_events_childs
+			]
+		},
+		{ // server-event
+			...include_block_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_ServerEvent,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "server-event"),
+			childs: [
+				...server_event_childs
+			]
+		},
+		{ // keys
+			...include_block_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Keys,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "keys"),
+			childs: [
+				...keys_childs
+			]
+		},
+		{ // key
+			...include_block_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Keys,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "key"),
+			childs: [
+				...key_childs
+			]
+		},
+		{ // action
+			...include_block_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Action,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "action"),
+			childs: [
+				...action_call_childs
+			]
 		}
-	}],
+	],
 	"include": [include_element],
 	"model-condition": [model_condition_element],
 	"auto-key": [{
