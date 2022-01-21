@@ -24,78 +24,58 @@ export class RuleDeclarationCheck extends ModelCheck {
 	}
 
 	private verifyRuleDeclaration(rule: SymbolDeclaration, options: ModelCheckerOptions) {
-		const ruleInputs = this.modelManager.getChildrenOfType(rule, ModelElementTypes.Input) as SymbolDeclaration[];
-		const ruleOutputs = this.modelManager.getChildrenOfType(rule, ModelElementTypes.Output) as SymbolDeclaration[];
-
-		//Initialize local names with rule inputs
-		this.ruleLocalNames = ruleInputs.map(input => {
-			return {
-				name: "name",
-				value: input.name,
-				range: input.range,
-				fullRange: input.fullRange
-			};
-		});
-
-		//Walk over child nodes which are not inputs or outputs
-		const nonRuleInputOutputChildren = rule.children.filter(child => child.type != ModelElementTypes.Input && child.type != ModelElementTypes.Output);
-		nonRuleInputOutputChildren.forEach(child => {
+		//Walk over child nodes and process
+		rule.children.forEach(child => {
 			this.walkNodesAndCheck(child, options);
-		});
-
-		//Add output to local name references
-		ruleOutputs.forEach(output => {
-			const attribute = output.attributes[NAMES.ATTRIBUTE_ATTRIBUTE];
-			this.processLocalNameReference(attribute);
-
-			const expression = output.attributes[NAMES.ATTRIBUTE_EXPRESSION];
-			this.processExpression(expression);
 		});
 
 		//Check all localNames were referenced?
 		this.ruleLocalNames.forEach(localName => {
 			if (!this.ruleLocalNameReferences.find(x => x.value == localName.value)) {
-				this.addMessage(localName.range, "DC0003",  CHECKS_MESSAGES.RULE_LOCALNAME_NOT_REFERENCED(localName.value));
+				this.addMessage(localName.range, "DC0003", CHECKS_MESSAGES.RULE_LOCALNAME_NOT_REFERENCED(localName.value));
 			}
 		});
 	}
 
 	private walkNodesAndCheck(node: TreeNode, options: ModelCheckerOptions) {
 		switch (node.type) {
+			case ModelElementTypes.Input:
+				{
+					this.processLocalNameDefinitionAttribute(node, NAMES.ATTRIBUTE_NAME);
+					break;
+				}
+			case ModelElementTypes.Output:
+				{
+					this.processLocalNameReferenceAttribute(node, NAMES.ATTRIBUTE_ATTRIBUTE);
+					this.processExpressionAttribute(node, NAMES.ATTRIBUTE_EXPRESSION);
+					break;
+				}
 			case ModelElementTypes.Argument:
 				{
-					const localName = node.attributes[NAMES.ATTRIBUTE_LOCALNAME];
-					this.processLocalNameReference(localName);
-
-					const expression = node.attributes[NAMES.ATTRIBUTE_EXPRESSION];
-					this.processExpression(expression);
+					this.processLocalNameReferenceAttribute(node, NAMES.ATTRIBUTE_LOCALNAME);
+					this.processExpressionAttribute(node, NAMES.ATTRIBUTE_EXPRESSION);
 					break;
 				}
 			case ModelElementTypes.ActionCallOutput:
 				{
-					const localName = node.attributes[NAMES.ATTRIBUTE_LOCALNAME];
-					this.processLocalNameDefinition(localName);
+					this.processLocalNameDefinitionAttribute(node, NAMES.ATTRIBUTE_LOCALNAME);
 					break;
 				}
 			case ModelElementTypes.SetVar:
 				{
-					const expression = node.attributes[NAMES.ATTRIBUTE_EXPRESSION];
-					this.processExpression(expression);
-
-					const localName = node.attributes[NAMES.ATTRIBUTE_NAME];
-					this.processLocalNameDefinition(localName);
+					this.processExpressionAttribute(node, NAMES.ATTRIBUTE_EXPRESSION);
+					this.processLocalNameDefinitionAttribute(node, NAMES.ATTRIBUTE_NAME);
 					break;
 				}
 			case ModelElementTypes.Switch:
 				{
-					const localName = node.attributes[NAMES.ATTRIBUTE_VARIABLE];
-					this.processLocalNameReference(localName);
+					this.processLocalNameReferenceAttribute(node, NAMES.ATTRIBUTE_VARIABLE);
 					break;
 				}
 			case ModelElementTypes.Condition:
 				{
-					const localName = node.attributes[NAMES.ATTRIBUTE_VARIABLE];
-					this.processLocalNameReference(localName);
+					this.processLocalNameReferenceAttribute(node, NAMES.ATTRIBUTE_VARIABLE);
+					this.processExpressionAttribute(node, NAMES.ATTRIBUTE_EXPRESSION);
 					break;
 				}
 		}
@@ -106,18 +86,25 @@ export class RuleDeclarationCheck extends ModelCheck {
 		});
 	}
 
-	private processLocalNameDefinition(localName: Attribute) {
+	private processLocalNameDefinitionAttribute(node: TreeNode, attributeName: string) {
+		const localName = node.attributes[attributeName];
 		if (localName) {
 			this.ruleLocalNames.push(localName);
 		}
 	}
 
-	private processExpression(expression: Attribute) {
+	private processExpressionAttribute(node: TreeNode, attributeName: string) {
+		const expression = node.attributes[attributeName];
 		if (expression) {
 			this.getExpressionVariablesAsAttributes(expression)?.forEach(expressionVariableAsAttribute => {
 				this.processLocalNameReference(expressionVariableAsAttribute);
 			});
 		}
+	}
+
+	private processLocalNameReferenceAttribute(node: TreeNode, attributeName: string) {
+		const localName = node.attributes[attributeName];
+		this.processLocalNameReference(localName);
 	}
 
 	private processLocalNameReference(localName: Attribute) {
