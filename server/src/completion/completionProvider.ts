@@ -3,6 +3,7 @@ import { AttributeTypes, ChildDefinition, ModelElementTypes, Definition, Referen
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { CompletionContext } from './completionContext';
+import { NAMES } from '../model-definition/constants';
 
 export class CompletionProvider {
 	private symbolAndReferenceManager: SymbolAndReferenceManager;
@@ -195,9 +196,9 @@ export class CompletionProvider {
 						case ModelElementTypes.RuleContext:
 							symbols = context
 								.getFromContext(ModelElementTypes.Rule, [
-									ModelElementTypes.Output,
-									ModelElementTypes.Input,
-									ModelElementTypes.SetVar,
+									{type: ModelElementTypes.ActionCallOutput, attribute: NAMES.ATTRIBUTE_LOCALNAME},
+									{type: ModelElementTypes.Input, attribute: NAMES.ATTRIBUTE_NAME},
+									{type: ModelElementTypes.SetVar, attribute: NAMES.ATTRIBUTE_NAME}
 								])
 								?.availableParams.filter(param=>param!=undefined).map(param => ({ label: param })) || [
 									{ label: "no params found" },

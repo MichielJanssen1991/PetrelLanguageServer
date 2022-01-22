@@ -32,7 +32,6 @@ export enum ModelElementTypes {
 	MainView = "MainView",
 	Rule = "Rule",
 	Rules = "Rules",
-	RuleContext = "RuleContext",
 	Output = "Output",
 	Profile = "Profile",
 	Search = "Search",
@@ -79,6 +78,8 @@ export enum ModelElementTypes {
 	ToolbarButton = "ToolbarButton",
 	Appearance = "Appearance",
 	AppearanceClass = "AppearanceClass", // this could be a list of all classes from the scss files (it can be filtered by the type of mixin it's using)
+	// Pseudo types 
+	RuleContext = "RuleContext",
 }
 
 export enum ModelElementSubTypes {

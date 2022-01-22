@@ -39,7 +39,7 @@ export class CompletionContext {
 	}
 
 	//Returns the first predecessor of the given type
-	public getPredecessorOfType(type: ModelElementTypes) {
+	public getAncestorOfType(type: ModelElementTypes) {
 		return this.getPredecessorOfTypeForNode(this.node, type);
 	}
 	public getPredecessorOfTypeForNode(node: TreeNode, type: ModelElementTypes): TreeNode | undefined {
@@ -52,25 +52,36 @@ export class CompletionContext {
 		}
 	}
 
-	public getFromContext(type: ModelElementTypes, matchTypes: ModelElementTypes[]) {
-		const node = this.getPredecessorOfType(type) as SymbolDeclaration;
+	/**
+	 * Get the value of given attributes for children of a given type within a given context
+	 * @param ancertorType: The context in which to search
+	 * @param typeAttributes: A list of type and attribute pairs. For each element of type it returns the value of the specified attribute
+	 * @returns 
+	 */
+	public getFromContext(ancertorType: ModelElementTypes, typeAttributes: { type: ModelElementTypes, attribute: string }[]) {
+		const node = this.getAncestorOfType(ancertorType) as SymbolDeclaration;
 		if (node) {
-			const params = this.findNamesForChildrenOfType(node, matchTypes);
+			const params = this.findNamesForChildrenOfType(node, typeAttributes);
 			return { name: node.name, availableParams: params };
 		}
 		return undefined;
 	}
 
-	private findNamesForChildrenOfType(node: TreeNode, matchTypes: ModelElementTypes[]): string[] {
+	private findNamesForChildrenOfType(node: TreeNode, typeAttributes: { type: ModelElementTypes, attribute: string }[]): string[] {
 		let names: string[] = [];
 		node.children.forEach(child => {
-			if (matchTypes.includes(child.type)) {
-				names.push((child as SymbolDeclaration).name);
+			const attribute = typeAttributes.find(typeAndAttribute => typeAndAttribute.type == child.type)?.attribute;
+			if (attribute && child.attributes[attribute]) {
+				names.push(child.attributes[attribute].value);
 			}
 			if (child.children && child.children.length > 0) {
-				names = names.concat(this.findNamesForChildrenOfType(child, matchTypes));
+				names = names.concat(this.findNamesForChildrenOfType(child, typeAttributes));
 			}
 		});
-		return names;
+		return this.removeDuplicates(names);
+	}
+
+	private removeDuplicates(names: string[]) {
+		return Array.from(new Set(names));
 	}
 }

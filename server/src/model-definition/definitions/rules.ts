@@ -31,7 +31,7 @@ export const RULE_DEFINITION: Definitions = {
 	"module": [{
 		type: ModelElementTypes.Module,
 		detailLevel: ModelDetailLevel.Declarations,
-		isGroupingElement:true,
+		isGroupingElement: true,
 		description: "Used for grouping model entities and model namespacing.",
 		attributes: [
 			{
@@ -281,7 +281,8 @@ export const RULE_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_attribute,
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
-		]},
+		]
+	},
 		action_call_output_element
 	],
 	"argument": [{
@@ -290,7 +291,11 @@ export const RULE_DEFINITION: Definitions = {
 		attributes: [
 			{
 				name: "local-name",
-				autoadd: true
+				autoadd: true,
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.RuleContext
+				}
 			},
 			{
 				name: "remote-name",
