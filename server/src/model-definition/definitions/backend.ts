@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, Definition, AttributeOption, ChildDefinition, ModelElementSubTypes} from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
-import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, model_condition_element, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_call_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition, default_childs, action_call_childs, dev_comment_attribute, target_namespace_attribute, dev_description_attribute, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, include_block_declaration_definition } from './shared';
+import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, model_condition_element, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, backend_action_call_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition, default_childs, action_call_childs, dev_comment_attribute, target_namespace_attribute, dev_description_attribute, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, include_block_declaration_definition, target_declaration_definition } from './shared';
 
 const include_block_meta_options: AttributeOption[] = [
 	{
@@ -28,6 +28,7 @@ const include_block_meta_options: AttributeOption[] = [
 		name: "key"
 	}
 ];
+
 
 const keys_childs: ChildDefinition[] = [
 	{
@@ -144,6 +145,30 @@ const type_childs: ChildDefinition[] = [
 	},
 	...default_childs
 ];
+
+const target_element_definition: Definition = {
+	...target_declaration_definition,
+	attributes: [
+		{
+			name: "meta-name",
+			description: "For which element to apply rules.",
+			required: true,
+			type:
+			{
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "type"
+					},
+					{
+						name: "attribute"
+					}
+				]
+			}
+		}
+	],
+	childs: []
+};
 
 const include_block_backend_declaration_definition: Definition = {
 	...include_block_declaration_definition,
@@ -1187,7 +1212,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"decorators": [decorators_element],
 	"decorator": [decorator_element],
 	"decorator-input": [decorator_input_element],
-	"target": [target_element],
+	"target": [target_element_definition],
 	"decorator-context-entity": [decorator_context_entity_element],
 	"argument": [action_argument_element],
 	"action": [backend_action_call_element],

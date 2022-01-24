@@ -107,6 +107,20 @@ export enum ModelElementSubTypes {
 	IncludeBlock_Action = "IncludeBlockAction",
 	IncludeBlock_View = "IncludeBlockView",
 	IncludeBlock_ObjectView = "IncludeBlockObjectView",
+	IncludeBlock_ListView = "IncludeBlockListView",
+	IncludeBlock_TreeView = "IncludeBlockTreeView",
+	IncludeBlock_ViewContainer = "IncludeBlockViewContainer",
+	IncludeBlock_Group = "IncludeBlockGroup",
+	IncludeBlock_Button = "IncludeBlockButton",
+
+	Target_View = "TargetView",
+	Target_ObjectView = "TargetObjectView",
+	Target_ListView = "TargetListView",
+	Target_TreeView = "TargetTreeView",
+	Target_ViewContainer = "TargetViewContainer",
+	Target_Group = "TargetGroup",
+	Target_Button = "TargetButton",
+	Target_Attribute = "TargetAttribute",
 }
 
 export enum ValidationLevels {

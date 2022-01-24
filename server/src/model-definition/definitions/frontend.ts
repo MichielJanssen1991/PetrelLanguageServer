@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption, Definition, ModelElementSubTypes } from '../symbolsAndReferences';
 import { isIncludeBlockOfType, isViewControl } from './other';
-import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_childs, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
+import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_childs, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_declaration_definition, target_namespace_attribute, view_argument_element, view_group_attributes } from './shared';
 
 const button_attributes: ElementAttribute[] =
 	[
@@ -821,7 +821,7 @@ const objectview_base_definition: Definition = {
 	]
 };
 
-const listview_base_definition: Definition = {
+const listview_base_definition: Definition = { // Listview
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "ListView"),
 	subtype: ModelElementSubTypes.View_ListView,
 	attributes: [
@@ -961,8 +961,7 @@ const listview_base_definition: Definition = {
 		}
 	]
 };
-
-const treeview_base_definition: Definition = {
+const treeview_base_definition: Definition = { // Tree
 	subtype: ModelElementSubTypes.View_Tree,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Tree"),
 	attributes: [
@@ -979,7 +978,6 @@ const treeview_base_definition: Definition = {
 		...default_view_childs
 	]
 };
-
 const datatree_view_base_definition:Definition = { // DataTree
 	subtype: ModelElementSubTypes.View_DataTree,
 	description: "DataTree as a definition",
@@ -1448,7 +1446,6 @@ const container_view_base_definition:Definition = { // ViewContainer
 		}
 	]
 };
-
 const iframe_view_base_definition:Definition = { // Iframe
 	subtype: ModelElementSubTypes.View_IFrame,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Iframe"),
@@ -1494,6 +1491,15 @@ const include_block_meta_options: AttributeOption[] = [
 		name: "ObjectView"
 	},
 	{
+		name: "ListView"
+	},
+	{
+		name: "TreeView"
+	},
+	{
+		name: "ViewContainer"
+	},
+	{
 		name: "attribute"
 	},
 	{
@@ -1526,6 +1532,515 @@ const include_block_meta_options: AttributeOption[] = [
 	{
 		name: "server-event"
 	}
+];
+
+const action_childs: ChildDefinition[] = [
+	{
+		element: "graph-params",
+		occurence: "once"
+	},
+	{
+		element: "argument"
+	},
+	{
+		element: "output"
+	},
+	{
+		element: "condition"	// TODO: WHY?? This should not be possible
+	},
+	{
+		element: "view"
+	},
+	{
+		element: "events"
+	},
+	{
+		element: "button"
+	},
+	...default_childs
+];
+
+const view_group_childs: ChildDefinition[] =
+[
+	{
+		element: "group"
+	},
+	{
+		element: "attribute"
+	},
+	{
+		element: "events"
+	},
+	{
+		element: "view"
+	},
+	{
+		element: "tabber"
+	},
+	{
+		element: "button"
+	},
+	{
+		element: "decorations"
+	},
+	...default_childs
+];
+
+const attribute_attributes: ElementAttribute[] = [
+	{
+		name: "name",
+		required: true,
+		description: "The name for the field. If the view is data bound, the fields with names corresponding to backend type attribute names will be data bound.",
+		validations: [
+			{
+				type: "regex",
+				value: /^[a-zA-Z]+[a-zA-Z0-9_]*$/,
+				message: "Mathematical symbols and punctuation are not allowed in sub model object identifiers. Use '_' for namespacing."
+			}
+		]
+	},
+	{
+		name: "caption",
+		description: ""
+	},
+	{
+		name: "bounded",
+		description: "This indicates whether the field corresponds with a field from the related type. If the field is \"data bound\":[Model_Frontend_Bounded] (saved in the data). Useful when displaying values not in the persistence. A non-data bound field is a free form field that is not linked to a database attribute.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "type",
+		description: "Determines field type and the saved attribute value.",
+		type:
+		{
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "string",
+				},
+				{
+					name: "enum",
+				},
+				{
+					name: "radio",
+				},
+				{
+					name: "boolset",
+				},
+				{
+					name: "segmentedbutton",
+				},
+				{
+					name: "listbox",
+				},
+				{
+					name: "numeric",
+				},
+				{
+					name: "slidebar",
+				},
+				{
+					name: "bool",
+				},
+				{
+					name: "switch",
+				},
+				{
+					name: "datetime",
+				},
+				{
+					name: "date",
+				},
+				{
+					name: "time",
+				},
+				{
+					name: "text",
+				},
+				{
+					name: "richtext",
+				},
+				{
+					name: "richtextdisplay",
+				},
+				{
+					name: "color",
+				},
+				{
+					name: "color-swatch",
+				},
+				{
+					name: "password",
+				},
+				{
+					name: "passwordstrength",
+				},
+				{
+					name: "email",
+				},
+				{
+					name: "autofield",
+				},
+				{
+					name: "none",
+					description: "Only the label is displayed"
+				},
+				{
+					name: "image",
+				},
+				{
+					name: "attachment",
+				},
+				{
+					name: "drawing",
+				},
+				{
+					name: "multiselect",
+				},
+				{
+					name: "sparkline",
+				},
+			]
+		},
+		visibilityConditions: [
+			{
+				attribute: "relation-type",
+				condition: "==",
+				value: ""
+			},
+			{
+				operator: "and",
+				attribute: "relation-field",
+				condition: "==",
+				value: ""
+			}
+		]
+	},
+	{
+		name: "empty-allowed",
+		description: "If the attribute or field can be left empty.",
+		type:
+		{
+			type: AttributeTypes.Enum,
+			"options": [
+				{
+					name: "", // empty = yes
+					obsolete: true
+				},
+				{
+					name: "yes",
+					default: true
+				},
+				{
+					name: "no"
+				}
+			]
+		},
+		visibilityConditions: [
+			{
+				attribute: "type",
+				condition: "!=",
+				value: "bool"
+			}
+		]
+	},
+	{
+		name: "key",
+		description: "One or more attributes of a type can be defined as key. These attributes together determine the primary key, which allows for a default sort order and ensures uniqueness of the fields.",
+		type: default_yes_no_attribute_type,
+		visibilityConditions: [
+			{
+				attribute: "relation-field",
+				condition: "!=",
+				value: ""
+			}
+		]
+	},
+	{
+		name: "attribute",
+		description: "An attribute to inherit all properties from.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Attribute // TODO: add Context of current type
+		}
+	},
+	{
+		name: "attribute-template",		// TODO: check if platform still supports this
+		description: "A template this attribute is based on.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Attribute // TODO: change this to AttributeTemplates once it's clear that platform it still supports
+		}
+	},
+	{
+		name: "sort",
+		description: "A consecutive numeric value (starting with 1) which indicates the sort order index.",
+		type: {
+			type: AttributeTypes.Numeric
+		}
+	},
+	{
+		name: "sort-type",
+		description: "If the sorting on this field should be ascending or descending.",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "ASC",
+					description: "Ascending"
+				},
+				{
+					name: "DESC",
+					description: "Descending"
+				}
+			]
+		},
+		visibilityConditions: [
+			{
+				attribute: "sort",
+				condition: "!=",
+				value: ""
+			}
+		]
+	},
+	{
+		name: "relation-type",
+		description: "Set relation type to let this attribute represent a relation to an object of this type. For example, the attribute 'Patient' in a type 'Consults per patient' has as relation type value 'Patients'. When the relation type is specified, the attribute can have linked relation attributes using the relation field property (see below).",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Type
+		},
+		visibilityConditions: [
+			{
+				attribute: "type",
+				condition: "==",
+				value: "multiselect"
+			},
+			{
+				operator: "or",
+				attribute: "type",
+				condition: "==",
+				value: ""
+			}
+		]
+	},
+	{
+		name: "list-relation-type",
+		description: "",
+		visibilityConditions: [
+			{
+				attribute: "relation-type",
+				condition: "==",
+				value: "Platform.Lists"
+			}
+		]
+	},
+	{
+		name: "relation-type-multiple",
+		description: "The relation type for the multiple relation.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Type
+		},
+		visibilityConditions: [
+			{
+				attribute: "type",
+				condition: "==",
+				value: "multiselect"
+			}
+		]
+	},
+	{
+		name: "relation-field",
+		description: "Set relation field to let this attribute represent another attribute of a related type. This type of attribute is called a \"relation attribute\". Relation attributes *must* be defined in the backend because the backend otherwise will not send data to the frontend.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Attribute
+		},
+		visibilityConditions: [
+			{
+				attribute: "type",
+				condition: "==",
+				value: ""
+			},
+			{
+				operator: "and",
+				attribute: "relation-type",
+				condition: "==",
+				value: ""
+			},
+		]
+	},
+	{
+		name: "allow-new",
+		description: "If it is allowed to enter a new not existing item as relation. This relation will be saved then to the related type.</summary>To this end it is necessary that the compulsory fields are present as not-read-only relation attributes, otherwise the record can not be saved.",
+		type: default_yes_no_attribute_type,
+		visibilityConditions: [
+			{
+				attribute: "relation-type-multiple",
+				condition: "!=",
+				value: ""
+			},
+			{
+				operator: "or",
+				attribute: "relation-type",
+				condition: "!=",
+				value: ""
+			},
+		]
+	},
+	{
+		name: "display-as",
+		description: "An attribute of the related type to display. Display-as can only be used when a relation type or relation field is specified.",
+		type:
+		{
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Attribute	// TODO add specification what attributes need to be displayed. Filter on parent type name OR related type attribute
+		},
+		visibilityConditions: [
+			{
+				attribute: "relation-type",
+				condition: "!=",
+				value: ""
+			},
+			{
+				operator: "or",
+				attribute: "relation-field",
+				condition: "!=",
+				value: ""
+			},
+			{
+				operator: "or",
+				attribute: "relation-type-multiple",
+				condition: "!=",
+				value: ""
+			}
+		]
+	},
+	{
+		name: "display-length",
+		description: "Specifies the field width, defined in number of characters displayed.",
+		type: {
+			type: AttributeTypes.Numeric
+		}
+	},
+	{
+		name: "max-length",
+		description: "Specifies the field width, defined in number of characters displayed.",
+		type: {
+			type: AttributeTypes.Numeric
+		}
+	},
+	{
+		name: "allowed-file-extensions",
+		description: "The extensions that are allowed for uploading, separated by pipes ('|'). E.g.,\".txt|.rtf|.doc|.docx|.odt|.pdf\".",
+		visibilityConditions: [
+			{
+				attribute: "type",
+				condition: "==",
+				value: "image"
+			},
+			{
+				operator: "or",
+				attribute: "type",
+				condition: "==",
+				value: "attachment"
+			}
+		]
+	},
+	{
+		name: "max-list-items",
+		description: "Limit the enum list to a maximum",
+		type: {
+			type: AttributeTypes.Numeric
+		},
+		visibilityConditions: [
+			{
+				attribute: "type",
+				condition: "==",
+				value: "enum"
+			}
+		]
+	},
+	{
+		name: "show-colorfield",
+		description: "Show the field with the color value",
+		type: default_yes_no_attribute_type,
+		visibilityConditions: [
+			{
+				attribute: "type",
+				condition: "==",
+				value: "color"
+			}
+		]
+	},
+	{
+		name: "show-color-picker",
+		description: "Show the extra button to pick a color from the colorpicker.",
+		type: default_yes_no_attribute_type,
+		visibilityConditions: [
+			{
+				attribute: "type",
+				condition: "==",
+				value: "color-swatch"
+			}
+		]
+	},
+	{
+		name: "field",	// TODO check if this is still available in the platform
+		description: "The password field to check the strength of.",
+		visibilityConditions: [
+			{
+				attribute: "type",
+				condition: "==",
+				value: "passwordstrength"
+			}
+		]
+	},
+	{
+		name: "username-field", // TODO check if this is still available in the platform
+		description: "The username field that belongs to the password field. Used to check username occurances in the password",
+		visibilityConditions: [
+			{
+				attribute: "type",
+				condition: "==",
+				value: "passwordstrength"
+			}
+		]
+	},
+	{
+		name: "translatable",
+		description: "If this attribute is multilingual. If so, the attribute will store a translation ID. The attribute will be translated before sending it to the front-end. See [Multilingual data]",
+		type: default_yes_no_attribute_type
+	}
+];
+
+const attribute_childs: ChildDefinition[] = [
+	{
+		element: "option"
+	},
+	{
+		element: "validations",
+		occurence: "once"
+	},
+	{
+		element: "events",
+		occurence: "once"
+	},
+	{
+		element: "format",
+		occurence: "once"
+	},
+	{
+		element: "argument"
+	},
+	{
+		element: "decorations"
+	},
+	{
+		element: "copy-attribute" // TODO still in use?
+	},
+	...default_childs
 ];
 
 const module_childs: ChildDefinition[] = [
@@ -1587,6 +2102,45 @@ const include_block_frontend_declaration_definition: Definition = {
 			}
 		}		
 	]
+};
+
+const target_element_definition: Definition = {
+	...target_declaration_definition,
+	attributes: [
+		{
+			name: "meta-name",
+			description: "For which element to apply rules.",
+			required: true,
+			type:
+			{
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "view"
+					},
+					{
+						name: "ObjectView"
+					},
+					{
+						name: "ListView"
+					},
+					{
+						name: "TreeView"
+					},
+					{
+						name: "ViewContainer"
+					},
+					{
+						name: "group"
+					},
+					{
+						name: "attribute"
+					}
+				]
+			}
+		}
+	],
+	childs: []
 };
 
 export const FRONTEND_DEFINITION: Definitions = {
@@ -1925,12 +2479,68 @@ export const FRONTEND_DEFINITION: Definitions = {
 				...objectview_base_definition.childs
 			]
 		},
+		{ // listview
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_ListView,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "ListView"),
+			childs: [
+				...listview_base_definition.childs
+			]
+		},
+		{ // treeview
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_TreeView,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "TreeView"),
+			childs: [
+				...treeview_base_definition.childs
+			]
+		},
+		{ // viewcontainer
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_ViewContainer,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "ViewContainer"),
+			childs: [
+				...container_view_base_definition.childs
+			]
+		},
 		{ // generic view
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_View,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "view"),
 			childs: [
 				...default_view_childs
+			]
+		},
+		{ // attribute
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Attribute,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "attribute"),
+			childs: [
+				...attribute_childs
+			]
+		},
+		{ // group
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Group,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "group"),
+			childs: [
+				...view_group_childs
+			]
+		},
+		{ // button
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Button,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "button"),
+			childs: [
+				...button_childs
+			]
+		},
+		{ // action
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Action,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "action"),
+			childs: [
+				...action_childs
 			]
 		},
 		
@@ -2927,461 +3537,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 		detailLevel: ModelDetailLevel.Declarations,
 		isSymbolDeclaration: true,
 		description: "Describes an attribute of this type.",
-		attributes: [
-			{
-				name: "name",
-				required: true,
-				description: "The name for the field. If the view is data bound, the fields with names corresponding to backend type attribute names will be data bound.",
-				validations: [
-					{
-						type: "regex",
-						value: /^[a-zA-Z]+[a-zA-Z0-9_]*$/,
-						message: "Mathematical symbols and punctuation are not allowed in sub model object identifiers. Use '_' for namespacing."
-					}
-				]
-			},
-			{
-				name: "caption",
-				description: ""
-			},
-			{
-				name: "bounded",
-				description: "This indicates whether the field corresponds with a field from the related type. If the field is \"data bound\":[Model_Frontend_Bounded] (saved in the data). Useful when displaying values not in the persistence. A non-data bound field is a free form field that is not linked to a database attribute.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "type",
-				description: "Determines field type and the saved attribute value.",
-				type:
-				{
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "string",
-						},
-						{
-							name: "enum",
-						},
-						{
-							name: "radio",
-						},
-						{
-							name: "boolset",
-						},
-						{
-							name: "segmentedbutton",
-						},
-						{
-							name: "listbox",
-						},
-						{
-							name: "numeric",
-						},
-						{
-							name: "slidebar",
-						},
-						{
-							name: "bool",
-						},
-						{
-							name: "switch",
-						},
-						{
-							name: "datetime",
-						},
-						{
-							name: "date",
-						},
-						{
-							name: "time",
-						},
-						{
-							name: "text",
-						},
-						{
-							name: "richtext",
-						},
-						{
-							name: "richtextdisplay",
-						},
-						{
-							name: "color",
-						},
-						{
-							name: "color-swatch",
-						},
-						{
-							name: "password",
-						},
-						{
-							name: "passwordstrength",
-						},
-						{
-							name: "email",
-						},
-						{
-							name: "autofield",
-						},
-						{
-							name: "none",
-							description: "Only the label is displayed"
-						},
-						{
-							name: "image",
-						},
-						{
-							name: "attachment",
-						},
-						{
-							name: "drawing",
-						},
-						{
-							name: "multiselect",
-						},
-						{
-							name: "sparkline",
-						},
-					]
-				},
-				visibilityConditions: [
-					{
-						attribute: "relation-type",
-						condition: "==",
-						value: ""
-					},
-					{
-						operator: "and",
-						attribute: "relation-field",
-						condition: "==",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "empty-allowed",
-				description: "If the attribute or field can be left empty.",
-				type:
-				{
-					type: AttributeTypes.Enum,
-					"options": [
-						{
-							name: "", // empty = yes
-							obsolete: true
-						},
-						{
-							name: "yes",
-							default: true
-						},
-						{
-							name: "no"
-						}
-					]
-				},
-				visibilityConditions: [
-					{
-						attribute: "type",
-						condition: "!=",
-						value: "bool"
-					}
-				]
-			},
-			{
-				name: "key",
-				description: "One or more attributes of a type can be defined as key. These attributes together determine the primary key, which allows for a default sort order and ensures uniqueness of the fields.",
-				type: default_yes_no_attribute_type,
-				visibilityConditions: [
-					{
-						attribute: "relation-field",
-						condition: "!=",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "attribute",
-				description: "An attribute to inherit all properties from.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute // TODO: add Context of current type
-				}
-			},
-			{
-				name: "attribute-template",		// TODO: check if platform still supports this
-				description: "A template this attribute is based on.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute // TODO: change this to AttributeTemplates once it's clear that platform it still supports
-				}
-			},
-			{
-				name: "sort",
-				description: "A consecutive numeric value (starting with 1) which indicates the sort order index.",
-				type: {
-					type: AttributeTypes.Numeric
-				}
-			},
-			{
-				name: "sort-type",
-				description: "If the sorting on this field should be ascending or descending.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "ASC",
-							description: "Ascending"
-						},
-						{
-							name: "DESC",
-							description: "Descending"
-						}
-					]
-				},
-				visibilityConditions: [
-					{
-						attribute: "sort",
-						condition: "!=",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "relation-type",
-				description: "Set relation type to let this attribute represent a relation to an object of this type. For example, the attribute 'Patient' in a type 'Consults per patient' has as relation type value 'Patients'. When the relation type is specified, the attribute can have linked relation attributes using the relation field property (see below).",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Type
-				},
-				visibilityConditions: [
-					{
-						attribute: "type",
-						condition: "==",
-						value: "multiselect"
-					},
-					{
-						operator: "or",
-						attribute: "type",
-						condition: "==",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "list-relation-type",
-				description: "",
-				visibilityConditions: [
-					{
-						attribute: "relation-type",
-						condition: "==",
-						value: "Platform.Lists"
-					}
-				]
-			},
-			{
-				name: "relation-type-multiple",
-				description: "The relation type for the multiple relation.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Type
-				},
-				visibilityConditions: [
-					{
-						attribute: "type",
-						condition: "==",
-						value: "multiselect"
-					}
-				]
-			},
-			{
-				name: "relation-field",
-				description: "Set relation field to let this attribute represent another attribute of a related type. This type of attribute is called a \"relation attribute\". Relation attributes *must* be defined in the backend because the backend otherwise will not send data to the frontend.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute
-				},
-				visibilityConditions: [
-					{
-						attribute: "type",
-						condition: "==",
-						value: ""
-					},
-					{
-						operator: "and",
-						attribute: "relation-type",
-						condition: "==",
-						value: ""
-					},
-				]
-			},
-			{
-				name: "allow-new",
-				description: "If it is allowed to enter a new not existing item as relation. This relation will be saved then to the related type.</summary>To this end it is necessary that the compulsory fields are present as not-read-only relation attributes, otherwise the record can not be saved.",
-				type: default_yes_no_attribute_type,
-				visibilityConditions: [
-					{
-						attribute: "relation-type-multiple",
-						condition: "!=",
-						value: ""
-					},
-					{
-						operator: "or",
-						attribute: "relation-type",
-						condition: "!=",
-						value: ""
-					},
-				]
-			},
-			{
-				name: "display-as",
-				description: "An attribute of the related type to display. Display-as can only be used when a relation type or relation field is specified.",
-				type:
-				{
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute	// TODO add specification what attributes need to be displayed. Filter on parent type name OR related type attribute
-				},
-				visibilityConditions: [
-					{
-						attribute: "relation-type",
-						condition: "!=",
-						value: ""
-					},
-					{
-						operator: "or",
-						attribute: "relation-field",
-						condition: "!=",
-						value: ""
-					},
-					{
-						operator: "or",
-						attribute: "relation-type-multiple",
-						condition: "!=",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "display-length",
-				description: "Specifies the field width, defined in number of characters displayed.",
-				type: {
-					type: AttributeTypes.Numeric
-				}
-			},
-			{
-				name: "max-length",
-				description: "Specifies the field width, defined in number of characters displayed.",
-				type: {
-					type: AttributeTypes.Numeric
-				}
-			},
-			{
-				name: "allowed-file-extensions",
-				description: "The extensions that are allowed for uploading, separated by pipes ('|'). E.g.,\".txt|.rtf|.doc|.docx|.odt|.pdf\".",
-				visibilityConditions: [
-					{
-						attribute: "type",
-						condition: "==",
-						value: "image"
-					},
-					{
-						operator: "or",
-						attribute: "type",
-						condition: "==",
-						value: "attachment"
-					}
-				]
-			},
-			{
-				name: "max-list-items",
-				description: "Limit the enum list to a maximum",
-				type: {
-					type: AttributeTypes.Numeric
-				},
-				visibilityConditions: [
-					{
-						attribute: "type",
-						condition: "==",
-						value: "enum"
-					}
-				]
-			},
-			{
-				name: "show-colorfield",
-				description: "Show the field with the color value",
-				type: default_yes_no_attribute_type,
-				visibilityConditions: [
-					{
-						attribute: "type",
-						condition: "==",
-						value: "color"
-					}
-				]
-			},
-			{
-				name: "show-color-picker",
-				description: "Show the extra button to pick a color from the colorpicker.",
-				type: default_yes_no_attribute_type,
-				visibilityConditions: [
-					{
-						attribute: "type",
-						condition: "==",
-						value: "color-swatch"
-					}
-				]
-			},
-			{
-				name: "field",	// TODO check if this is still available in the platform
-				description: "The password field to check the strength of.",
-				visibilityConditions: [
-					{
-						attribute: "type",
-						condition: "==",
-						value: "passwordstrength"
-					}
-				]
-			},
-			{
-				name: "username-field", // TODO check if this is still available in the platform
-				description: "The username field that belongs to the password field. Used to check username occurances in the password",
-				visibilityConditions: [
-					{
-						attribute: "type",
-						condition: "==",
-						value: "passwordstrength"
-					}
-				]
-			},
-			{
-				name: "translatable",
-				description: "If this attribute is multilingual. If so, the attribute will store a translation ID. The attribute will be translated before sending it to the front-end. See [Multilingual data]",
-				type: default_yes_no_attribute_type
-			}
-		],
-		childs: [
-			{
-				element: "option"
-			},
-			{
-				element: "validations",
-				occurence: "once"
-			},
-			{
-				element: "events",
-				occurence: "once"
-			},
-			{
-				element: "format",
-				occurence: "once"
-			},
-			{
-				element: "argument"
-			},
-			{
-				element: "decorations"
-			},
-			{
-				element: "copy-attribute" // TODO still in use?
-			},
-			...default_childs
-		]
+		attributes: attribute_attributes,
+		childs: attribute_childs
 	}],
 	"group": [
 		{
@@ -3903,31 +4060,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: [
-			{
-				element: "graph-params",
-				occurence: "once"
-			},
-			{
-				element: "argument"
-			},
-			{
-				element: "output"
-			},
-			{
-				element: "condition"	// TODO: WHY?? This should not be possible
-			},
-			{
-				element: "view"
-			},
-			{
-				element: "events"
-			},
-			{
-				element: "button"
-			},
-			...default_childs
-		]
+		childs: action_childs
 	}],
 	"output": [
 		action_call_output_element,
@@ -4625,7 +4758,99 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"decorators": [decorators_element],
 	"decorator": [decorator_element],
 	"decorator-input": [decorator_input_element],
-	"target": [target_element],
+	"target": [
+		{ // none
+			...target_element_definition,
+			matchCondition: (x)=>isIncludeBlockOfType(x, ""),
+			attributes: [
+				...target_element_definition.attributes,
+			]
+		},
+		{ // objectview
+			...target_element_definition,
+			subtype: ModelElementSubTypes.Target_ObjectView,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "ObjectView"),
+			attributes: [
+				...target_element_definition.attributes,
+				...objectview_base_definition.attributes
+			],
+			childs: [
+				...objectview_base_definition.childs
+			]
+		},
+		{ // listview
+			...target_element_definition,
+			subtype: ModelElementSubTypes.Target_ListView,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "ListView"),
+			attributes: [
+				...target_element_definition.attributes,
+				...listview_base_definition.attributes
+			],
+			childs: [
+				...listview_base_definition.childs
+			]
+		},
+		{ // viewcontainer
+			...target_element_definition,
+			subtype: ModelElementSubTypes.Target_ViewContainer,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "ViewContainer"),
+			attributes: [
+				...target_element_definition.attributes,
+				...container_view_base_definition.attributes
+			],
+			childs: [
+				...container_view_base_definition.childs
+			]
+		},
+		{ // treeview
+			...target_element_definition,
+			subtype: ModelElementSubTypes.Target_TreeView,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "TreeView"),
+			attributes: [
+				...target_element_definition.attributes,
+				...treeview_base_definition.attributes
+			],
+			childs: [
+				...treeview_base_definition.childs
+			]
+		},
+		{ // view
+			...target_element_definition,
+			subtype: ModelElementSubTypes.Target_TreeView,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "view"),
+			attributes: [
+				...target_element_definition.attributes,
+				...default_view_attributes
+			],
+			childs: [
+				...default_view_childs
+			]
+		},
+		{ // group
+			...target_element_definition,
+			subtype: ModelElementSubTypes.Target_Group,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "group"),
+			attributes: [
+				...target_element_definition.attributes,
+				...view_group_attributes
+			],
+			childs: [
+				...view_group_childs
+			]
+		},
+		{ // attribute
+			...target_element_definition,
+			subtype: ModelElementSubTypes.Target_Attribute,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "attribute"),
+			attributes: [
+				...target_element_definition.attributes,
+				...attribute_attributes
+			],
+			childs: [
+				...attribute_childs
+			]
+		},
+	],
 	"decorator-context-entity": [decorator_context_entity_element],
 	"merge-instruction": [merge_instruction_element],
 	"metadata-initialize": [{

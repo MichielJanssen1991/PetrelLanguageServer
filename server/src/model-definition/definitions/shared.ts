@@ -833,33 +833,11 @@ export const decorator_input_element: Definition =
 	childs: []
 };
 
-export const target_element: Definition = {
+export const target_declaration_definition: Definition = {
 	type: ModelElementTypes.Target,
 	description: "This element is mandatory and is a 'placeholder' for the element on which the decorator is applied. It can be extended with attributes and elements. Elements outside this element will occur outside the target element also.",
 	attributes: [
-		{
-			name: "meta-name",
-			description: "For which element to apply rules.",
-			required: true,
-			type:
-			{
-				type: AttributeTypes.Enum,
-				options: [
-					{
-						name: "type"
-					},
-					{
-						name: "view"
-					},
-					{
-						name: "group"
-					},
-					{
-						name: "attribute"
-					}
-				]
-			}
-		}
+		dev_comment_attribute
 	],
 	childs: []
 };
@@ -1377,34 +1355,6 @@ export const view_group_attributes: ElementAttribute[] =
 	dev_comment_attribute
 ];
 
-export const view_group_childs: ChildDefinition[] =
-[
-	{
-		element: "group"
-	},
-	{
-		element: "attribute"
-	},
-	{
-		element: "events"
-	},
-	{
-		element: "view"
-	},
-	{
-		element: "tabber"
-	},
-	{
-		element: "button"
-	},
-	{
-		element: "decorations"
-	},
-	child_include,
-	child_merge_instruction,
-	child_model_condition
-];
-
 export const search_childs: ChildDefinition[] = 
 [
 	{
@@ -1428,9 +1378,7 @@ export const search_childs: ChildDefinition[] =
 	{
 		element: "full-text-query"
 	},
-	child_include,
-	child_merge_instruction,
-	child_model_condition
+	...default_childs
 ];
 
 export const event_childs: ChildDefinition[] = 
@@ -1446,9 +1394,7 @@ export const event_childs: ChildDefinition[] =
 		obsolete: true,
 		obsoleteMessage: "Place include-block on a location where all include-blocks are grouped"
 	},
-	child_include,
-	child_merge_instruction,
-	child_model_condition
+	...default_childs
 ];
 
 export function isViewArgument(nodeContext: IXmlNodeContext): boolean {
