@@ -231,45 +231,10 @@ export class CompletionProvider {
 	private getChildElementCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
 		const node = context.currentNode as TreeNode;
 		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
-		let childCompletions: CompletionItem[] = [{label: "no child options found for " + node.tag }];
-		if (elementDefinition) {
-			const children = elementDefinition.childs;
-			// if the definition contains an array of children
-			if (Array.isArray(children) && children) {
-				childCompletions = this.mapChildrenToCompletionItems(children, modelFileContext);
-			}
-			// if the definition contains something else then an array of children. (could be empty too)
-			// In some cases the context of children is determined by the parent tag or some attribute
-			else {
-				// match context from an attribute to retrieve the children (e.g. include)
-				if (children?.matchElementFromAttribute) {
-					let elementName = context.currentNode?.attributes[children.matchElementFromAttribute]?.value.toLowerCase();
-					if (!elementName && children.matchSecondaryElementFromAttribute) {
-						elementName = context.currentNode?.attributes[children.matchSecondaryElementFromAttribute]?.value.toLowerCase();
-					}
-					if (elementName) {
-						const childElementDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, elementName, ModelElementTypes.All); //TODO: Add the correct ModelElementType
-						const childChildren = childElementDefinition?.childs;
-						if (Array.isArray(childChildren) && childChildren) {
-							childCompletions = this.mapChildrenToCompletionItems(childChildren, modelFileContext);
-						}
-					}
-				}
-				// match context from the parent tag to retrieve the children. (e.g. model-condition)
-				else if (children?.matchFromParent) {
-					const parent = context.firstParent;
-					if (parent) {
-						const parentElementDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, parent);
-						const parentChildren = parentElementDefinition?.childs;
-						if (Array.isArray(parentChildren) && parentChildren) {
-							childCompletions = this.mapChildrenToCompletionItems(parentChildren, modelFileContext);
-						}
-					}
-				}
-			}
+		if (elementDefinition && elementDefinition.childs.length > 0) {
+			return this.mapChildrenToCompletionItems(elementDefinition.childs, modelFileContext);
 		}
-
-		return childCompletions;
+		return [{label: "no child options found for " + node.tag }];
 	}
 
 	private mapAttributesToCompletionItem(attributes: ElementAttribute[]): CompletionItem[] {

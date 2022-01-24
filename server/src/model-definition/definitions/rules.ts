@@ -281,7 +281,8 @@ export const RULE_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_attribute,
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
-		]
+		],
+		childs: []
 	},
 		action_call_output_element
 	],
@@ -329,7 +330,8 @@ export const RULE_DEFINITION: Definitions = {
 					]
 				}
 			},
-		]
+		],
+		childs: []
 	}],
 	"set-var": [{
 		type: ModelElementTypes.SetVar,
@@ -369,7 +371,8 @@ export const RULE_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_attribute,
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
-		]
+		],
+		childs: []
 	}],
 	"clear-var": [{
 		type: ModelElementTypes.SetVar,
@@ -384,7 +387,8 @@ export const RULE_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_attribute,
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
-		]
+		],
+		childs: []
 	}],
 	"if": [{
 		type: ModelElementTypes.If,
@@ -677,7 +681,8 @@ export const RULE_DEFINITION: Definitions = {
 				name: "comment",
 				description: "Developer's comment on this element."
 			}
-		]
+		],
+		childs: []
 	}],
 	"then": [{
 		type: ModelElementTypes.Unknown,
@@ -1031,11 +1036,13 @@ export const RULE_DEFINITION: Definitions = {
 		type: ModelElementTypes.Unknown,
 		description: "Terminates the current loop.",
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"return": [{
 		type: ModelElementTypes.Unknown,
 		description: "Terminates the current rule.",
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"include_blocks": [include_blocks_element],
 	"include-block": [{
@@ -1098,10 +1105,7 @@ export const RULE_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: {
-			matchElementFromAttribute: "meta-name",
-			matchSecondaryElementFromAttribute: "meta-index"
-		}
+		childs: []
 	}],
 	"include": [include_element],
 	"merge-instruction": [merge_instruction_element],

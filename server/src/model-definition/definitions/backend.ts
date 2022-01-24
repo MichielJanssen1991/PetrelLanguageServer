@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, Definition, AttributeOption, ChildDefinition, ModelElementSubTypes} from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
-import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, model_condition_element, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_call_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition, default_childs, action_call_childs, dev_comment_attribute, target_namespace_attribute, dev_description_attribute, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute } from './shared';
+import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, model_condition_element, decorator_context_entity_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, target_element, backend_action_call_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition, default_childs, action_call_childs, dev_comment_attribute, target_namespace_attribute, dev_description_attribute, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, include_block_declaration_definition } from './shared';
 
 const include_block_meta_options: AttributeOption[] = [
 	{
@@ -145,19 +145,10 @@ const type_childs: ChildDefinition[] = [
 	...default_childs
 ];
 
-const include_block_declaration_definition: Definition = {
-	type: ModelElementTypes.IncludeBlock,
-	detailLevel: ModelDetailLevel.Declarations,
-	isSymbolDeclaration: true,
-	description: "A model fragment that is included by includes.",
+const include_block_backend_declaration_definition: Definition = {
+	...include_block_declaration_definition,
 	attributes: [
-		dev_comment_attribute,
-		{
-			name: "name",
-			description: "Unique identifier",
-			required: true,
-			autoadd: true,
-		},
+		...include_block_declaration_definition.attributes,
 		{
 			name: "meta-name",
 			description: "For which element to apply rules.",
@@ -537,7 +528,8 @@ export const BACKEND_DEFINITION: Definitions = {
 					relatedTo: ModelElementTypes.Attribute
 				}
 			}
-		]
+		],
+		childs: []
 	}],
 	"attribute": [{
 		type: ModelElementTypes.Attribute,
@@ -1023,7 +1015,8 @@ export const BACKEND_DEFINITION: Definitions = {
 				]
 			},
 			dev_comment_attribute
-		]
+		],
+		childs: []
 	}],
 	"keys": [{
 		description: "Database indexing keys. These are the sorting keys for creating (non) unique indices, as a result of which a performance improvement can be realised. Keys are when possible, used for queries. When no suitable key is found, the framework searches for the minimal set (this will however be usually bigger than when with a suitable key). From this set, at the server, those records that not satisfactory with a slower mechanism, are removed.",
@@ -1066,7 +1059,8 @@ export const BACKEND_DEFINITION: Definitions = {
 					relatedTo: ModelElementTypes.Attribute // TODO: filter on parent type
 				}
 			}
-		]
+		],
+		childs: []
 	}],
 	"format": [{
 		description: "Defines a lay-out.",
@@ -1092,7 +1086,8 @@ export const BACKEND_DEFINITION: Definitions = {
 				name: "height",
 				description: "The height of the option images."
 			}
-		]
+		],
+		childs: []
 	}],
 	"text": [{
 		description: "Displays the option labels.",
@@ -1101,7 +1096,8 @@ export const BACKEND_DEFINITION: Definitions = {
 				name: "width",
 				description: "The width of the option labels."
 			}
-		]
+		],
+		childs: []
 	}],
 	"server-events": [{
 		description: "A server event registration.",
@@ -1198,11 +1194,11 @@ export const BACKEND_DEFINITION: Definitions = {
 	"include-blocks": [include_blocks_element],
 	"include-block": [
 		{ // General
-			...include_block_declaration_definition,
+			...include_block_backend_declaration_definition,
 			matchCondition: (x)=>isIncludeBlockOfType(x, ""),
 		},
 		{ // module
-			...include_block_declaration_definition,
+			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Module,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "module"),
 			childs: [
@@ -1210,7 +1206,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			]
 		},
 		{ // type
-			...include_block_declaration_definition,
+			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Type,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "type"),
 			childs: [
@@ -1218,7 +1214,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			]
 		},
 		{ // attribute
-			...include_block_declaration_definition,
+			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Attribute,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "attribute"),
 			childs: [
@@ -1226,7 +1222,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			]
 		},
 		{ // server-events
-			...include_block_declaration_definition,
+			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ServerEvents,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "server-events"),
 			childs: [
@@ -1234,7 +1230,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			]
 		},
 		{ // server-event
-			...include_block_declaration_definition,
+			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ServerEvent,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "server-event"),
 			childs: [
@@ -1242,7 +1238,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			]
 		},
 		{ // keys
-			...include_block_declaration_definition,
+			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Keys,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "keys"),
 			childs: [
@@ -1250,7 +1246,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			]
 		},
 		{ // key
-			...include_block_declaration_definition,
+			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Keys,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "key"),
 			childs: [
@@ -1258,7 +1254,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			]
 		},
 		{ // action
-			...include_block_declaration_definition,
+			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Action,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "action"),
 			childs: [
@@ -1292,7 +1288,8 @@ export const BACKEND_DEFINITION: Definitions = {
 				}
 			},
 			dev_comment_attribute
-		]
+		],
+		childs: []
 	}],
 	"merge-instruction": [merge_instruction_element],
 	"input": [{
@@ -1304,7 +1301,8 @@ export const BACKEND_DEFINITION: Definitions = {
 				name: "required",
 				detailLevel: ModelDetailLevel.Declarations
 			}
-		]
+		],
+		childs: []
 	}],
 	"output": [action_call_output_element],
 	"filters": [{
@@ -1372,24 +1370,31 @@ export const BACKEND_DEFINITION: Definitions = {
 	}],
 	"searchcolumn": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"searchcolumn-submatch": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"or": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"and": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"group": [{
 		attributes: [dev_comment_attribute],
+		childs: [],
 		isGroupingElement: true
 	}],
 	"in": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"full-text-query": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 };

@@ -105,6 +105,8 @@ export enum ModelElementSubTypes {
 	IncludeBlock_Keys = "IncludeBlockKeys",
 	IncludeBlock_Key = "IncludeBlockKey",
 	IncludeBlock_Action = "IncludeBlockAction",
+	IncludeBlock_View = "IncludeBlockView",
+	IncludeBlock_ObjectView = "IncludeBlockObjectView",
 }
 
 export enum ValidationLevels {
@@ -243,7 +245,7 @@ export type Definition = {
 	name?: (x: any) => string,
 	description?: string,
 	checkObsolete?: boolean,
-	childs?: ChildDefinition[] | ChildReference,
+	childs: ChildDefinition[],
 	attributes: ElementAttribute[],
 	type?: ModelElementTypes,
 	subtype?: ModelElementSubTypes,

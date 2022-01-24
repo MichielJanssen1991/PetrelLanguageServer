@@ -297,7 +297,8 @@ export const input_element: Definition = {
 		dev_ignore_modelcheck_justification_attribute,
 		dev_comment_attribute
 	],
-	};
+	childs: []
+};
 
 	export const include_blocks_element: Definition =
 	{
@@ -344,8 +345,8 @@ export const merge_instruction_element: Definition =
 				}
 			},
 			dev_comment_attribute
-		]
-
+		],
+		childs: []
 	};
 
 export const infoset_single_aggregate_query: Definition = 
@@ -447,7 +448,8 @@ export const infoset_aggregate_function: Definition =
 					}
 				]
 			}
-		]
+		],
+		childs: []
 	};
 export const backend_action_call_element: Definition =
 	{
@@ -595,9 +597,7 @@ export const model_condition_element: Definition =
 				autoadd: true
 			},
 		],
-		childs: {
-			matchFromParent: true
-		}
+		childs: []
 	};
 
 export const include_element: Definition =
@@ -709,7 +709,8 @@ export const include_element: Definition =
 				]
 			},
 			dev_comment_attribute
-		]
+		],
+		childs: []
 	};
 
 export const decorations_element: Definition = 
@@ -759,7 +760,8 @@ export const decoration_argument_element: Definition =
 			autoadd: true
 		},
 		dev_comment_attribute
-	]
+	],
+	childs: []
 };
 
 export const decorators_element: Definition = 
@@ -827,7 +829,8 @@ export const decorator_input_element: Definition =
 				]
 			}
 		},
-	]
+	],
+	childs: []
 };
 
 export const target_element: Definition = {
@@ -858,9 +861,7 @@ export const target_element: Definition = {
 			}
 		}
 	],
-	childs: {
-		matchElementFromAttribute: "meta-name"
-	}
+	childs: []
 };
 
 export const decorator_context_entity_element: Definition = 
@@ -892,10 +893,7 @@ export const decorator_context_entity_element: Definition =
 			}
 		}
 	],
-	childs: {
-		matchElementFromAttribute: "meta-name",
-		matchSecondaryElementFromAttribute: "meta-index"
-	}
+	childs: []
 };
 
 export const action_definition_argument_element: Definition = {
@@ -943,7 +941,8 @@ export const action_definition_argument_element: Definition = {
 				]
 			}
 		},
-	]
+	],
+	childs: []
 };
 
 export const view_argument_element: Definition = {
@@ -1032,7 +1031,8 @@ export const view_argument_element: Definition = {
 		dev_ignore_modelcheck_attribute,
 		dev_ignore_modelcheck_justification_attribute,
 		dev_comment_attribute
-	]
+	],
+	childs: []
 };
 
 export const action_argument_element: Definition = {
@@ -1088,7 +1088,8 @@ export const action_argument_element: Definition = {
 		dev_ignore_modelcheck_attribute,
 		dev_ignore_modelcheck_justification_attribute,
 		dev_comment_attribute
-	]
+	],
+	childs: []
 };
 
 export const action_call_output_element: Definition =
@@ -1144,7 +1145,25 @@ export const action_call_output_element: Definition =
 		dev_comment_attribute,
 		dev_ignore_modelcheck_attribute,
 		dev_ignore_modelcheck_justification_attribute
-	]
+	],
+	childs: []
+};
+
+export const include_block_declaration_definition: Definition = {
+	type: ModelElementTypes.IncludeBlock,
+	detailLevel: ModelDetailLevel.Declarations,
+	isSymbolDeclaration: true,
+	description: "A model fragment that is included by includes.",
+	attributes: [
+		dev_comment_attribute,
+		{
+			name: "name",
+			description: "Unique identifier",
+			required: true,
+			autoadd: true,
+		}
+	],
+	childs: []
 };
 
 export const search_attributes: ElementAttribute[] = 

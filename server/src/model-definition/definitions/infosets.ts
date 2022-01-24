@@ -434,7 +434,8 @@ export const INFOSET_DEFINITION: Definitions = {
 					]
 				},
 			},
-		]
+		],
+		childs: []
 	}],
 	"searchcolumn-submatch": [{
 		description: "A condition that matches an attribute with sub query results.",
@@ -486,11 +487,13 @@ export const INFOSET_DEFINITION: Definitions = {
 	}],
 	"or": [{
 		description: "The or-operator between search columns. Use the group element to specify brackets.",
-		attributes: [dev_comment_attribute]
+		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"and": [{
 		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted.",
-		attributes: [dev_comment_attribute]
+		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"group": [{
 		isGroupingElement:true,
@@ -566,7 +569,8 @@ export const INFOSET_DEFINITION: Definitions = {
 				description: "The free text string to query on. Logical operators like AND/OR or quotes are ignored. Multiple values separated by pipe are note supported.",
 				required: true
 			}
-		]
+		],
+		childs: []
 	}],
 	"query": [{
 		description: "A specific data query command.",
@@ -650,7 +654,8 @@ export const INFOSET_DEFINITION: Definitions = {
 					type: AttributeTypes.Numeric
 				}
 			},
-		]
+		],
+		childs: []
 	}],
 	"set-aggregate-query": [{
 		description: "Specifies an aggregate query that returns a set of aggregate result objects.",
@@ -767,7 +772,8 @@ export const INFOSET_DEFINITION: Definitions = {
 					]
 				}
 			},
-		]
+		],
+		childs: []
 	}],
 	"grouping": [{
 		description: "A grouping over sets of objects of a certain type.",
@@ -787,7 +793,8 @@ export const INFOSET_DEFINITION: Definitions = {
 				name: "attribute",
 				description: "Specifies a type attribute to use as grouping."
 			}
-		]
+		],
+		childs: []
 	}],
 	"variable": [{
 		description: "An infoset can be based on one or more variables. The values of the contained infoset variables will be collected into the infoset. You can assign a fixed value to a variable, base it upon an aggregation, or base it upon a query.",
@@ -955,10 +962,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: {
-			matchElementFromAttribute: "meta-name",
-			matchSecondaryElementFromAttribute: "meta-index"
-		}
+		childs: []
 	}],
 	"include": [include_element],
 	"model-condition": [model_condition_element],
@@ -985,7 +989,8 @@ export const INFOSET_DEFINITION: Definitions = {
 				}
 			},
 			dev_comment_attribute
-		]
+		],
+		childs: []
 	}],
 	"merge-instruction": [merge_instruction_element],
 	"select": [{
@@ -1081,7 +1086,8 @@ export const INFOSET_DEFINITION: Definitions = {
 				]
 			},
 			dev_comment_attribute
-		]
+		],
+		childs: []
 	}],
 	"delete": [{
 		description: "Delete a data object.",

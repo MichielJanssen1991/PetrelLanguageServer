@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption, Definition, ModelElementSubTypes } from '../symbolsAndReferences';
-import { isViewControl } from './other';
-import { action_argument_element, action_call_output_element, child_include, child_merge_instruction, child_model_condition, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
+import { isIncludeBlockOfType, isViewControl } from './other';
+import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_childs, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element, target_namespace_attribute, view_argument_element, view_group_attributes, view_group_childs } from './shared';
 
 const button_attributes: ElementAttribute[] =
 	[
@@ -149,9 +149,7 @@ const button_childs: ChildDefinition[] =
 		{
 			element: "format"
 		},
-		child_include,
-		child_merge_instruction,
-		child_model_condition
+		...default_childs
 	];
 
 const view_attribute_name_required: ElementAttribute = {
@@ -705,9 +703,7 @@ const default_view_childs: ChildDefinition[] = [
 		element: "server-events",
 		occurence: "once"
 	},
-	child_include,
-	child_merge_instruction,
-	child_model_condition
+	...default_childs
 ];
 
 // const default_view_unknown_childs: ChildDefinition[] = [
@@ -768,9 +764,7 @@ const frontend_events_base_definition: Definition = {
 			required: true,
 			occurence: "at-least-once"
 		},
-		child_include,
-		child_merge_instruction,
-		child_model_condition
+		...default_childs
 	]
 };
 
@@ -1489,6 +1483,112 @@ const empty_view_base_definition:Definition = { // Empty
 	]
 };
 
+const include_block_meta_options: AttributeOption[] = [
+	{
+		name: "module"
+	},
+	{
+		name: "view"
+	},
+	{
+		name: "ObjectView"
+	},
+	{
+		name: "attribute"
+	},
+	{
+		name: "group"
+	},
+	{
+		name: "button"
+	},
+	{
+		name: "action"
+	},
+	{
+		name: "tree"
+	},
+	{
+		name: "condition"
+	},
+	{
+		name: "node"
+	},
+	{
+		name: "events"
+	},
+	{
+		name: "event"
+	},
+	{
+		name: "server-events"
+	},
+	{
+		name: "server-event"
+	}
+];
+
+const module_childs: ChildDefinition[] = [
+	{
+		element: "module"
+	},
+	{
+		element: "include-blocks"
+	},
+	{
+		element: "include-block"
+	},
+	{
+		element: "toolbar"
+	},
+	{
+		element: "functions"
+	},
+	{
+		element: "function"
+	},
+	{
+		element: "tree"
+	},
+	{
+		element: "views"
+	},
+	{
+		element: "view"
+	},
+	{
+		element: "main-view"
+	},
+	...default_childs
+];
+
+const include_block_frontend_declaration_definition: Definition = {
+	...include_block_declaration_definition,
+	attributes: [
+		...include_block_declaration_definition.attributes,
+		{
+			name: "meta-name",
+			description: "For which element to apply rules.",
+			required: true,
+			autoadd: true,
+			type:
+			{
+				type: AttributeTypes.Enum,
+				options: include_block_meta_options
+			}
+		},
+		{
+			name: "meta-index",
+			description: "For which element to apply rules.",
+			type:
+			{
+				type: AttributeTypes.Enum,
+				options: include_block_meta_options
+			}
+		}		
+	]
+};
+
 export const FRONTEND_DEFINITION: Definitions = {
 	"view": [
 		{ // General (no control type)
@@ -1800,86 +1900,43 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "include-block"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"include-blocks": [include_blocks_element],
-	"include-block": [{
-		type: ModelElementTypes.IncludeBlock,
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		description: "A model fragment that is included by includes.",
-		attributes: [
-			{
-				name: "name",
-				description: "Unique identifier",
-				required: true,
-				autoadd: true,
-			},
-			{
-				name: "meta-name",
-				description: "For which element to apply rules.",
-				required: true,
-				autoadd: true,
-				type:
-				{
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "module"
-						},
-						{
-							name: "view"
-						},
-						{
-							name: "attribute"
-						},
-						{
-							name: "group"
-						},
-						{
-							name: "button"
-						},
-						{
-							name: "action"
-						},
-						{
-							name: "tree"
-						},
-						{
-							name: "condition"
-						},
-						{
-							name: "node"
-						},
-						{
-							name: "events"
-						},
-						{
-							name: "event"
-						},
-						{
-							name: "server-events"
-						},
-						{
-							name: "server-event"
-						}
-					]
-				}
-			},
-			{
-				name: "meta-index",
-				description: "For which element to apply rules."
-			},
-			dev_comment_attribute
-		],
-		childs: {
-			matchElementFromAttribute: "meta-name",
-			matchSecondaryElementFromAttribute: "meta-index"
-		}
-	}],
+	"include-block": [
+		{ // General
+			...include_block_frontend_declaration_definition,
+			matchCondition: (x)=>isIncludeBlockOfType(x, ""),
+		},
+		{ // module
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Module,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "module"),
+			childs: [
+				...module_childs
+			]
+		},
+		{ // objectview
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_ObjectView,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "ObjectView"),
+			childs: [
+				...objectview_base_definition.childs
+			]
+		},
+		{ // generic view
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_View,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "view"),
+			childs: [
+				...default_view_childs
+			]
+		},
+		
+		
+		
+	],
 	"include": [include_element],
 	"main-view": [{
 		description: "A page framework in which views are to be rendered.",
@@ -1910,9 +1967,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "style-variables",
 				occurence: "once"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"module": [{
@@ -1930,41 +1985,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_description_attribute,
 			dev_comment_attribute,
 		],
-		childs: [
-			{
-				element: "module"
-			},
-			{
-				element: "include-blocks"
-			},
-			{
-				element: "include-block"
-			},
-			{
-				element: "toolbar"
-			},
-			{
-				element: "functions"
-			},
-			{
-				element: "function"
-			},
-			{
-				element: "tree"
-			},
-			{
-				element: "views"
-			},
-			{
-				element: "view"
-			},
-			{
-				element: "main-view"
-			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
-		]
+		childs: module_childs
 	}],
 	"model-condition": [model_condition_element],
 	"trees": [{
@@ -1983,9 +2004,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "include-block"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"tree": [{
@@ -2020,9 +2039,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "node"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"node": [{
@@ -2086,9 +2103,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "view",
 				occurence: "once"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"toolbars": [{
@@ -2101,9 +2116,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "module"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"toolbar": [{
@@ -2169,9 +2182,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "dropdown"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"toolbarbutton": [{
@@ -2337,14 +2348,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "text"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"pagenumbers": [{
 		description: "Toolbar item for paged navigation.",
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"views": [{
 		description: "Used for grouping views.",
@@ -2363,9 +2373,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "include-blocks"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"argument": [
@@ -2431,9 +2439,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "server-event"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"server-event": [{
@@ -3374,9 +3380,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "copy-attribute" // TODO still in use?
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"group": [
@@ -3442,12 +3446,14 @@ export const FRONTEND_DEFINITION: Definitions = {
 					name: "value",
 					required: true
 				},
-			]
+			],
+			childs: []
 		},
 	],
 	"separator": [{
 		description: "Separates nodes by a horizontal space.",
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"tabber": [{
 		description: "A tabber control by which fields can be tabbed.",
@@ -3501,9 +3507,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				occurence: "at-least-once",
 				required: true
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"tab": [{
@@ -3598,9 +3602,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "view"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"titlebar": [{
@@ -3614,9 +3616,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "dropdown"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"dropdown": [{
@@ -3642,9 +3642,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "button",
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"menu": [{
@@ -3660,9 +3658,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "menudivider"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"menuitem": [{
@@ -3679,9 +3675,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "button"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"menuheader": [{
@@ -3697,14 +3691,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "button"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"menudivider": [{
 		description: "A menu divider that can be used to separate groups of menu items.",
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"text": [{
 		description: "Adds text.",
@@ -3718,7 +3711,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "appearance-class",
 				description: "A style class applied to the element."
 			},
-		]
+		],
+		childs: []
 	}],
 	"icon": [{
 		description: "Adds an icon.",
@@ -3731,7 +3725,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "bg-image",
 				description: "Path to a background image to use as icon."
 			},
-		]
+		],
+		childs: []
 	}],
 	"format": [{
 		description: "Defines a lay-out.",
@@ -3756,7 +3751,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "height",
 				description: "The height of the option images. The default value is 16px."
 			},
-		]
+		],
+		childs: []
 	}],
 	"action": [{
 		description: "An Action",
@@ -3930,9 +3926,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "button"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"output": [
@@ -3949,7 +3943,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				dev_ignore_modelcheck_attribute,
 				dev_ignore_modelcheck_justification_attribute,
 				dev_comment_attribute
-			]
+			],
+			childs: []
 		}
 	],
 	"input": [input_element],
@@ -4072,9 +4067,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "group"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"field": [{
@@ -4101,15 +4094,18 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "Determines if the field is got from the bound data.",
 				type: default_yes_no_attribute_type
 			}
-		]
+		],
+		childs: []
 	}],
 	"or": [{
 		description: "The or-operator between search columns. Use the group element to specify brackets.",
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"and": [{
 		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted.",
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"then": [{
 		description: "The actions in the then will only be executed if the conditions succeed.",
@@ -4121,9 +4117,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "condition"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"else": [{
@@ -4136,9 +4130,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "condition"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"option": [{
@@ -4155,7 +4147,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "If the option is initially visible.",
 				type: default_yes_no_attribute_type
 			},
-		]
+		],
+		childs: []
 	}],
 	"validations": [{
 		description: "This will allow validating the fields etc.",
@@ -4184,7 +4177,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "regular-expression",
 				description: "A regular expression to validate the value of the field."
 			},
-		]
+		],
+		childs: []
 	}],
 	"sort": [{
 		description: "Defines an ordering over a property of objects of a certain type. Multiple property orderings may be stacked.",
@@ -4210,7 +4204,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 					]
 				}
 			},
-		]
+		],
+		childs: []
 	}],
 	"list": [{
 		description: "Datatree list definition.",
@@ -4248,7 +4243,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "display-appearance",
 				description: ""
 			},
-		]
+		],
+		childs: []
 	}],
 	"attachments": [{
 		description: "A list of all attachments of the current object.",
@@ -4258,7 +4254,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "The appearance of the attachments."
 			},
 			dev_comment_attribute
-		]
+		],
+		childs: []
 	}],
 	"layout": [{
 		description: "",
@@ -4281,7 +4278,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "resizable",
 				description: "Possible values: 'yes', 'no' or some number. If set to 'yes' the user can resize portlets. If the value is a number, this will be the width/height ratio. E.g. ratio 2 will cause that the portlet's width is always twice as much as the height."
 			},
-		]
+		],
+		childs: []
 	}],
 	"column": [{
 		description: "",
@@ -4327,7 +4325,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "IconPath"
 			}
-		]
+		],
+		childs: []
 	}],
 	"design": [{
 		attributes: [
@@ -4345,7 +4344,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "If set to \"no\" only single selection is possible",
 				type: default_yes_no_attribute_type
 			},
-		]
+		],
+		childs: []
 	}],
 	"source": [{
 		attributes: [
@@ -4368,37 +4368,48 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "field"
 			},
-		]
+		],
+		childs: []
 	}],
 	"units": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"appointments": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"filters": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"filter": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"agenda-view": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"month-view": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"timeline-view": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"units-view": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"week-view": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"year-view": [{
 		attributes: [dev_comment_attribute],
+		childs: []
 	}],
 	"report-parameters": [{
 		description: "Parameters to pass to the report.",
@@ -4425,7 +4436,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "value",
 				description: "A constant value to pass instead of an argument."
 			}
-		]
+		],
+		childs: []
 	}],
 	"style-variables": [{
 		description: "Apply style variables to the view HTML element",
@@ -4491,9 +4503,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "action"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"resources": [{
@@ -4531,8 +4541,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 					]
 				}
 			}
-		]
-
+		],
+		childs: []
 	}],
 	"stylesheet": [{
 		description: "A stylesheet reference to include in the frontend.",
@@ -4557,7 +4567,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 					]
 				}
 			}
-		]
+		],
+		childs: []
 	}],
 	"search": [{
 		description: "Toolbar search field.",
@@ -4605,7 +4616,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "extend-width",
 				description: "The width of the search field in \"closed\" form."
 			},
-		]
+		],
+		childs: []
 	}],
 	"decorations": [decorations_element],
 	"decoration": [decoration_element],
