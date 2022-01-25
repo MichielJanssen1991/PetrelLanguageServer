@@ -735,7 +735,11 @@ export const decoration_element: Definition =
 		{
 			name: "name",
 			required: true,
-			autoadd: true
+			autoadd: true,
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Decorator
+			}
 		},
 		dev_comment_attribute
 	],
@@ -779,6 +783,8 @@ export const decorators_element: Definition =
 export const decorator_element: Definition = 
 {
 	type: ModelElementTypes.Decorator,
+	isSymbolDeclaration: true,
+	detailLevel: ModelDetailLevel.Declarations,
 	description: "Definition to decorate a target element with extra elements or attributes. It will always get a default argument, named \"TargetName\", which contains the name attribute of the element on which this decorator is applied.",
 	attributes: [
 		{
