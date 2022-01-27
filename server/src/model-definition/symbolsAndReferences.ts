@@ -152,8 +152,8 @@ export type ContextQualifiers = {
  */
 export interface IXmlNodeContext {
 	getCurrentXmlNode: () => XmlNode
-	getFirstParent: () => XmlNode|undefined,
-	getAncestor: (level: number) => XmlNode|undefined,
+	getFirstParent: () => XmlNode | undefined,
+	getAncestor: (level: number) => XmlNode | undefined,
 	hasParentTag: (name: string) => boolean
 }
 
@@ -178,10 +178,10 @@ export interface TreeNode {
 	uri: string,
 	isSymbolDeclaration: boolean,
 	children: (TreeNode | SymbolDeclaration)[],
-	attributes: Record<string, Attribute|Reference>,
+	attributes: Record<string, Attribute | Reference>,
 	comment?: string,
 	contextQualifiers: ContextQualifiers,
-	parent?:TreeNode
+	parent?: TreeNode
 }
 
 export interface Attribute {
@@ -269,7 +269,7 @@ export type Definition = {
 	contextQualifiers?: (nodeContext: IXmlNodeContext) => ContextQualifiers
 	// matchCondition and ancestor are used to distinguish same tag definitions with different ModelElementTypes (for example action call output or rule output)
 	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
-	ancestors?: ModelElementTypes[],
+	ancestors?: { type: ModelElementTypes, subtypes?: ModelElementSubTypes[] }[],
 	// isGroupingElement is used as a signal to the parser that the element can be skipped when looking for the parent (for example rule in a module within rules, module is a grouping element) 
 	isGroupingElement?: boolean
 }

@@ -771,14 +771,14 @@ const frontend_events_base_definition: Definition = {
 const view_declaration_definition: Partial<Definition> = {
 	type: ModelElementTypes.View,
 	detailLevel: ModelDetailLevel.Declarations,
-	ancestors: [ModelElementTypes.Views],
+	ancestors: [{type: ModelElementTypes.Views}],
 	isSymbolDeclaration: true,
 	prefixNameSpace: true
 };
 
 const subview_definition: Partial<Definition> = {
 	type: ModelElementTypes.SubView,
-	ancestors: [ModelElementTypes.SubView, ModelElementTypes.View, ModelElementTypes.ActionCall, ModelElementTypes.MainView, ModelElementTypes.Node]
+	ancestors: [{type: ModelElementTypes.SubView}, {type: ModelElementTypes.View}, {type: ModelElementTypes.ActionCall}, {type: ModelElementTypes.MainView}, {type: ModelElementTypes.Node}]
 };
 
 const objectview_base_definition: Definition = {
@@ -2993,52 +2993,52 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"events": [
 		{
 			type: ModelElementTypes.Events_Attribute,
-			ancestors: [ModelElementTypes.Attribute],
+			ancestors: [{type: ModelElementTypes.Attribute}],
 			...frontend_events_base_definition
 		},
 		{
 			type: ModelElementTypes.Events_Button,
-			ancestors: [ModelElementTypes.Button],
+			ancestors: [{type: ModelElementTypes.Button}],
 			...frontend_events_base_definition
 		},
 		{
 			type: ModelElementTypes.Events_Action,
-			ancestors: [ModelElementTypes.Action],
+			ancestors: [{type: ModelElementTypes.Action}],
 			...frontend_events_base_definition
 		},
 		{
 			type: ModelElementTypes.Events_ToolBarButton,
-			ancestors: [ModelElementTypes.ToolbarButton],
+			ancestors: [{type: ModelElementTypes.ToolbarButton}],
 			...frontend_events_base_definition
 		},
 		{
 			type: ModelElementTypes.Events_Group,
-			ancestors: [ModelElementTypes.Event_Group],
+			ancestors: [{type: ModelElementTypes.Event_Group}],
 			...frontend_events_base_definition
 		},
 		{
 			type: ModelElementTypes.Events_MenuItem,
-			ancestors: [ModelElementTypes.MenuItem],
+			ancestors: [{type: ModelElementTypes.MenuItem}],
 			...frontend_events_base_definition
 		},
 		{
 			type: ModelElementTypes.Events_Node,
-			ancestors: [ModelElementTypes.Node],
+			ancestors: [{type: ModelElementTypes.Node}],
 			...frontend_events_base_definition
 		},
 		{
 			type: ModelElementTypes.Events_Tab,
-			ancestors: [ModelElementTypes.Tab],
+			ancestors: [{type: ModelElementTypes.Tab}],
 			...frontend_events_base_definition
 		},
 		{
 			type: ModelElementTypes.Events_ToolBarButton,
-			ancestors: [ModelElementTypes.ToolbarButton],
+			ancestors: [{type: ModelElementTypes.ToolbarButton}],
 			...frontend_events_base_definition
 		},
 		{
 			type: ModelElementTypes.Events_View,
-			ancestors: [ModelElementTypes.View, ModelElementTypes.SubView],
+			ancestors: [{type: ModelElementTypes.View}, {type: ModelElementTypes.SubView} ],
 			...frontend_events_base_definition
 		},
 	],
@@ -3075,7 +3075,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"event": [
 		{
 			type: ModelElementTypes.Event_Attribute,
-			ancestors: [ModelElementTypes.Events_Attribute],
+			ancestors: [{type: ModelElementTypes.Events_Attribute}],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -3122,7 +3122,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event_Button,
-			ancestors: [ModelElementTypes.Events_Button],
+			ancestors: [{type: ModelElementTypes.Events_Button}],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -3153,7 +3153,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event_ToolBarButton,
-			ancestors: [ModelElementTypes.Events_ToolBarButton],
+			ancestors: [{type: ModelElementTypes.Events_ToolBarButton}],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -3184,7 +3184,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event_Node,
-			ancestors: [ModelElementTypes.Events_Node],
+			ancestors: [{type: ModelElementTypes.Events_Node}],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -3211,7 +3211,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event_Group,
-			ancestors: [ModelElementTypes.Events_Group],
+			ancestors: [{type: ModelElementTypes.Events_Group}],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -3242,7 +3242,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event_Tab,
-			ancestors: [ModelElementTypes.Events_Tab],
+			ancestors: [{type: ModelElementTypes.Events_Tab}],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -3273,7 +3273,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event_Action,
-			ancestors: [ModelElementTypes.Events_Action],
+			ancestors: [{type: ModelElementTypes.Events_Action}],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -3299,7 +3299,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event_MenuItem,
-			ancestors: [ModelElementTypes.Events_MenuItem],
+			ancestors: [{type: ModelElementTypes.Events_MenuItem}],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -3325,7 +3325,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		},
 		{
 			type: ModelElementTypes.Event_View,
-			ancestors: [ModelElementTypes.Events_View],
+			ancestors: [{type: ModelElementTypes.Events_View}],
 			description: "A specific event registration.",
 			attributes: [
 				{
@@ -3542,7 +3542,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"group": [
 		{
-			ancestors: [ModelElementTypes.View, ModelElementTypes.SubView],
+			ancestors: [{type: ModelElementTypes.View}, {type: ModelElementTypes.SubView}],
 			type: ModelElementTypes.Group,
 			subtype: ModelElementSubTypes.Group_View,
 			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
@@ -3550,7 +3550,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			childs: view_group_childs
 		},
 		{
-			ancestors: [ModelElementTypes.Condition],
+			ancestors: [{type: ModelElementTypes.Condition}],
 			type: ModelElementTypes.Group,
 			subtype: ModelElementSubTypes.Group_Condition,
 			description: "A group set, used to filter.",
@@ -3582,7 +3582,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			description: "A button or link.",
 			type: ModelElementTypes.Button,
-			ancestors: [ModelElementTypes.View, ModelElementTypes.TitleBar, ModelElementTypes.MenuItem, ModelElementTypes.Group],
+			ancestors: [{type: ModelElementTypes.View}, {type: ModelElementTypes.TitleBar}, {type: ModelElementTypes.MenuItem}, {type: ModelElementTypes.Group}],
 			isSymbolDeclaration: true,
 			attributes: button_attributes,
 			childs: button_childs
@@ -3590,7 +3590,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			description: "A message/question answer button",
 			type: ModelElementTypes.Button,
-			ancestors: [ModelElementTypes.ActionCall],
+			ancestors: [{type: ModelElementTypes.ActionCall}],
 			attributes: [
 				{
 					name: "name"
@@ -4065,7 +4065,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"output": [
 		action_call_output_element,
 		{
-			ancestors: [ModelElementTypes.Function],
+			ancestors: [{type: ModelElementTypes.Function}],
 			detailLevel: ModelDetailLevel.Declarations,
 			isSymbolDeclaration: true,
 			attributes: [

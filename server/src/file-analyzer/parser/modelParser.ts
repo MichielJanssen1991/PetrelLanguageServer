@@ -98,7 +98,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 
 		//Parse object for definition
 		if (definition) {
-			this.parser.enrichTagWithType(definition.type || ModelElementTypes.Unknown);
+			this.parser.enrichTagWithType(definition.type || ModelElementTypes.Unknown, definition.subtype);
 			object = this.parseNodeForDefinition(node, definition);
 			if (object) {
 				this.pushToParsedObjectStack(object, definition);

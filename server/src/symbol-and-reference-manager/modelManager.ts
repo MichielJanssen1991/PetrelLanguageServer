@@ -7,7 +7,7 @@ import { SymbolAndReferenceManager } from './symbolAndReferenceManager';
  */
 export class ModelManager extends SymbolAndReferenceManager {
 	public getChildrenOfType(object: TreeNode | SymbolDeclaration, type: ModelElementTypes): (TreeNode | SymbolDeclaration)[] {
-		const directChilren = object.children.filter(x => (x.type == type));
+		const directChildren = object.children.filter(x => (x.type == type));
 		const decoratorsOrIncludeBlocks = object.children.filter(
 			x => (x.type == ModelElementTypes.Decorator
 				|| x.type == ModelElementTypes.IncludeBlock)
@@ -18,7 +18,7 @@ export class ModelManager extends SymbolAndReferenceManager {
 			const decoratorsOrIncludeBlocks = decoratorOrIncludeBlockRef ? this.getReferencedObject(decoratorOrIncludeBlockRef) : undefined;
 			return decoratorsOrIncludeBlocks ? this.getChildrenOfType(decoratorsOrIncludeBlocks, type) : [];
 		});
-		return [...directChilren, ...decoratedChildren];
+		return [...directChildren, ...decoratedChildren];
 	}
 
 	public getActionArguments(actionCall: TreeNode) {
