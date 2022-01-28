@@ -112,6 +112,13 @@ export enum ModelElementSubTypes {
 	IncludeBlock_ViewContainer = "IncludeBlockViewContainer",
 	IncludeBlock_Group = "IncludeBlockGroup",
 	IncludeBlock_Button = "IncludeBlockButton",
+	IncludeBlock_Rule = "IncludeBlockRule",
+	IncludeBlock_If = "IncludeBlockIf",
+	IncludeBlock_Then = "IncludeBlockThen",
+	IncludeBlock_Else = "IncludeBlockElse",
+	IncludeBlock_ElseIf = "IncludeBlockElseIf",
+	IncludeBlock_Switch = "IncludeBlockSwitch",
+	IncludeBlock_Case = "IncludeBlockCase",
 
 	Target_View = "TargetView",
 	Target_ObjectView = "TargetObjectView",
@@ -121,6 +128,7 @@ export enum ModelElementSubTypes {
 	Target_Group = "TargetGroup",
 	Target_Button = "TargetButton",
 	Target_Attribute = "TargetAttribute",
+	Target_Type = "TargetType",
 }
 
 export enum ValidationLevels {

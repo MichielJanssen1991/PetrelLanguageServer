@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption, Definition, ModelElementSubTypes } from '../symbolsAndReferences';
 import { isIncludeBlockOfType, isViewControl } from './other';
-import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element, decorator_element, decorator_input_element, default_childs, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_declaration_definition, target_namespace_attribute, view_argument_element, view_group_attributes } from './shared';
+import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_definition, decorator_element, decorator_input_element, default_childs, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_declaration_definition, target_namespace_attribute, view_argument_element, view_group_attributes } from './shared';
 
 const button_attributes: ElementAttribute[] =
 	[
@@ -1480,10 +1480,7 @@ const empty_view_base_definition:Definition = { // Empty
 	]
 };
 
-const include_block_meta_options: AttributeOption[] = [
-	{
-		name: "module"
-	},
+const meta_name_options: AttributeOption[] = [
 	{
 		name: "view"
 	},
@@ -1500,10 +1497,17 @@ const include_block_meta_options: AttributeOption[] = [
 		name: "ViewContainer"
 	},
 	{
-		name: "attribute"
+		name: "group"
 	},
 	{
-		name: "group"
+		name: "attribute"
+	}
+];
+
+const include_block_meta_options: AttributeOption[] = [
+	...meta_name_options,
+	{
+		name: "module"
 	},
 	{
 		name: "button"
@@ -1576,6 +1580,9 @@ const view_group_childs: ChildDefinition[] =
 	},
 	{
 		element: "tabber"
+	},
+	{
+		element: "separator"
 	},
 	{
 		element: "button"
@@ -2114,33 +2121,27 @@ const target_element_definition: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: [
-					{
-						name: "view"
-					},
-					{
-						name: "ObjectView"
-					},
-					{
-						name: "ListView"
-					},
-					{
-						name: "TreeView"
-					},
-					{
-						name: "ViewContainer"
-					},
-					{
-						name: "group"
-					},
-					{
-						name: "attribute"
-					}
-				]
+				options: meta_name_options
 			}
 		}
 	],
 	childs: []
+};
+
+const decorator_context_entity_element: Definition = {
+	...decorator_context_entity_element_definition,
+	attributes: [
+		{
+			name: "meta-name",
+			description: "For which element to apply rules.",
+			required: true,
+			type:
+			{
+				type: AttributeTypes.Enum,
+				options: meta_name_options
+			}
+		}
+	]
 };
 
 export const FRONTEND_DEFINITION: Definitions = {
@@ -3542,7 +3543,17 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"group": [
 		{
-			ancestors: [{type: ModelElementTypes.View}, {type: ModelElementTypes.SubView}],
+			ancestors: [{
+				type: ModelElementTypes.View
+			}, {
+				type: ModelElementTypes.SubView
+			},
+			{
+				type: ModelElementTypes.IncludeBlock,
+				subtypes: [
+					ModelElementSubTypes.IncludeBlock_Group
+				]
+			}],
 			type: ModelElementTypes.Group,
 			subtype: ModelElementSubTypes.Group_View,
 			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
@@ -3582,7 +3593,29 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			description: "A button or link.",
 			type: ModelElementTypes.Button,
-			ancestors: [{type: ModelElementTypes.View}, {type: ModelElementTypes.TitleBar}, {type: ModelElementTypes.MenuItem}, {type: ModelElementTypes.Group}],
+			ancestors: [{
+				type: ModelElementTypes.View
+			}, 
+			{
+				type: ModelElementTypes.TitleBar
+			}, 
+			{
+				type: ModelElementTypes.MenuItem
+			}, 
+			{
+				type: ModelElementTypes.Group
+			},
+			{
+				type: ModelElementTypes.IncludeBlock,
+				subtypes: [
+					ModelElementSubTypes.IncludeBlock_View,
+					ModelElementSubTypes.IncludeBlock_ListView,
+					ModelElementSubTypes.IncludeBlock_ObjectView,
+					ModelElementSubTypes.IncludeBlock_ViewContainer,
+					ModelElementSubTypes.IncludeBlock_TreeView,
+					ModelElementSubTypes.IncludeBlock_Group,
+				]
+			}],
 			isSymbolDeclaration: true,
 			attributes: button_attributes,
 			childs: button_childs
@@ -3590,7 +3623,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			description: "A message/question answer button",
 			type: ModelElementTypes.Button,
-			ancestors: [{type: ModelElementTypes.ActionCall}],
+			ancestors: [{
+				type: ModelElementTypes.ActionCall
+			},
+			{
+				type: ModelElementTypes.IncludeBlock,
+				subtypes: [ModelElementSubTypes.IncludeBlock_Action]
+			}],
 			attributes: [
 				{
 					name: "name"

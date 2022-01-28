@@ -1,5 +1,5 @@
 import { NAMES } from '../constants';
-import { AttributeTypes, ElementAttribute, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType, ChildDefinition } from '../symbolsAndReferences';
+import { AttributeTypes, ElementAttribute, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType, ChildDefinition, ModelElementSubTypes } from '../symbolsAndReferences';
 
 export const default_yes_no_attribute_type: AttributeType =
 	{
@@ -848,35 +848,11 @@ export const target_declaration_definition: Definition = {
 	childs: []
 };
 
-export const decorator_context_entity_element: Definition = 
+export const decorator_context_entity_element_definition: Definition = 
 {
 	type: ModelElementTypes.DecoratorContextEntity,
 	description: "Some summary",
-	attributes: [
-		{
-			name: "meta-name",
-			description: "For which element to apply rules.",
-			required: true,
-			type:
-			{
-				type: AttributeTypes.Enum,
-				options: [
-					{
-						name: ModelElementTypes.Type
-					},
-					{
-						name: ModelElementTypes.View
-					},
-					{
-						name: ModelElementTypes.Group
-					},
-					{
-						name: ModelElementTypes.Attribute
-					}
-				]
-			}
-		}
-	],
+	attributes: [],
 	childs: []
 };
 
@@ -933,7 +909,25 @@ export const view_argument_element: Definition = {
 	description: "Filter arguments for the view or attribute.",
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
-	ancestors: [ModelElementTypes.View, ModelElementTypes.SubView, ModelElementTypes.Attribute, ModelElementTypes.IncludeBlock],
+	ancestors: [{
+		type: ModelElementTypes.View
+	},
+	{
+		type: ModelElementTypes.SubView
+	}, 
+	{
+		type: ModelElementTypes.Attribute
+	}, 
+	{
+		type: ModelElementTypes.IncludeBlock, 
+		subtypes: [
+			ModelElementSubTypes.IncludeBlock_View,
+			ModelElementSubTypes.IncludeBlock_ListView,
+			ModelElementSubTypes.IncludeBlock_ObjectView,
+			ModelElementSubTypes.IncludeBlock_ViewContainer,
+			ModelElementSubTypes.IncludeBlock_TreeView
+		]
+	}],
 	attributes: [
 		{
 			name: NAMES.ATTRIBUTE_REMOTENAME,
@@ -1023,7 +1017,13 @@ export const action_argument_element: Definition = {
 	description: "An argument to pass to the action.",
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
-	ancestors: [ModelElementTypes.ActionCall],
+	ancestors: [{
+		type: ModelElementTypes.ActionCall
+	},
+	{
+		type: ModelElementTypes.IncludeBlock,
+		subtypes: [ModelElementSubTypes.IncludeBlock_Action]
+	}],
 	matchCondition: (nodeContext) => !isViewArgument(nodeContext),
 	attributes: [
 		{
@@ -1079,7 +1079,13 @@ export const action_argument_element: Definition = {
 export const action_call_output_element: Definition =
 {
 	description: "Output of the action.",
-	ancestors: [ModelElementTypes.ActionCall],
+	ancestors: [{
+		type: ModelElementTypes.ActionCall
+	},
+	{
+		type: ModelElementTypes.IncludeBlock,
+		subtypes: [ModelElementSubTypes.IncludeBlock_Action]
+	}],
 	type: ModelElementTypes.ActionCallOutput,
 	detailLevel: ModelDetailLevel.SubReferences,
 	attributes:[
