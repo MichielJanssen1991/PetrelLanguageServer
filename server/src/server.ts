@@ -7,7 +7,8 @@ import {
 	CompletionItem,
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
-	InitializeResult
+	InitializeResult,
+	DocumentSymbolParams
 } from 'vscode-languageserver/node';
 
 import PetrelLanguageServer from './petrelLanguageServer';
@@ -54,7 +55,8 @@ connection.onInitialize(async (params: InitializeParams) => {
 				triggerCharacters: ['#', '@']
 			},
 			definitionProvider: true,
-			referencesProvider: true
+			referencesProvider: true,
+			documentSymbolProvider: true
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -87,19 +89,23 @@ connection.onInitialized(() => {
 });
 
 connection.onCompletion((params: TextDocumentPositionParams): CompletionItem[] => {
-		return languageServer.onCompletion(params);
+	return languageServer.onCompletion(params);
 });
 
 connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
 	return languageServer.onCompletionResolve(item);
 });
 
-connection.onDefinition((params: TextDocumentPositionParams)=>{
+connection.onDefinition((params: TextDocumentPositionParams) => {
 	return languageServer.onDefinition(params);
 });
 
-connection.onReferences((params: TextDocumentPositionParams)=>{
+connection.onReferences((params: TextDocumentPositionParams) => {
 	return languageServer.onReference(params);
+});
+
+connection.onDocumentSymbol((params: DocumentSymbolParams) => {
+	return languageServer.onDocumentSymbol(params);
 });
 
 // Listen on the connection

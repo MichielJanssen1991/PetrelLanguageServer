@@ -1,11 +1,11 @@
 //VSCode languageserver
-import { TextDocuments, Diagnostic, CompletionItem, TextDocumentPositionParams, LocationLink, Location } from 'vscode-languageserver/node';
+import { TextDocuments, Diagnostic, CompletionItem, TextDocumentPositionParams, LocationLink, Location, DocumentSymbolParams, DocumentSymbol, SymbolKind } from 'vscode-languageserver/node';
 import * as LSP from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
-import { ModelDetailLevel, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
+import { ModelDetailLevel, Reference, SymbolDeclaration, TreeNode } from './model-definition/symbolsAndReferences';
 import { CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
 
@@ -176,6 +176,23 @@ export default class PetrelLanguageServer {
 
 	public async getSymbolDefinitionLocationLinks(symbols: SymbolDeclaration[]): Promise<LocationLink[]> {
 		return symbols.map((def) => this.symbolDefinitionToLocationLink(def));
+	}
+
+	public async onDocumentSymbol(params: DocumentSymbolParams): Promise<DocumentSymbol[]> {
+		const uri = params.textDocument.uri;
+		const tree = this.modelManager.getTreeForFile(uri);
+		return [this.mapNodesToDocumentSymbols(tree)];
+	}
+
+	private mapNodesToDocumentSymbols(node: TreeNode | SymbolDeclaration): DocumentSymbol {
+		const documentSymbol: DocumentSymbol = {
+			name: (node as SymbolDeclaration).name ? `${node.tag}:${(node as SymbolDeclaration).name}` : node.tag,
+			kind: SymbolKind.Object,
+			range: node.range,
+			selectionRange: node.range,
+			children: node.children.map(child => this.mapNodesToDocumentSymbols(child))
+		};
+		return documentSymbol;
 	}
 
 	private logRequest({ request, params, context }: {
