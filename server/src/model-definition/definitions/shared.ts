@@ -1,5 +1,5 @@
 import { NAMES } from '../constants';
-import { AttributeTypes, ElementAttribute, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType, ChildDefinition } from '../symbolsAndReferences';
+import { AttributeTypes, ElementAttribute, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType, ChildDefinition, ModelElementSubTypes } from '../symbolsAndReferences';
 
 export const default_yes_no_attribute_type: AttributeType =
 	{
@@ -297,7 +297,8 @@ export const input_element: Definition = {
 		dev_ignore_modelcheck_justification_attribute,
 		dev_comment_attribute
 	],
-	};
+	childs: []
+};
 
 	export const include_blocks_element: Definition =
 	{
@@ -344,8 +345,8 @@ export const merge_instruction_element: Definition =
 				}
 			},
 			dev_comment_attribute
-		]
-
+		],
+		childs: []
 	};
 
 export const infoset_single_aggregate_query: Definition = 
@@ -447,7 +448,8 @@ export const infoset_aggregate_function: Definition =
 					}
 				]
 			}
-		]
+		],
+		childs: []
 	};
 export const backend_action_call_element: Definition =
 	{
@@ -595,9 +597,7 @@ export const model_condition_element: Definition =
 				autoadd: true
 			},
 		],
-		childs: {
-			matchFromParent: true
-		}
+		childs: []
 	};
 
 export const include_element: Definition =
@@ -709,7 +709,8 @@ export const include_element: Definition =
 				]
 			},
 			dev_comment_attribute
-		]
+		],
+		childs: []
 	};
 
 export const decorations_element: Definition = 
@@ -734,7 +735,11 @@ export const decoration_element: Definition =
 		{
 			name: "name",
 			required: true,
-			autoadd: true
+			autoadd: true,
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Decorator
+			}
 		},
 		dev_comment_attribute
 	],
@@ -759,7 +764,8 @@ export const decoration_argument_element: Definition =
 			autoadd: true
 		},
 		dev_comment_attribute
-	]
+	],
+	childs: []
 };
 
 export const decorators_element: Definition = 
@@ -777,6 +783,8 @@ export const decorators_element: Definition =
 export const decorator_element: Definition = 
 {
 	type: ModelElementTypes.Decorator,
+	isSymbolDeclaration: true,
+	detailLevel: ModelDetailLevel.Declarations,
 	description: "Definition to decorate a target element with extra elements or attributes. It will always get a default argument, named \"TargetName\", which contains the name attribute of the element on which this decorator is applied.",
 	attributes: [
 		{
@@ -827,75 +835,25 @@ export const decorator_input_element: Definition =
 				]
 			}
 		},
-	]
+	],
+	childs: []
 };
 
-export const target_element: Definition = {
+export const target_declaration_definition: Definition = {
 	type: ModelElementTypes.Target,
 	description: "This element is mandatory and is a 'placeholder' for the element on which the decorator is applied. It can be extended with attributes and elements. Elements outside this element will occur outside the target element also.",
 	attributes: [
-		{
-			name: "meta-name",
-			description: "For which element to apply rules.",
-			required: true,
-			type:
-			{
-				type: AttributeTypes.Enum,
-				options: [
-					{
-						name: "type"
-					},
-					{
-						name: "view"
-					},
-					{
-						name: "group"
-					},
-					{
-						name: "attribute"
-					}
-				]
-			}
-		}
+		dev_comment_attribute
 	],
-	childs: {
-		matchElementFromAttribute: "meta-name"
-	}
+	childs: []
 };
 
-export const decorator_context_entity_element: Definition = 
+export const decorator_context_entity_element_definition: Definition = 
 {
 	type: ModelElementTypes.DecoratorContextEntity,
 	description: "Some summary",
-	attributes: [
-		{
-			name: "meta-name",
-			description: "For which element to apply rules.",
-			required: true,
-			type:
-			{
-				type: AttributeTypes.Enum,
-				options: [
-					{
-						name: ModelElementTypes.Type
-					},
-					{
-						name: ModelElementTypes.View
-					},
-					{
-						name: ModelElementTypes.Group
-					},
-					{
-						name: ModelElementTypes.Attribute
-					}
-				]
-			}
-		}
-	],
-	childs: {
-		matchElementFromAttribute: "meta-name",
-		matchSecondaryElementFromAttribute: "meta-index"
-	}
+	attributes: [],
+	childs: []
 };
 
 export const action_definition_argument_element: Definition = {
@@ -943,14 +901,33 @@ export const action_definition_argument_element: Definition = {
 				]
 			}
 		},
-	]
+	],
+	childs: []
 };
 
 export const view_argument_element: Definition = {
 	description: "Filter arguments for the view or attribute.",
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
-	ancestors: [ModelElementTypes.View, ModelElementTypes.SubView, ModelElementTypes.Attribute, ModelElementTypes.IncludeBlock],
+	ancestors: [{
+		type: ModelElementTypes.View
+	},
+	{
+		type: ModelElementTypes.SubView
+	}, 
+	{
+		type: ModelElementTypes.Attribute
+	}, 
+	{
+		type: ModelElementTypes.IncludeBlock, 
+		subtypes: [
+			ModelElementSubTypes.IncludeBlock_View,
+			ModelElementSubTypes.IncludeBlock_ListView,
+			ModelElementSubTypes.IncludeBlock_ObjectView,
+			ModelElementSubTypes.IncludeBlock_ViewContainer,
+			ModelElementSubTypes.IncludeBlock_TreeView
+		]
+	}],
 	attributes: [
 		{
 			name: NAMES.ATTRIBUTE_REMOTENAME,
@@ -1032,14 +1009,21 @@ export const view_argument_element: Definition = {
 		dev_ignore_modelcheck_attribute,
 		dev_ignore_modelcheck_justification_attribute,
 		dev_comment_attribute
-	]
+	],
+	childs: []
 };
 
 export const action_argument_element: Definition = {
 	description: "An argument to pass to the action.",
 	type: ModelElementTypes.Argument,
 	detailLevel: ModelDetailLevel.SubReferences,
-	ancestors: [ModelElementTypes.ActionCall],
+	ancestors: [{
+		type: ModelElementTypes.ActionCall
+	},
+	{
+		type: ModelElementTypes.IncludeBlock,
+		subtypes: [ModelElementSubTypes.IncludeBlock_Action]
+	}],
 	matchCondition: (nodeContext) => !isViewArgument(nodeContext),
 	attributes: [
 		{
@@ -1088,13 +1072,20 @@ export const action_argument_element: Definition = {
 		dev_ignore_modelcheck_attribute,
 		dev_ignore_modelcheck_justification_attribute,
 		dev_comment_attribute
-	]
+	],
+	childs: []
 };
 
 export const action_call_output_element: Definition =
 {
 	description: "Output of the action.",
-	ancestors: [ModelElementTypes.ActionCall],
+	ancestors: [{
+		type: ModelElementTypes.ActionCall
+	},
+	{
+		type: ModelElementTypes.IncludeBlock,
+		subtypes: [ModelElementSubTypes.IncludeBlock_Action]
+	}],
 	type: ModelElementTypes.ActionCallOutput,
 	detailLevel: ModelDetailLevel.SubReferences,
 	attributes:[
@@ -1144,7 +1135,25 @@ export const action_call_output_element: Definition =
 		dev_comment_attribute,
 		dev_ignore_modelcheck_attribute,
 		dev_ignore_modelcheck_justification_attribute
-	]
+	],
+	childs: []
+};
+
+export const include_block_declaration_definition: Definition = {
+	type: ModelElementTypes.IncludeBlock,
+	detailLevel: ModelDetailLevel.Declarations,
+	isSymbolDeclaration: true,
+	description: "A model fragment that is included by includes.",
+	attributes: [
+		dev_comment_attribute,
+		{
+			name: "name",
+			description: "Unique identifier",
+			required: true,
+			autoadd: true,
+		}
+	],
+	childs: []
 };
 
 export const search_attributes: ElementAttribute[] = 
@@ -1358,34 +1367,6 @@ export const view_group_attributes: ElementAttribute[] =
 	dev_comment_attribute
 ];
 
-export const view_group_childs: ChildDefinition[] =
-[
-	{
-		element: "group"
-	},
-	{
-		element: "attribute"
-	},
-	{
-		element: "events"
-	},
-	{
-		element: "view"
-	},
-	{
-		element: "tabber"
-	},
-	{
-		element: "button"
-	},
-	{
-		element: "decorations"
-	},
-	child_include,
-	child_merge_instruction,
-	child_model_condition
-];
-
 export const search_childs: ChildDefinition[] = 
 [
 	{
@@ -1409,9 +1390,7 @@ export const search_childs: ChildDefinition[] =
 	{
 		element: "full-text-query"
 	},
-	child_include,
-	child_merge_instruction,
-	child_model_condition
+	...default_childs
 ];
 
 export const event_childs: ChildDefinition[] = 
@@ -1427,9 +1406,7 @@ export const event_childs: ChildDefinition[] =
 		obsolete: true,
 		obsoleteMessage: "Place include-block on a location where all include-blocks are grouped"
 	},
-	child_include,
-	child_merge_instruction,
-	child_model_condition
+	...default_childs
 ];
 
 export function isViewArgument(nodeContext: IXmlNodeContext): boolean {

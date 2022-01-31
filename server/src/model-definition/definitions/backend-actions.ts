@@ -454,7 +454,8 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 				name: "value",
 			},
 			dev_comment_attribute
-		]
+		],
+		childs: []
 	}],
 	"inherit": [{
 		description: "Inherits at attribute-level (to use attribute types)",
@@ -480,13 +481,16 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	}],
 	"xml-rules": [{	// TODO check with platform if it's still in use
 		description: "XML Modeler rules additions.",
-		attributes: [dev_comment_attribute]
+		attributes: [dev_comment_attribute],
+		childs: []
 	}],	
 	"custom-rule": [{
-		attributes: [dev_comment_attribute]
+		attributes: [dev_comment_attribute],
+		childs: []
 	}],	// no documentation available TODO check with platform if it's still in use
 	"variable": [{
-		attributes: [dev_comment_attribute]
+		attributes: [dev_comment_attribute],
+		childs: []
 		// only useful for modeler
 	}],
 

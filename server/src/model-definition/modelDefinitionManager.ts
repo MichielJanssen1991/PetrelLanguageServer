@@ -45,7 +45,7 @@ export class ModelDefinitionManager {
 		switch (definitionsForTag.length) {
 			case 0: { return; }
 			case 1: { return definitionsForTag[0]; }
-			default: { return definitionsForTag.find(def => this.conditionAndAncestorMatches(modelFileContext, def, nodeContext));	}
+			default: { return definitionsForTag.find(def => this.conditionAndAncestorMatches(modelFileContext, def, nodeContext)); }
 		}
 	}
 
@@ -54,8 +54,15 @@ export class ModelDefinitionManager {
 			? def.matchCondition(nodeContext)
 			: true;
 		//TODO: Maybe this condition should be improved to allow for ancestors instead of parents. Or the name should be changed to parent
-		const ancestorOk = def.ancestors ? def.ancestors.includes(this.getFirstNonGroupingElementAncestor(modelFileContext, nodeContext)?.type||ModelElementTypes.Unknown) : true;
+		const ancestor = this.getFirstNonGroupingElementAncestor(modelFileContext, nodeContext);
+		const ancestorOk = def.ancestors ? def.ancestors.some(ancestorDef => this.ancestorMatches(ancestorDef, ancestor)) : true;
 		return matchConditionOk && ancestorOk;
+	}
+
+	private ancestorMatches(ancestorsDef: any, ancestor?: XmlNode):boolean {
+		const ancestorOk = ancestor?.type == ancestorsDef.type || ModelElementTypes.Unknown
+			&& (ancestorsDef.subtypes?ancestorsDef.subtypes.includes(ancestor?.subtype): true);
+		return ancestorOk;
 	}
 
 	private getFirstNonGroupingElementAncestor(modelFileContext: ModelFileContext, nodeContext: IXmlNodeContext, ancestorIndex = 1): XmlNode | undefined {
@@ -94,13 +101,13 @@ export class ModelDefinitionManager {
 		switch (definitionsForTag.length) {
 			case 0: { return; }
 			case 1: { return definitionsForTag[0]; }
-			default: { return definitionsForTag.find(def => this.tagAndTypeMatches(def, type, subtype));	}
+			default: { return definitionsForTag.find(def => this.tagAndTypeMatches(def, type, subtype)); }
 		}
 	}
 
 	private tagAndTypeMatches(def: Definition, type: ModelElementTypes, subtype?: ModelElementSubTypes): boolean {
 		const typeMatches = (def.type == type) || type == ModelElementTypes.All;
-		const subTypeMatchesOrEmpty = (subtype== undefined) || (def.subtype == subtype) || subtype == ModelElementSubTypes.All;
+		const subTypeMatchesOrEmpty = (subtype == undefined) || (def.subtype == subtype) || subtype == ModelElementSubTypes.All;
 		return typeMatches && subTypeMatchesOrEmpty;
 	}
 }
