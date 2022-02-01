@@ -60,7 +60,7 @@ export class ModelDefinitionManager {
 	}
 
 	private ancestorMatches(ancestorsDef: any, ancestor?: XmlNode):boolean {
-		const ancestorOk = ancestor?.type == ancestorsDef.type || ModelElementTypes.Unknown
+		const ancestorOk = ancestor?.type == (ancestorsDef.type || ModelElementTypes.Unknown)
 			&& (ancestorsDef.subtypes?ancestorsDef.subtypes.includes(ancestor?.subtype): true);
 		return ancestorOk;
 	}
