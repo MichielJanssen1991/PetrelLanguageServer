@@ -1,11 +1,11 @@
 //VSCode languageserver
-import { TextDocuments, Diagnostic, CompletionItem, TextDocumentPositionParams, LocationLink, Location, DocumentSymbolParams, DocumentSymbol, SymbolKind } from 'vscode-languageserver/node';
+import { TextDocuments, Diagnostic, CompletionItem, TextDocumentPositionParams, LocationLink, Location, DocumentSymbolParams, DocumentSymbol } from 'vscode-languageserver/node';
 import * as LSP from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
-import { ModelDetailLevel, Reference, SymbolDeclaration, TreeNode } from './model-definition/symbolsAndReferences';
+import { ModelDetailLevel, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
 import { CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
 
@@ -16,6 +16,7 @@ import path = require('path');
 import { ModelManager } from './symbol-and-reference-manager/modelManager';
 import { ModelDefinitionManager } from './model-definition/modelDefinitionManager';
 import { CompletionContext } from './completion/completionContext';
+import { DocumentSymbolProvider } from './document-symbols/documentSymbolProvider';
 
 interface DocumentSettings {
 	maxNumberOfProblems: number;
@@ -29,6 +30,7 @@ export default class PetrelLanguageServer {
 	private modelManager: ModelManager;
 	private modelDefinitionManager: ModelDefinitionManager;
 	private completionProvider: CompletionProvider;
+	private documentSymbolProvider: DocumentSymbolProvider;
 	private modelChecker: ModelChecker;
 	private documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 	// The global settings, used when the `workspace/configuration` request is not supported by the client.
@@ -38,6 +40,7 @@ export default class PetrelLanguageServer {
 	constructor(connection: LSP._Connection) {
 		this.modelDefinitionManager = new ModelDefinitionManager();
 		this.modelManager = new ModelManager();
+		this.documentSymbolProvider = new DocumentSymbolProvider(this.modelManager);
 		this.analyzer = new Analyzer(this.modelManager, this.modelDefinitionManager);
 		this.modelChecker = new ModelChecker(this.modelManager, this.modelDefinitionManager);
 		this.completionProvider = new CompletionProvider(this.modelManager, this.modelDefinitionManager);
@@ -180,20 +183,9 @@ export default class PetrelLanguageServer {
 
 	public async onDocumentSymbol(params: DocumentSymbolParams): Promise<DocumentSymbol[]> {
 		const uri = params.textDocument.uri;
-		const tree = this.modelManager.getTreeForFile(uri);
-		return [this.mapNodesToDocumentSymbols(tree)];
+		return this.documentSymbolProvider.getDocumentSymbolsForFile(uri);		
 	}
 
-	private mapNodesToDocumentSymbols(node: TreeNode | SymbolDeclaration): DocumentSymbol {
-		const documentSymbol: DocumentSymbol = {
-			name: (node as SymbolDeclaration).name ? `${node.tag}:${(node as SymbolDeclaration).name}` : node.tag,
-			kind: SymbolKind.Object,
-			range: node.range,
-			selectionRange: node.range,
-			children: node.children.map(child => this.mapNodesToDocumentSymbols(child))
-		};
-		return documentSymbol;
-	}
 
 	private logRequest({ request, params, context }: {
 		request: string

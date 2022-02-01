@@ -12,6 +12,7 @@ export const NAMES = {
 	ATTRIBUTE_INFOSET: "infoset-name",
 	ATTRIBUTE_ONERRORRULE: "onerror",
 	ATTRIBUTE_TYPE: "type",
+	ATTRIBUTE_TARGETNAMESPACE: "target-namespace",
 	ATTRIBUTE_LOCALNAME: "local-name",
 	ATTRIBUTE_REMOTENAME: "remote-name",
 	ATTRIBUTE_REQUIRED: "required",

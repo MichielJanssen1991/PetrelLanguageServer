@@ -209,9 +209,7 @@ export interface Reference extends Attribute {
 export interface SymbolDeclaration extends TreeNode {
 	isSymbolDeclaration: true,
 	name: string,
-	identifier: string
 }
-
 
 export function newReference(name: string, value: string, type: ModelElementTypes, range: LSP.Range, fullRange: LSP.Range, uri: string): Reference {
 	return {
@@ -245,7 +243,6 @@ export function newSymbolDeclaration(name: string, tag: string, type: ModelEleme
 		type,
 		subtype,
 		tag,
-		identifier: objectIdentifier(name, type, range),
 		range,
 		fullRange: LSP.Range.create(range.start, range.end),
 		uri,
@@ -255,11 +252,6 @@ export function newSymbolDeclaration(name: string, tag: string, type: ModelEleme
 		isSymbolDeclaration: true
 	};
 }
-
-export function objectIdentifier(name: string, type: ModelElementTypes, range: LSP.Range) {
-	return `${type}:${name}:${range.start.line}`;
-}
-
 
 export type Definitions = Record<string, Definition[]>
 

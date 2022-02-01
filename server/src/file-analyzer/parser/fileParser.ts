@@ -13,7 +13,7 @@ export abstract class FileParser extends DiagnosticsCollection {
 		super();
 		this.uri = uri;
 		this.detailLevel = detailLevel;
-		const rootNode = newTreeNode("document", ModelElementTypes.Unknown, LSP.Range.create({ character: 0, line: 0 }, { character: 0, line: 0 }), uri);
+		const rootNode = newTreeNode("document", ModelElementTypes.Document, LSP.Range.create({ character: 0, line: 0 }, { character: 0, line: 0 }), uri);
 		this.results = { problems: [], tree: rootNode };
 	}
 
