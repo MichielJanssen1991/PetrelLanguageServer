@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'url';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	createConnection,
 	ProposedFeatures,
@@ -8,7 +9,8 @@ import {
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
 	InitializeResult,
-	DocumentSymbolParams
+	DocumentSymbolParams,
+	TextDocuments
 } from 'vscode-languageserver/node';
 
 import PetrelLanguageServer from './petrelLanguageServer';
@@ -17,9 +19,10 @@ import PetrelLanguageServer from './petrelLanguageServer';
 // Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
 
+const documents = new TextDocuments(TextDocument);
+
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
-// let hasDiagnosticRelatedInformationCapability = false;
 
 let languageServer: PetrelLanguageServer;
 let workspaceRoot: string | undefined;
@@ -40,22 +43,19 @@ connection.onInitialize(async (params: InitializeParams) => {
 	hasWorkspaceFolderCapability = !!(
 		capabilities.workspace && !!capabilities.workspace.workspaceFolders
 	);
-	// hasDiagnosticRelatedInformationCapability = !!(
-	// 	capabilities.textDocument &&
-	// 	capabilities.textDocument.publishDiagnostics &&
-	// 	capabilities.textDocument.publishDiagnostics.relatedInformation
-	// );
 
 	const result: InitializeResult = {
 		capabilities: {
 			textDocumentSync: TextDocumentSyncKind.Incremental,
 			// Tell the client that this server supports code completion.
 			completionProvider: {
-				resolveProvider: true,
-				triggerCharacters: ['#', '@']
+				resolveProvider: true
 			},
+			// Tell the client that this server supports go to definition.
 			definitionProvider: true,
+			// Tell the client that this server supports find references
 			referencesProvider: true,
+			// Tell the client that this server supports document symbols for the document outline
 			documentSymbolProvider: true
 		}
 	};
@@ -67,10 +67,10 @@ connection.onInitialize(async (params: InitializeParams) => {
 		};
 	}
 	if (workspaceRoot) {
-		languageServer = await PetrelLanguageServer.fromRoot(connection, workspaceRoot);
+		languageServer = await PetrelLanguageServer.fromRoot(connection, documents, workspaceRoot);
 	}
 	else {
-		languageServer = new PetrelLanguageServer(connection);
+		languageServer = new PetrelLanguageServer(connection, documents);
 	}
 	return result;
 });
@@ -107,6 +107,10 @@ connection.onReferences((params: TextDocumentPositionParams) => {
 connection.onDocumentSymbol((params: DocumentSymbolParams) => {
 	return languageServer.onDocumentSymbol(params);
 });
+
+// Make the text document manager listen on the connection
+// for open, change and close text document events
+documents.listen(connection);
 
 // Listen on the connection
 connection.listen();

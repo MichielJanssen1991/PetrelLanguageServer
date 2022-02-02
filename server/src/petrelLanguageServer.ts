@@ -1,11 +1,11 @@
 //VSCode languageserver
-import { TextDocuments, Diagnostic, CompletionItem, TextDocumentPositionParams, LocationLink, Location, DocumentSymbolParams, DocumentSymbol } from 'vscode-languageserver/node';
+import { TextDocuments, Diagnostic, CompletionItem, TextDocumentPositionParams, DocumentSymbolParams, DocumentSymbol } from 'vscode-languageserver/node';
 import * as LSP from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
-import { ModelDetailLevel, Reference, SymbolDeclaration } from './model-definition/symbolsAndReferences';
+import { ModelDetailLevel } from './model-definition/symbolsAndReferences';
 import { CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
 
@@ -17,6 +17,7 @@ import { ModelManager } from './symbol-and-reference-manager/modelManager';
 import { ModelDefinitionManager } from './model-definition/modelDefinitionManager';
 import { CompletionContext } from './completion/completionContext';
 import { DocumentSymbolProvider } from './document-symbols/documentSymbolProvider';
+import { DefinitionAndReferenceProvider } from './on-definition-or-reference/DefinitionAndReferenceProvider';
 
 interface DocumentSettings {
 	maxNumberOfProblems: number;
@@ -25,48 +26,52 @@ interface DocumentSettings {
 }
 
 export default class PetrelLanguageServer {
-	private analyzer: Analyzer;
+	//Injected dependencies
 	private connection: LSP._Connection;
+	private documents: TextDocuments<TextDocument>;
+
+	// Sub components of the language server
+	private analyzer: Analyzer;
 	private modelManager: ModelManager;
 	private modelDefinitionManager: ModelDefinitionManager;
 	private completionProvider: CompletionProvider;
 	private documentSymbolProvider: DocumentSymbolProvider;
 	private modelChecker: ModelChecker;
-	private documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
-	// The global settings, used when the `workspace/configuration` request is not supported by the client.
+	private definitionAndReferenceProvider: DefinitionAndReferenceProvider
+
+	// Initialize default settings
 	private static defaultSettings: DocumentSettings = { maxNumberOfProblems: 10000, skipFolders: [], skipFoldersForChecks: [] };
 	private settings: DocumentSettings = PetrelLanguageServer.defaultSettings;
 
-	constructor(connection: LSP._Connection) {
+	constructor(connection: LSP._Connection, documents: TextDocuments<TextDocument>) {
+		//Injected dependencies
+		this.connection = connection;
+		this.documents = documents;
+
+		//Initialize various components and inject
 		this.modelDefinitionManager = new ModelDefinitionManager();
 		this.modelManager = new ModelManager();
 		this.documentSymbolProvider = new DocumentSymbolProvider(this.modelManager);
 		this.analyzer = new Analyzer(this.modelManager, this.modelDefinitionManager);
 		this.modelChecker = new ModelChecker(this.modelManager, this.modelDefinitionManager);
 		this.completionProvider = new CompletionProvider(this.modelManager, this.modelDefinitionManager);
-		this.connection = connection;
-
-		// Make the text document manager listen on the connection
-		// for open, change and close text document events
-		this.documents.listen(this.connection);
+		this.definitionAndReferenceProvider = new DefinitionAndReferenceProvider(this.modelManager);
 
 		// The content of a text document has changed. This event is emitted
 		// when the text document first opened or when its content has changed.
 		this.documents.onDidChangeContent(change => {
 			this.onDocumentChangeContent(change);
 		});
-
 	}
 
-	public static async fromRoot(connection: LSP._Connection, rootPath: string): Promise<PetrelLanguageServer> {
-		const languageServer = new PetrelLanguageServer(connection);
-		languageServer.settings = PetrelLanguageServer.getConfigSettings(rootPath);
-
+	public static async fromRoot(connection: LSP._Connection, documents: TextDocuments<TextDocument>, rootPath: string): Promise<PetrelLanguageServer> {
+		const languageServer = new PetrelLanguageServer(connection, documents);
+		languageServer.settings = PetrelLanguageServer.getSettingsFromFileOrDefault(rootPath);
 		languageServer.analyzer = await Analyzer.fromRoot({ connection, rootPath }, languageServer.modelManager, languageServer.modelDefinitionManager, languageServer.settings);
 		return languageServer;
 	}
 
-	private static getConfigSettings(rootPath: string): DocumentSettings {
+	private static getSettingsFromFileOrDefault(rootPath: string): DocumentSettings {
 		let configFile = path.join(rootPath, "petrel-language-server.config.json");
 		if (!fs.existsSync(configFile)) {
 			configFile = path.join(rootPath, ".modeler/petrel-language-server.config.json");
@@ -150,42 +155,20 @@ export default class PetrelLanguageServer {
 
 	public onDefinition(params: TextDocumentPositionParams) {
 		const context = this.getContext(params);
-		const { node, word, attribute } = context;
 		this.logRequest({ request: 'onDefinition', params, context });
-		let symbols: SymbolDeclaration[] = [];
-		if (node && attribute?.isReference) {
-			const reference = attribute as Reference;
-			const symbol = this.modelManager.getReferencedObject(reference);
-			symbols = symbol ? [symbol] : [];
-		} else {
-			symbols = this.modelManager.findSymbolsMatchingWord({ exactMatch: true, word });
-		}
-		return this.getSymbolDefinitionLocationLinks(symbols);
+		return this.definitionAndReferenceProvider.onDefinition(context);
 	}
 
 	public onReference(params: TextDocumentPositionParams) {
 		const context = this.getContext(params);
-		const { node, word } = context;
 		this.logRequest({ request: 'onReference', params, context });
-		let references: Reference[] = [];
-		if (node && node.isSymbolDeclaration && (node as SymbolDeclaration).name.endsWith(`.${word}`)) {
-			references = this.modelManager.getReferencesForSymbol(node as SymbolDeclaration);
-		} else {
-			references = this.modelManager.findReferencesMatchingWord({ exactMatch: true, word });
-		}
-
-		return this.getReferenceLocations(references);
-	}
-
-	public async getSymbolDefinitionLocationLinks(symbols: SymbolDeclaration[]): Promise<LocationLink[]> {
-		return symbols.map((def) => this.symbolDefinitionToLocationLink(def));
+		return this.definitionAndReferenceProvider.onReference(context);
 	}
 
 	public async onDocumentSymbol(params: DocumentSymbolParams): Promise<DocumentSymbol[]> {
 		const uri = params.textDocument.uri;
-		return this.documentSymbolProvider.getDocumentSymbolsForFile(uri);		
+		return this.documentSymbolProvider.getDocumentSymbolsForFile(uri);
 	}
-
 
 	private logRequest({ request, params, context }: {
 		request: string
@@ -206,26 +189,5 @@ export default class PetrelLanguageServer {
 			word=${JSON.stringify(context?.word)},
 			nodes (simplified)=${JSON.stringify(nodeSimplified)}`
 		);
-	}
-
-	private symbolDefinitionToLocationLink(symbol: SymbolDeclaration): LocationLink {
-		const locLink: LocationLink = {
-			targetRange: symbol.range,
-			targetSelectionRange: symbol.range,
-			targetUri: symbol.uri,
-		};
-		return locLink;
-	}
-
-	private async getReferenceLocations(symbols: Reference[]): Promise<Location[]> {
-		return symbols.map((def) => this.referenceToLocation(def));
-	}
-
-	private referenceToLocation(symbol: Reference): Location {
-		const locLink: Location = {
-			range: symbol.range,
-			uri: symbol.uri,
-		};
-		return locLink;
 	}
 }
