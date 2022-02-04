@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_condition_options_attribute_type, search_childs, search_attributes, input_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition } from './shared';
+import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_childs, search_attributes, input_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, default_childs, in_element, search_group_element, full_text_query_element, and_element, or_element, search_column_submatch_element, search_column_element } from './shared';
 export const INFOSET_DEFINITION: Definitions = {
 	"infosets": [{
 		description: "Collection of infosets.",
@@ -16,9 +16,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				element: "include-blocks"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"infoset": [{
@@ -97,9 +95,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				element: "single-aggregate-query",
 				occurence: "once"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"module": [{
@@ -134,9 +130,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				element: "decorations",
 				occurence: "once"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"search": [{
@@ -170,7 +164,7 @@ export const INFOSET_DEFINITION: Definitions = {
 						value: "no"
 					}
 				]
-
+	
 			},
 			{
 				name: "sort-order",
@@ -220,7 +214,7 @@ export const INFOSET_DEFINITION: Definitions = {
 						}
 					]
 				}
-
+	
 			},
 			{
 				name: "add-relations",
@@ -238,7 +232,7 @@ export const INFOSET_DEFINITION: Definitions = {
 						}
 					]
 				}
-
+	
 			},
 			{
 				name: "filter",
@@ -276,302 +270,13 @@ export const INFOSET_DEFINITION: Definitions = {
 		],
 		childs: search_childs
 	}],
-	"searchcolumn": [{
-		description: "Definition of the conditions of the search.",
-		type: ModelElementTypes.SearchColumn,
-		detailLevel: ModelDetailLevel.Declarations,
-		attributes: [
-			{
-				name: "name",
-				description: "The column to be searched.",
-				required: true,
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute,
-				},
-			},
-			{
-				name: "is-context-info",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "search-relation-iids",
-				description: "Only applicable to relation searchcolumns. Decides if the type will be searched by the specified display-as attribute (search-relation-iids = false) or by IId (search-relation-iids = true).",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "condition",
-				description: "The search condition.",
-				required: true,
-				type: search_condition_options_attribute_type
-			},
-			{
-				name: "value",
-				description: "The column value to be searched. You can work with parameters in this query, by using the syntax {..}. For example: &lt;search type=\"Patientencounter\"&gt;&lt;searchcolumn name=\"patientID\" value=\"{@patientID}\" condition=\"IS\" /&gt;&lt;/search&gt;",
-				visibilityConditions: [
-					{
-						attribute: "rule",
-						condition: "==",
-						value: ""
-					},
-					{
-						operator: "and",
-						attribute: "match-searchfield",
-						condition: "==",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "match-searchfield",
-				description: "A field in the search query to match with.",
-				visibilityConditions: [
-					{
-						attribute: "rule",
-						condition: "==",
-						value: ""
-					},
-					{
-						operator: "and",
-						attribute: "value",
-						condition: "==",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "match-searchfilter",
-				description: "The search query to match the \"match-searchfield\" from. If empty, it will match from the current context search query.",
-				visibilityConditions: [
-					{
-						attribute: "rule",
-						condition: "==",
-						value: ""
-					},
-					{
-						operator: "and",
-						attribute: "value",
-						condition: "==",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "rule",
-				description: "A rule that computes the value to compare with. Only for rules with no required inputs.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Rule,
-				},
-				detailLevel: ModelDetailLevel.References,
-				visibilityConditions: [
-					{
-						attribute: "value",
-						condition: "==",
-						value: ""
-					},
-					{
-						operator: "and",
-						attribute: "match-searchfield",
-						condition: "==",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "rule-output",
-				description: "The name of the output argument of the rule to take for the value of this search column.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Output,
-				},
-				detailLevel: ModelDetailLevel.References,
-				visibilityConditions: [
-					{
-						attribute: "rule",
-						condition: "!=",
-						value: ""
-					}
-				],
-				requiredConditions: [
-					{
-						attribute: "rule",
-						condition: "!=",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "search-when-empty",
-				description: "Whether to use this condition or not if the value is empty",
-				type: default_yes_no_attribute_type,
-			},
-			{
-				name: "sort",
-				description: "The sequence in which multiple columns should be sorted.",
-				type: {
-					type: AttributeTypes.Numeric
-				},
-			},
-			{
-				name: "sort-order",
-				description: "The order how the sort-column is ordered.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "ASC",
-							description: "Sorts ascending."
-						},
-						{
-							name: "DESC",
-							description: "Sorts descending."
-						},
-						{
-							name: "",
-							description: "Takes the default sort order for this attribute."
-						},
-					]
-				},
-			},
-		],
-		childs: []
-	}],
-	"searchcolumn-submatch": [{
-		description: "A condition that matches an attribute with sub query results.",
-		attributes: [
-			{
-				name: "name",
-				description: "The column to be searched.",
-				required: true
-			},
-			{
-				name: "is-context-info",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "search-relation-iids",
-				description: "Only applicable to relation searchcolumns. Decides if the type will be searched by the specified display-as attribute (search-relation-iids = false) or by IId (search-relation-iids = true).",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "true"
-						},
-						{
-							name: "false"
-						},
-					]
-				}
-			},
-			{
-				name: "condition",
-				description: "The search condition.",
-				required: true,
-				type: search_condition_options_attribute_type
-			}
-		],
-		childs: [
-			{
-				element: "scalar-aggregate-query",
-				occurence: "once"
-			},
-			{
-				element: "set-aggregate-query",
-				occurence: "once"
-			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
-		]
-	}],
-	"or": [{
-		description: "The or-operator between search columns. Use the group element to specify brackets.",
-		attributes: [dev_comment_attribute],
-		childs: []
-	}],
-	"and": [{
-		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted.",
-		attributes: [dev_comment_attribute],
-		childs: []
-	}],
-	"group": [{
-		isGroupingElement:true,
-		description: "",
-		attributes: [dev_comment_attribute],
-		childs: search_childs
-	}],
-	"in": [{
-		description: "Applies a querying condition to a relation. This may be a relation from the queried type to another type, or vice versa. It may even be applied to non-relation attributes.",
-		type: ModelElementTypes.In,
-		detailLevel: ModelDetailLevel.Declarations,
-		attributes: [
-			{
-				name: "field",
-				description: "The name of the attribute defined at the type of which the value is compared with the set returned by the sub query.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute	// TODO filter on type + add iid to the list
-				}
-			},
-			{
-				name: "include-empty",
-				description: "If results where the relation is empty are included too.",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "condition",
-				description: "The condition to apply for filtering the relation field using the filter applied to the relation instances.",
-				type: {
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "",
-							description: "is included in"
-						},
-						{
-							name: "not",
-							description: "is not included in"
-						}
-					]
-				}
-			},
-			{
-				name: "search-when-empty",
-				description: "Whether to drop this where-in condition if the filter is empty (if all the parameter based search columns are left out).",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "sub-filter-select-field",
-				description: "The attribute of the type queried in the sub query to match on. Default is the IID.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute	// TODO add iid to the list
-				}
-			}
-		],
-		childs: [
-			{
-				element: "search",
-				required: true,
-				occurence: "once"
-			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
-		]
-	}],
-	"full-text-query": [{
-		description: "A full text search query criterion. This must be added at the root of a search filter. It may be combined with other search criteria.",
-		attributes: [
-			{
-				name: "query",
-				description: "The free text string to query on. Logical operators like AND/OR or quotes are ignored. Multiple values separated by pipe are note supported.",
-				required: true
-			}
-		],
-		childs: []
-	}],
+	"searchcolumn": [search_column_element],
+	"searchcolumn-submatch": [search_column_submatch_element],
+	"or": [or_element],
+	"and": [and_element],
+	"group": [search_group_element],
+	"in": [in_element],
+	"full-text-query": [full_text_query_element],
 	"query": [{
 		description: "A specific data query command.",
 		attributes: [dev_comment_attribute],
@@ -584,9 +289,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				element: "delete",
 				occurence: "once"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"exists": [{
@@ -722,9 +425,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				element: "search",
 				occurence: "once"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"single-aggregate-query": [infoset_single_aggregate_query],
@@ -806,12 +507,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				name: "name",
 				required: true,
-				description: "Unique name of the variable.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute,
-				},
-				detailLevel: ModelDetailLevel.SubReferences
+				description: "Unique name of the variable."
 			},
 			{
 				name: "attribute",
@@ -839,6 +535,10 @@ export const INFOSET_DEFINITION: Definitions = {
 						},
 						{
 							name: "COUNT",
+							obsolete: true
+						},
+						{
+							name: "SUM",
 							obsolete: true
 						},
 					]
@@ -1165,9 +865,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				element: "full-text-query"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"input": [input_element]	

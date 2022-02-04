@@ -208,8 +208,8 @@ export const target_namespace_attribute: ElementAttribute =
 		validations: [
 			{
 				type: "regex",
-				value: /^(\+?[A-Z][a-zA-Z]+(\.[A-Z][a-zA-Z]+)*)?$/,
-				message: "Only alphabetic, CamelCased words separated by dots are allowed.",
+				value: /^(\+?[A-Z][a-zA-Z0-9]+(\.[A-Z][a-zA-Z0-9]+)*)?$/,
+				message: "Only alphabetic and/or numeric namespacing (start with a letter), CamelCased words separated by dots are allowed.",
 				level: ValidationLevels.Fatal
 			}
 		]
@@ -532,8 +532,10 @@ export const backend_action_call_element: Definition =
 		],
 		childs: action_call_childs
 	};
+
 export const model_condition_element: Definition =
 	{
+		type: ModelElementTypes.ModelCondition,
 		description: "A model part that will be included when the mentioned setting has the specified value.",
 		attributes: [
 			{
@@ -776,6 +778,9 @@ export const decorators_element: Definition =
 	childs: [
 		{
 			element: "decorator"
+		},
+		{
+			element: "include-blocks"
 		}
 	]
 };
@@ -1408,6 +1413,312 @@ export const event_childs: ChildDefinition[] =
 	},
 	...default_childs
 ];
+
+export const in_element: Definition = 
+{
+	description: "Applies a querying condition to a relation. This may be a relation from the queried type to another type, or vice versa. It may even be applied to non-relation attributes.",
+	type: ModelElementTypes.In,
+	detailLevel: ModelDetailLevel.Declarations,
+	attributes: [
+		{
+			name: "field",
+			description: "The name of the attribute defined at the type of which the value is compared with the set returned by the sub query.",
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Attribute	// TODO filter on type + add iid to the list
+			}
+		},
+		{
+			name: "include-empty",
+			description: "If results where the relation is empty are included too.",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "condition",
+			description: "The condition to apply for filtering the relation field using the filter applied to the relation instances.",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "",
+						description: "is included in"
+					},
+					{
+						name: "not",
+						description: "is not included in"
+					}
+				]
+			}
+		},
+		{
+			name: "search-when-empty",
+			description: "Whether to drop this where-in condition if the filter is empty (if all the parameter based search columns are left out).",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "sub-filter-select-field",
+			description: "The attribute of the type queried in the sub query to match on. Default is the IID.",
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Attribute	// TODO add iid to the list
+			}
+		}
+	],
+	childs: [
+		{
+			element: "search",
+			required: true,
+			occurence: "once"
+		},
+		...default_childs
+	]
+};
+
+export const search_group_element: Definition = 
+{
+	isGroupingElement:true,
+	description: "",
+	attributes: [dev_comment_attribute],
+	childs: search_childs
+};
+
+export const full_text_query_element: Definition = 
+{
+	description: "A full text search query criterion. This must be added at the root of a search filter. It may be combined with other search criteria.",
+	attributes: [
+		{
+			name: "query",
+			description: "The free text string to query on. Logical operators like AND/OR or quotes are ignored. Multiple values separated by pipe are note supported.",
+			required: true
+		}
+	],
+	childs: []
+};
+
+export const and_element: Definition = 
+{
+	description: "The and-operator between search columns. In fact, and is the default, so it can be omitted.",
+	attributes: [dev_comment_attribute],
+	childs: []
+};
+
+export const or_element: Definition = 
+{
+	description: "The or-operator between search columns. Use the group element to specify brackets.",
+	attributes: [dev_comment_attribute],
+	childs: []
+};
+
+export const search_column_element: Definition = 
+{
+	description: "Definition of the conditions of the search.",
+	type: ModelElementTypes.SearchColumn,
+	detailLevel: ModelDetailLevel.Declarations,
+	attributes: [
+		{
+			name: "name",
+			description: "The column to be searched.",
+			required: true,
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Attribute,
+			},
+		},
+		{
+			name: "is-context-info",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "search-relation-iids",
+			description: "Only applicable to relation searchcolumns. Decides if the type will be searched by the specified display-as attribute (search-relation-iids = false) or by IId (search-relation-iids = true).",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "condition",
+			description: "The search condition.",
+			required: true,
+			type: search_condition_options_attribute_type
+		},
+		{
+			name: "value",
+			description: "The column value to be searched. You can work with parameters in this query, by using the syntax {..}. For example: &lt;search type=\"Patientencounter\"&gt;&lt;searchcolumn name=\"patientID\" value=\"{@patientID}\" condition=\"IS\" /&gt;&lt;/search&gt;",
+			visibilityConditions: [
+				{
+					attribute: "rule",
+					condition: "==",
+					value: ""
+				},
+				{
+					operator: "and",
+					attribute: "match-searchfield",
+					condition: "==",
+					value: ""
+				}
+			]
+		},
+		{
+			name: "match-searchfield",
+			description: "A field in the search query to match with.",
+			visibilityConditions: [
+				{
+					attribute: "rule",
+					condition: "==",
+					value: ""
+				},
+				{
+					operator: "and",
+					attribute: "value",
+					condition: "==",
+					value: ""
+				}
+			]
+		},
+		{
+			name: "match-searchfilter",
+			description: "The search query to match the \"match-searchfield\" from. If empty, it will match from the current context search query.",
+			visibilityConditions: [
+				{
+					attribute: "rule",
+					condition: "==",
+					value: ""
+				},
+				{
+					operator: "and",
+					attribute: "value",
+					condition: "==",
+					value: ""
+				}
+			]
+		},
+		{
+			name: "rule",
+			description: "A rule that computes the value to compare with. Only for rules with no required inputs.",
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Rule,
+			},
+			detailLevel: ModelDetailLevel.References,
+			visibilityConditions: [
+				{
+					attribute: "value",
+					condition: "==",
+					value: ""
+				},
+				{
+					operator: "and",
+					attribute: "match-searchfield",
+					condition: "==",
+					value: ""
+				}
+			]
+		},
+		{
+			name: "rule-output",
+			description: "The name of the output argument of the rule to take for the value of this search column.",
+			type: {
+				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.Output,
+			},
+			detailLevel: ModelDetailLevel.References,
+			visibilityConditions: [
+				{
+					attribute: "rule",
+					condition: "!=",
+					value: ""
+				}
+			],
+			requiredConditions: [
+				{
+					attribute: "rule",
+					condition: "!=",
+					value: ""
+				}
+			]
+		},
+		{
+			name: "search-when-empty",
+			description: "Whether to use this condition or not if the value is empty",
+			type: default_yes_no_attribute_type,
+		},
+		{
+			name: "sort",
+			description: "The sequence in which multiple columns should be sorted.",
+			type: {
+				type: AttributeTypes.Numeric
+			},
+		},
+		{
+			name: "sort-order",
+			description: "The order how the sort-column is ordered.",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "ASC",
+						description: "Sorts ascending."
+					},
+					{
+						name: "DESC",
+						description: "Sorts descending."
+					},
+					{
+						name: "",
+						description: "Takes the default sort order for this attribute."
+					},
+				]
+			},
+		},
+	],
+	childs: []
+};
+
+export const search_column_submatch_element: Definition = 
+{
+	description: "A condition that matches an attribute with sub query results.",
+	attributes: [
+		{
+			name: "name",
+			description: "The column to be searched.",
+			required: true
+		},
+		{
+			name: "is-context-info",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "search-relation-iids",
+			description: "Only applicable to relation searchcolumns. Decides if the type will be searched by the specified display-as attribute (search-relation-iids = false) or by IId (search-relation-iids = true).",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "true"
+					},
+					{
+						name: "false"
+					},
+				]
+			}
+		},
+		{
+			name: "condition",
+			description: "The search condition.",
+			required: true,
+			type: search_condition_options_attribute_type
+		}
+	],
+	childs: [
+		{
+			element: "scalar-aggregate-query",
+			occurence: "once"
+		},
+		{
+			element: "set-aggregate-query",
+			occurence: "once"
+		},
+		...default_childs
+	]
+};
 
 export function isViewArgument(nodeContext: IXmlNodeContext): boolean {
 	return nodeContext.getFirstParent()?.name == "view";

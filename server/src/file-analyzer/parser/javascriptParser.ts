@@ -26,7 +26,7 @@ export class JavascriptParser extends FileParser {
 						this.addAction(this.stringArgumentValue(thirdArgument), range);
 					}
 					else {
-						this.addMessage(range, "JP0001", JavascriptParser.MESSAGES.THIRD_ARGUMENT_NOT_STRING);
+						this.addMessage(range, "JP0001", "#JP0001: " + JavascriptParser.MESSAGES.THIRD_ARGUMENT_NOT_STRING);
 					}
 				} else {
 					this.addAction(firstArgument, range);
@@ -46,7 +46,7 @@ export class JavascriptParser extends FileParser {
 						this.addAction(this.stringArgumentValue(secondArgument), range);
 					}
 					else {
-						this.addMessage(range, "JP0002",  JavascriptParser.MESSAGES.SECOND_ARGUMENT_NOT_STRING);
+						this.addMessage(range, "JP0002", "#JP0002: " + JavascriptParser.MESSAGES.SECOND_ARGUMENT_NOT_STRING);
 					}
 				} else {
 					this.addAction(firstArgument, range);

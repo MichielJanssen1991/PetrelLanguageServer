@@ -27,14 +27,14 @@ export class ReferencedObjectExistsCheck extends ModelCheck {
 		const name = reference.value;
 		const referenceNotFound = !referencedSymbol && name && !attributeValueIsAVariable(name); 
 		if (referenceNotFound) {
-			this.addMessage(reference.range, "ROC0001", CHECKS_MESSAGES.REFERENCE_NOT_FOUND(reference));
+			this.addMessage(reference.range, "ROC0001", "#ROC0001: " + CHECKS_MESSAGES.REFERENCE_NOT_FOUND(reference));
 		}
 		if (referencedSymbol && name != referencedSymbol.name && name.toLowerCase() == referencedSymbol.name.toLowerCase() && options.detailLevel >= ModelDetailLevel.SubReferences) {
-			this.addMessage(reference.range, "ROC0002", CHECKS_MESSAGES.REFERENCE_CAPITALIZATION(referencedSymbol, reference));
+			this.addMessage(reference.range, "ROC0002", "#ROC0002: " + CHECKS_MESSAGES.REFERENCE_CAPITALIZATION(referencedSymbol, reference));
 		}
 		const symbolIsObsolete = referencedSymbol && referencedSymbol.contextQualifiers.isObsolete;
 		if (symbolIsObsolete) {
-			this.addMessage(reference.range, "ROC0003", CHECKS_MESSAGES.REFERENCE_OBSOLETE(reference));
+			this.addMessage(reference.range, "ROC0003", "#ROC0003: " + CHECKS_MESSAGES.REFERENCE_OBSOLETE(reference));
 		}
 		return !symbolIsObsolete && !referenceNotFound;
 		

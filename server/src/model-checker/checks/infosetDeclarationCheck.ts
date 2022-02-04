@@ -41,14 +41,14 @@ export class InfosetDeclarationCheck extends ModelCheck {
 				//Check attributes which are not a variable
 				if (!attributeValueIsAVariable(attributeName)) {
 					if (!typeAttributes.includes(attributeName)) {
-						this.addMessage(attributeRef.range, "DC0001", CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND(attributeRef, typeRef));
+						this.addMessage(attributeRef.range, "DC0001", "#DC0001: " + CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND(attributeRef, typeRef));
 					}
 				}
 				//Check attributes which are a variable e.g. {AttributeName}
 				else {
 					const attributeVariableName = attributeName.replace("{", "").replace("}", "");
 					if (!this.infosetInputs.includes(attributeVariableName)) {
-						this.addMessage(attributeRef.range, "DC0002", CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_VARIABLE_NOT_FOUND(attributeVariableName));
+						this.addMessage(attributeRef.range, "DC0002", "#DC0002: " + CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_VARIABLE_NOT_FOUND(attributeVariableName));
 					}
 				}
 			});

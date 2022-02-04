@@ -29,7 +29,7 @@ export class FunctionCallCheck extends ActionCallCheck {
 	private verifyFunctionCall(reference: TreeNode/* , options: ModelCheckerOptions */) {
 		const functionNameNotSpecified = this.verifyMandatoryAttributeProvided(reference, NAMES.ATTRIBUTE_FUNCTION, false);
 		if (functionNameNotSpecified) {
-			this.addMessage(reference.range, "CC0008", CHECKS_MESSAGES.RULECALL_WITHOUT_NAME());
+			this.addMessage(reference.range, "CC0008", "#CC0008: " + CHECKS_MESSAGES.RULECALL_WITHOUT_NAME());
 		}
 		return !functionNameNotSpecified;
 	}

@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, Definition, AttributeOption, ChildDefinition, ModelElementSubTypes, ElementAttribute} from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
-import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, model_condition_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, backend_action_call_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition, default_childs, action_call_childs, dev_comment_attribute, target_namespace_attribute, dev_description_attribute, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, include_block_declaration_definition, target_declaration_definition, decorator_context_entity_element_definition } from './shared';
+import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, model_condition_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, backend_action_call_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, default_childs, action_call_childs, dev_comment_attribute, target_namespace_attribute, dev_description_attribute, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, include_block_declaration_definition, target_declaration_definition, decorator_context_entity_element_definition, search_childs, in_element, search_group_element, full_text_query_element, or_element, and_element, search_column_submatch_element, search_column_element } from './shared';
 
 const meta_name_options: AttributeOption[] = [
 	{
@@ -30,22 +30,14 @@ const include_block_meta_options: AttributeOption[] = [
 	},
 	{
 		name: "key"
-	}
+	},
+	{
+		name: "search"
+	},
 ];
 
-const element_type_attributes: ElementAttribute[] = [
-	{
-		name: "name",
-		description: "Unique name for the type. The type name should only consist of letters and numbers and should start with a letter. This name is also used in the table definition in the database.Recommendation: It is of the utmost importance to use a clear and unambiguous method of naming. Philips VitalHealth recommends to assign a name to the type in plural and to let it start with a capital.",
-		required: true,
-		validations: [
-			{
-				type: "regex",
-				value: /^[A-Za-z][A-Za-z0-9]*$/,
-				message: "The type name should only consist of letters and numbers and should start with a letter."
-			}
-		]
-	},
+const element_type_attributes_base: ElementAttribute[] = [
+	
 	{
 		name: "type",
 		description: "A type this type inherits from.",
@@ -216,7 +208,11 @@ const element_type_attributes: ElementAttribute[] = [
 				{
 					name: "CompanyInspecific",
 					description: "A table multiple companies share."
-				}
+				},
+				{
+					name: "*",
+					description: "Any other type of persistence (just type)"
+				},
 			]
 		},
 		visibilityConditions: [
@@ -270,6 +266,37 @@ const element_type_attributes: ElementAttribute[] = [
 	dev_ignore_modelcheck_attribute,
 	dev_ignore_modelcheck_justification_attribute,
 	dev_comment_attribute
+];
+
+const element_type_attributes: ElementAttribute[] = [
+	{
+		name: "name",
+		description: "Unique name for the type. The type name should only consist of letters and numbers and should start with a letter. This name is also used in the table definition in the database.Recommendation: It is of the utmost importance to use a clear and unambiguous method of naming. Philips VitalHealth recommends to assign a name to the type in plural and to let it start with a capital.",
+		required: true,
+		validations: [
+			{
+				type: "regex",
+				value: /^[A-Za-z][A-Za-z0-9-]*$/,
+				message: "The type name should only consist of letters and numbers and should start with a letter."
+			}
+		]
+	},
+	...element_type_attributes_base
+];
+
+const element_type_attributes_non_required: ElementAttribute[] = [
+	{
+		name: "name",
+		description: "Unique name for the type. The type name should only consist of letters and numbers and should start with a letter. This name is also used in the table definition in the database.Recommendation: It is of the utmost importance to use a clear and unambiguous method of naming. Philips VitalHealth recommends to assign a name to the type in plural and to let it start with a capital.",
+		validations: [
+			{
+				type: "regex",
+				value: /^[A-Za-z][A-Za-z0-9-]*$/,
+				message: "The type name should only consist of letters and numbers and should start with a letter."
+			}
+		]
+	},
+	...element_type_attributes_base
 ];
 
 const attribute_attributes: ElementAttribute[] = [
@@ -993,13 +1020,13 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				name: "value",
 				description: "The value of the option. Options with the empty value can be used to represent the situation when the attribute has no value, and thus will be presented by default (not applicable to boolean sets). The values should be unique inside the field.",
-				validations: [
+				/*validations: [
 					{
 						type: "regex",
 						value: /^[a-zA-Z0-9\s\-_./]*$/,
 						message: "The value can only contain letters, numbers, spaces, dashes, underscores or dots."
 					}
-				]
+				]*/
 			},
 			{
 				name: "caption",
@@ -1065,7 +1092,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		childs: keys_childs
 	}],
 	"key": [{
-		description: "A database indexing key. Max lenght of 25 letters",
+		description: "A database indexing key. Max lenght of 30 letters",
 		attributes: [
 			{
 				name: "name",
@@ -1074,8 +1101,8 @@ export const BACKEND_DEFINITION: Definitions = {
 				validations: [
 					{
 						type: "regex",
-						value: /^\w{1,25}$/,
-						message: "Name can not be longer then 25 characters and only contain letters"
+						value: /^\w{1,30}$/,
+						message: "Name can not be longer then 30 characters and only contain letters"
 					}
 				]
 			},
@@ -1141,11 +1168,13 @@ export const BACKEND_DEFINITION: Definitions = {
 		childs: []
 	}],
 	"server-events": [{
+		type: ModelElementTypes.ServerEvents,
 		description: "A server event registration.",
 		attributes: [dev_comment_attribute],
 		childs: server_events_childs
 	}],
 	"server-event": [{
+		type: ModelElementTypes.ServerEvent,
 		description: "Server side event.",
 		attributes: [
 			{
@@ -1242,7 +1271,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		matchCondition: (x)=>isIncludeBlockOfType(x, "type"),
 		attributes: [
 			...target_element_definition.attributes,
-			...element_type_attributes
+			...element_type_attributes_non_required
 		],
 		childs: [
 			...type_childs
@@ -1333,10 +1362,44 @@ export const BACKEND_DEFINITION: Definitions = {
 			childs: [
 				...action_call_childs
 			]
-		}
+		},
+		{ // action
+			...include_block_backend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Search,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "search"),
+			childs: [
+				...search_childs
+			]
+		},
 	],
 	"include": [include_element],
-	"model-condition": [model_condition_element],
+	"model-condition": [
+		{
+			...model_condition_element,
+			subtype: ModelElementSubTypes.ModelCondition_Attribute,
+			ancestors: [{ type: ModelElementTypes.Attribute}],
+			childs: attribute_childs
+		},
+		{
+			...model_condition_element,
+			subtype: ModelElementSubTypes.ModelCondition_ServerEvent,
+			ancestors: [{ type: ModelElementTypes.ServerEvent}],
+			childs: server_event_childs
+		},
+		{
+			...model_condition_element,
+			subtype: ModelElementSubTypes.ModelCondition_ServerEvents,
+			ancestors: [{ type: ModelElementTypes.ServerEvents}],
+			childs: server_events_childs
+		},
+		{
+			...model_condition_element,
+			subtype: ModelElementSubTypes.ModelCondition_Type,
+			ancestors: [{ type: ModelElementTypes.Type}],
+			childs: type_childs
+		},
+		
+	],
 	"auto-key": [{
 		"description": "Automatically generates a value, based on some counting method. This can be used e.g. for sequence numbers. The value of this attribute is automatically incremented with each new record.",
 		attributes: [
@@ -1385,9 +1448,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				element: "search"
 			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
+			...default_childs
 		]
 	}],
 	"search": [{
@@ -1413,61 +1474,29 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
-			{
-				element: "searchcolumn"
-			},
-			{
-				element: "searchcolumn-submatch"
-			},
-			{
-				element: "or"
-			},
-			{
-				element: "and"
-			},
-			{
-				element: "group"
-			},
-			{
-				element: "in"
-			},
-			{
-				element: "full-text-query",
-				occurence: "once"
-			},
-			child_include,
-			child_merge_instruction,
-			child_model_condition
-		]
+		childs: search_childs
 	}],
-	"searchcolumn": [{
-		attributes: [dev_comment_attribute],
-		childs: []
+	"searchcolumn": [search_column_element],
+	"searchcolumn-submatch": [search_column_submatch_element],
+	"or": [or_element],
+	"and": [and_element],
+	"group": [search_group_element],
+	"in": [in_element],
+	"full-text-query": [full_text_query_element],
+	"file-categories": [{
+			attributes: [],
+			childs: [{element: "category"}]
 	}],
-	"searchcolumn-submatch": [{
-		attributes: [dev_comment_attribute],
-		childs: []
-	}],
-	"or": [{
-		attributes: [dev_comment_attribute],
-		childs: []
-	}],
-	"and": [{
-		attributes: [dev_comment_attribute],
-		childs: []
-	}],
-	"group": [{
-		attributes: [dev_comment_attribute],
-		childs: [],
-		isGroupingElement: true
-	}],
-	"in": [{
-		attributes: [dev_comment_attribute],
-		childs: []
-	}],
-	"full-text-query": [{
-		attributes: [dev_comment_attribute],
-		childs: []
+	"category": [{
+		description: "",
+		attributes: [{
+			name: "name",
+			required: true,
+		},
+		{
+			name: "caption",
+			required: true
+		}],
+		childs: []	
 	}],
 };
