@@ -1363,7 +1363,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				...action_call_children
 			]
 		},
-		{ // action
+		{ // search
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Search,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "search"),

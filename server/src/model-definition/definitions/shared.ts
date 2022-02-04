@@ -384,6 +384,10 @@ export const infoset_single_aggregate_query: Definition =
 			{
 				element: "filter",
 				occurence: "once"
+			},
+			{
+				element: "search",
+				occurence: "once"
 			}
 		]
 	};
@@ -605,7 +609,7 @@ export const model_condition_element: Definition =
 export const include_element: Definition =
 	{
 		description: "Includes a file or an include block. The included model fragment is merged with the contents of the parent node of the include.",
-		type: ModelElementTypes.IncludeBlock,
+		type: ModelElementTypes.Include,
 		detailLevel: ModelDetailLevel.References,	
 		attributes: [
 			{
@@ -717,7 +721,9 @@ export const include_element: Definition =
 
 export const decorations_element: Definition = 
 {
+	type: ModelElementTypes.Decorations,
 	description: "Group decorators applications of this element.",
+	//isGroupingElement: true,
 	attributes: [
 		dev_comment_attribute
 	],
@@ -730,9 +736,10 @@ export const decorations_element: Definition =
 
 export const decoration_element: Definition = 
 {
+	type: ModelElementTypes.Decoration,
 	description: "Apply a decorator to this target element.",
 	isSymbolDeclaration: true,
-	detailLevel: ModelDetailLevel.Declarations,
+	detailLevel: ModelDetailLevel.References,
 	attributes: [
 		{
 			name: "name",
@@ -1536,7 +1543,6 @@ export const search_column_element: Definition =
 		{
 			name: "condition",
 			description: "The search condition.",
-			required: true,
 			type: search_condition_options_attribute_type
 		},
 		{
@@ -1714,6 +1720,10 @@ export const search_column_submatch_element: Definition =
 		},
 		{
 			element: "set-aggregate-query",
+			occurence: "once"
+		},
+		{
+			element: "single-aggregate-query",
 			occurence: "once"
 		},
 		...default_children

@@ -1,5 +1,49 @@
-import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_children, search_attributes, input_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, default_children, in_element, search_group_element, full_text_query_element, and_element, or_element, search_column_submatch_element, search_column_element } from './shared';
+import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ModelElementSubTypes, AttributeOption, Definition } from '../symbolsAndReferences';
+import { isIncludeBlockOfType } from './other';
+import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_children, search_attributes, input_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, default_children, in_element, search_group_element, full_text_query_element, and_element, or_element, search_column_submatch_element, search_column_element, include_block_declaration_definition } from './shared';
+
+const include_block_meta_options: AttributeOption[] = [
+	{
+		name: "module"
+	},
+	{
+		name: "infoset"
+	},
+	{
+		name: "search"
+	},
+	{
+		name: "searchcolumn"
+	}
+];
+
+const include_block_infoset_declaration_definition: Definition = {
+	...include_block_declaration_definition,
+	attributes: [
+		...include_block_declaration_definition.attributes,
+		{
+			name: "meta-name",
+			description: "For which element to apply rules.",
+			required: true,
+			autoadd: true,
+			type:
+			{
+				type: AttributeTypes.Enum,
+				options: include_block_meta_options
+			}
+		},
+		{
+			name: "meta-index",
+			description: "For which element to apply rules.",
+			type:
+			{
+				type: AttributeTypes.Enum,
+				options: include_block_meta_options
+			}
+		}		
+	]
+};
+
 export const INFOSET_DEFINITION: Definitions = {
 	"infosets": [{
 		description: "Collection of infosets.",
@@ -620,50 +664,16 @@ export const INFOSET_DEFINITION: Definitions = {
 		]
 	}],
 	"include-blocks": [include_blocks_element],
-	"include-block": [{
-		type: ModelElementTypes.IncludeBlock,
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		description: "A model fragment that is included by includes.",
-		attributes: [
-			{
-				name: "name",
-				description: "Unique identifier",
-				required: true,
-				autoadd: true,
-			},
-			{
-				name: "meta-name",
-				description: "For which element to apply rules.",
-				required: true,
-				autoadd: true,
-				type:
-				{
-					type: AttributeTypes.Enum,
-					options: [
-						{
-							name: "module"
-						},
-						{
-							name: "infoset"
-						},
-						{
-							name: "search"
-						},
-						{
-							name: "searchcolumn"
-						}
-					]
-				}
-			},
-			{
-				name: "meta-index",
-				description: "For which element to apply rules."
-			},
-			dev_comment_attribute
-		],
-		children: []
-	}],
+	"include-block": [
+		{ // search
+			...include_block_infoset_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Search,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "search"),
+			children: [
+				...search_children
+			]
+		}
+	],
 	"include": [include_element],
 	"model-condition": [model_condition_element],
 	"auto-key": [{

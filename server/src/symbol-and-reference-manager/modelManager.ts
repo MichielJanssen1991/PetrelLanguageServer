@@ -8,17 +8,31 @@ import { SymbolAndReferenceManager } from './symbolAndReferenceManager';
 export class ModelManager extends SymbolAndReferenceManager {
 	public getChildrenOfType(object: TreeNode | SymbolDeclaration, type: ModelElementTypes): (TreeNode | SymbolDeclaration)[] {
 		const directChildren = object.children.filter(x => (x.type == type));
-		const decoratorsOrIncludeBlocks = object.children.filter(
-			x => (x.type == ModelElementTypes.Decorator
-				|| x.type == ModelElementTypes.IncludeBlock)
-		);
-
-		const decoratedChildren: (TreeNode | SymbolDeclaration)[] = decoratorsOrIncludeBlocks.flatMap(decoratorOrIncludeBlock => {
-			const decoratorOrIncludeBlockRef = decoratorOrIncludeBlock.attributes["name"] as Reference;
-			const decoratorsOrIncludeBlocks = decoratorOrIncludeBlockRef ? this.getReferencedObject(decoratorOrIncludeBlockRef) : undefined;
+		
+		const includedChildren: (TreeNode | SymbolDeclaration)[] = object.children.filter(c=>c.type == ModelElementTypes.Include).flatMap(c => {
+			const includeBlockRef = c.attributes["block"] as Reference;
+			const decoratorsOrIncludeBlocks = includeBlockRef ? this.getReferencedObject(includeBlockRef) : undefined;
 			return decoratorsOrIncludeBlocks ? this.getChildrenOfType(decoratorsOrIncludeBlocks, type) : [];
 		});
-		return [...directChildren, ...decoratedChildren];
+
+		const decorationsGroupChildren = object.children.filter(d=>d.type == ModelElementTypes.Decorations).flatMap(d=>{
+			return this.getChildrenOfType(d, type);
+		});
+		
+		const decorationChildren = object.children.filter(d=>d.type == ModelElementTypes.Decoration).flatMap(d=>{
+			const decoratorRef = d.attributes["name"] as Reference;
+			const decorator = decoratorRef ? this.getReferencedObject(decoratorRef) : undefined;
+			return decorator ? this.getChildrenOfType(decorator, type) : [];
+		});
+				
+		const targetChildren = object.children.filter(d=>d.type == ModelElementTypes.Target).flatMap(d=>{
+			if (d.attributes["meta-name"].value == type){
+				return this.getChildrenOfType(d, type);
+			}
+			return [];			
+		});		
+		
+		return [...directChildren, ...includedChildren, ...decorationChildren, ...decorationsGroupChildren, ...targetChildren];
 	}
 
 	public getActionArguments(actionCall: TreeNode) {
