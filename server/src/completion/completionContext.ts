@@ -1,18 +1,5 @@
 import { Attribute, ModelElementTypes, Reference, TreeNode, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
 
-export type RuleContext = {
-	name: string,
-	availableParams: string[]//ParamRuleContext[]
-}
-
-export type ParamRuleContext = {
-	type: [ModelElementTypes.Input, ModelElementTypes.Output, ModelElementTypes.SetVar],
-	name?: string,
-	localName?: string,
-	remoteName?: string,
-	value?: string
-}
-
 export class CompletionContext {
 	public inAttribute: boolean;
 	public inTag: boolean;

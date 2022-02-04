@@ -61,15 +61,7 @@ export class CompletionProvider {
 			// get attributes based on the action called
 			let attributesForAction: ElementAttribute[] = [];
 			if (node.type == ModelElementTypes.ActionCall) {
-				const actionReference = node.attributes["name"] as Reference;
-				const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionReference);
-				if (referencedAction) {
-					attributesForAction = (referencedAction?.children
-						.filter(x => x.type == ModelElementTypes.Attribute) as SymbolDeclaration[])
-						.map(x => {
-							return { name: x.name, description: "geen" };
-						}) || [];
-				}
+				attributesForAction = this.getAttributesForActionCall(node);
 			}
 
 			let allAttributes = [...attributesForAction, ...attributesForTag];
@@ -85,6 +77,25 @@ export class CompletionProvider {
 			return [{label: "no attribute options found for " + node.tag}];
 		}
 		return [{label: "no attribute options found"}];
+	}
+
+	/**
+	 * Get a list of additional atributes applicable to the action call. For example 'rule-name' for action call of type 'Rule'
+	 * @param actionCall the action call node
+	 * @returns a list of attributes specific to this action.
+	 */
+	private getAttributesForActionCall(actionCall: TreeNode) {
+		let attributesForAction: ElementAttribute[] = [];
+		const actionReference = actionCall.attributes["name"] as Reference;
+		const referencedAction = this.symbolAndReferenceManager.getReferencedObject(actionReference);
+		if (referencedAction) {
+			attributesForAction = (referencedAction?.children
+				.filter(x => x.type == ModelElementTypes.Attribute) as SymbolDeclaration[])
+				.map(x => {
+					return { name: x.name, description: "geen" };
+				}) || [];
+		}
+		return attributesForAction;
 	}
 
 	/**
@@ -219,11 +230,11 @@ export class CompletionProvider {
 
 	/**
 	 * Get the possible children of an element. 
-	 * ModelDefinition.childs could contain:
+	 * ModelDefinition.children could contain:
 	 * - nothing (the completions will be empty)
 	 * - list of children (the completions will filled with these items)
-	 * - object with attribute matchElementFromAttribute referring to another element (the completions will be filled with the childs of that element)
-	 * - object with matchFromParent. (the completions will be filled with the childs of the parent)
+	 * - object with attribute matchElementFromAttribute referring to another element (the completions will be filled with the children of that element)
+	 * - object with matchFromParent. (the completions will be filled with the children of the parent)
 	 * @param modelFileContext 
 	 * @param context 
 	 * @returns 
@@ -267,7 +278,7 @@ export class CompletionProvider {
 
 	/**
 	 * Construct a snippet of xml-model based on the requested definition. Following things will be handled:
-	 * - If one or more childs of the definition is required it will be auto added as a child element (recursive)
+	 * - If one or more children of the definition is required it will be auto added as a child element (recursive)
 	 * - Required Attributes and Attributes marked as 'autoadd' in the definition will be added to the snippet
 	 * - vscode 'tabs' will be active on the attributes of the first element layer.
 	 * @param modelFileContext 
@@ -292,7 +303,7 @@ export class CompletionProvider {
 					}
 				}
 			}
-			// only parent node can use tabs... (tabIndent empty is only on the top element level. Recursive childs gets a \t in the tabIndent)
+			// only parent node can use tabs... (tabIndent empty is only on the top element level. Recursive children gets a \t in the tabIndent)
 			const attrValue = (tabIndent == "") ? `\${${i + 1}${attributeOptions}}` : `${attributeOptions.replace(/\|/g, "")}`;
 
 			return `${attribute.name}="${attrValue}"`;
