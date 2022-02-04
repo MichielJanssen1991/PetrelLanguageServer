@@ -259,7 +259,7 @@ export type Definition = {
 	name?: (x: any) => string,
 	description?: string,
 	checkObsolete?: boolean,
-	childs: ChildDefinition[],
+	children: ChildDefinition[],
 	attributes: ElementAttribute[],
 	type?: ModelElementTypes,
 	subtype?: ModelElementSubTypes,

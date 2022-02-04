@@ -17,7 +17,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 				//required: true
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "module"
 			},
@@ -50,7 +50,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 				description: ""
 			},
 		],
-		childs: [
+		children: [
 			{
 				element: "annotation",
 				required: true,
@@ -113,7 +113,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 				type: default_yes_no_attribute_type
 			},
 		],
-		childs: [
+		children: [
 			{
 				element: "attribute"
 			},
@@ -134,7 +134,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	"annotation": [{
 		description: "Developer's comment on this element.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "documentation",
 				required: true,
@@ -168,7 +168,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "summary",
 				occurence: "once"
@@ -188,7 +188,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	"summary": [{
 		description: "Summarises the function of an element.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "xml-text",
 				occurence: "once"
@@ -198,7 +198,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	"validation-description": [{
 		description: "A description of the desired value for this element. (TODO: Only for attributes where a validatestring is defined.)",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "xml-text",
 				occurence: "once"
@@ -214,7 +214,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	"element": [{
 		description: "sharing, prototyping of attributes (refer by name) -- used by xmleditor rules production",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "attribute"
 			},
@@ -322,7 +322,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "option"
 			},
@@ -347,7 +347,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "attribute-group"
 			},
@@ -383,7 +383,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "when"
 			},
@@ -412,7 +412,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "annotation"
 			}
@@ -455,7 +455,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: []
+		children: []
 	}],
 	"inherit": [{
 		description: "Inherits at attribute-level (to use attribute types)",
@@ -470,7 +470,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "include"
 			},
@@ -482,15 +482,15 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	"xml-rules": [{	// TODO check with platform if it's still in use
 		description: "XML Modeler rules additions.",
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],	
 	"custom-rule": [{
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],	// no documentation available TODO check with platform if it's still in use
 	"variable": [{
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 		// only useful for modeler
 	}],
 

@@ -1,12 +1,12 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel } from '../symbolsAndReferences';
-import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_condition_options_attribute_type, search_childs, search_attributes, input_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition } from './shared';
+import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_condition_options_attribute_type, search_children, search_attributes, input_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, child_include, child_merge_instruction, child_model_condition } from './shared';
 export const INFOSET_DEFINITION: Definitions = {
 	"infosets": [{
 		description: "Collection of infosets.",
 		attributes: [
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "module"
 			},
@@ -46,7 +46,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			dev_is_declaration_attribute,
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "input"
 			},
@@ -117,7 +117,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			dev_description_attribute,
 			dev_comment_attribute,
 		],
-		childs: [
+		children: [
 			{
 				element: "module"
 			},
@@ -274,7 +274,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: search_childs
+		children: search_children
 	}],
 	"searchcolumn": [{
 		description: "Definition of the conditions of the search.",
@@ -435,7 +435,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				},
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"searchcolumn-submatch": [{
 		description: "A condition that matches an attribute with sub query results.",
@@ -471,7 +471,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				type: search_condition_options_attribute_type
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "scalar-aggregate-query",
 				occurence: "once"
@@ -488,18 +488,18 @@ export const INFOSET_DEFINITION: Definitions = {
 	"or": [{
 		description: "The or-operator between search columns. Use the group element to specify brackets.",
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"and": [{
 		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted.",
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"group": [{
 		isGroupingElement:true,
 		description: "",
 		attributes: [dev_comment_attribute],
-		childs: search_childs
+		children: search_children
 	}],
 	"in": [{
 		description: "Applies a querying condition to a relation. This may be a relation from the queried type to another type, or vice versa. It may even be applied to non-relation attributes.",
@@ -550,7 +550,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				}
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "search",
 				required: true,
@@ -570,12 +570,12 @@ export const INFOSET_DEFINITION: Definitions = {
 				required: true
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"query": [{
 		description: "A specific data query command.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "select",
 				occurence: "once"
@@ -592,32 +592,32 @@ export const INFOSET_DEFINITION: Definitions = {
 	"exists": [{
 		description: "Evaluates if a selected data object exists.",
 		attributes: search_attributes,
-		childs: search_childs
+		children: search_children
 	}],
 	"count": [{
 		description: "Evaluates the count over the selected data objects.",
 		attributes: search_attributes,
-		childs: search_childs
+		children: search_children
 	}],
 	"min": [{
 		description: "Evaluates the minimal value of an attribute over the selected data objects.",
 		attributes: search_attributes,
-		childs: search_childs
+		children: search_children
 	}],
 	"max": [{
 		description: "Evaluates the maximal value of an attribute over the selected data objects.",
 		attributes: search_attributes,
-		childs: search_childs
+		children: search_children
 	}],
 	"average": [{
 		description: "Evaluates the average of an attribute over the selected data objects.",
 		attributes: search_attributes,
-		childs: search_childs
+		children: search_children
 	}],
 	"sum": [{
 		description: "Evaluates the sum of an attribute over the selected data objects.",
 		attributes: search_attributes,
-		childs: search_childs
+		children: search_children
 	}],
 	"generate-interval": [{
 		description: "Will generate a series of values for the attribute \"x\". See the type \"XType\" in the generic backend.",
@@ -655,7 +655,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				}
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"set-aggregate-query": [{
 		description: "Specifies an aggregate query that returns a set of aggregate result objects.",
@@ -700,7 +700,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				description: "A reference to a grouping on the type being queryed. May also be defined inline."	// TODO: should not be visible if child group is added
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "aggregate-attribute",
 				occurence: "at-least-once",
@@ -733,7 +733,7 @@ export const INFOSET_DEFINITION: Definitions = {
 	"ordering": [{
 		description: "An ordering over sets of objects of a certain type.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "sort",
 				occurence: "at-least-once",
@@ -773,12 +773,12 @@ export const INFOSET_DEFINITION: Definitions = {
 				}
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"grouping": [{
 		description: "A grouping over sets of objects of a certain type.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "grouping-item",
 				occurence: "at-least-once",
@@ -794,7 +794,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				description: "Specifies a type attribute to use as grouping."
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"variable": [{
 		description: "An infoset can be based on one or more variables. The values of the contained infoset variables will be collected into the infoset. You can assign a fixed value to a variable, base it upon an aggregation, or base it upon a query.",
@@ -851,7 +851,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			dev_obsolete_message_attribute,
 			dev_comment_attribute
 		],
-		childs: [ // HUH? ... WHY??
+		children: [ // HUH? ... WHY??
 			{
 				element: "input"
 			},
@@ -907,7 +907,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				]
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "input"
 			},
@@ -962,7 +962,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: []
+		children: []
 	}],
 	"include": [include_element],
 	"model-condition": [model_condition_element],
@@ -990,7 +990,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: []
+		children: []
 	}],
 	"merge-instruction": [merge_instruction_element],
 	"select": [{
@@ -1087,7 +1087,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: []
+		children: []
 	}],
 	"delete": [{
 		description: "Delete a data object.",
@@ -1143,7 +1143,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "searchcolumn"
 			},

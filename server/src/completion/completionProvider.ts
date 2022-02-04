@@ -231,8 +231,8 @@ export class CompletionProvider {
 	private getChildElementCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
 		const node = context.currentNode as TreeNode;
 		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
-		if (elementDefinition && elementDefinition.childs.length > 0) {
-			return this.mapChildrenToCompletionItems(elementDefinition.childs, modelFileContext);
+		if (elementDefinition && elementDefinition.children.length > 0) {
+			return this.mapChildrenToCompletionItems(elementDefinition.children, modelFileContext);
 		}
 		return [{label: "no child options found for " + node.tag }];
 	}
@@ -297,7 +297,7 @@ export class CompletionProvider {
 
 			return `${attribute.name}="${attrValue}"`;
 		}).join(" ") || "";
-		const childChildren = childsOwnDefinition?.childs;
+		const childChildren = childsOwnDefinition?.children;
 
 		// get the required child nodes and add them to the snippet
 		const childSnippets: string[] = [];
