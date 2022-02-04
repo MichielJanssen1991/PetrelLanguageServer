@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, Definition, AttributeOption, ChildDefinition, ModelElementSubTypes, ElementAttribute} from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
-import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, model_condition_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, backend_action_call_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, default_childs, action_call_childs, dev_comment_attribute, target_namespace_attribute, dev_description_attribute, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, include_block_declaration_definition, target_declaration_definition, decorator_context_entity_element_definition, search_childs, in_element, search_group_element, full_text_query_element, or_element, and_element, search_column_submatch_element, search_column_element } from './shared';
+import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, model_condition_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, backend_action_call_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, default_children, action_call_children, dev_comment_attribute, target_namespace_attribute, dev_description_attribute, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, include_block_declaration_definition, target_declaration_definition, decorator_context_entity_element_definition, search_children, in_element, search_group_element, full_text_query_element, or_element, and_element, search_column_submatch_element, search_column_element } from './shared';
 
 const meta_name_options: AttributeOption[] = [
 	{
@@ -253,7 +253,7 @@ const element_type_attributes_base: ElementAttribute[] = [
 	},
 	{
 		name: "x-acceptedChilds",
-		description: "A pipe-separated list of allowed childs.",
+		description: "A pipe-separated list of allowed children.",
 		visibilityConditions: [
 			{
 				attribute: "x-isParentElement",
@@ -452,7 +452,7 @@ const attribute_attributes: ElementAttribute[] = [
 	},
 	{
 		name: "delete-cascade",
-		description: "Specifies if with the removal of the referred object it is allowed to remove this relation. Indicates that when removing the parent to which this attribute is related, child records also have to be deleted. This is only useful for an identifying relation of e.g. \"Consults per patient\" (as childs) to parent \"Patient\". If false (default) an exception is thrown when one tries to delete the refered object and the relation still exists.",
+		description: "Specifies if with the removal of the referred object it is allowed to remove this relation. Indicates that when removing the parent to which this attribute is related, child records also have to be deleted. This is only useful for an identifying relation of e.g. \"Consults per patient\" (as children) to parent \"Patient\". If false (default) an exception is thrown when one tries to delete the refered object and the relation still exists.",
 		type: default_yes_no_attribute_type,
 		visibilityConditions: [
 			{
@@ -708,44 +708,44 @@ const attribute_attributes: ElementAttribute[] = [
 	}
 ];
 
-const keys_childs: ChildDefinition[] = [
+const keys_children: ChildDefinition[] = [
 	{
 		element: "key",
 		required: true,
 		occurence: "at-least-once"
 	},
-	...default_childs
+	...default_children
 ];
 
-const key_childs: ChildDefinition[] = [
+const key_children: ChildDefinition[] = [
 	{
 		element: "keyfield",
 		occurence: "at-least-once",
 		required: true
 	},
-	...default_childs
+	...default_children
 ];
 
-const server_events_childs: ChildDefinition[] = [
+const server_events_children: ChildDefinition[] = [
 	{
 		element: "server-event",
 		required: true,
 		occurence: "at-least-once"
 	},
-	...default_childs
+	...default_children
 ];
 
-const server_event_childs: ChildDefinition[] = [
+const server_event_children: ChildDefinition[] = [
 	{
 		element: "action"
 	},
 	{
 		element: "clear-var"
 	},
-	...default_childs
+	...default_children
 ];
 
-const module_childs: ChildDefinition[] = [
+const module_children: ChildDefinition[] = [
 	{
 		element: "module"
 	},
@@ -762,10 +762,10 @@ const module_childs: ChildDefinition[] = [
 		element: "decorators",
 		occurence: "once"
 	},
-	...default_childs
+	...default_children
 ];
 
-const attribute_childs: ChildDefinition[] =  [
+const attribute_children: ChildDefinition[] =  [
 	{
 		element: "option"
 	},
@@ -784,10 +784,10 @@ const attribute_childs: ChildDefinition[] =  [
 		element: "auto-field-filter",
 		occurence: "once"
 	},
-	...default_childs
+	...default_children
 ];
 
-const type_childs: ChildDefinition[] = [
+const type_children: ChildDefinition[] = [
 	{
 		element: "attribute"
 	},
@@ -821,7 +821,7 @@ const type_childs: ChildDefinition[] = [
 	{
 		element: "one-to-many"
 	},
-	...default_childs
+	...default_children
 ];
 
 const target_element_definition: Definition = {
@@ -838,7 +838,7 @@ const target_element_definition: Definition = {
 			}
 		}
 	],
-	childs: []
+	children: []
 };
 
 const include_block_backend_declaration_definition: Definition = {
@@ -892,7 +892,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				description: "relative location for the documents which are included in the rules"
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "application",
 				occurence: "once"
@@ -906,7 +906,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				description: "The unique name of the application"
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "module"
 			},
@@ -926,7 +926,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				element: "decorations",
 				occurence: "once"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"module": [{
@@ -944,7 +944,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			dev_description_attribute,
 			dev_comment_attribute,
 		],
-		childs: module_childs
+		children: module_children
 	}],
 	"type": [{
 		type: ModelElementTypes.Type,
@@ -953,18 +953,18 @@ export const BACKEND_DEFINITION: Definitions = {
 		prefixNameSpace: true,
 		description: "",
 		attributes: element_type_attributes,
-		childs: type_childs
+		children: type_children
 	}],
 	"virtual-filter": [{
 		description: "A filter on the base type that is defined here. The other way to set the virtual-filter is to select one of the filters defined at the base type using the attribute virtual-filter.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "search",
 				occurence: "once",
 				required: true
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"single-aggregate-query": [infoset_single_aggregate_query],
@@ -1004,7 +1004,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				}
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"attribute": [{
 		type: ModelElementTypes.Attribute,
@@ -1012,7 +1012,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		isSymbolDeclaration: true,
 		description: "Describes an attribute of this type.",
 		attributes: attribute_attributes,
-		childs: attribute_childs
+		children: attribute_children
 	}],
 	"option": [{
 		description: "A field value option. Options may be used for enums, radios and boolsets.",
@@ -1084,12 +1084,12 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: []
+		children: []
 	}],
 	"keys": [{
 		description: "Database indexing keys. These are the sorting keys for creating (non) unique indices, as a result of which a performance improvement can be realised. Keys are when possible, used for queries. When no suitable key is found, the framework searches for the minimal set (this will however be usually bigger than when with a suitable key). From this set, at the server, those records that not satisfactory with a slower mechanism, are removed.",
 		attributes: [dev_comment_attribute],
-		childs: keys_childs
+		children: keys_children
 	}],
 	"key": [{
 		description: "A database indexing key. Max lenght of 30 letters",
@@ -1113,7 +1113,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: key_childs
+		children: key_children
 	}],
 	"keyfield": [{
 		description: "",
@@ -1128,19 +1128,19 @@ export const BACKEND_DEFINITION: Definitions = {
 				}
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"format": [{
 		description: "Defines a lay-out.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "image"
 			},
 			{
 				element: "text"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"image": [{
@@ -1155,7 +1155,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				description: "The height of the option images."
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"text": [{
 		description: "Displays the option labels.",
@@ -1165,13 +1165,13 @@ export const BACKEND_DEFINITION: Definitions = {
 				description: "The width of the option labels."
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"server-events": [{
 		type: ModelElementTypes.ServerEvents,
 		description: "A server event registration.",
 		attributes: [dev_comment_attribute],
-		childs: server_events_childs
+		children: server_events_children
 	}],
 	"server-event": [{
 		type: ModelElementTypes.ServerEvent,
@@ -1249,7 +1249,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: server_event_childs
+		children: server_event_children
 	}],
 	"decorations": [decorations_element],
 	"decoration": [decoration_element],
@@ -1273,8 +1273,8 @@ export const BACKEND_DEFINITION: Definitions = {
 			...target_element_definition.attributes,
 			...element_type_attributes_non_required
 		],
-		childs: [
-			...type_childs
+		children: [
+			...type_children
 		]
 	},
 	{ // attribute
@@ -1285,8 +1285,8 @@ export const BACKEND_DEFINITION: Definitions = {
 			...target_element_definition.attributes,
 			...attribute_attributes
 		],
-		childs: [
-			...attribute_childs
+		children: [
+			...attribute_children
 		]
 	},
 	],
@@ -1303,72 +1303,72 @@ export const BACKEND_DEFINITION: Definitions = {
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Module,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "module"),
-			childs: [
-				...module_childs
+			children: [
+				...module_children
 			]
 		},
 		{ // type
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Type,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "type"),
-			childs: [
-				...type_childs
+			children: [
+				...type_children
 			]
 		},
 		{ // attribute
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Attribute,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "attribute"),
-			childs: [
-				...attribute_childs
+			children: [
+				...attribute_children
 			]
 		},
 		{ // server-events
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ServerEvents,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "server-events"),
-			childs: [
-				...server_events_childs
+			children: [
+				...server_events_children
 			]
 		},
 		{ // server-event
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ServerEvent,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "server-event"),
-			childs: [
-				...server_event_childs
+			children: [
+				...server_event_children
 			]
 		},
 		{ // keys
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Keys,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "keys"),
-			childs: [
-				...keys_childs
+			children: [
+				...keys_children
 			]
 		},
 		{ // key
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Keys,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "key"),
-			childs: [
-				...key_childs
+			children: [
+				...key_children
 			]
 		},
 		{ // action
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Action,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "action"),
-			childs: [
-				...action_call_childs
+			children: [
+				...action_call_children
 			]
 		},
 		{ // action
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Search,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "search"),
-			childs: [
-				...search_childs
+			children: [
+				...search_children
 			]
 		},
 	],
@@ -1378,25 +1378,25 @@ export const BACKEND_DEFINITION: Definitions = {
 			...model_condition_element,
 			subtype: ModelElementSubTypes.ModelCondition_Attribute,
 			ancestors: [{ type: ModelElementTypes.Attribute}],
-			childs: attribute_childs
+			children: attribute_children
 		},
 		{
 			...model_condition_element,
 			subtype: ModelElementSubTypes.ModelCondition_ServerEvent,
 			ancestors: [{ type: ModelElementTypes.ServerEvent}],
-			childs: server_event_childs
+			children: server_event_children
 		},
 		{
 			...model_condition_element,
 			subtype: ModelElementSubTypes.ModelCondition_ServerEvents,
 			ancestors: [{ type: ModelElementTypes.ServerEvents}],
-			childs: server_events_childs
+			children: server_events_children
 		},
 		{
 			...model_condition_element,
 			subtype: ModelElementSubTypes.ModelCondition_Type,
 			ancestors: [{ type: ModelElementTypes.Type}],
-			childs: type_childs
+			children: type_children
 		},
 		
 	],
@@ -1425,7 +1425,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: []
+		children: []
 	}],
 	"merge-instruction": [merge_instruction_element],
 	"input": [{
@@ -1438,17 +1438,17 @@ export const BACKEND_DEFINITION: Definitions = {
 				detailLevel: ModelDetailLevel.Declarations
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"output": [action_call_output_element],
 	"filters": [{
 		description: "Defines search filters for this type.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "search"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"search": [{
@@ -1474,7 +1474,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: search_childs
+		children: search_children
 	}],
 	"searchcolumn": [search_column_element],
 	"searchcolumn-submatch": [search_column_submatch_element],
@@ -1485,7 +1485,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"full-text-query": [full_text_query_element],
 	"file-categories": [{
 			attributes: [],
-			childs: [{element: "category"}]
+			children: [{element: "category"}]
 	}],
 	"category": [{
 		description: "",
@@ -1497,6 +1497,6 @@ export const BACKEND_DEFINITION: Definitions = {
 			name: "caption",
 			required: true
 		}],
-		childs: []	
+		children: []	
 	}],
 };

@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption, Definition, ModelElementSubTypes } from '../symbolsAndReferences';
 import { isIncludeBlockOfType, isViewControl } from './other';
-import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_definition, decorator_element, decorator_input_element, default_childs, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_childs, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_declaration_definition, target_namespace_attribute, view_argument_element, view_group_attributes } from './shared';
+import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_definition, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_declaration_definition, target_namespace_attribute, view_argument_element, view_group_attributes } from './shared';
 
 const button_attributes: ElementAttribute[] =
 	[
@@ -135,7 +135,7 @@ const button_attributes: ElementAttribute[] =
 		dev_comment_attribute
 	];
 
-const button_childs: ChildDefinition[] =
+const button_children: ChildDefinition[] =
 	[
 		{
 			element: "icon"
@@ -149,7 +149,7 @@ const button_childs: ChildDefinition[] =
 		{
 			element: "format"
 		},
-		...default_childs
+		...default_children
 	];
 
 const view_attribute_name_required: ElementAttribute = {
@@ -686,7 +686,7 @@ const default_reference_view_attributes: ElementAttribute[] = [
 	view_attribute_control,
 ];
 
-const default_view_childs: ChildDefinition[] = [
+const default_view_children: ChildDefinition[] = [
 	{
 		element: "events"
 	},
@@ -703,10 +703,10 @@ const default_view_childs: ChildDefinition[] = [
 		element: "server-events",
 		occurence: "once"
 	},
-	...default_childs
+	...default_children
 ];
 
-// const default_view_unknown_childs: ChildDefinition[] = [
+// const default_view_unknown_children: ChildDefinition[] = [
 // 	{
 // 		element: "layout",			// not in use
 // 		occurence: "once"
@@ -735,7 +735,7 @@ const default_view_childs: ChildDefinition[] = [
 // 	}
 // ];
 
-const default_view_record_childs: ChildDefinition[] = [
+const default_view_record_children: ChildDefinition[] = [
 	{
 		element: "attribute"
 	},
@@ -758,13 +758,13 @@ const default_view_record_childs: ChildDefinition[] = [
 const frontend_events_base_definition: Definition = {
 	description: "Frontend event registrations.\"Events\":[EventsAndActions_ActionsOverview] are the predefined events at the client side. These trigger a server side or client side action, as a result of which an operation (on the server or in the screen) is initiated.",
 	attributes: [dev_comment_attribute],
-	childs: [
+	children: [
 		{
 			element: "event",
 			required: true,
 			occurence: "at-least-once"
 		},
-		...default_childs
+		...default_children
 	]
 };
 
@@ -809,9 +809,9 @@ const objectview_base_definition: Definition = {
 			type: default_yes_no_attribute_type
 		},
 	],
-	childs: [
-		...default_view_childs,
-		...default_view_record_childs,
+	children: [
+		...default_view_children,
+		...default_view_record_children,
 		{
 			element: "separator"
 		},
@@ -953,9 +953,9 @@ const listview_base_definition: Definition = { // Listview
 		},
 
 	],
-	childs: [
-		...default_view_childs,
-		...default_view_record_childs,
+	children: [
+		...default_view_children,
+		...default_view_record_children,
 		{
 			element: "sort"
 		}
@@ -974,8 +974,8 @@ const treeview_base_definition: Definition = { // Tree
 			}
 		}
 	],
-	childs: [
-		...default_view_childs
+	children: [
+		...default_view_children
 	]
 };
 const datatree_view_base_definition:Definition = { // DataTree
@@ -983,8 +983,8 @@ const datatree_view_base_definition:Definition = { // DataTree
 	description: "DataTree as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "DataTree"),
 	attributes: [],
-	childs: [
-		...default_view_childs,
+	children: [
+		...default_view_children,
 		{
 			element: "list",
 			occurence: "once"
@@ -1012,8 +1012,8 @@ const htmlfile_view_base_definition:Definition = { // HtmlFile
 			]
 		}
 	],
-	childs: [
-		...default_view_childs
+	children: [
+		...default_view_children
 	]
 };
 const organizer_view_base_definition:Definition = { // Organizer
@@ -1208,8 +1208,8 @@ const organizer_view_base_definition:Definition = { // Organizer
 			type: default_yes_no_attribute_type
 		},
 	],
-	childs: [
-		...default_view_childs,
+	children: [
+		...default_view_children,
 		{
 			element: "units",
 			occurence: "once"
@@ -1279,8 +1279,8 @@ const mediaplayer_view_base_definition:Definition = { // MediaPlayer
 			]
 		},
 	],
-	childs: [
-		...default_view_childs
+	children: [
+		...default_view_children
 	]
 };
 const annotationtool_view_base_definition:Definition = { // AnnotationTool
@@ -1311,8 +1311,8 @@ const annotationtool_view_base_definition:Definition = { // AnnotationTool
 			]
 		},
 	],
-	childs: [
-		...default_view_childs
+	children: [
+		...default_view_children
 	]
 };
 const tabber_view_base_definition:Definition = { // Tabber
@@ -1337,7 +1337,7 @@ const tabber_view_base_definition:Definition = { // Tabber
 			description: "The active subview.</summary>For view tabbers, specifies the tabber view that starts the default when starting the view.",
 			type: {
 				type: AttributeTypes.Reference,
-				relatedTo: ModelElementTypes.TargetView // TODO filter on childs/siblings
+				relatedTo: ModelElementTypes.TargetView // TODO filter on children/siblings
 			},
 			visibilityConditions: [
 				{
@@ -1387,8 +1387,8 @@ const tabber_view_base_definition:Definition = { // Tabber
 			]
 		},
 	],
-	childs: [
-		...default_view_childs
+	children: [
+		...default_view_children
 	]
 };
 const container_view_base_definition:Definition = { // ViewContainer
@@ -1439,8 +1439,8 @@ const container_view_base_definition:Definition = { // ViewContainer
 			]
 		},
 	],
-	childs: [
-		...default_view_childs,
+	children: [
+		...default_view_children,
 		{
 			element: "view"
 		}
@@ -1462,12 +1462,12 @@ const iframe_view_base_definition:Definition = { // Iframe
 			]
 		}
 	],
-	childs: [
+	children: [
 		{
 			element: "style-variables",
 			occurence: "once"
 		},
-		...default_view_childs,
+		...default_view_children,
 
 	]
 };
@@ -1475,8 +1475,8 @@ const empty_view_base_definition:Definition = { // Empty
 	subtype: ModelElementSubTypes.View_IFrame,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Empty"),
 	attributes: [],
-	childs: [
-		...default_view_childs
+	children: [
+		...default_view_children
 	]
 };
 
@@ -1538,7 +1538,7 @@ const include_block_meta_options: AttributeOption[] = [
 	}
 ];
 
-const action_childs: ChildDefinition[] = [
+const action_children: ChildDefinition[] = [
 	{
 		element: "graph-params",
 		occurence: "once"
@@ -1561,10 +1561,10 @@ const action_childs: ChildDefinition[] = [
 	{
 		element: "button"
 	},
-	...default_childs
+	...default_children
 ];
 
-const view_group_childs: ChildDefinition[] =
+const view_group_children: ChildDefinition[] =
 [
 	{
 		element: "group"
@@ -1590,7 +1590,7 @@ const view_group_childs: ChildDefinition[] =
 	{
 		element: "decorations"
 	},
-	...default_childs
+	...default_children
 ];
 
 const attribute_attributes: ElementAttribute[] = [
@@ -2022,7 +2022,7 @@ const attribute_attributes: ElementAttribute[] = [
 	}
 ];
 
-const attribute_childs: ChildDefinition[] = [
+const attribute_children: ChildDefinition[] = [
 	{
 		element: "option"
 	},
@@ -2047,10 +2047,10 @@ const attribute_childs: ChildDefinition[] = [
 	{
 		element: "copy-attribute" // TODO still in use?
 	},
-	...default_childs
+	...default_children
 ];
 
-const module_childs: ChildDefinition[] = [
+const module_children: ChildDefinition[] = [
 	{
 		element: "module"
 	},
@@ -2081,7 +2081,7 @@ const module_childs: ChildDefinition[] = [
 	{
 		element: "main-view"
 	},
-	...default_childs
+	...default_children
 ];
 
 const include_block_frontend_declaration_definition: Definition = {
@@ -2125,7 +2125,7 @@ const target_element_definition: Definition = {
 			}
 		}
 	],
-	childs: []
+	children: []
 };
 
 const decorator_context_entity_element: Definition = {
@@ -2154,8 +2154,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				...default_view_attributes,
 				...default_definition_view_attributes,
 			],
-			childs: [
-				...default_view_childs
+			children: [
+				...default_view_children
 			]
 		},
 		{ // General (no control type) subview
@@ -2166,8 +2166,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				...default_view_attributes,
 				...default_reference_view_attributes,
 			],
-			childs: [
-				...default_view_childs
+			children: [
+				...default_view_children
 			]
 		},
 		{ // ObjectView as definition
@@ -2391,7 +2391,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"root": [{
 		description: "Project root of the frontend model.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "application",
 				occurence: "at-least-once"
@@ -2417,7 +2417,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				}
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "views",
 				occurence: "once"
@@ -2455,7 +2455,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "include-block"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"include-blocks": [include_blocks_element],
@@ -2468,80 +2468,80 @@ export const FRONTEND_DEFINITION: Definitions = {
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Module,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "module"),
-			childs: [
-				...module_childs
+			children: [
+				...module_children
 			]
 		},
 		{ // objectview
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ObjectView,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "ObjectView"),
-			childs: [
-				...objectview_base_definition.childs
+			children: [
+				...objectview_base_definition.children
 			]
 		},
 		{ // listview
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ListView,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "ListView"),
-			childs: [
-				...listview_base_definition.childs
+			children: [
+				...listview_base_definition.children
 			]
 		},
 		{ // treeview
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_TreeView,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "TreeView"),
-			childs: [
-				...treeview_base_definition.childs
+			children: [
+				...treeview_base_definition.children
 			]
 		},
 		{ // viewcontainer
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ViewContainer,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "ViewContainer"),
-			childs: [
-				...container_view_base_definition.childs
+			children: [
+				...container_view_base_definition.children
 			]
 		},
 		{ // generic view
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_View,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "view"),
-			childs: [
-				...default_view_childs
+			children: [
+				...default_view_children
 			]
 		},
 		{ // attribute
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Attribute,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "attribute"),
-			childs: [
-				...attribute_childs
+			children: [
+				...attribute_children
 			]
 		},
 		{ // group
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Group,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "group"),
-			childs: [
-				...view_group_childs
+			children: [
+				...view_group_children
 			]
 		},
 		{ // button
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Button,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "button"),
-			childs: [
-				...button_childs
+			children: [
+				...button_children
 			]
 		},
 		{ // action
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Action,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "action"),
-			childs: [
-				...action_childs
+			children: [
+				...action_children
 			]
 		},
 		
@@ -2570,7 +2570,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "view"
 			},
@@ -2578,7 +2578,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "style-variables",
 				occurence: "once"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"module": [{
@@ -2596,13 +2596,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_description_attribute,
 			dev_comment_attribute,
 		],
-		childs: module_childs
+		children: module_children
 	}],
 	"model-condition": [model_condition_element],
 	"trees": [{
 		description: "Used to group navigation trees.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "tree"
 			},
@@ -2615,7 +2615,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "include-block"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"tree": [{
@@ -2646,11 +2646,11 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "node"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"node": [{
@@ -2702,7 +2702,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "node"
 			},
@@ -2714,20 +2714,20 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "view",
 				occurence: "once"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"toolbars": [{
 		description: "Used to group toolbars.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "toolbar"
 			},
 			{
 				element: "module"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"toolbar": [{
@@ -2777,7 +2777,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_attribute,
 			dev_ignore_modelcheck_justification_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "toolbarbutton"
 			},
@@ -2793,7 +2793,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "dropdown"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"toolbarbutton": [{
@@ -2946,7 +2946,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "events"
 			},
@@ -2959,19 +2959,19 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "text"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"pagenumbers": [{
 		description: "Toolbar item for paged navigation.",
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"views": [{
 		description: "Used for grouping views.",
 		type: ModelElementTypes.Views,
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "view"
 			},
@@ -2984,7 +2984,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "include-blocks"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"argument": [
@@ -3046,11 +3046,11 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"server-events": [{
 		description: "",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "server-event"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"server-event": [{
@@ -3071,7 +3071,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				}
 			}
 		],
-		childs: event_childs
+		children: event_children
 	}],
 	"event": [
 		{
@@ -3119,7 +3119,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				dev_ignore_modelcheck_justification_attribute,
 				dev_comment_attribute
 			],
-			childs: event_childs
+			children: event_children
 		},
 		{
 			type: ModelElementTypes.Event_Button,
@@ -3150,7 +3150,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				dev_ignore_modelcheck_justification_attribute,
 				dev_comment_attribute
 			],
-			childs: event_childs
+			children: event_children
 		},
 		{
 			type: ModelElementTypes.Event_ToolBarButton,
@@ -3181,7 +3181,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				dev_ignore_modelcheck_justification_attribute,
 				dev_comment_attribute
 			],
-			childs: event_childs
+			children: event_children
 		},
 		{
 			type: ModelElementTypes.Event_Node,
@@ -3208,7 +3208,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				dev_ignore_modelcheck_justification_attribute,
 				dev_comment_attribute
 			],
-			childs: event_childs
+			children: event_children
 		},
 		{
 			type: ModelElementTypes.Event_Group,
@@ -3239,7 +3239,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				dev_ignore_modelcheck_justification_attribute,
 				dev_comment_attribute
 			],
-			childs: event_childs
+			children: event_children
 		},
 		{
 			type: ModelElementTypes.Event_Tab,
@@ -3270,7 +3270,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				dev_ignore_modelcheck_justification_attribute,
 				dev_comment_attribute
 			],
-			childs: event_childs
+			children: event_children
 		},
 		{
 			type: ModelElementTypes.Event_Action,
@@ -3296,7 +3296,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				dev_ignore_modelcheck_justification_attribute,
 				dev_comment_attribute
 			],
-			childs: event_childs
+			children: event_children
 		},
 		{
 			type: ModelElementTypes.Event_MenuItem,
@@ -3322,7 +3322,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				dev_ignore_modelcheck_justification_attribute,
 				dev_comment_attribute
 			],
-			childs: event_childs
+			children: event_children
 		},
 		{
 			type: ModelElementTypes.Event_View,
@@ -3530,7 +3530,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				dev_ignore_modelcheck_justification_attribute,
 				dev_comment_attribute
 			],
-			childs: event_childs
+			children: event_children
 		},
 	],
 	"attribute": [{
@@ -3539,7 +3539,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		isSymbolDeclaration: true,
 		description: "Describes an attribute of this type.",
 		attributes: attribute_attributes,
-		childs: attribute_childs
+		children: attribute_children
 	}],
 	"group": [
 		{
@@ -3558,7 +3558,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			subtype: ModelElementSubTypes.Group_View,
 			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
 			attributes: view_group_attributes,
-			childs: view_group_childs
+			children: view_group_children
 		},
 		{
 			ancestors: [{type: ModelElementTypes.Condition}],
@@ -3566,7 +3566,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			subtype: ModelElementSubTypes.Group_Condition,
 			description: "A group set, used to filter.",
 			attributes: [dev_comment_attribute],
-			childs: [
+			children: [
 				{
 					element: "group"
 				},
@@ -3618,7 +3618,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			}],
 			isSymbolDeclaration: true,
 			attributes: button_attributes,
-			childs: button_childs
+			children: button_children
 		},
 		{
 			description: "A message/question answer button",
@@ -3643,13 +3643,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 					required: true
 				},
 			],
-			childs: []
+			children: []
 		},
 	],
 	"separator": [{
 		description: "Separates nodes by a horizontal space.",
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"tabber": [{
 		description: "A tabber control by which fields can be tabbed.",
@@ -3697,13 +3697,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_override_rights_attribute,
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "tab",
 				occurence: "at-least-once",
 				required: true
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"tab": [{
@@ -3778,7 +3778,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_override_rights_attribute,
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "events",
 				occurence: "once"
@@ -3798,21 +3798,21 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "view"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"titlebar": [{
 		description: "Definition of the titlebar of the view, in which title buttons can be added. When loaded in a popup, the elements are added to the header.",
 		type: ModelElementTypes.TitleBar,
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "button"
 			},
 			{
 				element: "dropdown"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"dropdown": [{
@@ -3824,7 +3824,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				required: true
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "menu",
 				occurence: "once"
@@ -3838,13 +3838,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "button",
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"menu": [{
 		description: "The menu displayed when the dropdown opens.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "menuitem"
 			},
@@ -3854,14 +3854,14 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "menudivider"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"menuitem": [{
 		description: "A menu item. Typically this will contain a button element.",
 		attributes: [dev_comment_attribute],
 		type: ModelElementTypes.MenuItem,
-		childs: [
+		children: [
 			{
 				element: "text",
 			},
@@ -3871,13 +3871,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "button"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"menuheader": [{
 		description: "A menu header, that can be placed above a set of items to group them. Typically this will contain a text element.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "text",
 			},
@@ -3887,13 +3887,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "button"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"menudivider": [{
 		description: "A menu divider that can be used to separate groups of menu items.",
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"text": [{
 		description: "Adds text.",
@@ -3908,7 +3908,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "A style class applied to the element."
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"icon": [{
 		description: "Adds an icon.",
@@ -3922,12 +3922,12 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "Path to a background image to use as icon."
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"format": [{
 		description: "Defines a lay-out.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "image"
 			},
@@ -3948,7 +3948,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "The height of the option images. The default value is 16px."
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"action": [{
 		description: "An Action",
@@ -4099,7 +4099,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: action_childs
+		children: action_children
 	}],
 	"output": [
 		action_call_output_element,
@@ -4116,7 +4116,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				dev_ignore_modelcheck_justification_attribute,
 				dev_comment_attribute
 			],
-			childs: []
+			children: []
 		}
 	],
 	"input": [input_element],
@@ -4212,7 +4212,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_override_rights_attribute,
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "action"
 			},
@@ -4239,7 +4239,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "group"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"field": [{
@@ -4267,42 +4267,42 @@ export const FRONTEND_DEFINITION: Definitions = {
 				type: default_yes_no_attribute_type
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"or": [{
 		description: "The or-operator between search columns. Use the group element to specify brackets.",
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"and": [{
 		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted.",
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"then": [{
 		description: "The actions in the then will only be executed if the conditions succeed.",
 		attributes: [dev_override_rights_attribute],
-		childs: [
+		children: [
 			{
 				element: "action"
 			},
 			{
 				element: "condition"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"else": [{
 		description: "The actions in or after the else will only be executed if the conditions fail.",
 		attributes: [dev_override_rights_attribute],
-		childs: [
+		children: [
 			{
 				element: "action"
 			},
 			{
 				element: "condition"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"option": [{
@@ -4320,12 +4320,12 @@ export const FRONTEND_DEFINITION: Definitions = {
 				type: default_yes_no_attribute_type
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"validations": [{
 		description: "This will allow validating the fields etc.",
 		attributes: [dev_comment_attribute],
-		childs: [{
+		children: [{
 			element: "validation"
 		}]
 	}],
@@ -4350,7 +4350,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "A regular expression to validate the value of the field."
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"sort": [{
 		description: "Defines an ordering over a property of objects of a certain type. Multiple property orderings may be stacked.",
@@ -4377,7 +4377,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				}
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"list": [{
 		description: "Datatree list definition.",
@@ -4416,7 +4416,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: ""
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"attachments": [{
 		description: "A list of all attachments of the current object.",
@@ -4427,7 +4427,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: []
+		children: []
 	}],
 	"layout": [{
 		description: "",
@@ -4451,7 +4451,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "Possible values: 'yes', 'no' or some number. If set to 'yes' the user can resize portlets. If the value is a number, this will be the width/height ratio. E.g. ratio 2 will cause that the portlet's width is always twice as much as the height."
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"column": [{
 		description: "",
@@ -4461,7 +4461,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "The width of the column."
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "view"
 			}
@@ -4475,7 +4475,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "The height of the row."
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "view"
 			}
@@ -4483,7 +4483,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"IconConditions": [{
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "IconCondition"
 			}
@@ -4498,7 +4498,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "IconPath"
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"design": [{
 		attributes: [
@@ -4517,7 +4517,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				type: default_yes_no_attribute_type
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"source": [{
 		attributes: [
@@ -4541,52 +4541,52 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "field"
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"units": [{
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"appointments": [{
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"filters": [{
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"filter": [{
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"agenda-view": [{
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"month-view": [{
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"timeline-view": [{
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"units-view": [{
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"week-view": [{
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"year-view": [{
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"report-parameters": [{
 		description: "Parameters to pass to the report.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "report-parameter",
 				occurence: "at-least-once"
@@ -4609,7 +4609,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "A constant value to pass instead of an argument."
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"style-variables": [{
 		description: "Apply style variables to the view HTML element",
@@ -4620,7 +4620,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "argument"
 			}
@@ -4634,7 +4634,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "function"
 			},
@@ -4662,7 +4662,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "input"
 			},
@@ -4675,13 +4675,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				element: "action"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"resources": [{
 		description: "References to include in the frontend.",
 		attributes: [dev_comment_attribute],
-		childs: [
+		children: [
 			{
 				element: "script"
 			},
@@ -4714,7 +4714,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				}
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"stylesheet": [{
 		description: "A stylesheet reference to include in the frontend.",
@@ -4740,7 +4740,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				}
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"search": [{
 		description: "Toolbar search field.",
@@ -4789,7 +4789,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				description: "The width of the search field in \"closed\" form."
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"decorations": [decorations_element],
 	"decoration": [decoration_element],
@@ -4813,8 +4813,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				...target_element_definition.attributes,
 				...objectview_base_definition.attributes
 			],
-			childs: [
-				...objectview_base_definition.childs
+			children: [
+				...objectview_base_definition.children
 			]
 		},
 		{ // listview
@@ -4825,8 +4825,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				...target_element_definition.attributes,
 				...listview_base_definition.attributes
 			],
-			childs: [
-				...listview_base_definition.childs
+			children: [
+				...listview_base_definition.children
 			]
 		},
 		{ // viewcontainer
@@ -4837,8 +4837,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				...target_element_definition.attributes,
 				...container_view_base_definition.attributes
 			],
-			childs: [
-				...container_view_base_definition.childs
+			children: [
+				...container_view_base_definition.children
 			]
 		},
 		{ // treeview
@@ -4849,8 +4849,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				...target_element_definition.attributes,
 				...treeview_base_definition.attributes
 			],
-			childs: [
-				...treeview_base_definition.childs
+			children: [
+				...treeview_base_definition.children
 			]
 		},
 		{ // view
@@ -4861,8 +4861,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				...target_element_definition.attributes,
 				...default_view_attributes
 			],
-			childs: [
-				...default_view_childs
+			children: [
+				...default_view_children
 			]
 		},
 		{ // group
@@ -4873,8 +4873,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				...target_element_definition.attributes,
 				...view_group_attributes
 			],
-			childs: [
-				...view_group_childs
+			children: [
+				...view_group_children
 			]
 		},
 		{ // attribute
@@ -4885,8 +4885,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				...target_element_definition.attributes,
 				...attribute_attributes
 			],
-			childs: [
-				...attribute_childs
+			children: [
+				...attribute_children
 			]
 		},
 	],
@@ -4906,7 +4906,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				type: default_yes_no_attribute_type
 			},
 		],
-		childs: [
+		children: [
 			{
 				element: "action"
 			},

@@ -215,7 +215,7 @@ export const target_namespace_attribute: ElementAttribute =
 		]
 	};
 
-export const default_childs: ChildDefinition[] = [
+export const default_children: ChildDefinition[] = [
 		{
 			element: "include"
 		},
@@ -243,7 +243,7 @@ export const child_model_condition: ChildDefinition =
 		element: "model-condition"
 	};
 
-export const action_call_childs: ChildDefinition[] =[
+export const action_call_children: ChildDefinition[] =[
 	{
 		element: "argument"
 	},
@@ -260,7 +260,7 @@ export const action_call_childs: ChildDefinition[] =[
 	{
 		element: "include-block"
 	},
-	...default_childs
+	...default_children
 ];
 
 export const input_element: Definition = {
@@ -297,7 +297,7 @@ export const input_element: Definition = {
 		dev_ignore_modelcheck_justification_attribute,
 		dev_comment_attribute
 	],
-	childs: []
+	children: []
 };
 
 	export const include_blocks_element: Definition =
@@ -314,7 +314,7 @@ export const input_element: Definition = {
 			},
 			dev_comment_attribute
 		],
-		childs: [
+		children: [
 			{
 				element: "include-blocks"
 			},
@@ -346,7 +346,7 @@ export const merge_instruction_element: Definition =
 			},
 			dev_comment_attribute
 		],
-		childs: []
+		children: []
 	};
 
 export const infoset_single_aggregate_query: Definition = 
@@ -375,7 +375,7 @@ export const infoset_single_aggregate_query: Definition =
 				}
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "aggregate-attribute",
 				occurence: "at-least-once",
@@ -398,7 +398,7 @@ export const infoset_aggregate_attribute: Definition =
 				description: "Unique identifer. This name is used as output name."
 			}
 		], 
-		childs: [
+		children: [
 			{
 				element: "aggregate-function"
 			}
@@ -449,7 +449,7 @@ export const infoset_aggregate_function: Definition =
 				]
 			}
 		],
-		childs: []
+		children: []
 	};
 export const backend_action_call_element: Definition =
 	{
@@ -530,7 +530,7 @@ export const backend_action_call_element: Definition =
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: action_call_childs
+		children: action_call_children
 	};
 
 export const model_condition_element: Definition =
@@ -599,7 +599,7 @@ export const model_condition_element: Definition =
 				autoadd: true
 			},
 		],
-		childs: []
+		children: []
 	};
 
 export const include_element: Definition =
@@ -660,7 +660,7 @@ export const include_element: Definition =
 			},
 			{
 				name: "move-merged-childs",
-				description: "If the included block moves childs that the included block and the current context have in common up to the include point. Default, merged childs are moved.",
+				description: "If the included block moves children that the included block and the current context have in common up to the include point. Default, merged children are moved.",
 				type: default_yes_no_attribute_type,
 				visibilityConditions: [
 					{
@@ -712,7 +712,7 @@ export const include_element: Definition =
 			},
 			dev_comment_attribute
 		],
-		childs: []
+		children: []
 	};
 
 export const decorations_element: Definition = 
@@ -721,7 +721,7 @@ export const decorations_element: Definition =
 	attributes: [
 		dev_comment_attribute
 	],
-	childs: [
+	children: [
 		{
 			element: "decoration"
 		}
@@ -745,7 +745,7 @@ export const decoration_element: Definition =
 		},
 		dev_comment_attribute
 	],
-	childs: [
+	children: [
 		{
 			element: "decoration-argument"
 		}
@@ -767,7 +767,7 @@ export const decoration_argument_element: Definition =
 		},
 		dev_comment_attribute
 	],
-	childs: []
+	children: []
 };
 
 export const decorators_element: Definition = 
@@ -775,7 +775,7 @@ export const decorators_element: Definition =
 	type: ModelElementTypes.Decorators,
 	description: "Use to group decorator definitions.",
 	attributes: [dev_comment_attribute],
-	childs: [
+	children: [
 		{
 			element: "decorator"
 		},
@@ -798,7 +798,7 @@ export const decorator_element: Definition =
 			autoadd: true
 		}
 	],
-	childs: [
+	children: [
 		{
 			element: "decorator-input",
 		},
@@ -841,7 +841,7 @@ export const decorator_input_element: Definition =
 			}
 		},
 	],
-	childs: []
+	children: []
 };
 
 export const target_declaration_definition: Definition = {
@@ -850,7 +850,7 @@ export const target_declaration_definition: Definition = {
 	attributes: [
 		dev_comment_attribute
 	],
-	childs: []
+	children: []
 };
 
 export const decorator_context_entity_element_definition: Definition = 
@@ -858,7 +858,7 @@ export const decorator_context_entity_element_definition: Definition =
 	type: ModelElementTypes.DecoratorContextEntity,
 	description: "Some summary",
 	attributes: [],
-	childs: []
+	children: []
 };
 
 export const action_definition_argument_element: Definition = {
@@ -907,7 +907,7 @@ export const action_definition_argument_element: Definition = {
 			}
 		},
 	],
-	childs: []
+	children: []
 };
 
 export const view_argument_element: Definition = {
@@ -1015,7 +1015,7 @@ export const view_argument_element: Definition = {
 		dev_ignore_modelcheck_justification_attribute,
 		dev_comment_attribute
 	],
-	childs: []
+	children: []
 };
 
 export const action_argument_element: Definition = {
@@ -1078,7 +1078,7 @@ export const action_argument_element: Definition = {
 		dev_ignore_modelcheck_justification_attribute,
 		dev_comment_attribute
 	],
-	childs: []
+	children: []
 };
 
 export const action_call_output_element: Definition =
@@ -1141,7 +1141,7 @@ export const action_call_output_element: Definition =
 		dev_ignore_modelcheck_attribute,
 		dev_ignore_modelcheck_justification_attribute
 	],
-	childs: []
+	children: []
 };
 
 export const include_block_declaration_definition: Definition = {
@@ -1158,7 +1158,7 @@ export const include_block_declaration_definition: Definition = {
 			autoadd: true,
 		}
 	],
-	childs: []
+	children: []
 };
 
 export const search_attributes: ElementAttribute[] = 
@@ -1372,7 +1372,7 @@ export const view_group_attributes: ElementAttribute[] =
 	dev_comment_attribute
 ];
 
-export const search_childs: ChildDefinition[] = 
+export const search_children: ChildDefinition[] = 
 [
 	{
 		element: "or"
@@ -1395,10 +1395,10 @@ export const search_childs: ChildDefinition[] =
 	{
 		element: "full-text-query"
 	},
-	...default_childs
+	...default_children
 ];
 
-export const event_childs: ChildDefinition[] = 
+export const event_children: ChildDefinition[] = 
 [
 	{
 		element: "action"
@@ -1411,7 +1411,7 @@ export const event_childs: ChildDefinition[] =
 		obsolete: true,
 		obsoleteMessage: "Place include-block on a location where all include-blocks are grouped"
 	},
-	...default_childs
+	...default_children
 ];
 
 export const in_element: Definition = 
@@ -1464,13 +1464,13 @@ export const in_element: Definition =
 			}
 		}
 	],
-	childs: [
+	children: [
 		{
 			element: "search",
 			required: true,
 			occurence: "once"
 		},
-		...default_childs
+		...default_children
 	]
 };
 
@@ -1479,7 +1479,7 @@ export const search_group_element: Definition =
 	isGroupingElement:true,
 	description: "",
 	attributes: [dev_comment_attribute],
-	childs: search_childs
+	children: search_children
 };
 
 export const full_text_query_element: Definition = 
@@ -1492,21 +1492,21 @@ export const full_text_query_element: Definition =
 			required: true
 		}
 	],
-	childs: []
+	children: []
 };
 
 export const and_element: Definition = 
 {
 	description: "The and-operator between search columns. In fact, and is the default, so it can be omitted.",
 	attributes: [dev_comment_attribute],
-	childs: []
+	children: []
 };
 
 export const or_element: Definition = 
 {
 	description: "The or-operator between search columns. Use the group element to specify brackets.",
 	attributes: [dev_comment_attribute],
-	childs: []
+	children: []
 };
 
 export const search_column_element: Definition = 
@@ -1669,7 +1669,7 @@ export const search_column_element: Definition =
 			},
 		},
 	],
-	childs: []
+	children: []
 };
 
 export const search_column_submatch_element: Definition = 
@@ -1707,7 +1707,7 @@ export const search_column_submatch_element: Definition =
 			type: search_condition_options_attribute_type
 		}
 	],
-	childs: [
+	children: [
 		{
 			element: "scalar-aggregate-query",
 			occurence: "once"
@@ -1716,7 +1716,7 @@ export const search_column_submatch_element: Definition =
 			element: "set-aggregate-query",
 			occurence: "once"
 		},
-		...default_childs
+		...default_children
 	]
 };
 

@@ -1,8 +1,8 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ValidationLevels, ModelDetailLevel, Definition, AttributeOption, ModelElementSubTypes, ChildDefinition } from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
-import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_element, backend_action_call_element, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_is_declaration_attribute, dev_override_rights_attribute, input_element, include_block_declaration_definition, default_childs, action_call_childs } from './shared';
+import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_element, backend_action_call_element, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_is_declaration_attribute, dev_override_rights_attribute, input_element, include_block_declaration_definition, default_children, action_call_children } from './shared';
 
-const switch_childs: ChildDefinition[] = [
+const switch_children: ChildDefinition[] = [
 	{
 		element: "case",
 		occurence: "at-least-once"
@@ -11,10 +11,10 @@ const switch_childs: ChildDefinition[] = [
 		element: "default",
 		occurence: "once"
 	},
-	...default_childs
+	...default_children
 ];
 
-const then_else_childs: ChildDefinition[] = [
+const then_else_children: ChildDefinition[] = [
 	{
 		element: "return"
 	},
@@ -50,10 +50,10 @@ const then_else_childs: ChildDefinition[] = [
 	{
 		element: "switch"
 	},
-	...default_childs
+	...default_children
 ];
 
-const rule_childs: ChildDefinition[] = [
+const rule_children: ChildDefinition[] = [
 	{
 		element: "input"
 	},
@@ -61,10 +61,10 @@ const rule_childs: ChildDefinition[] = [
 		element: "output",
 		type: ModelElementTypes.Output
 	},
-	...then_else_childs
+	...then_else_children
 ];
 
-const if_elseif_childs: ChildDefinition[] = [
+const if_elseif_children: ChildDefinition[] = [
 	{
 		element: "condition",
 		occurence: "at-least-once",
@@ -79,7 +79,7 @@ const if_elseif_childs: ChildDefinition[] = [
 		element: "else",
 		occurence: "once"
 	},
-	...default_childs
+	...default_children
 ];
 
 const include_block_meta_options: AttributeOption[] = [
@@ -152,7 +152,7 @@ export const RULE_DEFINITION: Definitions = {
 				description: "Developer's comment on this element"
 			}
 		],
-		childs: [
+		children: [
 			{
 				element: "module"
 			},
@@ -165,7 +165,7 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "include-block"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"module": [{
@@ -183,7 +183,7 @@ export const RULE_DEFINITION: Definitions = {
 			dev_description_attribute,
 			dev_comment_attribute,
 		],
-		childs: [
+		children: [
 			{
 				element: "module"
 			},
@@ -196,7 +196,7 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				element: "include-block"
 			},
-			...default_childs
+			...default_children
 		]
 	}],
 	"rule": [{
@@ -304,7 +304,7 @@ export const RULE_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: rule_childs
+		children: rule_children
 	}],
 	"action": [backend_action_call_element],
 	"input": [input_element],
@@ -388,7 +388,7 @@ export const RULE_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: []
+		children: []
 	},
 	action_call_output_element
 	],
@@ -437,7 +437,7 @@ export const RULE_DEFINITION: Definitions = {
 				}
 			},
 		],
-		childs: []
+		children: []
 	}],
 	"set-var": [{
 		type: ModelElementTypes.SetVar,
@@ -478,7 +478,7 @@ export const RULE_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: []
+		children: []
 	}],
 	"clear-var": [{
 		type: ModelElementTypes.SetVar,
@@ -494,7 +494,7 @@ export const RULE_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		childs: []
+		children: []
 	}],
 	"if": [{
 		type: ModelElementTypes.If,
@@ -510,7 +510,7 @@ export const RULE_DEFINITION: Definitions = {
 				description: "Developer's comment on this element."
 			}
 		],
-		childs: if_elseif_childs
+		children: if_elseif_children
 	}],
 	"elseif": [{
 		type: ModelElementTypes.ElseIf,
@@ -526,7 +526,7 @@ export const RULE_DEFINITION: Definitions = {
 				description: "Developer's comment on this element."
 			}
 		],
-		childs: if_elseif_childs
+		children: if_elseif_children
 	}],
 	"condition": [{
 		type: ModelElementTypes.Condition,
@@ -752,7 +752,7 @@ export const RULE_DEFINITION: Definitions = {
 				description: "Developer's comment on this element."
 			}
 		],
-		childs: []
+		children: []
 	}],
 	"then": [{
 		type: ModelElementTypes.Unknown,
@@ -763,13 +763,13 @@ export const RULE_DEFINITION: Definitions = {
 				description: "Developer's comment on this element."
 			}
 		],
-		childs: then_else_childs
+		children: then_else_children
 	}],
 	"else": [{
 		type: ModelElementTypes.Unknown,
 		description: "Else branch for the if 'statement'. What is below this element is executed if the condition of the if statement is not fulfilled.",
 		attributes: [dev_comment_attribute],
-		childs: then_else_childs
+		children: then_else_children
 	}],
 	"transaction": [{
 		type: ModelElementTypes.Unknown,
@@ -797,7 +797,7 @@ export const RULE_DEFINITION: Definitions = {
 				}
 			}
 		],
-		childs: then_else_childs
+		children: then_else_children
 	}],
 	"switch": [{
 		type: ModelElementTypes.Switch,
@@ -836,7 +836,7 @@ export const RULE_DEFINITION: Definitions = {
 				description: "Developer's comment on this element."
 			}
 		],
-		childs: switch_childs
+		children: switch_children
 	}],
 	"case": [{
 		type: ModelElementTypes.Unknown,
@@ -848,13 +848,13 @@ export const RULE_DEFINITION: Definitions = {
 				autoadd: true
 			}
 		],
-		childs: then_else_childs
+		children: then_else_children
 	}],
 	"default": [{
 		type: ModelElementTypes.Unknown,
 		description: "",
 		attributes: [dev_comment_attribute],
-		childs: then_else_childs
+		children: then_else_children
 	}],
 	"forloop": [{
 		type: ModelElementTypes.Unknown,
@@ -879,19 +879,19 @@ export const RULE_DEFINITION: Definitions = {
 				autoadd: true
 			},
 		],
-		childs: then_else_childs
+		children: then_else_children
 	}],
 	"break": [{
 		type: ModelElementTypes.Unknown,
 		description: "Terminates the current loop.",
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"return": [{
 		type: ModelElementTypes.Unknown,
 		description: "Terminates the current rule.",
 		attributes: [dev_comment_attribute],
-		childs: []
+		children: []
 	}],
 	"include_blocks": [include_blocks_element],
 	"include-block": [
@@ -903,64 +903,64 @@ export const RULE_DEFINITION: Definitions = {
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Rule,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "rule"),
-			childs: [
-				...rule_childs
+			children: [
+				...rule_children
 			]
 		},
 		{ // action
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Action,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "action"),
-			childs: [
-				...action_call_childs
+			children: [
+				...action_call_children
 			]
 		},
 		{ // if
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_If,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "if"),
-			childs: [
-				...if_elseif_childs
+			children: [
+				...if_elseif_children
 			]
 		},
 		{ // then
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Then,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "then"),
-			childs: [
-				...then_else_childs
+			children: [
+				...then_else_children
 			]
 		},
 		{ // else
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Else,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "else"),
-			childs: [
-				...then_else_childs
+			children: [
+				...then_else_children
 			]
 		},
 		{ // elseif
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ElseIf,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "elseif"),
-			childs: [
-				...if_elseif_childs
+			children: [
+				...if_elseif_children
 			]
 		},
 		{ // switch
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Switch,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "switch"),
-			childs: [
-				...switch_childs
+			children: [
+				...switch_children
 			]
 		},
 		{ // case
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Case,
 			matchCondition: (x)=>isIncludeBlockOfType(x, "case"),
-			childs: [
-				...then_else_childs
+			children: [
+				...then_else_children
 			]
 		},
 	],

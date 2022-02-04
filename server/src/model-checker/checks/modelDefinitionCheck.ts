@@ -29,14 +29,14 @@ export class ModelDefinitionCheck extends ModelCheck {
 	private checkChildOccurrences(element: TreeNode, definition: Definition): void {
 		// check element on invalid child nodes
 		element.children.forEach(child => {
-			if (Array.isArray(definition.childs) && !definition.childs?.map(x=>x.element?.toLowerCase()).includes(child.tag.toLowerCase())){
+			if (Array.isArray(definition.children) && !definition.children?.map(x=>x.element?.toLowerCase()).includes(child.tag.toLowerCase())){
 				this.addMessage(element.range, "MDC0002", "#MDC0002: " + `Invalid child node '${child.tag}' for element '${element.tag}'`);
 			}
 		});
 
 		// check the amount of occurrences of a child and compare it with the definition
-		if (Array.isArray(definition.childs)){
-			definition.childs?.forEach(x=>{
+		if (Array.isArray(definition.children)){
+			definition.children?.forEach(x=>{
 				const childOccurrences = element.children.filter(c=>c.tag.toLowerCase()==x.element?.toLowerCase()).length;
 
 				switch(x.occurence){
