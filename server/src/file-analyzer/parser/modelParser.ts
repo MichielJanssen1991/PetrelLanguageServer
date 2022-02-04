@@ -82,7 +82,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 
 	//Parser events
 	private onError(e: any) {
-		this.addMessage(this.getTagRange(), "MP0001", "#MP0001: " + e.message);
+		this.addMessage(this.getTagRange(), "MP0001", e.message);
 	}
 
 	private onAttribute(attribute: any) {

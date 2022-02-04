@@ -22,11 +22,11 @@ export class SymbolIsReferencedCheck extends ModelCheck {
 		if (noReferencesFound) {
 			if(node.type == ModelElementTypes.Infoset)
 			{
-				this.addMessage(symbol.range, "ROC0004", "#ROC0004: " + CHECKS_MESSAGES.NO_REFERENCES_FOUND_INFOSET(symbol));
+				this.addMessage(symbol.range, "ROC0004", CHECKS_MESSAGES.NO_REFERENCES_FOUND_INFOSET(symbol));
 			}
 			else
 			{
-				this.addMessage(symbol.range, "ROC0005", "#ROC0005: " + CHECKS_MESSAGES.NO_REFERENCES_FOUND(symbol));
+				this.addMessage(symbol.range, "ROC0005", CHECKS_MESSAGES.NO_REFERENCES_FOUND(symbol));
 			}
 		}
 	}

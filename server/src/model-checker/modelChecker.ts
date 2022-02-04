@@ -90,7 +90,7 @@ export class ModelChecker extends DiagnosticsCollection {
 			this.addDiagnostics(diagnosticsForNode);
 		}
 		catch (error: any) {
-			this.addMessage(node.range, "GM0001", "#GM0001: " + CHECKS_MESSAGES.VALIDATION_ERROR(error.message, node as SymbolDeclaration));
+			this.addMessage(node.range, "GM0001", CHECKS_MESSAGES.VALIDATION_ERROR(error.message, node as SymbolDeclaration));
 		}
 	}
 }

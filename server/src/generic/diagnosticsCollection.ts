@@ -62,7 +62,7 @@ export class DiagnosticsCollection {
 			case DiagnosticSeverity.Error:
 			case DiagnosticSeverity.Warning:
 			case DiagnosticSeverity.Information:
-				this.addDiagnostic(range, message, this.diagnosticDefinitions[id]);
+				this.addDiagnostic(range, `#${id}: ` + message, this.diagnosticDefinitions[id]);
 				break;
 			default:
 				// no message
