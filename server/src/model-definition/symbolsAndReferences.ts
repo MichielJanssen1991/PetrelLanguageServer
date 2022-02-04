@@ -25,6 +25,7 @@ export enum ModelElementTypes {
 	Function = "Function",
 	Group = "Group",
 	Infoset = "Infoset",
+	Infosets = "Infosets",
 	Input = "Input",
 	Include = "Include",
 	IncludeBlock = "Include-Block",
@@ -131,6 +132,7 @@ export enum ModelElementSubTypes {
 	ModelCondition_ServerEvents = "ModelConditionServerEvents",
 	ModelCondition_ServerEvent = "ModelConditionServerEvent",
 	ModelCondition_Type = "ModelConditionType",
+	ModelCondition_Module = "ModelConditionModule",
 
 	Target_View = "TargetView",
 	Target_ObjectView = "TargetObjectView",

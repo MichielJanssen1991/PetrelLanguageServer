@@ -1,4 +1,4 @@
-import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ModelElementSubTypes, AttributeOption, Definition } from '../symbolsAndReferences';
+import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ModelElementSubTypes, AttributeOption, Definition, ChildDefinition } from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
 import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_children, search_attributes, input_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, default_children, in_element, search_group_element, full_text_query_element, and_element, or_element, search_column_submatch_element, search_column_element, include_block_declaration_definition } from './shared';
 
@@ -15,6 +15,26 @@ const include_block_meta_options: AttributeOption[] = [
 	{
 		name: "searchcolumn"
 	}
+];
+
+const module_children: ChildDefinition[] = [
+	{
+		element: "module"
+	},
+	{
+		element: "infoset"
+	},
+	{
+		element: "include-blocks"
+	},
+	{
+		element: "include-block"
+	},
+	{
+		element: "decorations",
+		occurence: "once"
+	},
+	...default_children
 ];
 
 const include_block_infoset_declaration_definition: Definition = {
@@ -157,25 +177,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			dev_description_attribute,
 			dev_comment_attribute,
 		],
-		children: [
-			{
-				element: "module"
-			},
-			{
-				element: "infoset"
-			},
-			{
-				element: "include-blocks"
-			},
-			{
-				element: "include-block"
-			},
-			{
-				element: "decorations",
-				occurence: "once"
-			},
-			...default_children
-		]
+		children: module_children
 	}],
 	"search": [{
 		type: ModelElementTypes.Search,
@@ -675,7 +677,17 @@ export const INFOSET_DEFINITION: Definitions = {
 		}
 	],
 	"include": [include_element],
-	"model-condition": [model_condition_element],
+	"model-condition": [
+		{
+			...model_condition_element,
+			subtype: ModelElementSubTypes.ModelCondition_Module,
+			ancestors: [
+				{ type: ModelElementTypes.Module},
+				{ type: ModelElementTypes.Infosets}
+			],
+			children: module_children
+		},
+	],
 	"auto-key": [{
 		description: "Automatically generates a value, based on some counting method.</summary>This can be used e.g. for sequence numbers. The value of this attribute is automatically incremented with each new record.",
 		attributes: [

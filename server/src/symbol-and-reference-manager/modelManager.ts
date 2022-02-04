@@ -26,10 +26,7 @@ export class ModelManager extends SymbolAndReferenceManager {
 		});
 				
 		const targetChildren = object.children.filter(d=>d.type == ModelElementTypes.Target).flatMap(d=>{
-			if (d.attributes["meta-name"].value == type){
-				return this.getChildrenOfType(d, type);
-			}
-			return [];			
+			return this.getChildrenOfType(d, type);		
 		});		
 		
 		return [...directChildren, ...includedChildren, ...decorationChildren, ...decorationsGroupChildren, ...targetChildren];
