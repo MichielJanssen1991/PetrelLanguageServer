@@ -1,0 +1,151 @@
+{
+	"name": "Petrel Color Theme",
+	"type": "dark",
+	"colors": {
+		"editor.background": "#1a2224",
+		"editor.foreground": "#eeffff",
+		"activityBarBadge.background": "#007acc",
+		"sideBarTitle.foreground": "#bbbbbb"
+	},
+	"tokenColors": [
+		{
+			"name": "Comment",
+			"scope": [
+				"comment",
+				"punctuation.definition.comment"
+			],
+			"settings": {
+				"fontStyle": "italic",
+				"foreground": "#546E7A"
+			}
+		},
+		{
+			"name": "Main declaration",
+			"scope": [
+				"entity.name.tag.maindeclaration.petrel"
+			],
+			"settings": {
+				"foreground": "#DCDCAA",
+				"fontStyle": "bold"
+			}
+		},
+		{
+			"name": "Action call",
+			"scope": [
+				"entity.name.tag.action.petrel"
+			],
+			"settings": {
+				"foreground": "#4EC9B0"
+			}
+		},
+		{
+			"name": "Action call",
+			"scope": [
+				"entity.name.tag.other.petrel"
+			],
+			"settings": {
+				"foreground": "#546E7A"
+			}
+		},
+		{
+			"name": "Inputs and arguments",
+			"scope": [
+				"entity.name.tag.inputs-and-arguments.petrel"
+			],
+			"settings": {
+				"foreground": "#40796d"
+			}
+		},
+		{
+			"name": "Grouping",
+			"scope": [
+				"entity.name.tag.grouping.petrel"
+			],
+			"settings": {
+				"foreground": "#C586C0"
+			}
+		},
+		{
+			"name": "Logic",
+			"scope": [
+				"entity.name.tag.logic.petrel"
+			],
+			"settings": {
+				"foreground": "#4FC1FF"
+			}
+		},
+		{
+			"name": "Tag begin and end",
+			"scope": [
+				"punctuation.definition.tag.begin.petrel",
+				"punctuation.definition.tag.end.petrel"
+
+			],
+			"settings": {
+				"foreground": "#1a65ac"
+			}
+		},
+		{
+			"name": "String begin and end",
+			"scope": [
+				"punctuation.definition.string.begin.petrel",
+				"punctuation.definition.string.end.petrel"
+
+			],
+			"settings": {
+				"foreground": "#8b9627"
+			}
+		},
+		{
+			"name": "Attribute value",
+			"scope": [
+				"entity.other.attribute-value.petrel",
+
+			],
+			"settings": {
+				"foreground": "#4a8854"
+			}
+		},
+		{
+			"name": "Name attribute name",
+			"scope": [
+				"entity.other.attribute-name.name.petrel",
+
+			],
+			"settings": {
+				"foreground": "#ce714c"
+			}
+		},
+		{
+			"name": "Name attribute value",
+			"scope": [
+				"meta.attribute-with-value.name.petrel entity.other.attribute-value.petrel",
+
+			],
+			"settings": {
+				"foreground": "#ddb151"
+			}
+		},
+		{
+			"name": "Other attribute name",
+			"scope": [
+				"entity.other.attribute-name.other.petrel",
+
+			],
+			"settings": {
+				"foreground": "#CE9178"
+			}
+		},
+		{
+			"name": "Other attribute value",
+			"scope": [
+				"entity.other.attribute-value.petrel",
+
+			],
+			"settings": {
+				"foreground": "#d7ba7d"
+			}
+		},
+
+	]
+}

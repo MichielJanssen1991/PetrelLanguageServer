@@ -1,0 +1,144 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Petrel",
+  "patterns": [
+    {
+      "include": "#tags"
+    }
+  ],
+  "repository": {
+    "tags": {
+      "patterns": [
+        {
+          "name": "meta.tag.block.maindeclaration.petrel",
+          "begin": "(</?)((?i:rule|infoset|function|view)\\b)",
+          "end": "(/>|>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.petrel" },
+            "2": { "name": "entity.name.tag.maindeclaration.petrel" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.petrel" }
+          },
+          "patterns": [{ "include": "#tag-content" }]
+        },
+        {
+          "name": "meta.tag.block.action.petrel",
+          "begin": "(</?)((?i:action)\\b)",
+          "end": "(/>|>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.petrel" },
+            "2": { "name": "entity.name.tag.action.petrel" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.petrel" }
+          },
+          "patterns": [{ "include": "#tag-content" }]
+        },
+        {
+          "name": "meta.tag.block.inputs-and-arguments.petrel",
+          "begin": "(</?)((?i:input|argument|output)\\b)",
+          "end": "(/>|>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.petrel" },
+            "2": { "name": "entity.name.tag.inputs-and-arguments.petrel" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.petrel" }
+          },
+          "patterns": [{ "include": "#tag-content" }]
+        },
+        {
+          "name": "meta.tag.block.grouping.petrel",
+          "begin": "(</?)((?i:module|group)\\b)",
+          "end": "(/>|>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.petrel" },
+            "2": { "name": "entity.name.tag.grouping.petrel" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.petrel" }
+          },
+          "patterns": [{ "include": "#tag-content" }]
+        },
+        {
+          "name": "meta.tag.block.logic.petrel",
+          "begin": "(</?)((?i:if|then|else|condition)\\b)",
+          "end": "(/>|>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.petrel" },
+            "2": { "name": "entity.name.tag.logic.petrel" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.petrel" }
+          },
+          "patterns": [{ "include": "#tag-content" }]
+        },
+        {
+          "name": "meta.tag.block.other.petrel",
+          "begin": "(</?)(((\\w|-)*)\\b)",
+          "end": "(/>|>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.petrel" },
+            "2": { "name": "entity.name.tag.other.petrel" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.petrel" }
+          },
+          "patterns": [{ "include": "#tag-content" }]
+        }
+      ]
+    },
+    "tag-content": {
+      "patterns": [
+        { "include": "#tag-name-attribute" },
+        { "include": "#tag-generic-attribute" }
+      ]
+    },
+    "tag-generic-attribute": {
+      "name": "meta.attribute-with-value.petrel",
+      "begin": "\\b((\\w|-)*)\\b\\s*(=)\\s*",
+      "end": "(?<=(\"(([^\"\\\\]|\\\\.)*))(\"))",
+      "beginCaptures": {
+        "1": { "name": "entity.other.attribute-name.other.petrel" },
+        "2": { "name": "punctuation.separator.key-value.petrel" }
+      },
+      "patterns": [
+        {"include": "#attribute-value"}
+      ]
+    },
+    "tag-name-attribute": {
+      "name": "meta.attribute-with-value.name.petrel",
+      "begin": "\\b(name)\\b\\s*(=)\\s*",
+      "end": "(?<=(\"(([^\"\\\\]|\\\\.)*))(\"))",
+      "beginCaptures": {
+        "1": { "name": "entity.other.attribute-name.name.petrel" },
+        "2": { "name": "punctuation.separator.key-value.petrel" }
+      },
+      "patterns": [
+        {"include": "#attribute-value"}
+      ]
+    },
+    "attribute-value":
+      {
+        "name": "entity.other.attribute-value.petrel",
+        "contentName": "meta.toc-list.id.petrel",
+        "begin": "\"",
+        "end": "\"",
+        "beginCaptures": {
+          "0": { "name": "punctuation.definition.string.begin.petrel" }
+        },
+        "endCaptures": {
+          "0": { "name": "punctuation.definition.string.end.petrel" }
+        },
+        "patterns": [
+          {
+            "name": "constant.character.escape.petrel",
+            "match": "\\\\."
+          }
+        ]
+      
+    }
+  },
+  "scopeName": "text.Petrel"
+}

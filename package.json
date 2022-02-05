@@ -46,7 +46,34 @@
 				"command": "petrelLanguageServer.activate",
 				"title": "Activate Petrel Language Server"
 			}
-		]
+		],
+		"themes": [
+            {
+                "label": "Petrel Color Theme",
+                "uiTheme": "vs-dark",
+                "path": "./themes/petrel-color-theme.json"
+            }
+        ],
+        "languages": [
+            {
+                "id": "xml",
+                "aliases": [
+                    "petrel",
+                    "xml"
+                ],
+                "extensions": [
+                    ".xml"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "xml",
+                "scopeName": "text.Petrel",
+                "path": "./syntaxes/petrel.tmLanguage.json"
+            }
+        ]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
