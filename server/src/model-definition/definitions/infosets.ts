@@ -737,13 +737,13 @@ export const INFOSET_DEFINITION: Definitions = {
 						value: ""
 					}
 				],
-				requiredConditions: [
-					{
-						attribute: "iids",
-						condition: "==",
-						value: ""
-					}
-				]
+				// requiredConditions: [
+				// 	{
+				// 		attribute: "iids",
+				// 		condition: "==",
+				// 		value: ""
+				// 	}
+				// ]
 			},
 			{
 				name: "iids",

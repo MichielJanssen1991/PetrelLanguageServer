@@ -476,7 +476,7 @@ export function isViewControl(nodeContext: IXmlNodeContext, controlType: string)
 }
 
 export function isIncludeBlockOfType(nodeContext: IXmlNodeContext, metaType: string): boolean {
-	return (nodeContext.getCurrentXmlNode().attributes["meta-name"] == metaType || nodeContext.getCurrentXmlNode().attributes["meta-info"] == metaType);
+	return (nodeContext.getCurrentXmlNode().attributes["meta-name"] == metaType || nodeContext.getCurrentXmlNode().attributes["meta-index"] == metaType);
 }
 
 //Objects which can be referenced without requiring the context

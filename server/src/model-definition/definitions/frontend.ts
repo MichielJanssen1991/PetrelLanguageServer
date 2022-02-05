@@ -686,6 +686,22 @@ const default_reference_view_attributes: ElementAttribute[] = [
 	view_attribute_control,
 ];
 
+const toolbarbutton_children: ChildDefinition[] = [
+	{
+		element: "events"
+	},
+	{
+		element: "format"
+	},
+	{
+		element: "icon"
+	},
+	{
+		element: "text"
+	},
+	...default_children
+];
+
 const default_view_children: ChildDefinition[] = [
 	{
 		element: "events"
@@ -758,6 +774,7 @@ const default_view_record_children: ChildDefinition[] = [
 const frontend_events_base_definition: Definition = {
 	description: "Frontend event registrations.\"Events\":[EventsAndActions_ActionsOverview] are the predefined events at the client side. These trigger a server side or client side action, as a result of which an operation (on the server or in the screen) is initiated.",
 	attributes: [dev_comment_attribute],
+	isGroupingElement: true,
 	children: [
 		{
 			element: "event",
@@ -1480,6 +1497,18 @@ const empty_view_base_definition:Definition = { // Empty
 	]
 };
 
+const event_element: Definition = {
+	type: ModelElementTypes.Event,
+	description: "A specific event registration.",
+	attributes: [
+		dev_override_rights_attribute,
+		dev_ignore_modelcheck_attribute,
+		dev_ignore_modelcheck_justification_attribute,
+		dev_comment_attribute
+	],
+	children: event_children
+};
+
 const meta_name_options: AttributeOption[] = [
 	{
 		name: "view"
@@ -1535,6 +1564,9 @@ const include_block_meta_options: AttributeOption[] = [
 	},
 	{
 		name: "server-event"
+	},
+	{
+		name: "toolbarbutton"
 	}
 ];
 
@@ -2544,6 +2576,22 @@ export const FRONTEND_DEFINITION: Definitions = {
 				...action_children
 			]
 		},
+		{ // event
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Event,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "event"),
+			children: [
+				...event_children
+			]
+		},
+		{ // toolbarbutton
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_ToolbarButton,
+			matchCondition: (x)=>isIncludeBlockOfType(x, "toolbarbutton"),
+			children: [
+				...toolbarbutton_children
+			]
+		},
 		
 		
 		
@@ -2946,21 +2994,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			dev_ignore_modelcheck_justification_attribute,
 			dev_comment_attribute
 		],
-		children: [
-			{
-				element: "events"
-			},
-			{
-				element: "format"
-			},
-			{
-				element: "icon"
-			},
-			{
-				element: "text"
-			},
-			...default_children
-		]
+		children: toolbarbutton_children
 	}],
 	"pagenumbers": [{
 		description: "Toolbar item for paged navigation.",
@@ -2991,58 +3025,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		view_argument_element,
 		action_argument_element
 	],
-	"events": [
-		{
-			type: ModelElementTypes.Events_Attribute,
-			ancestors: [{type: ModelElementTypes.Attribute}],
-			...frontend_events_base_definition
-		},
-		{
-			type: ModelElementTypes.Events_Button,
-			ancestors: [{type: ModelElementTypes.Button}],
-			...frontend_events_base_definition
-		},
-		{
-			type: ModelElementTypes.Events_Action,
-			ancestors: [{type: ModelElementTypes.Action}],
-			...frontend_events_base_definition
-		},
-		{
-			type: ModelElementTypes.Events_ToolBarButton,
-			ancestors: [{type: ModelElementTypes.ToolbarButton}],
-			...frontend_events_base_definition
-		},
-		{
-			type: ModelElementTypes.Events_Group,
-			ancestors: [{type: ModelElementTypes.Event_Group}],
-			...frontend_events_base_definition
-		},
-		{
-			type: ModelElementTypes.Events_MenuItem,
-			ancestors: [{type: ModelElementTypes.MenuItem}],
-			...frontend_events_base_definition
-		},
-		{
-			type: ModelElementTypes.Events_Node,
-			ancestors: [{type: ModelElementTypes.Node}],
-			...frontend_events_base_definition
-		},
-		{
-			type: ModelElementTypes.Events_Tab,
-			ancestors: [{type: ModelElementTypes.Tab}],
-			...frontend_events_base_definition
-		},
-		{
-			type: ModelElementTypes.Events_ToolBarButton,
-			ancestors: [{type: ModelElementTypes.ToolbarButton}],
-			...frontend_events_base_definition
-		},
-		{
-			type: ModelElementTypes.Events_View,
-			ancestors: [{type: ModelElementTypes.View}, {type: ModelElementTypes.SubView} ],
-			...frontend_events_base_definition
-		},
-	],
+	"events": [frontend_events_base_definition],
 	"server-events": [{
 		description: "",
 		attributes: [dev_comment_attribute],
@@ -3075,10 +3058,11 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"event": [
 		{
-			type: ModelElementTypes.Event_Attribute,
-			ancestors: [{type: ModelElementTypes.Events_Attribute}],
-			description: "A specific event registration.",
+			...event_element,
+			subtype: ModelElementSubTypes.Event_Attribute,
+			ancestors: [{type: ModelElementTypes.Attribute}],
 			attributes: [
+				...event_element.attributes,
 				{
 					name: "name",
 					description: "The type of event to listen to.",
@@ -3113,19 +3097,15 @@ export const FRONTEND_DEFINITION: Definitions = {
 							}
 						]
 					},
-				},
-				dev_override_rights_attribute,
-				dev_ignore_modelcheck_attribute,
-				dev_ignore_modelcheck_justification_attribute,
-				dev_comment_attribute
-			],
-			children: event_children
+				}				
+			]
 		},
 		{
-			type: ModelElementTypes.Event_Button,
-			ancestors: [{type: ModelElementTypes.Events_Button}],
-			description: "A specific event registration.",
+			...event_element,
+			subtype: ModelElementSubTypes.Event_Button,
+			ancestors: [{type: ModelElementTypes.Button}],
 			attributes: [
+				...event_element.attributes,
 				{
 					name: "name",
 					description: "The type of event to listen to.",
@@ -3145,18 +3125,14 @@ export const FRONTEND_DEFINITION: Definitions = {
 						]
 					},
 				},
-				dev_override_rights_attribute,
-				dev_ignore_modelcheck_attribute,
-				dev_ignore_modelcheck_justification_attribute,
-				dev_comment_attribute
-			],
-			children: event_children
+			]
 		},
 		{
-			type: ModelElementTypes.Event_ToolBarButton,
-			ancestors: [{type: ModelElementTypes.Events_ToolBarButton}],
-			description: "A specific event registration.",
+			...event_element,
+			subtype: ModelElementSubTypes.Event_ToolBarButton,
+			ancestors: [{type: ModelElementTypes.ToolbarButton}],
 			attributes: [
+				...event_element.attributes,
 				{
 					name: "name",
 					description: "The type of event to listen to.",
@@ -3175,20 +3151,16 @@ export const FRONTEND_DEFINITION: Definitions = {
 							}
 						]
 					},
-				},
-				dev_override_rights_attribute,
-				dev_ignore_modelcheck_attribute,
-				dev_ignore_modelcheck_justification_attribute,
-				dev_comment_attribute
-			],
-			children: event_children
+				}
+			]
 		},
 		{
-			type: ModelElementTypes.Event_Node,
-			ancestors: [{type: ModelElementTypes.Events_Node}],
-			description: "A specific event registration.",
+			...event_element,
+			subtype: ModelElementSubTypes.Event_Node,
+			ancestors: [{type: ModelElementTypes.Node}],
 			attributes: [
 				{
+					...event_element.attributes,
 					name: "name",
 					description: "The type of event to listen to.",
 					required: true,
@@ -3202,19 +3174,15 @@ export const FRONTEND_DEFINITION: Definitions = {
 							}
 						]
 					},
-				},
-				dev_override_rights_attribute,
-				dev_ignore_modelcheck_attribute,
-				dev_ignore_modelcheck_justification_attribute,
-				dev_comment_attribute
-			],
-			children: event_children
+				}
+			]
 		},
 		{
-			type: ModelElementTypes.Event_Group,
-			ancestors: [{type: ModelElementTypes.Events_Group}],
-			description: "A specific event registration.",
+			...event_element,
+			subtype: ModelElementSubTypes.Event_Group,
+			ancestors: [{type: ModelElementTypes.Group}],
 			attributes: [
+				...event_element.attributes,
 				{
 					name: "name",
 					description: "The type of event to listen to.",
@@ -3233,19 +3201,15 @@ export const FRONTEND_DEFINITION: Definitions = {
 							},
 						]
 					},
-				},
-				dev_override_rights_attribute,
-				dev_ignore_modelcheck_attribute,
-				dev_ignore_modelcheck_justification_attribute,
-				dev_comment_attribute
-			],
-			children: event_children
+				}
+			]
 		},
 		{
-			type: ModelElementTypes.Event_Tab,
-			ancestors: [{type: ModelElementTypes.Events_Tab}],
-			description: "A specific event registration.",
+			...event_element,
+			subtype: ModelElementSubTypes.Event_Tab,
+			ancestors: [{type: ModelElementTypes.Tab}],
 			attributes: [
+				...event_element.attributes,
 				{
 					name: "name",
 					description: "The type of event to listen to.",
@@ -3264,19 +3228,15 @@ export const FRONTEND_DEFINITION: Definitions = {
 							},
 						]
 					},
-				},
-				dev_override_rights_attribute,
-				dev_ignore_modelcheck_attribute,
-				dev_ignore_modelcheck_justification_attribute,
-				dev_comment_attribute
-			],
-			children: event_children
+				}
+			]
 		},
 		{
-			type: ModelElementTypes.Event_Action,
-			ancestors: [{type: ModelElementTypes.Events_Action}],
-			description: "A specific event registration.",
+			...event_element,
+			subtype: ModelElementSubTypes.Event_Action,
+			ancestors: [{type: ModelElementTypes.Action}],
 			attributes: [
+				...event_element.attributes,
 				{
 					name: "name",
 					description: "The type of event to listen to.",
@@ -3291,18 +3251,15 @@ export const FRONTEND_DEFINITION: Definitions = {
 						]
 					},
 				},
-				dev_override_rights_attribute,
-				dev_ignore_modelcheck_attribute,
-				dev_ignore_modelcheck_justification_attribute,
-				dev_comment_attribute
-			],
-			children: event_children
+			]
 		},
 		{
-			type: ModelElementTypes.Event_MenuItem,
-			ancestors: [{type: ModelElementTypes.Events_MenuItem}],
+			...event_element,
+			subtype: ModelElementSubTypes.Event_MenuItem,
+			ancestors: [{type: ModelElementTypes.MenuItem}],
 			description: "A specific event registration.",
 			attributes: [
+				...event_element.attributes,
 				{
 					name: "name",
 					description: "The type of event to listen to.",
@@ -3317,18 +3274,16 @@ export const FRONTEND_DEFINITION: Definitions = {
 						]
 					},
 				},
-				dev_override_rights_attribute,
-				dev_ignore_modelcheck_attribute,
-				dev_ignore_modelcheck_justification_attribute,
-				dev_comment_attribute
-			],
-			children: event_children
+			]
 		},
 		{
-			type: ModelElementTypes.Event_View,
-			ancestors: [{type: ModelElementTypes.Events_View}],
-			description: "A specific event registration.",
+			...event_element,
+			subtype: ModelElementSubTypes.Event_View,
+			ancestors: [
+				{type: ModelElementTypes.View},
+				{type: ModelElementTypes.SubView}],
 			attributes: [
+				...event_element.attributes,
 				{
 					name: "name",
 					description: "The type of event to listen to.",
@@ -3524,13 +3479,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 							value: "onkeypress"
 						}
 					],
-				},
-				dev_override_rights_attribute,
-				dev_ignore_modelcheck_attribute,
-				dev_ignore_modelcheck_justification_attribute,
-				dev_comment_attribute
-			],
-			children: event_children
+				}
+			]
 		},
 	],
 	"attribute": [{

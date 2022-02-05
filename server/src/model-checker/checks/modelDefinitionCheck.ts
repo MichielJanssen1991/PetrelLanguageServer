@@ -112,7 +112,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 						}
 						break;
 					case AttributeTypes.Numeric:
-						if (!Number(attrValue)) {
+						if (!Number(attrValue) && attrValue != "0") {
 							this.addMessage(element.range, "MDC0010", `Invalid value for '${da.name}': '${attrValue}' is not a number`);
 						}
 						break;
