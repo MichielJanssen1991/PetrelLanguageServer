@@ -1,7 +1,7 @@
 //VSCode languageserver
-import { TextDocuments, Diagnostic, CompletionItem, TextDocumentPositionParams, DocumentSymbolParams, DocumentSymbol } from 'vscode-languageserver/node';
+import { Diagnostic, CompletionItem, TextDocumentPositionParams, DocumentSymbolParams, DocumentSymbol, DidChangeTextDocumentParams, DidOpenTextDocumentParams } from 'vscode-languageserver/node';
 import * as LSP from 'vscode-languageserver';
-import { TextDocument } from 'vscode-languageserver-textdocument';
+import { DocumentUri } from 'vscode-languageserver-textdocument';
 
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
@@ -28,7 +28,6 @@ interface DocumentSettings {
 export default class PetrelLanguageServer {
 	//Injected dependencies
 	private connection: LSP._Connection;
-	private documents: TextDocuments<TextDocument>;
 
 	// Sub components of the language server
 	private analyzer: Analyzer;
@@ -43,10 +42,10 @@ export default class PetrelLanguageServer {
 	private static defaultSettings: DocumentSettings = { maxNumberOfProblems: 10000, skipFolders: [], skipFoldersForChecks: [] };
 	private settings: DocumentSettings = PetrelLanguageServer.defaultSettings;
 
-	constructor(connection: LSP._Connection, documents: TextDocuments<TextDocument>) {
+	// constructor(connection: LSP._Connection, documents: TextDocuments<TextDocument>) {
+	constructor(connection: LSP._Connection) {
 		//Injected dependencies
 		this.connection = connection;
-		this.documents = documents;
 
 		//Initialize various components and inject
 		this.modelDefinitionManager = new ModelDefinitionManager();
@@ -56,16 +55,10 @@ export default class PetrelLanguageServer {
 		this.modelChecker = new ModelChecker(this.modelManager, this.modelDefinitionManager);
 		this.completionProvider = new CompletionProvider(this.modelManager, this.modelDefinitionManager);
 		this.definitionAndReferenceProvider = new DefinitionAndReferenceProvider(this.modelManager);
-
-		// The content of a text document has changed. This event is emitted
-		// when the text document first opened or when its content has changed.
-		this.documents.onDidChangeContent(change => {
-			this.onDocumentChangeContent(change);
-		});
 	}
 
-	public static async fromRoot(connection: LSP._Connection, documents: TextDocuments<TextDocument>, rootPath: string): Promise<PetrelLanguageServer> {
-		const languageServer = new PetrelLanguageServer(connection, documents);
+	public static async fromRoot(connection: LSP._Connection, rootPath: string): Promise<PetrelLanguageServer> {
+		const languageServer = new PetrelLanguageServer(connection);
 		languageServer.settings = PetrelLanguageServer.getSettingsFromFileOrDefault(rootPath);
 		languageServer.analyzer = await Analyzer.fromRoot({ connection, rootPath }, languageServer.modelManager, languageServer.modelDefinitionManager, languageServer.settings);
 		return languageServer;
@@ -98,19 +91,26 @@ export default class PetrelLanguageServer {
 		);
 	}
 
-	public async onDocumentChangeContent(change: any) {
-		const document = change.document;
-		this.analyzer.updateDocument(document.uri, document);
-		const diagnostics = await this.validateTextDocument(document);
+	public async onDidChangeTextDocument(change: DidChangeTextDocumentParams) {
+		const document = this.analyzer.updateDocument(change);
+		const diagnostics = await this.validateTextDocument(change.textDocument.uri);
 		this.connection.sendDiagnostics({
 			uri: document.uri,
 			diagnostics
 		});
 	}
 
-	private async validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
-		const uri = textDocument.uri;
-		const parsingDiagnostics = this.analyzer.analyze(uri, textDocument, ModelDetailLevel.All);
+	public async onDidOpenTextDocument(params: DidOpenTextDocumentParams) {
+		const document = this.analyzer.openDocument(params);
+		const diagnostics = await this.validateTextDocument(params.textDocument.uri);
+		this.connection.sendDiagnostics({
+			uri: document.uri,
+			diagnostics
+		});
+	}
+
+	private async validateTextDocument(uri: DocumentUri): Promise<Diagnostic[]> {
+		const parsingDiagnostics = await this.analyzer.analyze(uri, ModelDetailLevel.All);
 
 		time("Checking file");
 		const referenceChecksDiagnostics = this.modelChecker.checkFile(uri, { detailLevel: ModelDetailLevel.All });

@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import { promisify } from 'util';
 import * as LSP from 'vscode-languageserver';
-import { Position, TextDocument } from 'vscode-languageserver-textdocument';
+import { DocumentUri, Position, TextDocument } from 'vscode-languageserver-textdocument';
 
-import { filePathToFileURL, getFileExtension, getJavascriptFilePaths, getModelFilePaths } from '../util/fs';
+import { filePathToFileURI, fileURIToFilePath, getFileExtension, getJavascriptFilePaths, getModelFilePaths } from '../util/fs';
 import { ModelDetailLevel } from '../model-definition/symbolsAndReferences';
 import { time, timeEnd } from 'console';
 import { getContextFromLine, wordAtPoint } from '../util/xml';
@@ -12,6 +12,7 @@ import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbo
 import { JavascriptParser } from './parser/javascriptParser';
 import { FileParser } from './parser/fileParser';
 import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
+import { DidChangeTextDocumentParams, DidOpenTextDocumentParams } from 'vscode-languageserver';
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -21,20 +22,22 @@ const readFileAsync = promisify(fs.readFile);
 export class Analyzer {
 	private symbolAndReferenceManager: SymbolAndReferenceManager;
 	private modelDefinitionManager: ModelDefinitionManager;
+
+	// Object containing TextDocument for each uri. Only for open workspace documents
 	private uriToTextDocument: { [uri: string]: TextDocument } = {};
 
-	constructor(symbolAndReferenceManager: SymbolAndReferenceManager, modelDefinitionManager:ModelDefinitionManager) {
+	constructor(symbolAndReferenceManager: SymbolAndReferenceManager, modelDefinitionManager: ModelDefinitionManager) {
 		this.symbolAndReferenceManager = symbolAndReferenceManager;
-		this.modelDefinitionManager =  modelDefinitionManager;
+		this.modelDefinitionManager = modelDefinitionManager;
 	}
 
 	/**
 	 * Initialize the Analyzer based on a connection to the client and a root path.	 
 	 */
 	public static async fromRoot(
-		{ connection, rootPath }: { connection: LSP.Connection, rootPath: string }, 
-		symbolAndReferenceManager: SymbolAndReferenceManager, 
-		modelDefinitionManager: ModelDefinitionManager, 
+		{ connection, rootPath }: { connection: LSP.Connection, rootPath: string },
+		symbolAndReferenceManager: SymbolAndReferenceManager,
+		modelDefinitionManager: ModelDefinitionManager,
 		options?: { skipFolders: string[] })
 		: Promise<Analyzer> {
 		const analyzer = new Analyzer(symbolAndReferenceManager, modelDefinitionManager);
@@ -50,10 +53,10 @@ export class Analyzer {
 			connection.console.log(`Glob resolved with ${filePaths.length} model files`);
 			await analyzer.analyzeFiles(filePaths, connection, ModelDetailLevel.References);
 
-			const javascriptFilePaths: string[] = await getJavascriptFilePaths( rootPath, options);
+			const javascriptFilePaths: string[] = await getJavascriptFilePaths(rootPath, options);
 			connection.console.log(`Glob resolved with ${javascriptFilePaths.length} javascript files`);
 			await analyzer.analyzeFiles(javascriptFilePaths, connection, ModelDetailLevel.References);
-			
+
 			connection.console.log(`Analyzer finished after ${getTimePassed()}`);
 		}
 
@@ -63,12 +66,11 @@ export class Analyzer {
 	private async analyzeFiles(filepaths: string[], connection: LSP.Connection, detailLevel: ModelDetailLevel) {
 		const numberOfFiles = filepaths.length; let i = 1;
 		for (const filePath of filepaths) {
-			const uri = filePathToFileURL(filePath);
+			const uri = filePathToFileURI(filePath);
 			connection.console.log(`Analyzing file (${i}/${numberOfFiles}): ${uri}`);
 
 			try {
-				const fileContent = await readFileAsync(filePath, 'utf8');
-				this.analyze(uri, TextDocument.create(uri, getFileExtension(uri), 1, fileContent), detailLevel);
+				this.analyze(uri, detailLevel);
 			} catch (error) {
 				connection.console.warn(`Failed analyzing ${uri}. Error: ${(error as Error).message}`);
 			}
@@ -77,21 +79,32 @@ export class Analyzer {
 		return { numberOfFiles, i };
 	}
 
-	public updateDocument(uri: string, document: TextDocument) {
+	public updateDocument(change: DidChangeTextDocumentParams) {
+		const uri = change.textDocument.uri;
+		const document = this.uriToTextDocument[uri];
+		const updatedDocument = TextDocument.update(document, change.contentChanges, change.textDocument.version);
+		this.uriToTextDocument[uri] = updatedDocument;
+		return updatedDocument;
+	}
+
+	public openDocument(params: DidOpenTextDocumentParams) {
+		const documentItem = params.textDocument;
+		const uri = documentItem.uri;
+		const document = TextDocument.create(documentItem.uri, documentItem.languageId, documentItem.version, documentItem.text);
 		this.uriToTextDocument[uri] = document;
+		return document;
 	}
 
 	/**
-	 * Analyze the given document to find declarations and references.
+	 * Analyze the document for the provided uri to find declarations and references.
 	 * Returns syntax errors that occurred while parsing the file
 	 */
-	public analyze(uri: string, document: TextDocument, detailLevel: ModelDetailLevel): LSP.Diagnostic[] {
-		const contents = document.getText();
-		let problems: LSP.Diagnostic[] = [];
-
+	public async analyze(uri: DocumentUri, detailLevel: ModelDetailLevel): Promise<LSP.Diagnostic[]> {
+		const contents = await this.getFileContent(uri);
+		
 		time("Analyzing file for declarations and references");
 		const extension = getFileExtension(uri);
-		let parser:FileParser;
+		let parser: FileParser;
 		switch (extension) {
 			case "xml": parser = new ModelParser(uri, detailLevel, this.modelDefinitionManager); break;
 			case "js": parser = new JavascriptParser(uri); break;
@@ -100,9 +113,20 @@ export class Analyzer {
 
 		const results = parser.parseFile(contents);
 		this.symbolAndReferenceManager.updateTree(uri, results.tree, results.modelFileContext);
-		problems = problems.concat(results.problems);
 		timeEnd("Analyzing file for declarations and references");
-		return problems;
+		return results.problems;
+	}
+
+	/**
+	 * Get the content for a given file. If it is an open workspace document get it directly, otherwise read it from disk
+	 */
+	private async getFileContent(uri: string) {
+		const document = this.uriToTextDocument[uri];
+		if (document) {
+			return document.getText();
+		} else {
+			return await readFileAsync(fileURIToFilePath(uri), 'utf8');
+		}
 	}
 
 	/**

@@ -1,5 +1,4 @@
 import { fileURLToPath } from 'url';
-import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	createConnection,
 	ProposedFeatures,
@@ -10,7 +9,8 @@ import {
 	TextDocumentSyncKind,
 	InitializeResult,
 	DocumentSymbolParams,
-	TextDocuments
+	DidOpenTextDocumentParams,
+	DidChangeTextDocumentParams
 } from 'vscode-languageserver/node';
 
 import PetrelLanguageServer from './petrelLanguageServer';
@@ -18,8 +18,6 @@ import PetrelLanguageServer from './petrelLanguageServer';
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
-
-const documents = new TextDocuments(TextDocument);
 
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
@@ -46,7 +44,10 @@ connection.onInitialize(async (params: InitializeParams) => {
 
 	const result: InitializeResult = {
 		capabilities: {
-			textDocumentSync: TextDocumentSyncKind.Incremental,
+			textDocumentSync: {
+				change: TextDocumentSyncKind.Incremental,
+				openClose: true
+			},
 			// Tell the client that this server supports code completion.
 			completionProvider: {
 				resolveProvider: true
@@ -67,10 +68,10 @@ connection.onInitialize(async (params: InitializeParams) => {
 		};
 	}
 	if (workspaceRoot) {
-		languageServer = await PetrelLanguageServer.fromRoot(connection, documents, workspaceRoot);
+		languageServer = await PetrelLanguageServer.fromRoot(connection, workspaceRoot);
 	}
 	else {
-		languageServer = new PetrelLanguageServer(connection, documents);
+		languageServer = new PetrelLanguageServer(connection);
 	}
 	return result;
 });
@@ -108,9 +109,13 @@ connection.onDocumentSymbol((params: DocumentSymbolParams) => {
 	return languageServer.onDocumentSymbol(params);
 });
 
-// Make the text document manager listen on the connection
-// for open, change and close text document events
-documents.listen(connection);
+connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
+	return languageServer.onDidOpenTextDocument(params);
+});
+
+connection.onDidChangeTextDocument((params: DidChangeTextDocumentParams) => {
+	return languageServer.onDidChangeTextDocument(params);
+});
 
 // Listen on the connection
 connection.listen();

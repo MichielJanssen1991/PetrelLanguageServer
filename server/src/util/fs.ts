@@ -6,8 +6,11 @@ const globPatternXml = '**/*@(.xml)';
 const globPatternJs = '**/*@(.js)';
 const globOptions = { nodir: true, absolute: true, strict: false, follow: false };
 
-export function filePathToFileURL(path: string) {
+export function filePathToFileURI(path: string) {
   return URI.file(path).toString();
+}
+export function fileURIToFilePath(uri: string) {
+  return URI.parse(uri).fsPath;
 }
 
 export function getFileExtension(uri: string) {
