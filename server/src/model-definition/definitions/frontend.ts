@@ -719,6 +719,10 @@ const default_view_children: ChildDefinition[] = [
 		element: "server-events",
 		occurence: "once"
 	},
+	{
+		element: "metadata-initialize",
+		occurence: "once"
+	},
 	...default_children
 ];
 
@@ -2091,6 +2095,9 @@ const module_children: ChildDefinition[] = [
 	},
 	{
 		element: "include-block"
+	},
+	{
+		element: "decorators"
 	},
 	{
 		element: "toolbar"
@@ -3547,6 +3554,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 				type: ModelElementTypes.View
 			}, 
 			{
+				type: ModelElementTypes.SubView
+			}, 
+			{
 				type: ModelElementTypes.TitleBar
 			}, 
 			{
@@ -3554,6 +3564,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			}, 
 			{
 				type: ModelElementTypes.Group
+			},
+			{
+				type: ModelElementTypes.DropDown
 			},
 			{
 				type: ModelElementTypes.IncludeBlock,
@@ -3767,6 +3780,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"dropdown": [{
 		description: "A dropdown menu. Typically it contains a text element. It also contains a menu definition.",
+		type:ModelElementTypes.DropDown,
 		attributes: [
 			{
 				name: "name",
@@ -4055,6 +4069,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		action_call_output_element,
 		{
 			ancestors: [{type: ModelElementTypes.Function}],
+			type: ModelElementTypes.Output,
 			detailLevel: ModelDetailLevel.Declarations,
 			isSymbolDeclaration: true,
 			attributes: [
@@ -4843,6 +4858,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"decorator-context-entity": [decorator_context_entity_element],
 	"merge-instruction": [merge_instruction_element],
 	"metadata-initialize": [{
+		type:ModelElementTypes.MetaDataInitialize,
 		description: "Modifies the metadata just before it is used.",
 		attributes: [
 			{
