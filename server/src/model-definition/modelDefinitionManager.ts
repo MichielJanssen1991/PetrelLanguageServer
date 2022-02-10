@@ -106,7 +106,7 @@ export class ModelDefinitionManager {
 	}
 
 	private tagAndTypeMatches(def: Definition, type: ModelElementTypes, subtype?: ModelElementSubTypes): boolean {
-		const typeMatches = (def.type == type) || type == ModelElementTypes.All;
+		const typeMatches = ((def.type||ModelElementTypes.Unknown) == type) || type == ModelElementTypes.All;
 		const subTypeMatchesOrEmpty = (subtype == undefined) || (def.subtype == subtype) || subtype == ModelElementSubTypes.All;
 		return typeMatches && subTypeMatchesOrEmpty;
 	}

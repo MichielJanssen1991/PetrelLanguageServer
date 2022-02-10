@@ -70,7 +70,7 @@ export class Analyzer {
 			connection.console.log(`Analyzing file (${i}/${numberOfFiles}): ${uri}`);
 
 			try {
-				this.analyze(uri, detailLevel);
+				await this.analyze(uri, detailLevel);
 			} catch (error) {
 				connection.console.warn(`Failed analyzing ${uri}. Error: ${(error as Error).message}`);
 			}

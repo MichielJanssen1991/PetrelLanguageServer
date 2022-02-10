@@ -792,14 +792,14 @@ const frontend_events_base_definition: Definition = {
 const view_declaration_definition: Partial<Definition> = {
 	type: ModelElementTypes.View,
 	detailLevel: ModelDetailLevel.Declarations,
-	ancestors: [{type: ModelElementTypes.Views}],
+	ancestors: [{ type: ModelElementTypes.Views }],
 	isSymbolDeclaration: true,
 	prefixNameSpace: true
 };
 
 const subview_definition: Partial<Definition> = {
 	type: ModelElementTypes.SubView,
-	ancestors: [{type: ModelElementTypes.SubView}, {type: ModelElementTypes.View}, {type: ModelElementTypes.ActionCall}, {type: ModelElementTypes.MainView}, {type: ModelElementTypes.Node}]
+	ancestors: [{ type: ModelElementTypes.SubView }, { type: ModelElementTypes.View }, { type: ModelElementTypes.ActionCall }, { type: ModelElementTypes.MainView }, { type: ModelElementTypes.Node }]
 };
 
 const objectview_base_definition: Definition = {
@@ -999,7 +999,7 @@ const treeview_base_definition: Definition = { // Tree
 		...default_view_children
 	]
 };
-const datatree_view_base_definition:Definition = { // DataTree
+const datatree_view_base_definition: Definition = { // DataTree
 	subtype: ModelElementSubTypes.View_DataTree,
 	description: "DataTree as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "DataTree"),
@@ -1016,7 +1016,7 @@ const datatree_view_base_definition:Definition = { // DataTree
 		}
 	]
 };
-const htmlfile_view_base_definition:Definition = { // HtmlFile
+const htmlfile_view_base_definition: Definition = { // HtmlFile
 	subtype: ModelElementSubTypes.View_HTML,
 	description: "HTMLFile as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "HtmlFile"),
@@ -1037,7 +1037,7 @@ const htmlfile_view_base_definition:Definition = { // HtmlFile
 		...default_view_children
 	]
 };
-const organizer_view_base_definition:Definition = { // Organizer
+const organizer_view_base_definition: Definition = { // Organizer
 	subtype: ModelElementSubTypes.View_Organizer,
 	description: "Organizer as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Organizer"),
@@ -1265,7 +1265,7 @@ const organizer_view_base_definition:Definition = { // Organizer
 		}
 	]
 };
-const mediaplayer_view_base_definition:Definition = { // MediaPlayer
+const mediaplayer_view_base_definition: Definition = { // MediaPlayer
 	subtype: ModelElementSubTypes.View_MediaPlayer,
 	description: "MediaPlayer as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "MediaPlayer"),
@@ -1304,7 +1304,7 @@ const mediaplayer_view_base_definition:Definition = { // MediaPlayer
 		...default_view_children
 	]
 };
-const annotationtool_view_base_definition:Definition = { // AnnotationTool
+const annotationtool_view_base_definition: Definition = { // AnnotationTool
 	subtype: ModelElementSubTypes.View_AnnotationTool,
 	description: "AnnotationTool as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "AnnotationTool"),
@@ -1336,7 +1336,7 @@ const annotationtool_view_base_definition:Definition = { // AnnotationTool
 		...default_view_children
 	]
 };
-const tabber_view_base_definition:Definition = { // Tabber
+const tabber_view_base_definition: Definition = { // Tabber
 	subtype: ModelElementSubTypes.View_Tabber,
 	description: "Tabber as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Tabber"),
@@ -1412,7 +1412,7 @@ const tabber_view_base_definition:Definition = { // Tabber
 		...default_view_children
 	]
 };
-const container_view_base_definition:Definition = { // ViewContainer
+const container_view_base_definition: Definition = { // ViewContainer
 	subtype: ModelElementSubTypes.View_Container,
 	description: "ViewContainer as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "ViewContainer"),
@@ -1467,7 +1467,7 @@ const container_view_base_definition:Definition = { // ViewContainer
 		}
 	]
 };
-const iframe_view_base_definition:Definition = { // Iframe
+const iframe_view_base_definition: Definition = { // Iframe
 	subtype: ModelElementSubTypes.View_IFrame,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Iframe"),
 	attributes: [
@@ -1492,7 +1492,7 @@ const iframe_view_base_definition:Definition = { // Iframe
 
 	]
 };
-const empty_view_base_definition:Definition = { // Empty
+const empty_view_base_definition: Definition = { // Empty
 	subtype: ModelElementSubTypes.View_IFrame,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Empty"),
 	attributes: [],
@@ -1601,33 +1601,33 @@ const action_children: ChildDefinition[] = [
 ];
 
 const view_group_children: ChildDefinition[] =
-[
-	{
-		element: "group"
-	},
-	{
-		element: "attribute"
-	},
-	{
-		element: "events"
-	},
-	{
-		element: "view"
-	},
-	{
-		element: "tabber"
-	},
-	{
-		element: "separator"
-	},
-	{
-		element: "button"
-	},
-	{
-		element: "decorations"
-	},
-	...default_children
-];
+	[
+		{
+			element: "group"
+		},
+		{
+			element: "attribute"
+		},
+		{
+			element: "events"
+		},
+		{
+			element: "view"
+		},
+		{
+			element: "tabber"
+		},
+		{
+			element: "separator"
+		},
+		{
+			element: "button"
+		},
+		{
+			element: "decorations"
+		},
+		...default_children
+	];
 
 const attribute_attributes: ElementAttribute[] = [
 	{
@@ -2146,7 +2146,7 @@ const include_block_frontend_declaration_definition: Definition = {
 				type: AttributeTypes.Enum,
 				options: include_block_meta_options
 			}
-		}		
+		}
 	]
 };
 
@@ -2501,12 +2501,12 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"include-block": [
 		{ // General
 			...include_block_frontend_declaration_definition,
-			matchCondition: (x)=>isIncludeBlockOfType(x, ""),
+			matchCondition: (x) => isIncludeBlockOfType(x, ""),
 		},
 		{ // module
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Module,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "module"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "module"),
 			children: [
 				...module_children
 			]
@@ -2514,7 +2514,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // objectview
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ObjectView,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "ObjectView"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "ObjectView"),
 			children: [
 				...objectview_base_definition.children
 			]
@@ -2522,7 +2522,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // listview
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ListView,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "ListView"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "ListView"),
 			children: [
 				...listview_base_definition.children
 			]
@@ -2530,7 +2530,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // treeview
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_TreeView,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "TreeView"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "TreeView"),
 			children: [
 				...treeview_base_definition.children
 			]
@@ -2538,7 +2538,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // viewcontainer
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ViewContainer,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "ViewContainer"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "ViewContainer"),
 			children: [
 				...container_view_base_definition.children
 			]
@@ -2546,7 +2546,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // generic view
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_View,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "view"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "view"),
 			children: [
 				...default_view_children
 			]
@@ -2554,7 +2554,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // attribute
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Attribute,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "attribute"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "attribute"),
 			children: [
 				...attribute_children
 			]
@@ -2562,7 +2562,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // group
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Group,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "group"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "group"),
 			children: [
 				...view_group_children
 			]
@@ -2570,7 +2570,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // button
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Button,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "button"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "button"),
 			children: [
 				...button_children
 			]
@@ -2578,7 +2578,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // action
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Action,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "action"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "action"),
 			children: [
 				...action_children
 			]
@@ -2586,7 +2586,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // event
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Event,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "event"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "event"),
 			children: [
 				...event_children
 			]
@@ -2594,14 +2594,14 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // toolbarbutton
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ToolbarButton,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "toolbarbutton"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "toolbarbutton"),
 			children: [
 				...toolbarbutton_children
 			]
 		},
-		
-		
-		
+
+
+
 	],
 	"include": [include_element],
 	"main-view": [{
@@ -3067,7 +3067,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Attribute,
-			ancestors: [{type: ModelElementTypes.Attribute}],
+			ancestors: [{ type: ModelElementTypes.Attribute }],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3104,13 +3104,13 @@ export const FRONTEND_DEFINITION: Definitions = {
 							}
 						]
 					},
-				}				
+				}
 			]
 		},
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Button,
-			ancestors: [{type: ModelElementTypes.Button}],
+			ancestors: [{ type: ModelElementTypes.Button }],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3137,7 +3137,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_ToolBarButton,
-			ancestors: [{type: ModelElementTypes.ToolbarButton}],
+			ancestors: [{ type: ModelElementTypes.ToolbarButton }],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3164,7 +3164,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Node,
-			ancestors: [{type: ModelElementTypes.Node}],
+			ancestors: [{ type: ModelElementTypes.Node }],
 			attributes: [
 				{
 					...event_element.attributes,
@@ -3187,7 +3187,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Group,
-			ancestors: [{type: ModelElementTypes.Group}],
+			ancestors: [{ type: ModelElementTypes.Group }],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3214,7 +3214,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Tab,
-			ancestors: [{type: ModelElementTypes.Tab}],
+			ancestors: [{ type: ModelElementTypes.Tab }],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3241,7 +3241,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Action,
-			ancestors: [{type: ModelElementTypes.Action}],
+			ancestors: [{ type: ModelElementTypes.Action }],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3263,7 +3263,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_MenuItem,
-			ancestors: [{type: ModelElementTypes.MenuItem}],
+			ancestors: [{ type: ModelElementTypes.MenuItem }],
 			description: "A specific event registration.",
 			attributes: [
 				...event_element.attributes,
@@ -3287,8 +3287,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			...event_element,
 			subtype: ModelElementSubTypes.Event_View,
 			ancestors: [
-				{type: ModelElementTypes.View},
-				{type: ModelElementTypes.SubView}],
+				{ type: ModelElementTypes.View },
+				{ type: ModelElementTypes.SubView }],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3510,7 +3510,14 @@ export const FRONTEND_DEFINITION: Definitions = {
 				subtypes: [
 					ModelElementSubTypes.IncludeBlock_Group
 				]
-			}],
+			},
+			{
+				type: ModelElementTypes.Group,
+				subtypes: [
+					ModelElementSubTypes.Group_View
+				]
+			}
+			],
 			type: ModelElementTypes.Group,
 			subtype: ModelElementSubTypes.Group_View,
 			description: "A field set, used to group fields. In the user interface, this (by default) draws a border around the fields.",
@@ -3518,7 +3525,17 @@ export const FRONTEND_DEFINITION: Definitions = {
 			children: view_group_children
 		},
 		{
-			ancestors: [{type: ModelElementTypes.Condition}],
+			ancestors: [
+				{
+					type: ModelElementTypes.Condition
+				},
+				{
+					type: ModelElementTypes.Group,
+					subtypes: [
+						ModelElementSubTypes.Group_Condition
+					]
+				}
+			],
 			type: ModelElementTypes.Group,
 			subtype: ModelElementSubTypes.Group_Condition,
 			description: "A group set, used to filter.",
@@ -3552,16 +3569,16 @@ export const FRONTEND_DEFINITION: Definitions = {
 			type: ModelElementTypes.Button,
 			ancestors: [{
 				type: ModelElementTypes.View
-			}, 
+			},
 			{
 				type: ModelElementTypes.SubView
-			}, 
+			},
 			{
 				type: ModelElementTypes.TitleBar
-			}, 
+			},
 			{
 				type: ModelElementTypes.MenuItem
-			}, 
+			},
 			{
 				type: ModelElementTypes.Group
 			},
@@ -3780,7 +3797,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"dropdown": [{
 		description: "A dropdown menu. Typically it contains a text element. It also contains a menu definition.",
-		type:ModelElementTypes.DropDown,
+		type: ModelElementTypes.DropDown,
 		attributes: [
 			{
 				name: "name",
@@ -4068,7 +4085,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"output": [
 		action_call_output_element,
 		{
-			ancestors: [{type: ModelElementTypes.Function}],
+			ancestors: [{ type: ModelElementTypes.Function }],
 			type: ModelElementTypes.Output,
 			detailLevel: ModelDetailLevel.Declarations,
 			isSymbolDeclaration: true,
@@ -4765,7 +4782,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"target": [
 		{ // none
 			...target_element_definition,
-			matchCondition: (x)=>isIncludeBlockOfType(x, ""),
+			matchCondition: (x) => isIncludeBlockOfType(x, ""),
 			attributes: [
 				...target_element_definition.attributes,
 			]
@@ -4773,7 +4790,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // objectview
 			...target_element_definition,
 			subtype: ModelElementSubTypes.Target_ObjectView,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "ObjectView"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "ObjectView"),
 			attributes: [
 				...target_element_definition.attributes,
 				...objectview_base_definition.attributes
@@ -4785,7 +4802,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // listview
 			...target_element_definition,
 			subtype: ModelElementSubTypes.Target_ListView,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "ListView"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "ListView"),
 			attributes: [
 				...target_element_definition.attributes,
 				...listview_base_definition.attributes
@@ -4797,7 +4814,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // viewcontainer
 			...target_element_definition,
 			subtype: ModelElementSubTypes.Target_ViewContainer,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "ViewContainer"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "ViewContainer"),
 			attributes: [
 				...target_element_definition.attributes,
 				...container_view_base_definition.attributes
@@ -4809,7 +4826,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // treeview
 			...target_element_definition,
 			subtype: ModelElementSubTypes.Target_TreeView,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "TreeView"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "TreeView"),
 			attributes: [
 				...target_element_definition.attributes,
 				...treeview_base_definition.attributes
@@ -4821,7 +4838,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // view
 			...target_element_definition,
 			subtype: ModelElementSubTypes.Target_TreeView,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "view"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "view"),
 			attributes: [
 				...target_element_definition.attributes,
 				...default_view_attributes
@@ -4833,7 +4850,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // group
 			...target_element_definition,
 			subtype: ModelElementSubTypes.Target_Group,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "group"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "group"),
 			attributes: [
 				...target_element_definition.attributes,
 				...view_group_attributes
@@ -4845,7 +4862,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // attribute
 			...target_element_definition,
 			subtype: ModelElementSubTypes.Target_Attribute,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "attribute"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "attribute"),
 			attributes: [
 				...target_element_definition.attributes,
 				...attribute_attributes
@@ -4858,7 +4875,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"decorator-context-entity": [decorator_context_entity_element],
 	"merge-instruction": [merge_instruction_element],
 	"metadata-initialize": [{
-		type:ModelElementTypes.MetaDataInitialize,
+		type: ModelElementTypes.MetaDataInitialize,
 		description: "Modifies the metadata just before it is used.",
 		attributes: [
 			{
