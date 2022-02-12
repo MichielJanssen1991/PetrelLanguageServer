@@ -182,7 +182,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 			let object: TreeNode;
 			const type = definition.type || ModelElementTypes.Unknown;
 			if (definition.isSymbolDeclaration) {
-				const name = this.parseNodeForName(definition, node);
+				const name = this.getSymbolName(definition, node);
 				object = newSymbolDeclaration(name, node.name, type, this.getTagRange(), this.uri, definition.subtype);
 				object.comment = node.attributes.comment;
 			}
@@ -267,9 +267,8 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		return contextQualifiers;
 	}
 
-	private parseNodeForName(definition: Definition, node: XmlNode) {
-		const nameFunction = definition.name || (function (node: XmlNode) { return node.attributes.name; });
-		let name = nameFunction(node);
+	private getSymbolName(definition: Definition, node: XmlNode) {
+		let name = node.attributes.name;
 		if (definition.prefixNameSpace) {
 			const nameSpace = this.getNameSpace();
 			name = (nameSpace == "") ? name : `${nameSpace}.${name}`;

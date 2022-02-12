@@ -277,7 +277,6 @@ export function newSymbolDeclaration(name: string, tag: string, type: ModelEleme
 export type Definitions = Record<string, Definition[]>
 
 export type Definition = {
-	name?: (x: any) => string,
 	description?: string,
 	checkObsolete?: boolean,
 	children: ChildDefinition[],

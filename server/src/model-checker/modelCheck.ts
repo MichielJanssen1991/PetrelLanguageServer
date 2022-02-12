@@ -6,8 +6,10 @@ import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 import { ModelCheckerOptions } from './modelChecker';
 
 export abstract class ModelCheck extends DiagnosticsCollection {
+	//Injected dependencies
 	protected modelManager: ModelManager;
 	protected modelDefinitionManager: ModelDefinitionManager;
+	
 	//Applicablility of the check is determined by the below conditions
 	protected abstract modelElementType: ModelElementTypes;
 	protected abstract detailLevel: ModelDetailLevel;

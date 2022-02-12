@@ -293,7 +293,6 @@ export const OTHER_DEFINITION: Definitions =
 		children: []
 	}],
 	"include": [{
-		name: (x) => x.attributes.block,
 		type: ModelElementTypes.IncludeBlock,
 		attributes: [dev_comment_attribute],
 		detailLevel: ModelDetailLevel.References,
@@ -433,10 +432,6 @@ const nonPetrelModelTags = new Set(
 export function isNonPetrelModelTag(tagName: string) {
 	return nonPetrelModelTags.has(tagName);
 }
-
-
-
-
 
 
 export function isInfosetOutput(nodeContext: IXmlNodeContext): boolean {

@@ -8,7 +8,6 @@ export function pointIsInRange(range: Range, pos: Position): boolean {
 }
 
 //Returns true when the value is a variable: "{variableName}"
-export function attributeValueIsAVariable(value: string)
-{
-	return /^\{.+\}$/.test(value); 
+export function attributeValueIsAVariable(value: string) {
+	return /^\{.+\}$/.test(value);
 }

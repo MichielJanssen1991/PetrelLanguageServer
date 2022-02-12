@@ -42,7 +42,6 @@ export default class PetrelLanguageServer {
 	private static defaultSettings: DocumentSettings = { maxNumberOfProblems: 10000, skipFolders: [], skipFoldersForChecks: [] };
 	private settings: DocumentSettings = PetrelLanguageServer.defaultSettings;
 
-	// constructor(connection: LSP._Connection, documents: TextDocuments<TextDocument>) {
 	constructor(connection: LSP._Connection) {
 		//Injected dependencies
 		this.connection = connection;
