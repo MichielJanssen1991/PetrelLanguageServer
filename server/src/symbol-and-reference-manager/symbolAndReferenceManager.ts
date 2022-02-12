@@ -1,11 +1,11 @@
 import { time, timeEnd } from 'console';
 import FuzzySearch = require('fuzzy-search');
-import { Position } from 'vscode-languageserver-types';
+import { Position, Range } from 'vscode-languageserver-types';
 import { standaloneObjectTypes } from '../model-definition/definitions/other';
 import { ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { ModelElementTypes, Reference, SymbolDeclaration, TreeNode, Attribute } from '../model-definition/symbolsAndReferences';
 import { flattenNestedListObjects, flattenNestedObjectValues, flattenObjectValues } from '../util/array';
-import { pointIsInRange } from '../util/other';
+import { pointIsInRange, rangeIsInRange } from '../util/other';
 
 type Symbols = { [name: string]: SymbolDeclaration[] }
 type FileSymbols = { [uri: string]: Symbols }
@@ -234,13 +234,13 @@ export class SymbolAndReferenceManager {
 	 */
 	public getNodeForPosition(uri: string, position: Position) {
 		const node = this.findNodeForPositionInChildNodes(this.uriToTree[uri], position);
-		const inTag = pointIsInRange(node.range, position);
-		const attribute: Reference | Attribute | undefined = Object.values(node.attributes).find(x => pointIsInRange(x.fullRange, position));
+		const inTag = pointIsInRange(position, node.range);
+		const attribute: Reference | Attribute | undefined = Object.values(node.attributes).find(x => pointIsInRange(position, x.fullRange));
 		return { node, inTag, attribute };
 	}
 
-	private findNodeForPositionInChildNodes(node: TreeNode, position: Position):TreeNode {
-		const childNode = node.children.find(x => pointIsInRange(x.fullRange, position));
+	private findNodeForPositionInChildNodes(node: TreeNode, position: Position): TreeNode {
+		const childNode = node.children.find(x => pointIsInRange(position, x.fullRange));
 		if (childNode) {
 			return this.findNodeForPositionInChildNodes(childNode, position);
 		} else {
@@ -248,4 +248,20 @@ export class SymbolAndReferenceManager {
 		}
 	}
 
+	/**
+	 * Get the node covering the range. Returns the deepest node for which the range is completely included in the node
+	 * node: The deepest node representing the xml tag that the position is located in
+	 */
+	public getNodeCoveringRange(uri: string, range: Range) {
+		return this.findDescendantCoveringRange(this.uriToTree[uri], range);
+	}
+
+	private findDescendantCoveringRange(node: TreeNode, range: Range): TreeNode {
+		const childNode = node.children.find(node => rangeIsInRange(range, node.fullRange));
+		if (childNode) {
+			return this.findDescendantCoveringRange(childNode, range);
+		} else {
+			return node; //No matching child node, return self
+		}
+	}
 }

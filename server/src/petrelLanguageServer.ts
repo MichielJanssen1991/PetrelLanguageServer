@@ -1,7 +1,6 @@
 //VSCode languageserver
-import { Diagnostic, CompletionItem, TextDocumentPositionParams, DocumentSymbolParams, DocumentSymbol, DidChangeTextDocumentParams, DidOpenTextDocumentParams } from 'vscode-languageserver/node';
+import { CompletionItem, TextDocumentPositionParams, DocumentSymbolParams, DocumentSymbol, DidChangeTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams } from 'vscode-languageserver/node';
 import * as LSP from 'vscode-languageserver';
-import { DocumentUri } from 'vscode-languageserver-textdocument';
 
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
@@ -10,7 +9,6 @@ import { CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
 
 //Other
-import { time, timeEnd } from 'console';
 import * as fs from 'fs';
 import path = require('path');
 import { ModelManager } from './symbol-and-reference-manager/modelManager';
@@ -18,6 +16,7 @@ import { ModelDefinitionManager } from './model-definition/modelDefinitionManage
 import { CompletionContext } from './completion/completionContext';
 import { DocumentSymbolProvider } from './document-symbols/documentSymbolProvider';
 import { DefinitionAndReferenceProvider } from './on-definition-or-reference/DefinitionAndReferenceProvider';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 
 interface DocumentSettings {
 	maxNumberOfProblems: number;
@@ -50,8 +49,8 @@ export default class PetrelLanguageServer {
 		this.modelDefinitionManager = new ModelDefinitionManager();
 		this.modelManager = new ModelManager();
 		this.documentSymbolProvider = new DocumentSymbolProvider(this.modelManager);
-		this.analyzer = new Analyzer(this.modelManager, this.modelDefinitionManager);
 		this.modelChecker = new ModelChecker(this.modelManager, this.modelDefinitionManager);
+		this.analyzer = new Analyzer(this.modelManager, this.modelDefinitionManager, this.modelChecker);
 		this.completionProvider = new CompletionProvider(this.modelManager, this.modelDefinitionManager);
 		this.definitionAndReferenceProvider = new DefinitionAndReferenceProvider(this.modelManager);
 	}
@@ -59,7 +58,13 @@ export default class PetrelLanguageServer {
 	public static async fromRoot(connection: LSP._Connection, rootPath: string): Promise<PetrelLanguageServer> {
 		const languageServer = new PetrelLanguageServer(connection);
 		languageServer.settings = PetrelLanguageServer.getSettingsFromFileOrDefault(rootPath);
-		languageServer.analyzer = await Analyzer.fromRoot({ connection, rootPath }, languageServer.modelManager, languageServer.modelDefinitionManager, languageServer.settings);
+		languageServer.analyzer = await Analyzer.fromRoot(
+			connection,
+			rootPath,
+			languageServer.modelManager,
+			languageServer.modelDefinitionManager,
+			languageServer.modelChecker,
+			languageServer.settings);
 		return languageServer;
 	}
 
@@ -91,31 +96,23 @@ export default class PetrelLanguageServer {
 	}
 
 	public async onDidChangeTextDocument(change: DidChangeTextDocumentParams) {
-		const document = this.analyzer.updateDocument(change);
-		const diagnostics = await this.validateTextDocument(change.textDocument.uri);
-		this.connection.sendDiagnostics({
-			uri: document.uri,
-			diagnostics
-		});
+		const uri = change.textDocument.uri;
+		const diagnostics = await this.analyzer.updateDocument(change);
+		this.connection.sendDiagnostics({ uri, diagnostics });
 	}
 
 	public async onDidOpenTextDocument(params: DidOpenTextDocumentParams) {
-		const document = this.analyzer.openDocument(params);
-		const diagnostics = await this.validateTextDocument(params.textDocument.uri);
-		this.connection.sendDiagnostics({
-			uri: document.uri,
-			diagnostics
-		});
+		const uri = params.textDocument.uri;
+		const documentItem = params.textDocument;
+		const document = TextDocument.create(documentItem.uri, documentItem.languageId, documentItem.version, documentItem.text);
+		const diagnostics = await this.analyzer.openDocument(document);
+		this.connection.sendDiagnostics({ uri, diagnostics });
 	}
 
-	private async validateTextDocument(uri: DocumentUri): Promise<Diagnostic[]> {
-		const parsingDiagnostics = await this.analyzer.analyze(uri, ModelDetailLevel.All);
-
-		time("Checking file");
-		const referenceChecksDiagnostics = this.modelChecker.checkFile(uri, { detailLevel: ModelDetailLevel.All });
-		timeEnd("Checking file");
-
-		return [...parsingDiagnostics, ...referenceChecksDiagnostics];
+	public async onDidSaveTextDocument(params: DidSaveTextDocumentParams) {
+		const uri = params.textDocument.uri;
+		const diagnostics = await this.analyzer.analyzeDocument(uri);
+		this.connection.sendDiagnostics({ uri, diagnostics });
 	}
 
 	private getWordAtPoint(params: LSP.TextDocumentPositionParams): string {

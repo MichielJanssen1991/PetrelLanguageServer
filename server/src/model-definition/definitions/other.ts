@@ -435,7 +435,7 @@ export function isNonPetrelModelTag(tagName: string) {
 
 
 export function isInfosetOutput(nodeContext: IXmlNodeContext): boolean {
-	return ("infoset" == nodeContext.getFirstParent()?.name);
+	return ("infoset" == nodeContext.getParent()?.tag);
 }
 
 export function isActionDefinition(nodeContext: IXmlNodeContext): boolean {
@@ -463,7 +463,7 @@ export function isModelCheckRuleAction(nodeContext: IXmlNodeContext): boolean {
 }
 
 export function isViewDeclaration(nodeContext: IXmlNodeContext): boolean {
-	return !(nodeContext.getFirstParent()?.name == "action" || nodeContext.getFirstParent()?.name == "view");
+	return !(nodeContext.getParent()?.tag == "action" || nodeContext.getParent()?.tag == "view");
 }
 
 export function isViewControl(nodeContext: IXmlNodeContext, controlType: string): boolean {

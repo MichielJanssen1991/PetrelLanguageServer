@@ -181,8 +181,8 @@ export type ContextQualifiers = {
  */
 export interface IXmlNodeContext {
 	getCurrentXmlNode: () => XmlNode
-	getFirstParent: () => XmlNode | undefined,
-	getAncestor: (level: number) => XmlNode | undefined,
+	getParent: () => TreeNode | undefined,
+	getAncestor: (level: number) => TreeNode | undefined,
 	hasParentTag: (name: string) => boolean
 }
 

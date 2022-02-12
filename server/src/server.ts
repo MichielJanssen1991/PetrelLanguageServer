@@ -10,7 +10,8 @@ import {
 	InitializeResult,
 	DocumentSymbolParams,
 	DidOpenTextDocumentParams,
-	DidChangeTextDocumentParams
+	DidChangeTextDocumentParams,
+	DidSaveTextDocumentParams
 } from 'vscode-languageserver/node';
 
 import PetrelLanguageServer from './petrelLanguageServer';
@@ -46,7 +47,8 @@ connection.onInitialize(async (params: InitializeParams) => {
 		capabilities: {
 			textDocumentSync: {
 				change: TextDocumentSyncKind.Incremental,
-				openClose: true
+				openClose: true,
+				save: true
 			},
 			// Tell the client that this server supports code completion.
 			completionProvider: {
@@ -115,6 +117,10 @@ connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
 
 connection.onDidChangeTextDocument((params: DidChangeTextDocumentParams) => {
 	return languageServer.onDidChangeTextDocument(params);
+});
+
+connection.onDidSaveTextDocument((params: DidSaveTextDocumentParams) => {
+	return languageServer.onDidSaveTextDocument(params);
 });
 
 // Listen on the connection

@@ -1,4 +1,3 @@
-import { XmlNode } from '../file-analyzer/parser/saxParserExtended';
 import { BACKEND_DEFINITION } from './definitions/backend';
 import { BACKEND_ACTIONS_DEFINITION } from './definitions/backend-actions';
 import { FRONTEND_DEFINITION } from './definitions/frontend';
@@ -59,16 +58,16 @@ export class ModelDefinitionManager {
 		return matchConditionOk && ancestorOk;
 	}
 
-	private ancestorMatches(ancestorsDef: any, ancestor?: XmlNode):boolean {
+	private ancestorMatches(ancestorsDef: any, ancestor?: TreeNode):boolean {
 		const ancestorOk = ancestor?.type == (ancestorsDef.type || ModelElementTypes.Unknown)
 			&& (ancestorsDef.subtypes?ancestorsDef.subtypes.includes(ancestor?.subtype): true);
 		return ancestorOk;
 	}
 
-	private getFirstNonGroupingElementAncestor(modelFileContext: ModelFileContext, nodeContext: IXmlNodeContext, ancestorIndex = 1): XmlNode | undefined {
+	private getFirstNonGroupingElementAncestor(modelFileContext: ModelFileContext, nodeContext: IXmlNodeContext, ancestorIndex = 1): TreeNode | undefined {
 		const ancestor = nodeContext.getAncestor(ancestorIndex);
 		if (ancestor) {
-			const ancestorDefinition = this.getModelDefinitionForTagAndType(modelFileContext, ancestor.name, ancestor.type);
+			const ancestorDefinition = this.getModelDefinitionForTagAndType(modelFileContext, ancestor.tag, ancestor.type);
 			if (ancestorDefinition?.isGroupingElement) {
 				return this.getFirstNonGroupingElementAncestor(modelFileContext, nodeContext, ancestorIndex + 1);
 			} else {
