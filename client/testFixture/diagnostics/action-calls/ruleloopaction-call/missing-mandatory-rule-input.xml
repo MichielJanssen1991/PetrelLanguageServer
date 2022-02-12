@@ -1,6 +1,7 @@
-<module>
+<?cp-edit petrel/rules?>
+<rules>
   <rule name="ExampleRule">
     <action name="RuleLoopAction" infoset-name="KnownInfoset" rulename="KnownRuleWithMandatoryInput">
     </action>
   </rule>
-</module>
+</rules>

@@ -1,4 +1,5 @@
-<module>
+<?cp-edit petrel/infosets?>
+<infosets>
   <infoset name="ExampleInfosetWhichIsNotReferenced">
   </infoset>
-</module>
+</infosets>

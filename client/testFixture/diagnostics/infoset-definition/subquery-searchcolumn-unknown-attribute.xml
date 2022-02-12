@@ -1,14 +1,12 @@
-<module>
-  <type name="Type_Test_SearchColumnUnknownAttributeInSubquery">
-    <attribute name="KnownAttribute"/>
-  </type>
-  <infoset name="InfosetDefinition_Test_SearchColumnUnknownAttribute">
-    <search add-relations="no" type="Type_Test_SearchColumnUnknownAttributeInSubquery">
+<?cp-edit petrel/infosets?>
+<infosets>
+  <infoset name="SearchKnownTypeWithUnknownAttributeInSubquery">
+    <search add-relations="no" type="KnownType">
       <in field="KnownAttribute">
-        <search add-relations="no" type="Type_Test_SearchColumnUnknownAttributeInSubquery">
+        <search add-relations="no" type="KnownType">
           <searchcolumn name="UnknownAttribute" condition="Is" value="1" />
         </search>
       </in>
     </search>
   </infoset>
-</module>
+</infosets>

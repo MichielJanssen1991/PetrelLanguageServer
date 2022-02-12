@@ -1,10 +1,8 @@
-<module>
-  <type name="Type_Test_SearchColumnUnknownRule">
-    <attribute name="TestAttribute"/>
-  </type>
-  <infoset name="InfosetDefinition_Test_SearchColumnUnknownRule">
-    <search add-relations="no" type="Type_Test_SearchColumnUnknownRule">
-      <searchcolumn name="TestAttribute" condition="Is" rule="Rule_Test_SearchColumnUnknownRule" rule-output="Output1" />
+<?cp-edit petrel/infosets?>
+<infosets>
+  <infoset name="SearchKnownTypeForKnownAttributeUsingUnknownRule">
+    <search add-relations="no" type="KnownType">
+      <searchcolumn name="KnownAttribute" condition="Is" rule="UnknownRule" rule-output="Output1" />
     </search>
   </infoset>
-</module>
+</infosets>

@@ -1,9 +1,8 @@
-<module>
-  <type name="Type_Test_SearchColumnUnknownAttribute">
-  </type>
-  <infoset name="InfosetDefinition_Test_SearchColumnUnknownAttribute">
-    <search add-relations="no" type="Type_Test_SearchColumnUnknownAttribute">
+<?cp-edit petrel/infosets?>
+<infosets>
+  <infoset name="SearchKnownTypeForUnknownAttribute">
+    <search add-relations="no" type="KnownType">
       <searchcolumn condition="Is" name="UnknownAttribute" value="1" />
     </search>
   </infoset>
-</module>
+</infosets>

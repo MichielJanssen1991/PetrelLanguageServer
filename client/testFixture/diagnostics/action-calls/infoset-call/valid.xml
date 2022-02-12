@@ -1,13 +1,11 @@
-<module>
-  <infoset name="Infoset_Test_Valid">
-    <variable name="TestAttribute"/>
-  </infoset>
+<?cp-edit petrel/rules?>
+<rules>
   <rule name="ExampleRule">
-    <action name="Infoset" infoset-name="Infoset_Test_Valid">
-      <output local-name="TestAttribute"/>
-      <output local-name="Infoset_Test_Valid"/>
+    <action name="Infoset" infoset-name="KnownInfoset">
+      <output local-name="KnownInfosetOutput"/>
+      <output local-name="KnownInfoset"/>
     </action>
-    <output name="TestAttribute" attribute="TestAttribute"/>
-    <output name="Infoset_Test_Valid" attribute="Infoset_Test_Valid"/>
+    <output name="KnownInfosetOutput" attribute="KnownInfosetOutput"/>
+    <output name="KnownInfoset" attribute="KnownInfoset"/>
   </rule>
-</module>
+</rules>

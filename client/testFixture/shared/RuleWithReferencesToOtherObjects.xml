@@ -3,9 +3,10 @@
 		<action name="Rule" rulename="ExampleRule"/>
 		<action name="Rule" rulename="KnownRuleWithMandatoryInputs"/>
 		<action name="Rule" rulename="ObsoleteRuleForSkipCheck"/>
-		<action name="Infoset" infoset-name="InfosetDefinition_Test_SearchColumnUnknownType"/>
-		<action name="Infoset" infoset-name="InfosetDefinition_Test_SearchColumnUnknownAttribute"/>
-		<action name="Infoset" infoset-name="InfosetDefinition_Test_SearchColumnUnknownRule"/>
+		<action name="Infoset" infoset-name="SearchUnknownType"/>
+		<action name="Infoset" infoset-name="SearchKnownTypeForUnknownAttribute"/>
+		<action name="Infoset" infoset-name="SearchKnownTypeForKnownAttributeUsingUnknownRule"/>
+		<action name="Infoset" infoset-name="SearchKnownTypeWithUnknownAttributeInSubquery"/>
 		<action name="Select" type="test1"/>
 		<action name="Select" type="test2"/>
 		<action name="Select" type="abc"/>
