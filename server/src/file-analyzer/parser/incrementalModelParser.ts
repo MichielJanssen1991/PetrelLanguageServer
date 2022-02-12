@@ -2,7 +2,7 @@ import { Range } from 'vscode-languageserver';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
 import { Attribute, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
 import { positionIsGreaterThan, rangeIsInRange, rangeIsRange } from '../../util/other';
-import { FileParserResults } from './fileParser';
+import { IncrementalParser } from './fileParser';
 import { ModelParser } from './modelParser';
 
 enum IncrementalModelParserState {
@@ -11,28 +11,21 @@ enum IncrementalModelParserState {
 	Is,
 	After
 }
-export class IncrementalModelParser {
-	private previousResult: FileParserResults;
-	private previousTree: TreeNode;
-	private newRange: Range;
-	private oldRange: Range;
-	private newContent: string;
-	private modelParser: ModelParser;
-	private modelDefinitionManager: ModelDefinitionManager;
+export class IncrementalModelParser extends ModelParser implements IncrementalParser{
+	private newRange: Range = Range.create(0,0,0,0);
+	private oldRange: Range = Range.create(0,0,0,0);
+	private newContent="";
 
-	constructor(uri: string, detailLevel: ModelDetailLevel, modelDefinitionManager: ModelDefinitionManager, previousResult: FileParserResults, oldRange: Range, parseRange: Range, newContent: string) {
-		this.modelParser = new ModelParser(uri, detailLevel, modelDefinitionManager);
-		this.modelDefinitionManager = modelDefinitionManager;
-		this.previousResult = previousResult;
-		this.previousTree = previousResult.tree;
-		this.newContent = newContent;
-		this.newRange = parseRange;
-		this.oldRange = oldRange;
+	constructor(uri: string, detailLevel: ModelDetailLevel, modelDefinitionManager: ModelDefinitionManager) {
+		super(uri, detailLevel, modelDefinitionManager);
 	}
 
-	public updateParsedTree() {
-		this.walknodes(this.previousTree);
-		return this.previousResult;
+	public updateFile(oldRange: Range, newRange: Range, contents: string) {
+		this.newContent = contents;
+		this.newRange = newRange;
+		this.oldRange = oldRange;
+		this.walknodes(this.results.tree);
+		return this.results;
 	}
 
 	public walknodes(node: TreeNode) {
@@ -46,15 +39,15 @@ export class IncrementalModelParser {
 				break;
 			case IncrementalModelParserState.Parent:
 				//Build context using parsed object stack
-				this.modelParser.pushToParsedObjectStack(node,
-					this.modelDefinitionManager.getModelDefinitionForTreeNode(this.previousResult.modelFileContext || ModelFileContext.Unknown, node)
+				this.pushToParsedObjectStack(node,
+					this.modelDefinitionManager.getModelDefinitionForTreeNode(this.results.modelFileContext || ModelFileContext.Unknown, node)
 				);
 				node.children.forEach(child => this.walknodes(child));
 				this.translateNodeRangesParentsOfReparsedPart(node);
 				break;
 			case IncrementalModelParserState.Is:
-				this.modelParser.parseFile(this.newContent);
-				newNode = this.modelParser.getLatestParsedObjectFromStack().parsedObject.children.pop() as TreeNode;
+				this.parseFile(this.newContent);
+				newNode = this.getLatestParsedObjectFromStack().parsedObject.children.pop() as TreeNode;
 				this.translateNodeRangesForReparsedPart(newNode);
 				Object.keys(newNode).forEach(key => { (node as any)[key] = (newNode as any)[key]; }
 				);

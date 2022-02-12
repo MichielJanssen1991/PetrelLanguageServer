@@ -9,8 +9,8 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	private parser: ISaxParserExtended;
 	private parsedObjectStack: { parsedObject: TreeNode, definition?: Definition }[] = [];
 	private context: ModelFileContext = ModelFileContext.Unknown;
-	private modelDefinitionManager: ModelDefinitionManager;
 	private attributeRanges: Record<string, { range: Range, fullRange: Range }> = {};
+	protected modelDefinitionManager: ModelDefinitionManager;
 
 	constructor(uri: string, detailLevel: ModelDetailLevel, modelDefinitionManager: ModelDefinitionManager) {
 		super(uri, detailLevel);
@@ -126,12 +126,12 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	}
 
 	// Push the ParsedObject to the parsedObjectStack
-	public pushToParsedObjectStack(parsedObject: TreeNode, definition?: Definition) {
+	protected pushToParsedObjectStack(parsedObject: TreeNode, definition?: Definition) {
 		this.parsedObjectStack.push({ parsedObject, definition });
 	}
 
 	// Get the latest ParsedObject from the parsedObjectStack
-	public getLatestParsedObjectFromStack() {
+	protected getLatestParsedObjectFromStack() {
 		return this.parsedObjectStack[this.parsedObjectStack.length - 1];
 	}
 

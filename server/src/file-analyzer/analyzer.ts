@@ -9,12 +9,12 @@ import { getContextFromLine, wordAtPoint } from '../util/xml';
 import { ModelParser } from './parser/modelParser';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { JavascriptParser } from './parser/javascriptParser';
-import { FileParser, FileParserResults } from './parser/fileParser';
+import { FileParser, IncrementalParser } from './parser/fileParser';
 import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
 import { Connection, Diagnostic, DidChangeTextDocumentParams, Range, TextDocumentContentChangeEvent } from 'vscode-languageserver';
-import { IncrementalModelParser } from './parser/incrementalModelParser';
 import { rangeIsInRange } from '../util/other';
 import { ModelChecker } from '../model-checker/modelChecker';
+import { IncrementalModelParser } from './parser/incrementalModelParser';
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -28,9 +28,9 @@ export class Analyzer {
 
 	// Object containing TextDocument for each uri. Only for open workspace documents
 	private uriToTextDocument: { [uri: string]: TextDocument } = {};
-	// Object containing parser results for each uri. Only for open workspace documents. 
+	// Object containing incremental parsers per uri. Only for open workspace documents. 
 	// The previous parser result is used in incremental parsing
-	private uriToParserResults: { [uri: string]: FileParserResults } = {};
+	private uriToIncrementalParsers: { [uri: string]: IncrementalParser } = {};
 
 	constructor(symbolAndReferenceManager: SymbolAndReferenceManager, modelDefinitionManager: ModelDefinitionManager, modelChecker: ModelChecker) {
 		this.symbolAndReferenceManager = symbolAndReferenceManager;
@@ -42,8 +42,8 @@ export class Analyzer {
 	 * Initialize the Analyzer based on a connection to the client and a root path.	 
 	 */
 	public static async fromRoot(
-		connection: Connection, 
-		rootPath: string ,
+		connection: Connection,
+		rootPath: string,
 		symbolAndReferenceManager: SymbolAndReferenceManager,
 		modelDefinitionManager: ModelDefinitionManager,
 		modelChecker: ModelChecker,
@@ -79,7 +79,7 @@ export class Analyzer {
 			connection.console.log(`Analyzing file (${i}/${numberOfFiles}): ${uri}`);
 
 			try {
-				await this.analyze(uri, detailLevel);
+				await this.analyze(uri, detailLevel, false);
 			} catch (error) {
 				connection.console.warn(`Failed analyzing ${uri}. Error: ${(error as Error).message}`);
 			}
@@ -93,11 +93,11 @@ export class Analyzer {
 		const document = this.uriToTextDocument[uri];
 		const updatedDocument = TextDocument.update(document, change.contentChanges, change.textDocument.version);
 		this.uriToTextDocument[uri] = updatedDocument;
-		const parsingDiagnostics = await this.analyzeDocumentIncrementally(uri, ModelDetailLevel.All, change.contentChanges);
+		const parsingDiagnostics = await this.analyzeDocumentIncrementally(uri, change.contentChanges);
 		const checkerDiagnostics = await this.validateTextDocument(uri);
 		return [...parsingDiagnostics, ...checkerDiagnostics];
 	}
-	
+
 	public async openDocument(document: TextDocument) {
 		const uri = document.uri;
 		this.uriToTextDocument[uri] = document;
@@ -116,25 +116,32 @@ export class Analyzer {
 	 * Analyze the document for the provided uri to find declarations and references.
 	 * Returns syntax errors that occurred while parsing the file
 	 */
-	public async analyze(uri: DocumentUri, detailLevel: ModelDetailLevel, storeResult=false): Promise<Diagnostic[]> {
+	public async analyze(uri: DocumentUri, detailLevel: ModelDetailLevel, incrementalIfPossible: boolean): Promise<Diagnostic[]> {
 		const contents = await this.getFileContent(uri);
 
 		time("Parsing file");
-		const parser: FileParser = this.getParserForFile(uri, detailLevel);
+		const parser: FileParser = this.getParserForFile(uri, detailLevel, incrementalIfPossible);
 		const results = parser.parseFile(contents);
-		if(storeResult){
-			this.uriToParserResults[uri] = results;
+		if (IncrementalModelParser.IsIncrementalParser(parser)) {
+			this.uriToIncrementalParsers[uri] = parser as IncrementalModelParser;
 		}
 		this.symbolAndReferenceManager.updateTree(uri, results.tree, results.modelFileContext);
 		timeEnd("Parsing file");
 		return results.problems;
 	}
 
-	private getParserForFile(uri: string, detailLevel: ModelDetailLevel) {
+	private getParserForFile(uri: string, detailLevel: ModelDetailLevel, incrementalIfPossible: boolean) {
 		const extension = getFileExtension(uri);
 		let parser: FileParser;
 		switch (extension) {
-			case "xml": parser = new ModelParser(uri, detailLevel, this.modelDefinitionManager); break;
+			case "xml": {
+				if (incrementalIfPossible) {
+					parser = new IncrementalModelParser(uri, detailLevel, this.modelDefinitionManager);
+				} else {
+					parser = new ModelParser(uri, detailLevel, this.modelDefinitionManager);
+				}
+				break;
+			}
 			case "js": parser = new JavascriptParser(uri); break;
 			default: parser = new ModelParser(uri, detailLevel, this.modelDefinitionManager); break;
 		}
@@ -145,8 +152,8 @@ export class Analyzer {
 	 * Analyze the document increment for the provided uri to update the tree.
 	 * Returns syntax errors that occurred while parsing the file
 	 */
-	public async analyzeDocumentIncrementally(uri: DocumentUri, detailLevel: ModelDetailLevel, changes: TextDocumentContentChangeEvent[]): Promise<Diagnostic[]> {
-		const diagnostics = changes.map(change => { this.analyzeSingleDocumentChange(uri, detailLevel, change); }).pop();
+	public async analyzeDocumentIncrementally(uri: DocumentUri, changes: TextDocumentContentChangeEvent[]): Promise<Diagnostic[]> {
+		const diagnostics = changes.map(change => { this.analyzeSingleDocumentChange(uri, change); }).pop();
 		return diagnostics || [];
 	}
 
@@ -154,7 +161,7 @@ export class Analyzer {
 	 * Analyze the document single increment for the provided uri to update the tree.
 	 * Returns syntax errors that occurred while parsing the file
 	 */
-	public async analyzeSingleDocumentChange(uri: DocumentUri, detailLevel: ModelDetailLevel, change: TextDocumentContentChangeEvent): Promise<Diagnostic[]> {
+	public async analyzeSingleDocumentChange(uri: DocumentUri, change: TextDocumentContentChangeEvent): Promise<Diagnostic[]> {
 		let problems: Diagnostic[] = [];
 		time("Parsing file increment");
 		if (TextDocumentContentChangeEvent.isIncremental(change)) {
@@ -165,22 +172,14 @@ export class Analyzer {
 			const newRange = this.determineRangeAfterChanges(coveringNode.fullRange, change.range, change.text);
 			const contents = await this.getFileContent(uri, newRange);
 
-			const parser: IncrementalModelParser = new IncrementalModelParser(
-				uri,
-				detailLevel,
-				this.modelDefinitionManager,
-				this.uriToParserResults[uri],
-				oldRange,
-				newRange,
-				contents);
+			const parser: IncrementalParser = this.uriToIncrementalParsers[uri];
 
 			// console.log("oldRange:" + this.printRange(oldRange));
 			// console.log("rangeAfterChange:" + this.printRange(rangeAfterChange));
 			// console.log("contents:" + contents);
 			// console.log("BEFORE");
 			// this.printTree(this.uriToParserResults[uri].tree);
-			const results = parser.updateParsedTree();
-			this.uriToParserResults[uri] = results;
+			const results = parser.updateFile(oldRange, newRange, contents);
 			// console.log("AFTER");
 			// this.printTree(this.uriToParserResults[uri].tree);
 

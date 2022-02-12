@@ -1,5 +1,5 @@
 import * as LSP from 'vscode-languageserver';
-import { Diagnostic } from 'vscode-languageserver';
+import { Diagnostic, Range } from 'vscode-languageserver';
 import { DiagnosticsCollection } from '../../generic/diagnosticsCollection';
 import { ModelFileContext } from '../../model-definition/modelDefinitionManager';
 import { ModelDetailLevel, ModelElementTypes, newTreeNode, TreeNode } from '../../model-definition/symbolsAndReferences';
@@ -18,10 +18,18 @@ export abstract class FileParser extends DiagnosticsCollection {
 	}
 
 	abstract parseFile(fileContent: string): FileParserResults
+
+	public static IsIncrementalParser(parser: FileParser) {
+		return (parser as any)["updateFile"] != undefined;
+	}
 }
 
 export type FileParserResults = {
 	problems: Diagnostic[],
 	tree: TreeNode,
 	modelFileContext?: ModelFileContext,
+}
+
+export interface IncrementalParser {
+	updateFile: (oldRange: Range, newRange: Range, contents: string) => FileParserResults
 }
