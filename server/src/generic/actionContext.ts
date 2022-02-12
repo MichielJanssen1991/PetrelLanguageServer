@@ -1,6 +1,6 @@
 import { Attribute, ModelElementTypes, Reference, TreeNode, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
 
-export class CompletionContext {
+export class ActionContext {
 	public inAttribute: boolean;
 	public inTag: boolean;
 	public node: TreeNode;

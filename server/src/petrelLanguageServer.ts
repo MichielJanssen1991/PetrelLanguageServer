@@ -13,7 +13,7 @@ import * as fs from 'fs';
 import path = require('path');
 import { ModelManager } from './symbol-and-reference-manager/modelManager';
 import { ModelDefinitionManager } from './model-definition/modelDefinitionManager';
-import { CompletionContext } from './completion/completionContext';
+import { ActionContext } from './generic/actionContext';
 import { DocumentSymbolProvider } from './document-symbols/documentSymbolProvider';
 import { DefinitionAndReferenceProvider } from './on-definition-or-reference/DefinitionAndReferenceProvider';
 import { TextDocument } from 'vscode-languageserver-textdocument';
@@ -122,7 +122,7 @@ export default class PetrelLanguageServer {
 	/**	
 	 * Get the context for a given DocumentPosition.
 	 */
-	public getContext(params: LSP.TextDocumentPositionParams): CompletionContext {
+	public getContext(params: LSP.TextDocumentPositionParams): ActionContext {
 		let word = "";
 
 		if (params.position && params.position.line) {
@@ -134,7 +134,7 @@ export default class PetrelLanguageServer {
 		const inAttribute = this.analyzer.contextFromLine(uri, pos);
 
 		const { node, inTag, attribute } = this.modelManager.getNodeForPosition(uri, pos);
-		const context = new CompletionContext(inAttribute, inTag, node, word, uri, attribute);
+		const context = new ActionContext(inAttribute, inTag, node, word, uri, attribute);
 
 		return context;
 	}
@@ -169,7 +169,7 @@ export default class PetrelLanguageServer {
 	private logRequest({ request, params, context }: {
 		request: string
 		params: LSP.TextDocumentPositionParams
-		context?: CompletionContext
+		context?: ActionContext
 	}) {
 		const nodeSimplified = {
 			type: context?.node.type,
