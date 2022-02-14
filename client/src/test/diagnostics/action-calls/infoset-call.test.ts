@@ -9,8 +9,8 @@ suite('Should get diagnostics for infoset call', () => {
 		const docUri = getDocUri(folder + 'without-infoset-name.xml');
 		await testDiagnostics(docUri, [
 			{
-				message: 'Infoset call without infoset-name specified.',
-				range: toRange(2, 5, 2, 27),
+				message: '#CC0007: Infoset call without infoset-name specified.',
+				range: toRange(3, 4, 3, 27),
 				severity: vscode.DiagnosticSeverity.Information,
 				source: 'ex'
 			},
@@ -21,8 +21,8 @@ suite('Should get diagnostics for infoset call', () => {
 		const docUri = getDocUri(folder + 'unknown-infoset.xml');
 		await testDiagnostics(docUri, [
 			{
-				message: "Infoset with name 'NotAKnownInfoset' not found.",
-				range: toRange(2, 40, 2, 58),
+				message: "#ROC0001: Infoset with name 'NotAKnownInfoset' not found.",
+				range: toRange(3, 40, 3, 58),
 				severity: vscode.DiagnosticSeverity.Error,
 				source: 'ex'
 			},
@@ -33,8 +33,8 @@ suite('Should get diagnostics for infoset call', () => {
 		const docUri = getDocUri(folder + 'unknown-input.xml');
 		await testDiagnostics(docUri, [
 			{
-				message: "Input 'UnknownInput' not found for Action: 'Infoset' or Infoset: 'KnownInfoset'.",
-				range: toRange(3, 5, 3, 42),
+				message: "#CC0001: Input 'UnknownInput' not found for Action: 'Infoset' or Infoset: 'KnownInfoset'.",
+				range: toRange(4, 4, 4, 42),
 				severity: vscode.DiagnosticSeverity.Warning,
 				source: 'ex'
 			},
@@ -45,8 +45,8 @@ suite('Should get diagnostics for infoset call', () => {
 		const docUri = getDocUri(folder + 'missing-mandatory-input.xml');
 		await testDiagnostics(docUri, [
 			{
-				message: "Mandatory input 'MandatoryInfosetInput' for Infoset with name 'KnownInfosetWithMandatoryInput' not provided.",
-				range: toRange(2, 40, 2, 72),
+				message: "#CC0003: Mandatory input 'MandatoryInfosetInput' for Infoset with name 'KnownInfosetWithMandatoryInput' not provided.",
+				range: toRange(3, 40, 3, 72),
 				severity: vscode.DiagnosticSeverity.Error,
 				source: 'ex'
 			},
@@ -57,8 +57,8 @@ suite('Should get diagnostics for infoset call', () => {
 		const docUri = getDocUri(folder + 'wrong-capitalization.xml');
 		await testDiagnostics(docUri, [
 			{
-				message: "Preferred capitalization for Action with name 'infoset' is 'Infoset'.",
-				range: toRange(4, 17, 4, 26),
+				message: "#ROC0002: Preferred capitalization for Action with name 'infoset' is 'Infoset'.",
+				range: toRange(3, 17, 3, 26),
 				severity: vscode.DiagnosticSeverity.Information,
 				source: 'ex'
 			},

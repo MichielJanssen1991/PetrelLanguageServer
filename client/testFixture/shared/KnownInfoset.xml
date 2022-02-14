@@ -1,5 +1,6 @@
 <module>
   <infoset name="KnownInfoset">
     <search type="KnownType"/>
+    <variable name="KnownInfosetOutput"/>
   </infoset>
 </module>

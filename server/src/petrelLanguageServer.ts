@@ -1,7 +1,6 @@
 //VSCode languageserver
-import { TextDocuments, Diagnostic, CompletionItem, TextDocumentPositionParams, DocumentSymbolParams, DocumentSymbol } from 'vscode-languageserver/node';
+import { CompletionItem, TextDocumentPositionParams, DocumentSymbolParams, DocumentSymbol, DidChangeTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams } from 'vscode-languageserver/node';
 import * as LSP from 'vscode-languageserver';
-import { TextDocument } from 'vscode-languageserver-textdocument';
 
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
@@ -10,14 +9,14 @@ import { CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
 
 //Other
-import { time, timeEnd } from 'console';
 import * as fs from 'fs';
 import path = require('path');
 import { ModelManager } from './symbol-and-reference-manager/modelManager';
 import { ModelDefinitionManager } from './model-definition/modelDefinitionManager';
-import { CompletionContext } from './completion/completionContext';
+import { ActionContext } from './generic/actionContext';
 import { DocumentSymbolProvider } from './document-symbols/documentSymbolProvider';
 import { DefinitionAndReferenceProvider } from './on-definition-or-reference/DefinitionAndReferenceProvider';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 
 interface DocumentSettings {
 	maxNumberOfProblems: number;
@@ -28,7 +27,6 @@ interface DocumentSettings {
 export default class PetrelLanguageServer {
 	//Injected dependencies
 	private connection: LSP._Connection;
-	private documents: TextDocuments<TextDocument>;
 
 	// Sub components of the language server
 	private analyzer: Analyzer;
@@ -43,31 +41,30 @@ export default class PetrelLanguageServer {
 	private static defaultSettings: DocumentSettings = { maxNumberOfProblems: 10000, skipFolders: [], skipFoldersForChecks: [] };
 	private settings: DocumentSettings = PetrelLanguageServer.defaultSettings;
 
-	constructor(connection: LSP._Connection, documents: TextDocuments<TextDocument>) {
+	constructor(connection: LSP._Connection) {
 		//Injected dependencies
 		this.connection = connection;
-		this.documents = documents;
 
 		//Initialize various components and inject
 		this.modelDefinitionManager = new ModelDefinitionManager();
 		this.modelManager = new ModelManager();
 		this.documentSymbolProvider = new DocumentSymbolProvider(this.modelManager);
-		this.analyzer = new Analyzer(this.modelManager, this.modelDefinitionManager);
 		this.modelChecker = new ModelChecker(this.modelManager, this.modelDefinitionManager);
+		this.analyzer = new Analyzer(this.modelManager, this.modelDefinitionManager, this.modelChecker);
 		this.completionProvider = new CompletionProvider(this.modelManager, this.modelDefinitionManager);
 		this.definitionAndReferenceProvider = new DefinitionAndReferenceProvider(this.modelManager);
-
-		// The content of a text document has changed. This event is emitted
-		// when the text document first opened or when its content has changed.
-		this.documents.onDidChangeContent(change => {
-			this.onDocumentChangeContent(change);
-		});
 	}
 
-	public static async fromRoot(connection: LSP._Connection, documents: TextDocuments<TextDocument>, rootPath: string): Promise<PetrelLanguageServer> {
-		const languageServer = new PetrelLanguageServer(connection, documents);
+	public static async fromRoot(connection: LSP._Connection, rootPath: string): Promise<PetrelLanguageServer> {
+		const languageServer = new PetrelLanguageServer(connection);
 		languageServer.settings = PetrelLanguageServer.getSettingsFromFileOrDefault(rootPath);
-		languageServer.analyzer = await Analyzer.fromRoot({ connection, rootPath }, languageServer.modelManager, languageServer.modelDefinitionManager, languageServer.settings);
+		languageServer.analyzer = await Analyzer.fromRoot(
+			connection,
+			rootPath,
+			languageServer.modelManager,
+			languageServer.modelDefinitionManager,
+			languageServer.modelChecker,
+			languageServer.settings);
 		return languageServer;
 	}
 
@@ -98,25 +95,24 @@ export default class PetrelLanguageServer {
 		);
 	}
 
-	public async onDocumentChangeContent(change: any) {
-		const document = change.document;
-		this.analyzer.updateDocument(document.uri, document);
-		const diagnostics = await this.validateTextDocument(document);
-		this.connection.sendDiagnostics({
-			uri: document.uri,
-			diagnostics
-		});
+	public async onDidChangeTextDocument(change: DidChangeTextDocumentParams) {
+		const uri = change.textDocument.uri;
+		const diagnostics = await this.analyzer.updateDocument(change);
+		this.connection.sendDiagnostics({ uri, diagnostics });
 	}
 
-	private async validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
-		const uri = textDocument.uri;
-		const parsingDiagnostics = this.analyzer.analyze(uri, textDocument, ModelDetailLevel.All);
+	public async onDidOpenTextDocument(params: DidOpenTextDocumentParams) {
+		const uri = params.textDocument.uri;
+		const documentItem = params.textDocument;
+		const document = TextDocument.create(documentItem.uri, documentItem.languageId, documentItem.version, documentItem.text);
+		const diagnostics = await this.analyzer.openDocument(document);
+		this.connection.sendDiagnostics({ uri, diagnostics });
+	}
 
-		time("Checking file");
-		const referenceChecksDiagnostics = this.modelChecker.checkFile(uri, { detailLevel: ModelDetailLevel.All });
-		timeEnd("Checking file");
-
-		return [...parsingDiagnostics, ...referenceChecksDiagnostics];
+	public async onDidSaveTextDocument(params: DidSaveTextDocumentParams) {
+		const uri = params.textDocument.uri;
+		const diagnostics = await this.analyzer.analyzeDocument(uri);
+		this.connection.sendDiagnostics({ uri, diagnostics });
 	}
 
 	private getWordAtPoint(params: LSP.TextDocumentPositionParams): string {
@@ -126,7 +122,7 @@ export default class PetrelLanguageServer {
 	/**	
 	 * Get the context for a given DocumentPosition.
 	 */
-	public getContext(params: LSP.TextDocumentPositionParams): CompletionContext {
+	public getContext(params: LSP.TextDocumentPositionParams): ActionContext {
 		let word = "";
 
 		if (params.position && params.position.line) {
@@ -138,7 +134,7 @@ export default class PetrelLanguageServer {
 		const inAttribute = this.analyzer.contextFromLine(uri, pos);
 
 		const { node, inTag, attribute } = this.modelManager.getNodeForPosition(uri, pos);
-		const context = new CompletionContext(inAttribute, inTag, node, word, uri, attribute);
+		const context = new ActionContext(inAttribute, inTag, node, word, uri, attribute);
 
 		return context;
 	}
@@ -173,7 +169,7 @@ export default class PetrelLanguageServer {
 	private logRequest({ request, params, context }: {
 		request: string
 		params: LSP.TextDocumentPositionParams
-		context?: CompletionContext
+		context?: ActionContext
 	}) {
 		const nodeSimplified = {
 			type: context?.node.type,

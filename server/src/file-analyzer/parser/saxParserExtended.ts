@@ -1,5 +1,4 @@
 import * as LSP from 'vscode-languageserver';
-import { ModelElementSubTypes, ModelElementTypes } from '../../model-definition/symbolsAndReferences';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const sax = require("../../../node_modules/sax/lib/sax");
 
@@ -32,22 +31,15 @@ export type ProcessingInstruction = {
 export type XmlNode = {
 	name: string
 	attributes: Record<string, string>
-	type: ModelElementTypes,
-	subtype?: ModelElementSubTypes
 }
 
 
 // Extend with own functionality used for parsing model xml
 export interface ISaxParserExtended extends ISaxParser {
 	uri: string,
-	getParent: () => XmlNode|undefined,
-	getAncestor: (level: number) => XmlNode|undefined,
-	hasParentTag: (name: string) => boolean,
-	getCurrentXmlNode: () => XmlNode,
 	getTagRange: () => LSP.Range;
 	getAttributeRange: (attribute: { name: string, value: string }) => LSP.Range;
 	getAttributeValueRange: (attribute: { name: string, value: string }) => LSP.Range;
-	enrichTagWithType: (type: ModelElementTypes, subtype?:ModelElementSubTypes) => void;
 }
 
 
@@ -82,28 +74,10 @@ export function newSaxParserExtended(
 		onprocessinginstruction(instruction);
 	};
 
-	parser.getParent = function () {
-		return this.getAncestor(1);
-	};
-	
-	parser.getAncestor = function (level: number) {
-		const parentNodeStack = this.tags;
-		return parentNodeStack[parentNodeStack.length - 1 - level];
-	};
-
-	parser.getCurrentXmlNode = function () {
-		return this.tag;
-	};
-
-	parser.hasParentTag = function (name: string) {
-		const parentTagNames = this.tags.find((x: { name: string; }) => x.name == name);
-		return parentTagNames != undefined;
-	};
-
 	parser.getTagRange = function () {
 		return LSP.Range.create(
 			this.line,
-			Math.max(this.column + this.startTagPosition - this.position, 0),
+			Math.max(this.column + this.startTagPosition - this.position-1, 0),
 			this.line,
 			this.column,
 		);
@@ -130,11 +104,6 @@ export function newSaxParserExtended(
 			this.line,
 			this.column,
 		);
-	};
-
-	parser.enrichTagWithType = function (type:ModelElementTypes, subtype?:ModelElementSubTypes) {
-		this.tag.type = type; 
-		this.tag.subtype = subtype;
 	};
 
 	return parser;

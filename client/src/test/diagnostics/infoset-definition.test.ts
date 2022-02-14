@@ -8,8 +8,8 @@ suite('Should get diagnostics for infoset declaration', () => {
 		const docUri = getDocUri('diagnostics\\infoset-definition\\search-unknown-type.xml');
 		await testDiagnostics(docUri, [
 			{
-				message: "Type with name 'UnknownType' not found.",
-				range: toRange(2, 36, 2, 49),
+				message: "#ROC0001: Type with name 'UnknownType' not found.",
+				range: toRange(3, 36, 3, 49),
 				severity: vscode.DiagnosticSeverity.Error,
 				source: 'ex'
 			},
@@ -20,8 +20,8 @@ suite('Should get diagnostics for infoset declaration', () => {
 		const docUri = getDocUri('diagnostics\\infoset-definition\\searchcolumn-unknown-attribute.xml');
 		await testDiagnostics(docUri, [
 			{
-				message: "Attribute 'UnknownAttribute' not found in Type with name 'Type_Test_SearchColumnUnknownAttribute'.",
-				range: toRange(5, 40, 5, 58),
+				message: "#DC0001: Attribute 'UnknownAttribute' not found in Type with name 'KnownType'.",
+				range: toRange(4, 40, 4, 58),
 				severity: vscode.DiagnosticSeverity.Error,
 				source: 'ex'
 			},
@@ -32,8 +32,8 @@ suite('Should get diagnostics for infoset declaration', () => {
 		const docUri = getDocUri('diagnostics\\infoset-definition\\subquery-searchcolumn-unknown-attribute.xml');
 		await testDiagnostics(docUri, [
 			{
-				message: "Attribute 'UnknownAttribute' not found in Type with name 'Type_Test_SearchColumnUnknownAttributeInSubquery'.",
-				range: toRange(8, 29, 8, 47),
+				message: "#DC0001: Attribute 'UnknownAttribute' not found in Type with name 'KnownType'.",
+				range: toRange(6, 29, 6, 47),
 				severity: vscode.DiagnosticSeverity.Error,
 				source: 'ex'
 			},
@@ -44,8 +44,8 @@ suite('Should get diagnostics for infoset declaration', () => {
 		const docUri = getDocUri('diagnostics\\infoset-definition\\searchcolumn-unknown-rule.xml');
 		await testDiagnostics(docUri, [
 			{
-				message: "Rule with name 'Rule_Test_SearchColumnUnknownRule' not found.",
-				range: toRange(6, 61, 6, 96),
+				message: "#ROC0001: Rule with name 'UnknownRule' not found.",
+				range: toRange(4, 62, 4, 75),
 				severity: vscode.DiagnosticSeverity.Error,
 				source: 'ex'
 			},
@@ -56,8 +56,8 @@ suite('Should get diagnostics for infoset declaration', () => {
 		const docUri = getDocUri('diagnostics\\infoset-definition\\not-referenced.xml');
 		await testDiagnostics(docUri, [
 			{
-				message: "No references found to Infoset with name 'ExampleInfosetWhichIsNotReferenced'. The infoset could still be used indirectly via it's output variables.",
-				range: toRange(1, 3, 1, 53),
+				message: "#ROC0004: No references found to Infoset with name 'ExampleInfosetWhichIsNotReferenced'. The infoset could still be used indirectly via it's output variables.",
+				range: toRange(2, 2, 2, 53),
 				severity: vscode.DiagnosticSeverity.Information,
 				source: 'ex'
 			},

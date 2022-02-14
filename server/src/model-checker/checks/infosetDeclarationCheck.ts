@@ -15,7 +15,6 @@ export class InfosetDeclarationCheck extends ModelCheck {
 
 	constructor(modelManager: ModelManager) {
 		super(modelManager);
-
 	}
 
 	protected checkInternal(node: TreeNode, options: ModelCheckerOptions) {

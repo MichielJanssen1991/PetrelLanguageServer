@@ -1,5 +1,5 @@
 <?cp-edit petrel2.5.8/rules?>
-<module>
+<rules>
   <rule name="ExampleRule">
     <if description="">
       <condition variable="UnknownLocalNameUsedInCondition" operator="==" />
@@ -13,4 +13,4 @@
     <output name="UnknownLocalNameUsedInOutput" attribute="UnknownLocalNameUsedInOutput" />
     <output name="ExpressionValue" attribute="ExpressionValue" />
   </rule>
-</module>
+</rules>

@@ -1,6 +1,7 @@
-<module>
+<?cp-edit petrel/rules?>
+<rules>
   <rule name="ExampleRule">
     <action name="Rule" infoset-name="KnownInfoset" rulename="NotAKnownRule">
     </action>
   </rule>
-</module>
+</rules>

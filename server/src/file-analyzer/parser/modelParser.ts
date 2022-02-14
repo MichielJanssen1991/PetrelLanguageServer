@@ -7,11 +7,11 @@ import { ISaxParserExtended, newSaxParserExtended, XmlNode, ProcessingInstructio
 
 export class ModelParser extends FileParser implements IXmlNodeContext {
 	private parser: ISaxParserExtended;
-	private parsedObjectStack: { depth: number, parsedObject: TreeNode, definition?: Definition }[] = [];
+	private parsedObjectStack: { parsedObject: TreeNode, definition?: Definition }[] = [];
 	private context: ModelFileContext = ModelFileContext.Unknown;
-	private modelDefinitionManager: ModelDefinitionManager;
 	private attributeRanges: Record<string, { range: Range, fullRange: Range }> = {};
-	
+	protected modelDefinitionManager: ModelDefinitionManager;
+
 	constructor(uri: string, detailLevel: ModelDetailLevel, modelDefinitionManager: ModelDefinitionManager) {
 		super(uri, detailLevel);
 		this.setModelFileContext(ModelFileContext.Unknown);
@@ -24,7 +24,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		);
 		this.modelDefinitionManager = modelDefinitionManager;
 
-		this.parsedObjectStack.push({ depth: -1, parsedObject: this.results.tree });
+		this.parsedObjectStack.push({ parsedObject: this.results.tree });
 	}
 
 	//FileParser methods
@@ -35,33 +35,30 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	}
 
 	//INodeContext implementation
-	public getFirstParent() {
-		return this.parser.getParent();
-	}
-	
-	public getAncestor(level: number) {
-		return this.parser.getAncestor(level);
+	public getParent() {
+		return this.getAncestor(1);
 	}
 
-	public hasParentTag(name: string) {
-		return this.parser.hasParentTag(name);
+	public getAncestor(level: number) {
+		const parentNodeStack = this.parsedObjectStack;
+		return parentNodeStack[parentNodeStack.length - level].parsedObject;
 	}
 
 	public getCurrentXmlNode() {
-		return this.parser.getCurrentXmlNode();
+		return this.parser.tag;
 	}
 
-	//Methods related to range or depth 
+	public hasParentTag(name: string) {
+		return this.parsedObjectStack.some(item => item.parsedObject.tag == name);
+	}
+
+	//Methods related to range
 	public getTagRange() {
 		return this.parser.getTagRange();
 	}
 
 	public getAttributeRanges(attribute: { name: string; value: string; }) {
 		return { range: this.parser.getAttributeValueRange(attribute), fullRange: this.parser.getAttributeRange(attribute) };
-	}
-
-	private getCurrentDepth() {
-		return this.parser.tags.length;
 	}
 
 	//Namespace and other context qualifiers
@@ -93,24 +90,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	private onOpenTag(node: XmlNode) {
 		const tagName = node.name;
 		this.deduceContextFromTag(tagName);
-		const definition = this.getModelDefinitionForCurrentNode();
-		let object;
-
-		//Parse object for definition
-		if (definition) {
-			this.parser.enrichTagWithType(definition.type || ModelElementTypes.Unknown, definition.subtype);
-			object = this.parseNodeForDefinition(node, definition);
-			if (object) {
-				this.pushToParsedObjectStack(object, definition);
-			}
-		}
-
-		//If no definition is found only add the parsed tag when detail level is All 
-		if (this.detailLevel == ModelDetailLevel.All && !object) {
-			object = newTreeNode(node.name, ModelElementTypes.Unknown, this.getTagRange(), this.uri);
-			this.pushToParsedObjectStack(object);
-		}
-
+		this.parseNode(node);
 		this.attributeRanges = {};
 	}
 
@@ -146,90 +126,119 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	}
 
 	// Push the ParsedObject to the parsedObjectStack
-	private pushToParsedObjectStack(parsedObject: TreeNode, definition?: Definition) {
-		const depth = this.getCurrentDepth();
-		this.parsedObjectStack.push({ depth: depth, parsedObject, definition });
+	protected pushToParsedObjectStack(parsedObject: TreeNode, definition?: Definition) {
+		this.parsedObjectStack.push({ parsedObject, definition });
+	}
+
+	// Get the latest ParsedObject from the parsedObjectStack
+	protected getLatestParsedObjectFromStack() {
+		return this.parsedObjectStack[this.parsedObjectStack.length - 1];
 	}
 
 	// Process parsed objects from the parsedObjectStack based on the depth the parser currently is in the xml structure 
 	private processParsedObjectStack() {
-		const depth = this.getCurrentDepth();
-		let lastIndex = this.parsedObjectStack.length - 1;
-		while (lastIndex >= 0 && this.parsedObjectStack[lastIndex].depth > depth) {
-			lastIndex--;
-			const context = this.getContextQualifiers();
-			const item = this.parsedObjectStack.pop();
-			if (item) {
-				this.processParsedObjectFromStack(item, context);
+		const context = this.getContextQualifiers();
+		const item = this.parsedObjectStack.pop();
+		if (item) {
+			const { parsedObject, definition } = item;
+			const parentIndex = this.parsedObjectStack.length - 1;
+			const parent = parentIndex >= 0 ? this.parsedObjectStack[parentIndex] : undefined;
+			//If no definition is found only add the parsed tag when detail level is All 
+			if (this.detailLevel == ModelDetailLevel.All || definition) {
+				parsedObject.contextQualifiers = context;
+				parsedObject.fullRange.end = this.getTagRange().end;
+				if (parent) {
+					parsedObject.parent = parent.parsedObject;
+					this.parsedObjectStack[parentIndex].parsedObject.children.push(parsedObject);
+				}
+			} else {
+				//Transfer children
+				if (parent) {
+					parsedObject.children.forEach(child => {
+						child.parent = parent.parsedObject;
+						this.parsedObjectStack[parentIndex].parsedObject.children.push(child);
+					});
+				}
 			}
 		}
 	}
 
-	private processParsedObjectFromStack(item: { depth: number; parsedObject: TreeNode; }, context: ContextQualifiers) {
-		const { parsedObject } = item;
-		parsedObject.contextQualifiers = context;
-		parsedObject.fullRange.end = this.getTagRange().end;
-		const parentIndex = this.parsedObjectStack.length - 1;
-		const firstParent = parentIndex >= 0 ? this.parsedObjectStack[parentIndex] : undefined;
-		if (firstParent) {
-			parsedObject.parent = firstParent.parsedObject;
-			this.parsedObjectStack[parentIndex].parsedObject.children.push(parsedObject);
+	//Node parsing
+	private parseNode(node: XmlNode) {
+		let object;
+		//Parse object for definition
+		const definition = this.getModelDefinitionForCurrentNodeAndDetailLevel();
+		if (definition) {
+			object = this.parseNodeForDefinition(node, definition);
+		} else {
+			//Add bare minimum node if no matching definition found for parsing
+			object = newTreeNode(node.name, ModelElementTypes.Unknown, this.getTagRange(), this.uri);
 		}
+		this.pushToParsedObjectStack(object, definition);
 	}
 
-	private parseNodeForDefinition(node: XmlNode, definition: Definition): TreeNode | undefined {
-		if (this.detailLevel >= (definition.detailLevel != undefined ? definition.detailLevel : ModelDetailLevel.All)) {
-			let object: TreeNode;
-			const type = definition.type || ModelElementTypes.Unknown;
-			if (definition.isSymbolDeclaration) {
-				const name = this.parseNodeForName(definition, node);
-				object = newSymbolDeclaration(name, node.name, type, this.getTagRange(), this.uri, definition.subtype);
-				object.comment = node.attributes.comment;
-			}
-			else {
-				object = newTreeNode(node.name, type, this.getTagRange(), this.uri, definition.subtype);
-			}
-
-			object.attributes = this.parseAttributes(definition, node);
-			object.contextQualifiers = this.parseContextQualifiers(definition, node);
-			return object;
+	private parseNodeForDefinition(node: XmlNode, definition: Definition): TreeNode {
+		let object: TreeNode;
+		const type = definition.type || ModelElementTypes.Unknown;
+		if (definition.isSymbolDeclaration) {
+			const name = this.getSymbolName(definition, node);
+			object = newSymbolDeclaration(name, node.name, type, this.getTagRange(), this.uri, definition.subtype);
+			object.comment = node.attributes.comment;
+		}
+		else {
+			object = newTreeNode(node.name, type, this.getTagRange(), this.uri, definition.subtype);
 		}
 
-		return undefined;
+		object.attributes = this.parseAttributes(definition, node);
+		object.contextQualifiers = this.parseContextQualifiers(definition, node);
+		return object;
 	}
 
-	private parseAttributes(definition: Definition, node: XmlNode):  Record<string, Reference|Attribute> {
-		let attributes: Record<string, Attribute|Reference> = {};
+	private parseAttributes(definition: Definition, node: XmlNode): Record<string, Reference | Attribute> {
+		let attributes: Record<string, Attribute | Reference> = {};
 		if (definition.attributes) {
 			definition.attributes.forEach(attributeDefinition => {
 				const attribute = this.parseAttributeForDefinition(attributeDefinition, node);
-					if (attribute) { attributes[attributeDefinition.name] = attribute; }
+				if (attribute) { attributes[attributeDefinition.name] = attribute; }
 			});
 		}
 
-		// For now add fixed attributes for action calls (e.g. reference to rule / infoset or type) based on the old definition, should use action defintions 
+		// For now add fixed attributes for action calls (e.g. reference to rule / infoset or type).
 		if (definition.type == ModelElementTypes.ActionCall) {
-			const otherDefinition = this.modelDefinitionManager.getModelDefinition(ModelFileContext.Unknown);
-			const actionCallDefinition = otherDefinition["action"].find(x => x.type == ModelElementTypes.ActionCall);
-			if (actionCallDefinition && actionCallDefinition.attributes) {
-				actionCallDefinition.attributes.forEach(attributeDefinition => {
-					const attribute = this.parseAttributeForDefinition(attributeDefinition, node);
-					if (attribute) { attributes[attributeDefinition.name] = attribute; }
-				});
-			}
+			attributes = { ...attributes, ...this.parseAdditionalActionCallAttributes(node) };
 		}
 
 		// When detail level is All add all attributes not yet recognized as otherattributes
 		if (this.detailLevel == ModelDetailLevel.All) {
-			const attributesRecognized = new Set(Object.keys(attributes));
-			const attributesNotRecognized = Object.keys(node.attributes).filter(attributeName => !attributesRecognized.has(attributeName)).reduce((obj: Record<string, Attribute>, attributeName) => {
-				const attributeValue = node.attributes[attributeName];
-				const { range, fullRange } = this.attributeRanges[attributeName];
-				const attribute = { name: attributeName, value: attributeValue, range, fullRange };
-				obj[attributeName] = attribute;
-				return obj;
-			}, {});
+			const attributesNotRecognized = this.parseOtherAttributes(attributes, node);
 			attributes = { ...attributes, ...attributesNotRecognized };
+		}
+		return attributes;
+	}
+
+	private parseOtherAttributes(attributes: Record<string, Attribute | Reference>, node: XmlNode) {
+		const attributesNamesRecognized = new Set(Object.keys(attributes));
+		const attributesNamesNotRecognized = Object.keys(node.attributes)
+			.filter(attributeName => !attributesNamesRecognized.has(attributeName));
+		const attributesNotRecognized = attributesNamesNotRecognized.reduce((obj: Record<string, Attribute>, attributeName) => {
+			const attributeValue = node.attributes[attributeName];
+			const { range, fullRange } = this.attributeRanges[attributeName];
+			const attribute = { name: attributeName, value: attributeValue, range, fullRange };
+			obj[attributeName] = attribute;
+			return obj;
+		}, {});
+		return attributesNotRecognized;
+	}
+
+	private parseAdditionalActionCallAttributes(node: XmlNode) {
+		const attributes: Record<string, Attribute | Reference> = {};
+		const otherDefinition = this.modelDefinitionManager.getModelDefinition(ModelFileContext.Unknown);
+		const actionCallDefinition = otherDefinition["action"].find(x => x.type == ModelElementTypes.ActionCall);
+		if (actionCallDefinition && actionCallDefinition.attributes) {
+			actionCallDefinition.attributes.forEach(attributeDefinition => {
+				const attribute = this.parseAttributeForDefinition(attributeDefinition, node);
+				if (attribute) { attributes[attributeDefinition.name] = attribute; }
+			});
 		}
 		return attributes;
 	}
@@ -267,9 +276,8 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		return contextQualifiers;
 	}
 
-	private parseNodeForName(definition: Definition, node: XmlNode) {
-		const nameFunction = definition.name || (function (node: XmlNode) { return node.attributes.name; });
-		let name = nameFunction(node);
+	private getSymbolName(definition: Definition, node: XmlNode) {
+		let name = node.attributes.name;
 		if (definition.prefixNameSpace) {
 			const nameSpace = this.getNameSpace();
 			name = (nameSpace == "") ? name : `${nameSpace}.${name}`;
@@ -277,7 +285,14 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		return name;
 	}
 
-	private getModelDefinitionForCurrentNode() {
-		return this.modelDefinitionManager.getModelDefinitionForCurrentNode(this.context, this);
+	private getModelDefinitionForCurrentNodeAndDetailLevel(): Definition | undefined {
+		const definition = this.modelDefinitionManager.getModelDefinitionForCurrentNode(this.context, this);
+		if (definition) {
+			const defDetailLevel = definition.detailLevel != undefined ? definition.detailLevel : ModelDetailLevel.All;
+			if (this.detailLevel >= defDetailLevel) {
+				return definition;
+			}
+		}
+		return undefined;
 	}
 }

@@ -2,7 +2,7 @@ import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-lan
 import { AttributeTypes, ChildDefinition, ModelElementTypes, Definition, Reference, SymbolDeclaration, TreeNode, ElementAttribute } from '../model-definition/symbolsAndReferences';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
-import { CompletionContext } from './completionContext';
+import { ActionContext } from '../generic/actionContext';
 import { NAMES } from '../model-definition/constants';
 
 export class CompletionProvider {
@@ -14,7 +14,7 @@ export class CompletionProvider {
 		this.modelDefinitionManager = modelDefinitionManager;
 	}
 
-	public getCompletionItems(context: CompletionContext): CompletionItem[] {
+	public getCompletionItems(context: ActionContext): CompletionItem[] {
 		const { word, inTag, inAttribute, uri/*,  attribute */ } = context;
 		const modelFileContext = this.symbolAndReferenceManager.getModelFileContextForFile(uri);
 		const currentNode = context.currentNode;
@@ -48,7 +48,7 @@ export class CompletionProvider {
 		return allCompletions;
 	}
 
-	private getAttributeCompletions(modelFileContext: ModelFileContext, context: CompletionContext) {
+	private getAttributeCompletions(modelFileContext: ModelFileContext, context: ActionContext) {
 		let attributeCompletions: CompletionItem[] = [];
 		const node = context.currentNode;
 		if (node) {
@@ -192,7 +192,7 @@ export class CompletionProvider {
 		return returnResult || false;
 	}
 
-	private getAttributeValueCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
+	private getAttributeValueCompletions(modelFileContext: ModelFileContext, context: ActionContext): CompletionItem[] {
 		const node = context.currentNode as TreeNode;
 		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
 		const attribute = context.attribute;
@@ -239,7 +239,7 @@ export class CompletionProvider {
 	 * @param context 
 	 * @returns 
 	 */
-	private getChildElementCompletions(modelFileContext: ModelFileContext, context: CompletionContext): CompletionItem[] {
+	private getChildElementCompletions(modelFileContext: ModelFileContext, context: ActionContext): CompletionItem[] {
 		const node = context.currentNode as TreeNode;
 		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
 		if (elementDefinition && elementDefinition.children.length > 0) {

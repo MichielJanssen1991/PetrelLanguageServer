@@ -1,7 +1,8 @@
-<module>
+<?cp-edit petrel/rules?>
+<rules>
   <rule name="ExampleRule">
     <action name="RuleLoopAction" rulename="KnownRule" infoset-name="KnownInfoset">
     <argument remote-name="UnknownInput"/>
     </action>
   </rule>
-</module>
+</rules>

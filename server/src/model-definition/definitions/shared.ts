@@ -1732,10 +1732,10 @@ export const search_column_submatch_element: Definition =
 };
 
 export function isViewArgument(nodeContext: IXmlNodeContext): boolean {
-	return nodeContext.getFirstParent()?.name == "view";
+	return nodeContext.getParent()?.tag == "view";
 }
 
 export function isOutputDeclaration(nodeContext: IXmlNodeContext): boolean {
-	return (["rule", "infoset", "function"].includes(nodeContext.getFirstParent()?.name||"NONE"))
-		|| (nodeContext.getFirstParent()?.name == "action" && nodeContext.hasParentTag("actions"));
+	return (["rule", "infoset", "function"].includes(nodeContext.getParent()?.tag||"NONE"))
+		|| (nodeContext.getParent()?.tag == "action" && nodeContext.hasParentTag("actions"));
 }

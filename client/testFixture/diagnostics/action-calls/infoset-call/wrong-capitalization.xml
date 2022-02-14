@@ -1,8 +1,7 @@
-<module>
-  <infoset name="Infoset_Test_Capitalization">
-  </infoset>
+<?cp-edit petrel/rules?>
+<rules>
   <rule name="ExampleRule">
-    <action name="infoset" infoset-name="Infoset_Test_Capitalization">
+    <action name="infoset" infoset-name="KnownInfoset">
     </action>
   </rule>
-</module>
+</rules>

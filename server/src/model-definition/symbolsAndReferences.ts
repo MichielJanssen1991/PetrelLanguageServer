@@ -19,6 +19,7 @@ export enum ModelElementTypes {
 	Decorations = "Decorations",
 	DecoratorContextEntity = "Decorator-context-entity",
 	Document = "Document",
+	DropDown = "DropDown",
 	ElseIf = "ElseIf",
 	Exists = "Exists",
 	Field = "Field",
@@ -35,6 +36,7 @@ export enum ModelElementTypes {
 	Module = "Module",
 	NameSpace = "NameSpace",
 	MainView = "MainView",
+	MetaDataInitialize = "MetaDataInitialize",
 	Rule = "Rule",
 	Rules = "Rules",
 	Output = "Output",
@@ -182,8 +184,8 @@ export type ContextQualifiers = {
  */
 export interface IXmlNodeContext {
 	getCurrentXmlNode: () => XmlNode
-	getFirstParent: () => XmlNode | undefined,
-	getAncestor: (level: number) => XmlNode | undefined,
+	getParent: () => TreeNode | undefined,
+	getAncestor: (level: number) => TreeNode | undefined,
 	hasParentTag: (name: string) => boolean
 }
 
@@ -278,7 +280,6 @@ export function newSymbolDeclaration(name: string, tag: string, type: ModelEleme
 export type Definitions = Record<string, Definition[]>
 
 export type Definition = {
-	name?: (x: any) => string,
 	description?: string,
 	checkObsolete?: boolean,
 	children: ChildDefinition[],

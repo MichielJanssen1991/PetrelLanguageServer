@@ -1,5 +1,6 @@
-<module>
-  <infoset name="InfosetDefinition_Test_SearchColumnUnknownType">
+<?cp-edit petrel/infosets?>
+<infosets>
+  <infoset name="SearchUnknownType">
     <search add-relations="no" type="UnknownType"/>
   </infoset>
-</module>
+</infosets>

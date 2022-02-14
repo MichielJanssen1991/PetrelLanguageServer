@@ -1,4 +1,5 @@
-<module>
+<?cp-edit petrel/rules?>
+<rules>
   <rule name="ExampleRuleWhichIsNotReferenced">
   </rule>
-</module>
+</rules>

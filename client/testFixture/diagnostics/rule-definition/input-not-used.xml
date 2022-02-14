@@ -1,5 +1,5 @@
 <?cp-edit petrel2.5.8/rules?>
-<module>
+<rules>
   <rule name="ExampleRule">
     <input name="InputNotUsedInRule"/>
     <input name="InputUsedInCondition"/>
@@ -16,4 +16,4 @@
     </if>
     <output name="RuleOutput" attribute="RuleOutput" />
   </rule>
-</module>
+</rules>

@@ -1,11 +1,12 @@
 import { time, timeEnd } from 'console';
 import FuzzySearch = require('fuzzy-search');
-import { Position } from 'vscode-languageserver-types';
+import { Position, Range } from 'vscode-languageserver-types';
 import { standaloneObjectTypes } from '../model-definition/definitions/other';
 import { ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { ModelElementTypes, Reference, SymbolDeclaration, TreeNode, Attribute } from '../model-definition/symbolsAndReferences';
-import { flattenNestedListObjects, flattenNestedObjectValues, flattenObjectValues } from '../util/array';
-import { pointIsInRange } from '../util/other';
+import { flattenNestedObjectValues, flattenObjectValues } from '../util/array';
+import { pointIsInRange, rangeIsInRange } from '../util/other';
+import { walkTree } from '../util/tree';
 
 type Symbols = { [name: string]: SymbolDeclaration[] }
 type FileSymbols = { [uri: string]: Symbols }
@@ -19,24 +20,8 @@ export class SymbolAndReferenceManager {
 	private uriToReferences: FileReferences = {};
 	private uriToTree: FileTrees = {};
 	private uriToModelFileContext: FileContexts = {};
-	private get symbolsByName(): Symbols {
-		if (!this.symbolsByNameCached) {
-			time("Reevaluating symbols by name cache");
-			this.symbolsByNameCached = flattenNestedListObjects(this.uriToSymbols);
-			timeEnd("Reevaluating symbols by name cache");
-		}
-		return this.symbolsByNameCached;
-	}
-	private get referencesByName(): References {
-		if (!this.referencesByNameCached) {
-			time("Reevaluating references by name cache");
-			this.referencesByNameCached = flattenNestedListObjects(this.uriToReferences);
-			timeEnd("Reevaluating references by name cache");
-		}
-		return this.referencesByNameCached;
-	}
-	private symbolsByNameCached: Symbols | undefined;
-	private referencesByNameCached: References | undefined;
+	private symbolsByName: Symbols = {}
+	private referencesByName: References = {}
 
 	/**
 	 * Get the list of all files known by the reference manager
@@ -50,53 +35,35 @@ export class SymbolAndReferenceManager {
 	/**
 	 * Update the tree for a given file
 	 */
-	public updateTree(url: string, tree: TreeNode, modelFileContext?: ModelFileContext) {
-		this.referencesByNameCached = undefined;
-		this.symbolsByNameCached = undefined;
-		this.uriToTree[url] = tree;
-		this.uriToSymbols[url] = {};
-		this.uriToReferences[url] = {};
-		this.uriToModelFileContext[url] = modelFileContext;
-		this.walkNodes(tree);
+	public updateTree(uri: string, tree: TreeNode, modelFileContext?: ModelFileContext) {
+		time("Clearing lookup tables for old tree");
+		this.clearLookupTablesForFile(uri);
+		timeEnd("Clearing lookup tables for old tree");
+
+		this.uriToTree[uri] = tree;
+		this.uriToSymbols[uri] = {};
+		this.uriToReferences[uri] = {};
+		this.uriToModelFileContext[uri] = modelFileContext;
+		time("Update lookup tables for new tree");
+		this.updateTablesForTree(tree);
+		timeEnd("Update lookup tables for new tree");
 	}
 
-	private walkNodes(node: TreeNode) {
-		this.processNode(node);
-		node.children.forEach(x => this.walkNodes(x));
-
-		Object.values(node.attributes).forEach(x => this.processAttribute(x));
+	private updateTablesForTree(tree: TreeNode) {
+		walkTree(tree, this.processNodeForDeclaratations.bind(this), this.processAttributeForReferences.bind(this));
 	}
 
-	private processNode(node: TreeNode) {
-		if (standaloneObjectTypes.has(node.type)) {
-			if (node.isSymbolDeclaration) {
-				this.addSymbolDeclaration(node as SymbolDeclaration);
-			}
+	private clearLookupTablesForFile(uri:string) {
+		const references = this.uriToReferences[uri];
+		if(references){
+			const referenceNames = Object.keys(references);
+			referenceNames.forEach(name=> this.removeReference(uri,name));
 		}
-	}
-	private processAttribute(attribute: Attribute) {
-		if (attribute.isReference) {
-			const ref = attribute as Reference;
-			if (standaloneObjectTypes.has(ref.type)) {
-				this.addReference(ref);
-			}
+		const symbols = this.uriToSymbols[uri];
+		if(symbols){
+			const symbolNames = Object.keys(symbols);
+			symbolNames.forEach(name=> this.removeSymbolDeclaration(uri,name));
 		}
-	}
-
-	private addReference(reference: Reference) {
-		const uri = reference.uri;
-		const name = reference.type == ModelElementTypes.Action ? reference.value.toLowerCase() : reference.value;
-		const namedReferencesForName = this.uriToReferences[uri][name] || [];
-		namedReferencesForName.push(reference);
-		this.uriToReferences[uri][name] = namedReferencesForName;
-	}
-
-	private addSymbolDeclaration(symbol: SymbolDeclaration) {
-		const uri = symbol.uri;
-		const name = symbol.type == ModelElementTypes.Action ? symbol.name.toLowerCase() : symbol.name;
-		const namedDeclarationsForName = this.uriToSymbols[uri][name] || [];
-		namedDeclarationsForName.push(symbol);
-		this.uriToSymbols[uri][name] = namedDeclarationsForName;
 	}
 
 	/**
@@ -234,13 +201,13 @@ export class SymbolAndReferenceManager {
 	 */
 	public getNodeForPosition(uri: string, position: Position) {
 		const node = this.findNodeForPositionInChildNodes(this.uriToTree[uri], position);
-		const inTag = pointIsInRange(node.range, position);
-		const attribute: Reference | Attribute | undefined = Object.values(node.attributes).find(x => pointIsInRange(x.fullRange, position));
+		const inTag = pointIsInRange(position, node.range);
+		const attribute: Reference | Attribute | undefined = Object.values(node.attributes).find(x => pointIsInRange(position, x.fullRange));
 		return { node, inTag, attribute };
 	}
 
-	private findNodeForPositionInChildNodes(node: TreeNode, position: Position):TreeNode {
-		const childNode = node.children.find(x => pointIsInRange(x.fullRange, position));
+	private findNodeForPositionInChildNodes(node: TreeNode, position: Position): TreeNode {
+		const childNode = node.children.find(x => pointIsInRange(position, x.fullRange));
 		if (childNode) {
 			return this.findNodeForPositionInChildNodes(childNode, position);
 		} else {
@@ -248,4 +215,95 @@ export class SymbolAndReferenceManager {
 		}
 	}
 
+	/**
+	 * Get the node covering the range. Returns the deepest node for which the range is completely included in the node
+	 * node: The deepest node representing the xml tag that the position is located in
+	 */
+	public getNodeCoveringRange(uri: string, range: Range) {
+		return this.findDescendantCoveringRange(this.uriToTree[uri], range);
+	}
+
+	private findDescendantCoveringRange(node: TreeNode, range: Range): TreeNode {
+		const childNode = node.children.find(node => rangeIsInRange(range, node.fullRange));
+		if (childNode) {
+			return this.findDescendantCoveringRange(childNode, range);
+		} else {
+			return node; //No matching child node, return self
+		}
+	}
+
+	// Below code section contains code for updating the various lookup tables given a update of the parsed tree
+	private processNodeForDeclaratations(node: TreeNode) {
+		if (standaloneObjectTypes.has(node.type)) {
+			if (node.isSymbolDeclaration) {
+				this.addSymbolDeclaration(node as SymbolDeclaration);
+			}
+		}
+	}
+
+	private processAttributeForReferences(attribute: Attribute) {
+		if (attribute.isReference) {
+			const ref = attribute as Reference;
+			if (standaloneObjectTypes.has(ref.type)) {
+				this.addReference(ref);
+			}
+		}
+	}
+
+	private pushToReferencesByName(name: string, reference: Reference) {
+		const referencesForName = this.referencesByName[name] || [];
+		referencesForName.push(reference);
+		this.referencesByName[name] = referencesForName;
+	}
+
+	private pushToSymbolsByName(name: string, symbol: SymbolDeclaration) {
+		const namedDeclarationsForName = this.symbolsByName[name] || [];
+		namedDeclarationsForName.push(symbol);
+		this.symbolsByName[name] = namedDeclarationsForName;
+	}
+
+	private pushToReferencesByNameByFile(uri: string, name: string, reference: Reference) {
+		const namedReferencesForNameAndFile = this.uriToReferences[uri][name] || [];
+		namedReferencesForNameAndFile.push(reference);
+		this.uriToReferences[uri][name] = namedReferencesForNameAndFile;
+	}
+
+	private pushToSymbolsByNameByFile(uri: string, name: string, symbol: SymbolDeclaration) {
+		const namedDeclarationsForNameAndFile = this.uriToSymbols[uri][name] || [];
+		namedDeclarationsForNameAndFile.push(symbol);
+		this.uriToSymbols[uri][name] = namedDeclarationsForNameAndFile;
+	}
+
+	private addReference(reference: Reference) {
+		const uri = reference.uri;
+		const name = this.getReferenceKeyNameForLookupTable(reference);
+		this.pushToReferencesByName(name, reference);
+		this.pushToReferencesByNameByFile(uri, name, reference);
+	}
+
+	private addSymbolDeclaration(symbol: SymbolDeclaration) {
+		const uri = symbol.uri;
+		const name = this.getSymbolKeyNameForLookupTable(symbol);
+		this.pushToSymbolsByName(name, symbol);
+		this.pushToSymbolsByNameByFile(uri, name, symbol);
+	}
+
+	private removeReference(uri: string, name:string) {
+		let namedDeclarationsForName = this.referencesByName[name] || [];
+		namedDeclarationsForName = namedDeclarationsForName.filter(x => x.uri != uri);
+		this.referencesByName[name] = namedDeclarationsForName;
+	}
+
+	private removeSymbolDeclaration(uri: string, name:string) {
+		let namedDeclarationsForName = this.symbolsByName[name] || [];
+		namedDeclarationsForName = namedDeclarationsForName.filter(x => x.uri != uri);
+		this.symbolsByName[name] = namedDeclarationsForName;
+	}
+
+	private getSymbolKeyNameForLookupTable(symbol: SymbolDeclaration) {
+		return symbol.type == ModelElementTypes.Action ? symbol.name.toLowerCase() : symbol.name;
+	}
+	private getReferenceKeyNameForLookupTable(reference: Reference) {
+		return reference.type == ModelElementTypes.Action ? reference.value.toLowerCase() : reference.value;
+	}
 }

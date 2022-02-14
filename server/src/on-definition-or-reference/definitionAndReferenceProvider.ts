@@ -1,5 +1,5 @@
 import { Location, LocationLink } from 'vscode-languageserver-protocol';
-import { CompletionContext } from '../completion/completionContext';
+import { ActionContext } from '../generic/actionContext';
 import { Reference, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
 import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 
@@ -10,7 +10,7 @@ export class DefinitionAndReferenceProvider {
 		this.modelManager = modelManager;
 	}
 
-	public onDefinition(context: CompletionContext) {
+	public onDefinition(context: ActionContext) {
 		const { node, word, attribute } = context;
 		let symbols: SymbolDeclaration[] = [];
 		if (node && attribute?.isReference) {
@@ -23,7 +23,7 @@ export class DefinitionAndReferenceProvider {
 		return this.getSymbolDefinitionLocationLinks(symbols);
 	}
 
-	public onReference(context: CompletionContext) {
+	public onReference(context: ActionContext) {
 		const { node, word } = context;
 		let references: Reference[] = [];
 		if (node && node.isSymbolDeclaration && (node as SymbolDeclaration).name.endsWith(`.${word}`)) {
