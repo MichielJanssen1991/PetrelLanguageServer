@@ -111,6 +111,9 @@ export enum ModelElementSubTypes {
 	IncludeBlock_Switch = "IncludeBlockSwitch",
 	IncludeBlock_Case = "IncludeBlockCase",
 	IncludeBlock_ToolbarButton = "IncludeBlockToolbarButton",
+	IncludeBlock_Node = "IncludeBlockNode",
+	IncludeBlock_Tab = "IncludeBlockTab",
+	IncludeBlock_MenuItem = "IncludeBlockMenuItem",
 	
 	ModelCondition_Attribute = "ModelConditionAttribute",
 	ModelCondition_ServerEvents = "ModelConditionServerEvents",

@@ -719,6 +719,10 @@ const default_view_children: ChildDefinition[] = [
 		element: "server-events",
 		occurence: "once"
 	},
+	{
+		element: "metadata-initialize",
+		occurence: "once"
+	},
 	...default_children
 ];
 
@@ -3060,7 +3064,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Attribute,
-			ancestors: [{type: ModelElementTypes.Attribute}],
+			ancestors: [
+				{type: ModelElementTypes.Attribute},
+				{type: ModelElementTypes.IncludeBlock, subtypes: [ModelElementSubTypes.IncludeBlock_Attribute]}
+			],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3103,7 +3110,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Button,
-			ancestors: [{type: ModelElementTypes.Button}],
+			ancestors: [
+				{type: ModelElementTypes.Button},
+				{type: ModelElementTypes.IncludeBlock, subtypes: [ModelElementSubTypes.IncludeBlock_Button]}
+			],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3130,7 +3140,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_ToolBarButton,
-			ancestors: [{type: ModelElementTypes.ToolbarButton}],
+			ancestors: [
+				{type: ModelElementTypes.ToolbarButton},
+				{type: ModelElementTypes.IncludeBlock, subtypes: [ModelElementSubTypes.IncludeBlock_ToolbarButton]}
+			],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3157,7 +3170,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Node,
-			ancestors: [{type: ModelElementTypes.Node}],
+			ancestors: [
+				{type: ModelElementTypes.Node},
+				{type: ModelElementTypes.IncludeBlock, subtypes: [ModelElementSubTypes.IncludeBlock_Node]}
+			],
 			attributes: [
 				{
 					...event_element.attributes,
@@ -3180,7 +3196,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Group,
-			ancestors: [{type: ModelElementTypes.Group}],
+			ancestors: [
+				{type: ModelElementTypes.Group},
+				{type: ModelElementTypes.IncludeBlock, subtypes: [ModelElementSubTypes.IncludeBlock_Group]}
+			],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3207,7 +3226,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Tab,
-			ancestors: [{type: ModelElementTypes.Tab}],
+			ancestors: [
+				{type: ModelElementTypes.Tab},
+				{type: ModelElementTypes.IncludeBlock, subtypes: [ModelElementSubTypes.IncludeBlock_Tab]}
+			],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3234,7 +3256,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Action,
-			ancestors: [{type: ModelElementTypes.Action}],
+			ancestors: [
+				{type: ModelElementTypes.ActionCall},
+				{type: ModelElementTypes.IncludeBlock, subtypes: [ModelElementSubTypes.IncludeBlock_Action]}
+			],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3256,7 +3281,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			...event_element,
 			subtype: ModelElementSubTypes.Event_MenuItem,
-			ancestors: [{type: ModelElementTypes.MenuItem}],
+			ancestors: [
+				{type: ModelElementTypes.MenuItem},
+				{type: ModelElementTypes.IncludeBlock, subtypes: [ModelElementSubTypes.IncludeBlock_MenuItem]}
+			],
 			description: "A specific event registration.",
 			attributes: [
 				...event_element.attributes,
@@ -3281,7 +3309,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			subtype: ModelElementSubTypes.Event_View,
 			ancestors: [
 				{type: ModelElementTypes.View},
-				{type: ModelElementTypes.SubView}],
+				{type: ModelElementTypes.SubView},
+				{type: ModelElementTypes.IncludeBlock, subtypes: [ModelElementSubTypes.IncludeBlock_View]}
+			],
 			attributes: [
 				...event_element.attributes,
 				{
@@ -3495,13 +3525,18 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			ancestors: [{
 				type: ModelElementTypes.View
-			}, {
+			}, 
+			{
 				type: ModelElementTypes.SubView
+			},
+			{
+				type: ModelElementTypes.Group
 			},
 			{
 				type: ModelElementTypes.IncludeBlock,
 				subtypes: [
-					ModelElementSubTypes.IncludeBlock_Group
+					ModelElementSubTypes.IncludeBlock_Group,
+					ModelElementSubTypes.IncludeBlock_View
 				]
 			}],
 			type: ModelElementTypes.Group,
@@ -3545,6 +3580,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			type: ModelElementTypes.Button,
 			ancestors: [{
 				type: ModelElementTypes.View
+			}, 
+			{
+				type: ModelElementTypes.SubView
 			}, 
 			{
 				type: ModelElementTypes.TitleBar

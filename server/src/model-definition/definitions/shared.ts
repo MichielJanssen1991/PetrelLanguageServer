@@ -540,6 +540,7 @@ export const backend_action_call_element: Definition =
 export const model_condition_element: Definition =
 	{
 		type: ModelElementTypes.ModelCondition,
+		isGroupingElement: true,
 		description: "A model part that will be included when the mentioned setting has the specified value.",
 		attributes: [
 			{
