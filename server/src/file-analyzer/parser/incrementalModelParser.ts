@@ -2,6 +2,7 @@ import { Range } from 'vscode-languageserver';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
 import { Attribute, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
 import { positionIsGreaterThan, rangeIsInRange, rangeIsRange } from '../../util/other';
+// import { printTree } from '../../util/print';
 import { IncrementalParser } from './fileParser';
 import { ModelParser } from './modelParser';
 
@@ -21,10 +22,16 @@ export class IncrementalModelParser extends ModelParser implements IncrementalPa
 	}
 
 	public updateFile(oldRange: Range, newRange: Range, contents: string) {
+		// console.log("BEFORE");
+		// printTree(this.results.tree);
+		
 		this.newContent = contents;
 		this.newRange = newRange;
 		this.oldRange = oldRange;
 		this.walknodes(this.results.tree);
+		
+		// console.log("AFTER");
+		// printTree(this.results.tree);
 		return this.results;
 	}
 
@@ -121,6 +128,7 @@ export class IncrementalModelParser extends ModelParser implements IncrementalPa
 	private translateNodeVertically(nodeOrAttribute: TreeNode | Attribute, y: number) {
 		nodeOrAttribute.range.start.line += y;
 		nodeOrAttribute.range.end.line += y;
+		nodeOrAttribute.fullRange.start.line += y;
 		nodeOrAttribute.fullRange.end.line += y;
 	}
 

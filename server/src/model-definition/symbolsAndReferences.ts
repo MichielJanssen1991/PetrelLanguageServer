@@ -240,8 +240,8 @@ export function newReference(name: string, value: string, type: ModelElementType
 		name,
 		value,
 		type,
-		range,
-		fullRange,
+		range: {start: {...range.start}, end: {...range.end}},//Make copy
+		fullRange: {start: {...fullRange.start}, end: {...fullRange.end}},//Make copy
 		uri,
 		isReference: true
 	};
@@ -252,8 +252,8 @@ export function newTreeNode(tag: string, type: ModelElementTypes, range: LSP.Ran
 		type,
 		subtype,
 		tag,
-		range,
-		fullRange: LSP.Range.create(range.start, range.end),
+		range: {start: {...range.start}, end: {...range.end}},//Make copy
+		fullRange: {start: {...range.start}, end: {...range.end}},//Make copy
 		uri,
 		children: [],
 		attributes: {},
@@ -267,8 +267,8 @@ export function newSymbolDeclaration(name: string, tag: string, type: ModelEleme
 		type,
 		subtype,
 		tag,
-		range,
-		fullRange: LSP.Range.create(range.start, range.end),
+		range: {start: {...range.start}, end: {...range.end}},
+		fullRange: {start: {...range.start}, end: {...range.end}},
 		uri,
 		children: [],
 		attributes: {},

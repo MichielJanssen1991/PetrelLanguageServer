@@ -58,7 +58,9 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	}
 
 	public getAttributeRanges(attribute: { name: string; value: string; }) {
-		return { range: this.parser.getAttributeValueRange(attribute), fullRange: this.parser.getAttributeRange(attribute) };
+		return { 
+			range: this.parser.getAttributeValueRange(attribute), 
+			fullRange: this.parser.getAttributeRange(attribute) };
 	}
 
 	//Namespace and other context qualifiers

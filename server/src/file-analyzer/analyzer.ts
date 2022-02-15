@@ -173,16 +173,7 @@ export class Analyzer {
 			const contents = await this.getFileContent(uri, newRange);
 
 			const parser: IncrementalParser = this.uriToIncrementalParsers[uri];
-
-			// console.log("oldRange:" + this.printRange(oldRange));
-			// console.log("rangeAfterChange:" + this.printRange(rangeAfterChange));
-			// console.log("contents:" + contents);
-			// console.log("BEFORE");
-			// this.printTree(this.uriToParserResults[uri].tree);
 			const results = parser.updateFile(oldRange, newRange, contents);
-			// console.log("AFTER");
-			// this.printTree(this.uriToParserResults[uri].tree);
-
 			this.symbolAndReferenceManager.updateTree(uri, results.tree, results.modelFileContext);
 			problems = results.problems;
 		}
