@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption, Definition, ModelElementSubTypes } from '../symbolsAndReferences';
 import { isIncludeBlockOfType, isViewControl } from './other';
-import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_definition, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, is_declaration_attribute, is_public_attribute, override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element_partial, target_namespace_attribute, view_argument_element, view_group_attributes } from './shared';
+import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_partial, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, is_declaration_attribute, is_public_attribute, override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element_partial, target_namespace_attribute, view_argument_element, view_group_attributes } from './shared';
 
 const button_attributes: ElementAttribute[] =
 	[
@@ -2091,7 +2091,7 @@ const target_element: Definition = {
 };
 
 const decorator_context_entity_element: Definition = {
-	...decorator_context_entity_element_definition,
+	...decorator_context_entity_element_partial,
 	attributes: [
 		{
 			name: "meta-name",
@@ -2103,7 +2103,8 @@ const decorator_context_entity_element: Definition = {
 				options: meta_name_attribute_options
 			}
 		}
-	]
+	],
+	children: []
 };
 
 export const FRONTEND_DEFINITION: Definitions = {

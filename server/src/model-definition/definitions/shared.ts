@@ -847,12 +847,10 @@ export const target_element_partial: Partial<Definition> = {
 	]
 };
 
-export const decorator_context_entity_element_definition: Definition = 
+export const decorator_context_entity_element_partial: Partial<Definition> = 
 {
 	type: ModelElementTypes.DecoratorContextEntity,
-	description: "Some summary",
-	attributes: [],
-	children: []
+	description: "Some summary"
 };
 
 export const action_definition_argument_element: Definition = {
