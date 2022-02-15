@@ -853,55 +853,6 @@ export const decorator_context_entity_element_partial: Partial<Definition> =
 	description: "Some summary"
 };
 
-export const action_definition_argument_element: Definition = {
-	description: "Allows to define attributes/inputs/outputs shared per module",
-	attributes: [
-		{
-			name: "name",
-			required: true
-		},
-		{
-			name: "type",
-			type: {
-				type: AttributeTypes.Enum,
-				options: [
-					{
-						name: "string"
-					},
-					{
-						name: "integer"
-					},
-					{
-						name: "boolean"
-					},
-					{
-						name: "numeric"
-					},
-					{
-						name: "xml"
-					},
-					{
-						name: "xml-string"
-					},
-					{
-						name: "mixed"
-					},
-					{
-						name: "iid"
-					},
-					{
-						name: "pipedlist"
-					},
-					{
-						name: "xml-list"
-					},
-				]
-			}
-		},
-	],
-	children: []
-};
-
 export const view_argument_element: Definition = {
 	description: "Filter arguments for the view or attribute.",
 	type: ModelElementTypes.Argument,

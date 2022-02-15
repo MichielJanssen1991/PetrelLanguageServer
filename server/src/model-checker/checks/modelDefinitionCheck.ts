@@ -30,7 +30,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 		// check element on invalid child nodes
 		element.children.forEach(child => {
 			if (Array.isArray(definition.children) && !definition.children?.map(x=>x.element?.toLowerCase()).includes(child.tag.toLowerCase())){
-				this.addMessage(element.range, "MDC0002", `Invalid child node '${child.tag}' for element '${element.tag}'`);
+				this.addMessage(child.range, "MDC0002", `Invalid child node '${child.tag}' for element '${element.tag}'`);
 			}
 		});
 

@@ -202,7 +202,7 @@ export class SymbolAndReferenceManager {
 	public getNodeForPosition(uri: string, position: Position) {
 		const node = this.findNodeForPositionInChildNodes(this.uriToTree[uri], position);
 		const inTag = pointIsInRange(position, node.range);
-		const attribute: Reference | Attribute | undefined = Object.values(node.attributes).find(x => pointIsInRange(position, x.fullRange));
+		const attribute: Reference | Attribute | undefined = Object.values(node.attributes).find(x => pointIsInRange(position, x.range));
 		return { node, inTag, attribute };
 	}
 
