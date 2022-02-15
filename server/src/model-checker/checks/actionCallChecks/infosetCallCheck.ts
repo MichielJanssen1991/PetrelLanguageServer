@@ -41,7 +41,13 @@ export class InfosetCallCheck extends ActionCallCheck {
 	protected getAdditionalInputsForSpecificAction() { return []; }
 
 	protected getAdditionalOutputsForSpecificAction(node: TreeNode) {
-		const infosetRef = node.attributes[NAMES.ATTRIBUTE_INFOSET];
-		return [infosetRef.value];
+		const infosetRef = node.attributes[NAMES.ATTRIBUTE_INFOSET] as Reference;
+		if(infosetRef){
+			const infosetDef = this.modelManager.getReferencedObject(infosetRef);
+			const outputNames = infosetDef ? this.modelManager.getInfosetVariables(infosetDef).map(x=> x.name) : [];
+			outputNames.push(infosetRef.value);
+			return outputNames;
+		}
+		return [];
 	}
 }

@@ -26,6 +26,7 @@ export enum ModelElementTypes {
 	Function = "Function",
 	Group = "Group",
 	Infoset = "Infoset",
+	InfosetVariable = "InfosetVariable",
 	Infosets = "Infosets",
 	Input = "Input",
 	Include = "Include",
@@ -116,7 +117,7 @@ export enum ModelElementSubTypes {
 	IncludeBlock_Node = "IncludeBlockNode",
 	IncludeBlock_Tab = "IncludeBlockTab",
 	IncludeBlock_MenuItem = "IncludeBlockMenuItem",
-	
+
 	ModelCondition_Attribute = "ModelConditionAttribute",
 	ModelCondition_ServerEvents = "ModelConditionServerEvents",
 	ModelCondition_ServerEvent = "ModelConditionServerEvent",
@@ -152,7 +153,7 @@ export enum ModelElementSubTypes {
 	Event_MenuItem = "ButtonEvent",
 	Event_ToolBarButton = "ToolBarButtonEvent",
 	Event_View = "ViewEvent",
-	
+
 }
 
 export enum ValidationLevels {
