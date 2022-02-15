@@ -1,8 +1,8 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ModelElementSubTypes, AttributeOption, Definition, ChildDefinition } from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
-import { dev_comment_attribute, dev_description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_override_rights_attribute, dev_is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, search_children, search_attributes, input_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, default_children, in_element, search_group_element, full_text_query_element, and_element, or_element, search_column_submatch_element, search_column_element, include_block_declaration_definition } from './shared';
+import { comment_attribute, description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, obsolete_attribute, obsolete_message_attribute, override_rights_attribute, is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, search_children, search_attributes, input_element, single_aggregate_query_element, aggregate_attribute_element, aggregate_function_element, default_children, in_element, search_group_element, full_text_query_element, and_element, or_element, search_column_submatch_element, search_column_element, include_block_declaration_definition } from './shared';
 
-const include_block_meta_options: AttributeOption[] = [
+const meta_attribute_options: AttributeOption[] = [
 	{
 		name: "module"
 	},
@@ -49,7 +49,7 @@ const include_block_infoset_declaration_definition: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: include_block_meta_options
+				options: meta_attribute_options
 			}
 		},
 		{
@@ -58,7 +58,7 @@ const include_block_infoset_declaration_definition: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: include_block_meta_options
+				options: meta_attribute_options
 			}
 		}		
 	]
@@ -68,7 +68,7 @@ export const INFOSET_DEFINITION: Definitions = {
 	"infosets": [{
 		description: "Collection of infosets.",
 		attributes: [
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: [
 			{
@@ -102,11 +102,11 @@ export const INFOSET_DEFINITION: Definitions = {
 					}
 				]
 			},
-			dev_obsolete_attribute,
-			dev_obsolete_message_attribute,
-			dev_override_rights_attribute,
-			dev_is_declaration_attribute,
-			dev_comment_attribute
+			obsolete_attribute,
+			obsolete_message_attribute,
+			override_rights_attribute,
+			is_declaration_attribute,
+			comment_attribute
 		],
 		children: [
 			{
@@ -174,8 +174,8 @@ export const INFOSET_DEFINITION: Definitions = {
 				autoadd: true
 			},
 			target_namespace_attribute,
-			dev_description_attribute,
-			dev_comment_attribute,
+			description_attribute,
+			comment_attribute,
 		],
 		children: module_children
 	}],
@@ -312,7 +312,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				name: "alias",
 				description: "An internal name for the search query which is available to use for 'match search field' purposes."
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: search_children
 	}],
@@ -325,7 +325,7 @@ export const INFOSET_DEFINITION: Definitions = {
 	"full-text-query": [full_text_query_element],
 	"query": [{
 		description: "A specific data query command.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "select",
@@ -474,12 +474,12 @@ export const INFOSET_DEFINITION: Definitions = {
 			...default_children
 		]
 	}],
-	"single-aggregate-query": [infoset_single_aggregate_query],
-	"aggregate-attribute": [infoset_aggregate_attribute],
-	"aggregate-function": [infoset_aggregate_function],
+	"single-aggregate-query": [single_aggregate_query_element],
+	"aggregate-attribute": [aggregate_attribute_element],
+	"aggregate-function": [aggregate_function_element],
 	"ordering": [{
 		description: "An ordering over sets of objects of a certain type.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "sort",
@@ -524,7 +524,7 @@ export const INFOSET_DEFINITION: Definitions = {
 	}],
 	"grouping": [{
 		description: "A grouping over sets of objects of a certain type.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "grouping-item",
@@ -591,11 +591,11 @@ export const INFOSET_DEFINITION: Definitions = {
 				},
 				detailLevel: ModelDetailLevel.SubReferences
 			},
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_obsolete_attribute,
-			dev_obsolete_message_attribute,
-			dev_comment_attribute
+			ignore_modelcheck_attribute,
+			ignore_modelcheck_justification_attribute,
+			obsolete_attribute,
+			obsolete_message_attribute,
+			comment_attribute
 		],
 		children: [ // HUH? ... WHY??
 			{
@@ -710,7 +710,7 @@ export const INFOSET_DEFINITION: Definitions = {
 					type: AttributeTypes.Numeric
 				}
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: []
 	}],
@@ -807,7 +807,7 @@ export const INFOSET_DEFINITION: Definitions = {
 					}
 				]
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: []
 	}],
@@ -863,7 +863,7 @@ export const INFOSET_DEFINITION: Definitions = {
 				name: "alias",
 				description: "An internal name for the search query which is available to use for 'match search field' purposes."
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: [
 			{

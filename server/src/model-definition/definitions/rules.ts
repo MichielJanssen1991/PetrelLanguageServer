@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ValidationLevels, ModelDetailLevel, Definition, AttributeOption, ModelElementSubTypes, ChildDefinition } from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
-import { dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_element, backend_action_call_element, dev_obsolete_attribute, dev_obsolete_message_attribute, dev_is_declaration_attribute, dev_override_rights_attribute, input_element, include_block_declaration_definition, default_children, action_call_children } from './shared';
+import { comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_element, backend_action_call_element, obsolete_attribute, obsolete_message_attribute, is_declaration_attribute, override_rights_attribute, input_element, include_block_declaration_definition, default_children, action_call_children } from './shared';
 
 const switch_children: ChildDefinition[] = [
 	{
@@ -82,7 +82,7 @@ const if_elseif_children: ChildDefinition[] = [
 	...default_children
 ];
 
-const include_block_meta_options: AttributeOption[] = [
+const meta_attribute_options: AttributeOption[] = [
 	{
 		name: "module"
 	},
@@ -127,7 +127,7 @@ const include_block_rules_declaration_definition: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: include_block_meta_options
+				options: meta_attribute_options
 			}
 		},
 		{
@@ -136,7 +136,7 @@ const include_block_rules_declaration_definition: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: include_block_meta_options
+				options: meta_attribute_options
 			}
 		}		
 	]
@@ -180,8 +180,8 @@ export const RULE_DEFINITION: Definitions = {
 				autoadd: true
 			},
 			target_namespace_attribute,
-			dev_description_attribute,
-			dev_comment_attribute,
+			description_attribute,
+			comment_attribute,
 		],
 		children: [
 			{
@@ -296,13 +296,13 @@ export const RULE_DEFINITION: Definitions = {
 					}
 				]
 			},
-			dev_obsolete_attribute,
-			dev_obsolete_message_attribute,
-			dev_override_rights_attribute,
-			dev_is_declaration_attribute,
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_comment_attribute
+			obsolete_attribute,
+			obsolete_message_attribute,
+			override_rights_attribute,
+			is_declaration_attribute,
+			ignore_modelcheck_attribute,
+			ignore_modelcheck_justification_attribute,
+			comment_attribute
 		],
 		children: rule_children
 	}],
@@ -384,9 +384,9 @@ export const RULE_DEFINITION: Definitions = {
 				name: "postcondition",
 				description: "A condition to check the value with."
 			},
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_comment_attribute
+			ignore_modelcheck_attribute,
+			ignore_modelcheck_justification_attribute,
+			comment_attribute
 		],
 		children: []
 	},
@@ -474,9 +474,9 @@ export const RULE_DEFINITION: Definitions = {
 				name: "value",
 				description: "A fixed value."
 			},
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_comment_attribute
+			ignore_modelcheck_attribute,
+			ignore_modelcheck_justification_attribute,
+			comment_attribute
 		],
 		children: []
 	}],
@@ -490,9 +490,9 @@ export const RULE_DEFINITION: Definitions = {
 				required: true,
 				autoadd: true
 			},
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_comment_attribute
+			ignore_modelcheck_attribute,
+			ignore_modelcheck_justification_attribute,
+			comment_attribute
 		],
 		children: []
 	}],
@@ -768,7 +768,7 @@ export const RULE_DEFINITION: Definitions = {
 	"else": [{
 		type: ModelElementTypes.Unknown,
 		description: "Else branch for the if 'statement'. What is below this element is executed if the condition of the if statement is not fulfilled.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: then_else_children
 	}],
 	"transaction": [{
@@ -853,7 +853,7 @@ export const RULE_DEFINITION: Definitions = {
 	"default": [{
 		type: ModelElementTypes.Unknown,
 		description: "",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: then_else_children
 	}],
 	"forloop": [{
@@ -884,13 +884,13 @@ export const RULE_DEFINITION: Definitions = {
 	"break": [{
 		type: ModelElementTypes.Unknown,
 		description: "Terminates the current loop.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"return": [{
 		type: ModelElementTypes.Unknown,
 		description: "Terminates the current rule.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"include_blocks": [include_blocks_element],

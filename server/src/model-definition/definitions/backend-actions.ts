@@ -1,5 +1,5 @@
 import { AttributeTypes, Definitions, ModelDetailLevel, ModelElementTypes } from '../symbolsAndReferences';
-import { action_definition_argument_element, default_yes_no_attribute_type, dev_comment_attribute } from './shared';
+import { action_definition_argument_element, default_yes_no_attribute_type, comment_attribute } from './shared';
 
 export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	"module": [{
@@ -133,7 +133,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	}],
 	"annotation": [{
 		description: "Developer's comment on this element.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "documentation",
@@ -166,7 +166,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 					]
 				}
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: [
 			{
@@ -187,7 +187,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	}],
 	"summary": [{
 		description: "Summarises the function of an element.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "xml-text",
@@ -197,7 +197,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	}],
 	"validation-description": [{
 		description: "A description of the desired value for this element. (TODO: Only for attributes where a validatestring is defined.)",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "xml-text",
@@ -213,7 +213,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	],
 	"element": [{
 		description: "sharing, prototyping of attributes (refer by name) -- used by xmleditor rules production",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "attribute"
@@ -320,7 +320,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 					}
 				]
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: [
 			{
@@ -345,7 +345,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 				name: "title",
 				description: "Unique label of the group."
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: [
 			{
@@ -381,7 +381,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 					]
 				}
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: [
 			{
@@ -410,7 +410,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			{
 				name: "icon"
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: [
 			{
@@ -453,7 +453,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			{
 				name: "value",
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: []
 	}],
@@ -468,7 +468,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 					relatedTo: ModelElementTypes.Attribute	// TODO: filter in root attributes
 				}
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: [
 			{
@@ -481,15 +481,15 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	}],
 	"xml-rules": [{	// TODO check with platform if it's still in use
 		description: "XML Modeler rules additions.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],	
 	"custom-rule": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],	// no documentation available TODO check with platform if it's still in use
 	"variable": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 		// only useful for modeler
 	}],

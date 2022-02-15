@@ -1,6 +1,9 @@
 import { NAMES } from '../constants';
 import { AttributeTypes, ElementAttribute, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType, ChildDefinition, ModelElementSubTypes } from '../symbolsAndReferences';
 
+// export const guidelines
+// <name_element>_element e.g. module_element
+
 export const default_yes_no_attribute_type: AttributeType =
 	{
 		type: AttributeTypes.Enum,
@@ -22,20 +25,20 @@ export const default_yes_no_attribute_type: AttributeType =
 		]
 	} as AttributeType;
 
-export const dev_comment_attribute: ElementAttribute =
+export const comment_attribute: ElementAttribute =
 	{
 		name: "comment",
 		description: "Developer's comment on this element."
 	};
 
-export const dev_obsolete_attribute: ElementAttribute =
+export const obsolete_attribute: ElementAttribute =
 	{
 		name: "obsolete",
 		description: "Set to yes if this model entity is obsolete. This means another way of modeling is prefered and this old functionality may be removed in the next version.",
 		type: default_yes_no_attribute_type
 	};
 
-export const dev_obsolete_message_attribute: ElementAttribute =
+export const obsolete_message_attribute: ElementAttribute =
 	{
 		name: "obsolete-message",
 		description: "Indicate what to use as an alternative.",
@@ -48,7 +51,7 @@ export const dev_obsolete_message_attribute: ElementAttribute =
 		]
 	};
 
-	export const dev_override_rights_attribute: ElementAttribute =
+export const override_rights_attribute: ElementAttribute =
 	{
 		name: "override-rights",
 		description: "May restrict which layers can override / extend this declaration.",
@@ -79,34 +82,33 @@ export const dev_obsolete_message_attribute: ElementAttribute =
 		}
 	};
 	
-	export const dev_is_declaration_attribute: ElementAttribute =
+export const is_declaration_attribute: ElementAttribute =
 	{
 		name: "is-declaration",
 		description: "May be used to have a metadata item which only specifies override rights and not specifies an instance.",
 		type: default_yes_no_attribute_type
 	};
 
-	export const dev_is_public_attribute: ElementAttribute =
+export const is_public_attribute: ElementAttribute =
 	{
 		name: "is-public",
 		description: "Indicates whether this entity is part of the public API and exposed to other models using it. NOTE: There is currently no validation of the contract, and this property is only used for the unused entities model check, but features may be added later.",
 		type: default_yes_no_attribute_type
 	};
 	
-
-export const dev_description_attribute: ElementAttribute =
+export const description_attribute: ElementAttribute =
 	{
 		name: "description",
 		description: "Description of contents and purpose."
 	};
 
-export const dev_ignore_modelcheck_attribute: ElementAttribute =
+export const ignore_modelcheck_attribute: ElementAttribute =
 	{
 		name: "ignore-modelcheck",
 		description: "A space separated list of modelchecks that should be ignored. When there is a model validation error or warning, the warning can be suppressed by using \"ignore-modelcheck\" property in the model code and put the validation error names from \"ModelCheck\" column as its values that can be found in modelchecker file output. When adding ignored model checks, make sure to document a justification in the \"ignore-modelcheck-justification\" field."
 	};
 
-export const dev_ignore_modelcheck_justification_attribute: ElementAttribute =
+export const ignore_modelcheck_justification_attribute: ElementAttribute =
 	{
 		name: "ignore-modelcheck-justification",
 		description: "If \"ignore-modelcheck\" was set, a justification why those model checks were ignored.",
@@ -228,21 +230,6 @@ export const default_children: ChildDefinition[] = [
 		}
 	];
 
-export const child_merge_instruction: ChildDefinition = 
-	{
-		element: "merge-instruction",
-		occurence: "once"
-	};
-
-export const child_include: ChildDefinition = 
-	{
-		element: "include"
-	};
-export const child_model_condition: ChildDefinition = 
-	{
-		element: "model-condition"
-	};
-
 export const action_call_children: ChildDefinition[] =[
 	{
 		element: "argument"
@@ -293,14 +280,14 @@ export const input_element: Definition = {
 				]
 			}
 		},
-		dev_ignore_modelcheck_attribute,
-		dev_ignore_modelcheck_justification_attribute,
-		dev_comment_attribute
+		ignore_modelcheck_attribute,
+		ignore_modelcheck_justification_attribute,
+		comment_attribute
 	],
 	children: []
 };
 
-	export const include_blocks_element: Definition =
+export const include_blocks_element: Definition =
 	{
 		description: "Use to group include blocks.",
 		attributes: [
@@ -312,7 +299,7 @@ export const input_element: Definition = {
 				name: "description",
 				description: "Description of contents and purpose."
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: [
 			{
@@ -344,12 +331,12 @@ export const merge_instruction_element: Definition =
 					]
 				}
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: []
 	};
 
-export const infoset_single_aggregate_query: Definition = 
+export const single_aggregate_query_element: Definition = 
 	{
 		description: "Specifies an aggregate query that returns a single aggregate result object.",
 		attributes: [
@@ -392,7 +379,7 @@ export const infoset_single_aggregate_query: Definition =
 		]
 	};
 
-export const infoset_aggregate_attribute: Definition = 
+export const aggregate_attribute_element: Definition = 
 	{
 		description: "Specifies an aggregate result.",
 		attributes: [
@@ -409,7 +396,7 @@ export const infoset_aggregate_attribute: Definition =
 		]
 	};
 
-export const infoset_aggregate_function: Definition = 
+export const aggregate_function_element: Definition = 
 	{
 		description: "Specifies the value of an aggregate.",
 		attributes: [
@@ -530,9 +517,9 @@ export const backend_action_call_element: Definition =
 					}
 				]
 			},
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_comment_attribute
+			ignore_modelcheck_attribute,
+			ignore_modelcheck_justification_attribute,
+			comment_attribute
 		],
 		children: action_call_children
 	};
@@ -715,7 +702,7 @@ export const include_element: Definition =
 					}
 				]
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: []
 	};
@@ -726,7 +713,7 @@ export const decorations_element: Definition =
 	description: "Group decorators applications of this element.",
 	//isGroupingElement: true,
 	attributes: [
-		dev_comment_attribute
+		comment_attribute
 	],
 	children: [
 		{
@@ -751,7 +738,7 @@ export const decoration_element: Definition =
 				relatedTo: ModelElementTypes.Decorator
 			}
 		},
-		dev_comment_attribute
+		comment_attribute
 	],
 	children: [
 		{
@@ -773,7 +760,7 @@ export const decoration_argument_element: Definition =
 			name: "value",
 			autoadd: true
 		},
-		dev_comment_attribute
+		comment_attribute
 	],
 	children: []
 };
@@ -782,7 +769,7 @@ export const decorators_element: Definition =
 {
 	type: ModelElementTypes.Decorators,
 	description: "Use to group decorator definitions.",
-	attributes: [dev_comment_attribute],
+	attributes: [comment_attribute],
 	children: [
 		{
 			element: "decorator"
@@ -852,13 +839,12 @@ export const decorator_input_element: Definition =
 	children: []
 };
 
-export const target_declaration_definition: Definition = {
+export const target_element_partial: Partial<Definition> = {
 	type: ModelElementTypes.Target,
 	description: "This element is mandatory and is a 'placeholder' for the element on which the decorator is applied. It can be extended with attributes and elements. Elements outside this element will occur outside the target element also.",
 	attributes: [
-		dev_comment_attribute
-	],
-	children: []
+		comment_attribute
+	]
 };
 
 export const decorator_context_entity_element_definition: Definition = 
@@ -1019,9 +1005,9 @@ export const view_argument_element: Definition = {
 			description: "If the argument has to be used as a default value for attribute with that name. Default = yes.",
 			type: default_yes_no_attribute_type
 		},
-		dev_ignore_modelcheck_attribute,
-		dev_ignore_modelcheck_justification_attribute,
-		dev_comment_attribute
+		ignore_modelcheck_attribute,
+		ignore_modelcheck_justification_attribute,
+		comment_attribute
 	],
 	children: []
 };
@@ -1082,9 +1068,9 @@ export const action_argument_element: Definition = {
 			description: "This indicates whether the field corresponds with a field from the related type.</summary> If the field is \"data bound\":[Model_Frontend_Bounded] (saved in the data). Useful when displaying values not in the persistence. A non-data bound field is a free form field that is not linked to a database attribute.",
 			type: default_yes_no_attribute_type			
 		},
-		dev_ignore_modelcheck_attribute,
-		dev_ignore_modelcheck_justification_attribute,
-		dev_comment_attribute
+		ignore_modelcheck_attribute,
+		ignore_modelcheck_justification_attribute,
+		comment_attribute
 	],
 	children: []
 };
@@ -1145,9 +1131,9 @@ export const action_call_output_element: Definition =
 				]
 			}
 		},
-		dev_comment_attribute,
-		dev_ignore_modelcheck_attribute,
-		dev_ignore_modelcheck_justification_attribute
+		comment_attribute,
+		ignore_modelcheck_attribute,
+		ignore_modelcheck_justification_attribute
 	],
 	children: []
 };
@@ -1158,7 +1144,7 @@ export const include_block_declaration_definition: Definition = {
 	isSymbolDeclaration: true,
 	description: "A model fragment that is included by includes.",
 	attributes: [
-		dev_comment_attribute,
+		comment_attribute,
 		{
 			name: "name",
 			description: "Unique identifier",
@@ -1214,7 +1200,7 @@ export const search_attributes: ElementAttribute[] =
 		name: "alias",
 		description: "An internal name for the search query which is available to use for 'match search field' purposes."
 	},
-	dev_comment_attribute
+	comment_attribute
 ];
 
 export const view_group_attributes: ElementAttribute[] =
@@ -1374,10 +1360,10 @@ export const view_group_attributes: ElementAttribute[] =
 			]
 		}
 	},
-	dev_override_rights_attribute,
-	dev_ignore_modelcheck_attribute,
-	dev_ignore_modelcheck_justification_attribute,
-	dev_comment_attribute
+	override_rights_attribute,
+	ignore_modelcheck_attribute,
+	ignore_modelcheck_justification_attribute,
+	comment_attribute
 ];
 
 export const search_children: ChildDefinition[] = 
@@ -1486,7 +1472,7 @@ export const search_group_element: Definition =
 {
 	isGroupingElement:true,
 	description: "",
-	attributes: [dev_comment_attribute],
+	attributes: [comment_attribute],
 	children: search_children
 };
 
@@ -1506,14 +1492,14 @@ export const full_text_query_element: Definition =
 export const and_element: Definition = 
 {
 	description: "The and-operator between search columns. In fact, and is the default, so it can be omitted.",
-	attributes: [dev_comment_attribute],
+	attributes: [comment_attribute],
 	children: []
 };
 
 export const or_element: Definition = 
 {
 	description: "The or-operator between search columns. Use the group element to specify brackets.",
-	attributes: [dev_comment_attribute],
+	attributes: [comment_attribute],
 	children: []
 };
 

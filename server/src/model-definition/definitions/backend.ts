@@ -1,8 +1,8 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, Definition, AttributeOption, ChildDefinition, ModelElementSubTypes, ElementAttribute} from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
-import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, model_condition_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, backend_action_call_element, infoset_single_aggregate_query, infoset_aggregate_attribute, infoset_aggregate_function, default_children, action_call_children, dev_comment_attribute, target_namespace_attribute, dev_description_attribute, dev_obsolete_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, include_block_declaration_definition, target_declaration_definition, decorator_context_entity_element_definition, search_children, in_element, search_group_element, full_text_query_element, or_element, and_element, search_column_submatch_element, search_column_element } from './shared';
+import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, model_condition_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, backend_action_call_element, single_aggregate_query_element, aggregate_attribute_element, aggregate_function_element, default_children, action_call_children, comment_attribute, target_namespace_attribute, description_attribute, obsolete_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, include_block_declaration_definition, target_element_partial, decorator_context_entity_element_definition, search_children, in_element, search_group_element, full_text_query_element, or_element, and_element, search_column_submatch_element, search_column_element } from './shared';
 
-const meta_name_options: AttributeOption[] = [
+const meta_name_attribute_options: AttributeOption[] = [
 	{
 		name: "attribute"
 	},
@@ -11,8 +11,8 @@ const meta_name_options: AttributeOption[] = [
 	},
 ];
 
-const include_block_meta_options: AttributeOption[] = [
-	...meta_name_options,
+const meta_attribute_options: AttributeOption[] = [
+	...meta_name_attribute_options,
 	{
 		name: "module"
 	},
@@ -36,7 +36,7 @@ const include_block_meta_options: AttributeOption[] = [
 	},
 ];
 
-const element_type_attributes_base: ElementAttribute[] = [
+const type_element_attributes: ElementAttribute[] = [
 	
 	{
 		name: "type",
@@ -262,13 +262,13 @@ const element_type_attributes_base: ElementAttribute[] = [
 			}
 		]
 	},
-	dev_obsolete_attribute,
-	dev_ignore_modelcheck_attribute,
-	dev_ignore_modelcheck_justification_attribute,
-	dev_comment_attribute
+	obsolete_attribute,
+	ignore_modelcheck_attribute,
+	ignore_modelcheck_justification_attribute,
+	comment_attribute
 ];
 
-const element_type_attributes: ElementAttribute[] = [
+const type_element_attributes_required: ElementAttribute[] = [
 	{
 		name: "name",
 		description: "Unique name for the type. The type name should only consist of letters and numbers and should start with a letter. This name is also used in the table definition in the database.Recommendation: It is of the utmost importance to use a clear and unambiguous method of naming. Philips VitalHealth recommends to assign a name to the type in plural and to let it start with a capital.",
@@ -281,10 +281,10 @@ const element_type_attributes: ElementAttribute[] = [
 			}
 		]
 	},
-	...element_type_attributes_base
+	...type_element_attributes
 ];
 
-const element_type_attributes_non_required: ElementAttribute[] = [
+const type_element_attributes_non_required: ElementAttribute[] = [
 	{
 		name: "name",
 		description: "Unique name for the type. The type name should only consist of letters and numbers and should start with a letter. This name is also used in the table definition in the database.Recommendation: It is of the utmost importance to use a clear and unambiguous method of naming. Philips VitalHealth recommends to assign a name to the type in plural and to let it start with a capital.",
@@ -296,7 +296,7 @@ const element_type_attributes_non_required: ElementAttribute[] = [
 			}
 		]
 	},
-	...element_type_attributes_base
+	...type_element_attributes
 ];
 
 const attribute_attributes: ElementAttribute[] = [
@@ -824,8 +824,8 @@ const type_children: ChildDefinition[] = [
 	...default_children
 ];
 
-const target_element_definition: Definition = {
-	...target_declaration_definition,
+const target_element: Definition = {
+	...target_element_partial,
 	attributes: [
 		{
 			name: "meta-name",
@@ -834,7 +834,7 @@ const target_element_definition: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: meta_name_options
+				options: meta_name_attribute_options
 			}
 		}
 	],
@@ -853,7 +853,7 @@ const include_block_backend_declaration_definition: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: include_block_meta_options
+				options: meta_attribute_options
 			}
 		},
 		{
@@ -862,7 +862,7 @@ const include_block_backend_declaration_definition: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: include_block_meta_options
+				options: meta_attribute_options
 			}
 		}		
 	]
@@ -878,7 +878,7 @@ const decorator_context_entity_element: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: meta_name_options
+				options: meta_name_attribute_options
 			}
 		}
 	]
@@ -941,8 +941,8 @@ export const BACKEND_DEFINITION: Definitions = {
 				autoadd: true
 			},
 			target_namespace_attribute,
-			dev_description_attribute,
-			dev_comment_attribute,
+			description_attribute,
+			comment_attribute,
 		],
 		children: module_children
 	}],
@@ -952,12 +952,12 @@ export const BACKEND_DEFINITION: Definitions = {
 		isSymbolDeclaration: true,
 		prefixNameSpace: true,
 		description: "",
-		attributes: element_type_attributes,
+		attributes: type_element_attributes_required,
 		children: type_children
 	}],
 	"virtual-filter": [{
 		description: "A filter on the base type that is defined here. The other way to set the virtual-filter is to select one of the filters defined at the base type using the attribute virtual-filter.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "search",
@@ -967,9 +967,9 @@ export const BACKEND_DEFINITION: Definitions = {
 			...default_children
 		]
 	}],
-	"single-aggregate-query": [infoset_single_aggregate_query],
-	"aggregate-attribute": [infoset_aggregate_attribute],
-	"aggregate-function": [infoset_aggregate_function],
+	"single-aggregate-query": [single_aggregate_query_element],
+	"aggregate-attribute": [aggregate_attribute_element],
+	"aggregate-function": [aggregate_function_element],
 	"one-to-many": [{
 		description: "A 1-to-n relation that maps another type that has a foreign relation to this type.",
 		attributes: [
@@ -1082,13 +1082,13 @@ export const BACKEND_DEFINITION: Definitions = {
 					}
 				]
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: []
 	}],
 	"keys": [{
 		description: "Database indexing keys. These are the sorting keys for creating (non) unique indices, as a result of which a performance improvement can be realised. Keys are when possible, used for queries. When no suitable key is found, the framework searches for the minimal set (this will however be usually bigger than when with a suitable key). From this set, at the server, those records that not satisfactory with a slower mechanism, are removed.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: keys_children
 	}],
 	"key": [{
@@ -1111,7 +1111,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				description: "Defines an unique key. The combination of all fields contained in the key have to be unique.",
 				type: default_yes_no_attribute_type
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: key_children
 	}],
@@ -1132,7 +1132,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	}],
 	"format": [{
 		description: "Defines a lay-out.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "image"
@@ -1170,7 +1170,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"server-events": [{
 		type: ModelElementTypes.ServerEvents,
 		description: "A server event registration.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: server_events_children
 	}],
 	"server-event": [{
@@ -1247,7 +1247,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				name: "class",
 				description: "The class which implements the event."
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: server_event_children
 	}],
@@ -1259,30 +1259,30 @@ export const BACKEND_DEFINITION: Definitions = {
 	"decorator-input": [decorator_input_element],
 	"target": [
 	{ // none
-		...target_element_definition,
+		...target_element,
 		matchCondition: (x)=>isIncludeBlockOfType(x, ""),
 		attributes: [
-			...target_element_definition.attributes,
+			...target_element.attributes,
 		]
 	},
 	{ // objectview
-		...target_element_definition,
+		...target_element,
 		subtype: ModelElementSubTypes.Target_Type,
 		matchCondition: (x)=>isIncludeBlockOfType(x, "type"),
 		attributes: [
-			...target_element_definition.attributes,
-			...element_type_attributes_non_required
+			...target_element.attributes,
+			...type_element_attributes_non_required
 		],
 		children: [
 			...type_children
 		]
 	},
 	{ // attribute
-		...target_element_definition,
+		...target_element,
 		subtype: ModelElementSubTypes.Target_Type,
 		matchCondition: (x)=>isIncludeBlockOfType(x, "attribute"),
 		attributes: [
-			...target_element_definition.attributes,
+			...target_element.attributes,
 			...attribute_attributes
 		],
 		children: [
@@ -1423,7 +1423,7 @@ export const BACKEND_DEFINITION: Definitions = {
 					type: AttributeTypes.Numeric
 				}
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: []
 	}],
@@ -1443,7 +1443,7 @@ export const BACKEND_DEFINITION: Definitions = {
 	"output": [action_call_output_element],
 	"filters": [{
 		description: "Defines search filters for this type.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "search"
@@ -1472,7 +1472,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				description: "If 'no' the search returns nothing (matches no record) when the filter is empty or if all the parameter based search columns are left out; if 'yes' it  all records (matches all records).",
 				type: default_yes_no_attribute_type
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: search_children
 	}],

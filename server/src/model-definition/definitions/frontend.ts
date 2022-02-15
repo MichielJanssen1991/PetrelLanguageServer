@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption, Definition, ModelElementSubTypes } from '../symbolsAndReferences';
 import { isIncludeBlockOfType, isViewControl } from './other';
-import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_definition, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, dev_comment_attribute, dev_description_attribute, dev_ignore_modelcheck_attribute, dev_ignore_modelcheck_justification_attribute, dev_is_declaration_attribute, dev_is_public_attribute, dev_override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_declaration_definition, target_namespace_attribute, view_argument_element, view_group_attributes } from './shared';
+import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_definition, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, is_declaration_attribute, is_public_attribute, override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element_partial, target_namespace_attribute, view_argument_element, view_group_attributes } from './shared';
 
 const button_attributes: ElementAttribute[] =
 	[
@@ -129,10 +129,10 @@ const button_attributes: ElementAttribute[] =
 				]
 			}
 		},
-		dev_override_rights_attribute,
-		dev_ignore_modelcheck_attribute,
-		dev_ignore_modelcheck_justification_attribute,
-		dev_comment_attribute
+		override_rights_attribute,
+		ignore_modelcheck_attribute,
+		ignore_modelcheck_justification_attribute,
+		comment_attribute
 	];
 
 const button_children: ChildDefinition[] =
@@ -152,26 +152,7 @@ const button_children: ChildDefinition[] =
 		...default_children
 	];
 
-const view_attribute_name_required: ElementAttribute = {
-	name: "name",
-	description: "Unique name for the view. The name is in most cases the outside identifier (views can be retrieved by name). For nested views, the name is not used as an outside identifier, but only for inner identifier. Using same inner identifiers merges subviews on inheritance.",
-	required: true,
-	validations: [
-		{
-			type: "regex",
-			value: /^[a-zA-Z]+[0-9a-zA-Z_\-.]*$/,
-			message: "1) Special characters (except '_', '-', '.') are not allowed in the name of the view. 2) A name should start with a letter"
-		}
-	]
-};
-
-const view_attribute_target_uri: ElementAttribute = {
-	name: "target-uri",
-	description: "The target identifier for the item used in frontend actions, etcetera.",
-	autoadd: true
-};
-
-const view_control_options: AttributeOption[] = [
+const control_attribute_options: AttributeOption[] = [
 	{
 		name: "ObjectView"
 	},
@@ -213,275 +194,7 @@ const view_control_options: AttributeOption[] = [
 	}
 ];
 
-const view_attribute_control_required: ElementAttribute = {
-	name: "control",
-	description: "View control type.",
-	required: true,
-	type: {
-		type: AttributeTypes.Enum,
-		options: view_control_options
-	}
-};
-
-const view_attribute_control: ElementAttribute = {
-	name: "control",
-	description: "View control type.",
-	type: {
-		type: AttributeTypes.Enum,
-		options: view_control_options
-	}
-};
-
-const view_attribute_title: ElementAttribute = {
-	name: "title",
-	description: "The title to display above the view (in the title bar).",
-	visibilityConditions: [
-		{
-			attribute: "control",
-			condition: "!=",
-			value: "HtmlFile"
-		},
-		{
-			operator: "and",
-			attribute: "control",
-			condition: "!=",
-			value: "Empty"
-		},
-	]
-};
-
-const view_attribute_type: ElementAttribute = {
-	name: "type",
-	description: "The backend data type to which the view is linked.",
-	type: {
-		type: AttributeTypes.Reference,
-		relatedTo: ModelElementTypes.Type
-	}
-};
-
-const view_attribute_view: ElementAttribute = {
-	name: "view",
-	description: "A view to inherit from. An inherited view copies all characteristics of the source view unless the attributes are changed in the inherited view. Supplements are also possible.",
-	type: {
-		type: AttributeTypes.Reference,
-		relatedTo: ModelElementTypes.View
-	}
-};
-
-const view_attribute_toolbar: ElementAttribute = {
-	name: "toolbar",
-	description: "The toolbar used in the view.",
-	type: {
-		type: AttributeTypes.Reference,
-		relatedTo: ModelElementTypes.Toolbar
-	},
-	visibilityConditions: [
-		{
-			attribute: "child-element",	// TODO check on child elements instead of attribute
-			condition: "misses",
-			value: "toolbar"
-		}
-	]
-};
-
-const view_attribute_bounded: ElementAttribute = {
-	name: "bounded",
-	description: "If the view is data bound, that is, presents and saves instances from the data type.</summary>It is possible to us a not data bound view for e.g. filtering purposes.",
-	type: default_yes_no_attribute_type
-};
-
-const view_attribute_mode: ElementAttribute = {
-	name: "mode",
-	description: "The mode in which the view has to be started.</summary>Startup mode: how to initialize (with or without loading data, ...). Only applicable for object or list control views.",
-	type: {
-		type: AttributeTypes.Enum,
-		options: [
-			{
-				name: "view"
-			},
-			{
-				name: "new"
-			},
-			{
-				name: "edit"
-			},
-			{
-				name: "viewdefaults",
-				obsolete: true
-			},
-			{
-				name: "design",
-				obsolete: true
-			}
-		]
-	}
-};
-
-const view_attribute_parent_connection: ElementAttribute = {
-	name: "parent-connection",
-	description: "Creates a header-lines relation between the parent view and this view.",
-	type: {
-		type: AttributeTypes.Reference,
-		relatedTo: ModelElementTypes.Attribute
-	},
-	visibilityConditions: [
-		{
-			attribute: "parent-node",	// Todo This should be a check on parent node not an attribut
-			condition: "==",
-			value: "view"
-		}
-	]
-};
-
-const view_attribute_portlet: ElementAttribute = {
-	name: "portlet",
-	description: "If the view can be added to a portal view.",
-	type: default_yes_no_attribute_type
-};
-
-const view_attribute_slide_position: ElementAttribute = {
-	name: "slide-position",
-	description: "The position of the screen or direction to which the view may slide in to.",
-	type: {
-		type: AttributeTypes.Enum,
-		options: [
-			{
-				name: "bottom"
-			},
-			{
-				name: "left"
-			},
-			{
-				name: "right"
-			},
-			{
-				name: "top"
-			},
-		]
-	}
-};
-
-const view_attribute_start_slided_in: ElementAttribute = {
-	name: "start-slided-in",
-	description: "If the view should start up slided in.",
-	type: default_yes_no_attribute_type,
-	visibilityConditions: [
-		{
-			attribute: "slide-position",
-			condition: "!=",
-			value: ""
-		}
-	]
-};
-
-const view_attribute_infoset: ElementAttribute = {
-	name: "infoset",
-	description: "The data set to display in the view. This is usefull when the data is not exactly the same as in the persistence, for example some calculated values. Only applicable for list control views.",
-	type: {
-		type: AttributeTypes.Reference,
-		relatedTo: ModelElementTypes.Infoset
-	},
-	visibilityConditions: [
-		{
-			attribute: "control",
-			condition: "==",
-			value: "ListView"
-		},
-		{
-			operator: "or",
-			attribute: "control",
-			condition: "==",
-			value: "ObjectView"
-		},
-	]
-};
-
-const view_attribute_filter: ElementAttribute = {
-	name: "filter",
-	description: "A filter to apply to the type that is viewed.",
-	type: {
-		type: AttributeTypes.Reference,
-		relatedTo: ModelElementTypes.TypeFilter
-	},
-	visibilityConditions: [
-		{
-			attribute: "type",
-			condition: "!=",
-			value: ""
-		}
-	]
-};
-
-const view_attribute_appearance: ElementAttribute = {
-	name: "appearance",
-	description: "The style of this view.",
-	obsolete: true,	// appearance is something that is hardly used, so it should be deprecated
-	obsoleteMessage: "use something else :)",
-	type: {
-		type: AttributeTypes.Reference,
-		relatedTo: ModelElementTypes.Appearance
-	}
-};
-
-const view_attribute_appearance_class: ElementAttribute = {
-	name: "appearance-class",
-	description: "A specific style for the view element.",
-	type: {
-		type: AttributeTypes.Reference,
-		relatedTo: ModelElementTypes.AppearanceClass
-	}
-};
-
-const attribute_float: ElementAttribute = {
-	name: "float",
-	description: "Whether the element is floated",
-	type: {
-		type: AttributeTypes.Enum,
-		options: [
-			{
-				name: "",
-				description: "none"
-			},
-			{
-				name: "left"
-			},
-			{
-				name: "right"
-			}
-		]
-	}
-};
-
-const attribute_clear: ElementAttribute = {
-	name: "clear",
-	description: "Specifies the sides of the element where other floating elements are not allowed.",
-	type: {
-		type: AttributeTypes.Enum,
-		options: [
-			{
-				name: "both"
-			},
-			{
-				name: "left"
-			},
-			{
-				name: "right"
-			}
-		]
-	}
-};
-
-const attribute_background_image: ElementAttribute = {
-	name: "background-image",
-	description: "A background image for the view. (TIP: use SCSS instead of this attribute)"
-};
-
-const attribute_background_position: ElementAttribute = {
-	name: "background-position",
-	description: "Background position for the view. See: http://www.w3.org/TR/CSS2/colors.html (TIP: use SCSS instead of this attribute)"
-};
-
-const attribute_detail_height: ElementAttribute = {
+const detail_height_attribute: ElementAttribute = {
 	name: "detail-height",
 	description: "The height of the view in object view. Useful when object view is of different height than the list view.",
 	visibilityConditions: [
@@ -499,191 +212,400 @@ const attribute_detail_height: ElementAttribute = {
 	]
 };
 
-const attribute_skip_history: ElementAttribute = {
-	name: "skip-history",
-	description: "If set to true, the Back button will skip this view.",
-	type: default_yes_no_attribute_type
-};
-
-const attribute_readonly: ElementAttribute = {
-	name: "readonly",
-	description: "Set yes if view suppose to be view only is. No data can be saved from this view.",
-	type: default_yes_no_attribute_type
-};
-
-const attribute_help_code: ElementAttribute = {
-	name: "help-code",
-	description: "The tag of the Help page to show when displaying help. When not specified, the view name is used as tag."
-};
-
-const attribute_designable: ElementAttribute = {
-	name: "designable",
-	description: "Whether the view is designable by a user having designer rights.",
-	obsolete: true,
-	obsoleteMessage: "This shouldn't be a feature",
-	type: default_yes_no_attribute_type
-};
-
-const attribute_lookup_width: ElementAttribute = {
-	name: "lookup-width",
-	description: "The width of the view in lookup dialog state."
-};
-
-const attribute_lookup_height: ElementAttribute = {
-	name: "lookup-height",
-	description: "The height of the view in lookup dialog state."
-};
-
-const attribute_lookup_top: ElementAttribute = {
-	name: "lookup-top",
-	description: "The vertical position of the view in lookup dialog state."
-};
-
-const attribute_lookup_left: ElementAttribute = {
-	name: "lookup-left",
-	description: "The horizontal position of the view in lookup dialog state."
-};
-
-const attribute_position: ElementAttribute = {
-	name: "position",
-	description: "Positioning of the view",
-	type: {
-		type: AttributeTypes.Enum,
-		options: [
+const default_view_attributes: ElementAttribute[] = [
+	{
+		name: "title",
+		description: "The title to display above the view (in the title bar).",
+		visibilityConditions: [
 			{
-				name: "absolute",
-				description: "absolute (relative to parent)"
+				attribute: "control",
+				condition: "!=",
+				value: "HtmlFile"
 			},
 			{
-				name: "fixed",
-				description: "fixed (relative to document.body)"
+				operator: "and",
+				attribute: "control",
+				condition: "!=",
+				value: "Empty"
 			},
 		]
+	},
+	{
+		name: "type",
+		description: "The backend data type to which the view is linked.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Type
+		}
+	},
+	{
+		name: "view",
+		description: "A view to inherit from. An inherited view copies all characteristics of the source view unless the attributes are changed in the inherited view. Supplements are also possible.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.View
+		}
+	},
+	{
+		name: "toolbar",
+		description: "The toolbar used in the view.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Toolbar
+		},
+		visibilityConditions: [
+			{
+				attribute: "child-element",	// TODO check on child elements instead of attribute
+				condition: "misses",
+				value: "toolbar"
+			}
+		]
+	},
+	{
+		name: "bounded",
+		description: "If the view is data bound, that is, presents and saves instances from the data type.</summary>It is possible to us a not data bound view for e.g. filtering purposes.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "mode",
+		description: "The mode in which the view has to be started.</summary>Startup mode: how to initialize (with or without loading data, ...). Only applicable for object or list control views.",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "view"
+				},
+				{
+					name: "new"
+				},
+				{
+					name: "edit"
+				},
+				{
+					name: "viewdefaults",
+					obsolete: true
+				},
+				{
+					name: "design",
+					obsolete: true
+				}
+			]
+		}
+	},
+	{
+		name: "parent-connection",
+		description: "Creates a header-lines relation between the parent view and this view.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Attribute
+		},
+		visibilityConditions: [
+			{
+				attribute: "parent-node",	// Todo This should be a check on parent node not an attribut
+				condition: "==",
+				value: "view"
+			}
+		]
+	},
+	{
+		name: "portlet",
+		description: "If the view can be added to a portal view.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "slide-position",
+		description: "The position of the screen or direction to which the view may slide in to.",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "bottom"
+				},
+				{
+					name: "left"
+				},
+				{
+					name: "right"
+				},
+				{
+					name: "top"
+				},
+			]
+		}
+	},
+	{
+		name: "start-slided-in",
+		description: "If the view should start up slided in.",
+		type: default_yes_no_attribute_type,
+		visibilityConditions: [
+			{
+				attribute: "slide-position",
+				condition: "!=",
+				value: ""
+			}
+		]
+	},
+	{
+		name: "infoset",
+		description: "The data set to display in the view. This is usefull when the data is not exactly the same as in the persistence, for example some calculated values. Only applicable for list control views.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Infoset
+		},
+		visibilityConditions: [
+			{
+				attribute: "control",
+				condition: "==",
+				value: "ListView"
+			},
+			{
+				operator: "or",
+				attribute: "control",
+				condition: "==",
+				value: "ObjectView"
+			},
+		]
+	},
+	{
+		name: "filter",
+		description: "A filter to apply to the type that is viewed.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.TypeFilter
+		},
+		visibilityConditions: [
+			{
+				attribute: "type",
+				condition: "!=",
+				value: ""
+			}
+		]
+	},
+	{
+		name: "appearance",
+		description: "The style of this view.",
+		obsolete: true,	// appearance is something that is hardly used, so it should be deprecated
+		obsoleteMessage: "use something else :)",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.Appearance
+		}
+	},
+	{
+		name: "appearance-class",
+		description: "A specific style for the view element.",
+		type: {
+			type: AttributeTypes.Reference,
+			relatedTo: ModelElementTypes.AppearanceClass
+		}
+	},
+	{
+		name: "float",
+		description: "Whether the element is floated",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "",
+					description: "none"
+				},
+				{
+					name: "left"
+				},
+				{
+					name: "right"
+				}
+			]
+		}
+	},
+	{
+		name: "clear",
+		description: "Specifies the sides of the element where other floating elements are not allowed.",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "both"
+				},
+				{
+					name: "left"
+				},
+				{
+					name: "right"
+				}
+			]
+		}
+	},
+	{
+		name: "background-image",
+		description: "A background image for the view. (TIP: use SCSS instead of this attribute)"
+	},
+	{
+		name: "background-position",
+		description: "Background position for the view. See: http://www.w3.org/TR/CSS2/colors.html (TIP: use SCSS instead of this attribute)"
+	},
+	{
+		name: "skip-history",
+		description: "If set to true, the Back button will skip this view.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "readonly",
+		description: "Set yes if view suppose to be view only is. No data can be saved from this view.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "help-code",
+		description: "The tag of the Help page to show when displaying help. When not specified, the view name is used as tag."
+	},
+	{
+		name: "designable",
+		description: "Whether the view is designable by a user having designer rights.",
+		obsolete: true,
+		obsoleteMessage: "This shouldn't be a feature",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "lookup-width",
+		description: "The width of the view in lookup dialog state."
+	},
+	{
+		name: "lookup-height",
+		description: "The height of the view in lookup dialog state."
+	},
+	{
+		name: "lookup-top",
+		description: "The vertical position of the view in lookup dialog state."
+	},
+	{
+		name: "lookup-left",
+		description: "The horizontal position of the view in lookup dialog state."
+	},
+	{
+		name: "position",
+		description: "Positioning of the view",
+		type: {
+			type: AttributeTypes.Enum,
+			options: [
+				{
+					name: "absolute",
+					description: "absolute (relative to parent)"
+				},
+				{
+					name: "fixed",
+					description: "fixed (relative to document.body)"
+				},
+			]
+		}
+	},
+	{
+		name: "top",
+		description: "",
+		visibilityConditions: [
+			{
+				attribute: "position",
+				condition: "!=",
+				value: ""
+			}
+		]
+	},
+	{
+		name: "right",
+		description: "",
+		visibilityConditions: [
+			{
+				attribute: "position",
+				condition: "!=",
+				value: ""
+			}
+		]
+	},
+	{
+		name: "bottom",
+		description: "",
+		visibilityConditions: [
+			{
+				attribute: "position",
+				condition: "!=",
+				value: ""
+			}
+		]
+	},
+	{
+		name: "left",
+		description: "",
+		visibilityConditions: [
+			{
+				attribute: "position",
+				condition: "!=",
+				value: ""
+			}
+		]
+	},
+	{
+		name: "width",
+		description: ""
+	},
+	{
+		name: "height",
+		description: ""
+	},
+	{
+		name: "log-access",
+		description: "Determines whether all access that is requested for this view (at runtime) has to be logged or not.",
+		type: default_yes_no_attribute_type
+	},
+	{
+		name: "log-attributes",
+		description: "A pipe-separated list of attributes (from the arguments or the data of the view) to log with access logging.",
+		visibilityConditions: [
+			{
+				attribute: "log-access",
+				condition: "==",
+				value: "yes"
+			}
+		]
 	}
-};
-
-const attribute_top: ElementAttribute = {
-	name: "top",
-	description: "",
-	visibilityConditions: [
-		{
-			attribute: "position",
-			condition: "!=",
-			value: ""
-		}
-	]
-};
-
-const attribute_right: ElementAttribute = {
-	name: "right",
-	description: "",
-	visibilityConditions: [
-		{
-			attribute: "position",
-			condition: "!=",
-			value: ""
-		}
-	]
-};
-
-const attribute_bottom: ElementAttribute = {
-	name: "bottom",
-	description: "",
-	visibilityConditions: [
-		{
-			attribute: "position",
-			condition: "!=",
-			value: ""
-		}
-	]
-};
-
-const attribute_left: ElementAttribute = {
-	name: "left",
-	description: "",
-	visibilityConditions: [
-		{
-			attribute: "position",
-			condition: "!=",
-			value: ""
-		}
-	]
-};
-
-const attribute_width: ElementAttribute = {
-	name: "width",
-	description: ""
-};
-
-const attribute_height: ElementAttribute = {
-	name: "height",
-	description: ""
-};
-
-const attribute_log_access: ElementAttribute = {
-	name: "log-access",
-	description: "Determines whether all access that is requested for this view (at runtime) has to be logged or not.",
-	type: default_yes_no_attribute_type
-};
-
-const attribute_log_attributes: ElementAttribute = {
-	name: "log-attributes",
-	description: "A pipe-separated list of attributes (from the arguments or the data of the view) to log with access logging.",
-	visibilityConditions: [
-		{
-			attribute: "log-access",
-			condition: "==",
-			value: "yes"
-		}
-	]
-};
-
-const default_view_attributes: ElementAttribute[] = [
-	view_attribute_title,
-	view_attribute_type,
-	view_attribute_view,
-	view_attribute_toolbar,
-	view_attribute_bounded,
-	view_attribute_mode,
-	view_attribute_parent_connection,
-	view_attribute_portlet,
-	view_attribute_slide_position,
-	view_attribute_start_slided_in,
-	view_attribute_infoset,
-	view_attribute_filter,
-	view_attribute_appearance,
-	view_attribute_appearance_class,
-	attribute_float,
-	attribute_clear,
-	attribute_background_image,
-	attribute_background_position,
-	attribute_skip_history,
-	attribute_readonly,
-	attribute_help_code,
-	attribute_designable,
-	attribute_lookup_width,
-	attribute_lookup_height,
-	attribute_lookup_top,
-	attribute_lookup_left,
-	attribute_position,
-	attribute_top,
-	attribute_right,
-	attribute_bottom,
-	attribute_left,
-	attribute_width,
-	attribute_height,
-	attribute_log_access,
-	attribute_log_attributes
 ];
 
 const default_definition_view_attributes: ElementAttribute[] = [
-	view_attribute_name_required,
-	view_attribute_control_required,
+	{
+		name: "name",
+		description: "Unique name for the view. The name is in most cases the outside identifier (views can be retrieved by name). For nested views, the name is not used as an outside identifier, but only for inner identifier. Using same inner identifiers merges subviews on inheritance.",
+		required: true,
+		validations: [
+			{
+				type: "regex",
+				value: /^[a-zA-Z]+[0-9a-zA-Z_\-.]*$/,
+				message: "1) Special characters (except '_', '-', '.') are not allowed in the name of the view. 2) A name should start with a letter"
+			}
+		]
+	},
+	{
+		name: "control",
+		description: "View control type.",
+		required: true,
+		type: {
+			type: AttributeTypes.Enum,
+			options: control_attribute_options
+		}
+	}
 ];
 
-const default_reference_view_attributes: ElementAttribute[] = [
-	view_attribute_target_uri,
-	view_attribute_control,
+const default_subview_attributes: ElementAttribute[] = [
+	{
+		name: "target-uri",
+		description: "The target identifier for the item used in frontend actions, etcetera.",
+		autoadd: true
+	},
+	{
+		name: "control",
+		description: "View control type.",
+		type: {
+			type: AttributeTypes.Enum,
+			options: control_attribute_options
+		}
+	}
 ];
 
 const toolbarbutton_children: ChildDefinition[] = [
@@ -775,21 +697,7 @@ const default_view_record_children: ChildDefinition[] = [
 	},
 ];
 
-const frontend_events_base_definition: Definition = {
-	description: "Frontend event registrations.\"Events\":[EventsAndActions_ActionsOverview] are the predefined events at the client side. These trigger a server side or client side action, as a result of which an operation (on the server or in the screen) is initiated.",
-	attributes: [dev_comment_attribute],
-	isGroupingElement: true,
-	children: [
-		{
-			element: "event",
-			required: true,
-			occurence: "at-least-once"
-		},
-		...default_children
-	]
-};
-
-const view_declaration_definition: Partial<Definition> = {
+const view_element_partial: Partial<Definition> = {
 	type: ModelElementTypes.View,
 	detailLevel: ModelDetailLevel.Declarations,
 	ancestors: [{ type: ModelElementTypes.Views }],
@@ -797,16 +705,21 @@ const view_declaration_definition: Partial<Definition> = {
 	prefixNameSpace: true
 };
 
-const subview_definition: Partial<Definition> = {
+const subview_element_partial: Partial<Definition> = {
 	type: ModelElementTypes.SubView,
-	ancestors: [{ type: ModelElementTypes.SubView }, { type: ModelElementTypes.View }, { type: ModelElementTypes.ActionCall }, { type: ModelElementTypes.MainView }, { type: ModelElementTypes.Node }]
+	ancestors: [
+		{ type: ModelElementTypes.SubView }, 
+		{ type: ModelElementTypes.View }, 
+		{ type: ModelElementTypes.ActionCall }, 
+		{ type: ModelElementTypes.MainView }, 
+		{ type: ModelElementTypes.Node }]
 };
 
-const objectview_base_definition: Definition = {
+const objectview_element: Definition = {
 	subtype: ModelElementSubTypes.View_ObjectView,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "ObjectView"),
 	attributes: [
-		attribute_detail_height,	// object/list
+		detail_height_attribute,	// object/list
 		{
 			name: "layoutable",
 			description: "Whether or not a layout can be created by the Inspector. If set to 'yes' then the view should also have a name.",
@@ -842,11 +755,11 @@ const objectview_base_definition: Definition = {
 	]
 };
 
-const listview_base_definition: Definition = { // Listview
+const listview_element: Definition = { // Listview
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "ListView"),
 	subtype: ModelElementSubTypes.View_ListView,
 	attributes: [
-		attribute_detail_height,	// object/list
+		detail_height_attribute,	// object/list
 		{
 			name: "show-favorites-column",
 			description: "Whether to show a favorites column.",
@@ -982,7 +895,8 @@ const listview_base_definition: Definition = { // Listview
 		}
 	]
 };
-const treeview_base_definition: Definition = { // Tree
+
+const treeview_element: Definition = { // Tree
 	subtype: ModelElementSubTypes.View_Tree,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Tree"),
 	attributes: [
@@ -999,7 +913,8 @@ const treeview_base_definition: Definition = { // Tree
 		...default_view_children
 	]
 };
-const datatree_view_base_definition: Definition = { // DataTree
+
+const datatreeview_element: Definition = { // DataTree
 	subtype: ModelElementSubTypes.View_DataTree,
 	description: "DataTree as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "DataTree"),
@@ -1016,7 +931,8 @@ const datatree_view_base_definition: Definition = { // DataTree
 		}
 	]
 };
-const htmlfile_view_base_definition: Definition = { // HtmlFile
+
+const htmlview_element: Definition = { // HtmlFile
 	subtype: ModelElementSubTypes.View_HTML,
 	description: "HTMLFile as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "HtmlFile"),
@@ -1037,7 +953,8 @@ const htmlfile_view_base_definition: Definition = { // HtmlFile
 		...default_view_children
 	]
 };
-const organizer_view_base_definition: Definition = { // Organizer
+
+const organizerview_element: Definition = { // Organizer
 	subtype: ModelElementSubTypes.View_Organizer,
 	description: "Organizer as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Organizer"),
@@ -1265,7 +1182,8 @@ const organizer_view_base_definition: Definition = { // Organizer
 		}
 	]
 };
-const mediaplayer_view_base_definition: Definition = { // MediaPlayer
+
+const mediaplayerview_element: Definition = { // MediaPlayer
 	subtype: ModelElementSubTypes.View_MediaPlayer,
 	description: "MediaPlayer as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "MediaPlayer"),
@@ -1304,7 +1222,8 @@ const mediaplayer_view_base_definition: Definition = { // MediaPlayer
 		...default_view_children
 	]
 };
-const annotationtool_view_base_definition: Definition = { // AnnotationTool
+
+const annotationtoolview_element: Definition = { // AnnotationTool
 	subtype: ModelElementSubTypes.View_AnnotationTool,
 	description: "AnnotationTool as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "AnnotationTool"),
@@ -1336,7 +1255,8 @@ const annotationtool_view_base_definition: Definition = { // AnnotationTool
 		...default_view_children
 	]
 };
-const tabber_view_base_definition: Definition = { // Tabber
+
+const tabberview_element: Definition = { // Tabber
 	subtype: ModelElementSubTypes.View_Tabber,
 	description: "Tabber as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Tabber"),
@@ -1412,7 +1332,8 @@ const tabber_view_base_definition: Definition = { // Tabber
 		...default_view_children
 	]
 };
-const container_view_base_definition: Definition = { // ViewContainer
+
+const containerview_element: Definition = { // ViewContainer
 	subtype: ModelElementSubTypes.View_Container,
 	description: "ViewContainer as a definition",
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "ViewContainer"),
@@ -1467,7 +1388,8 @@ const container_view_base_definition: Definition = { // ViewContainer
 		}
 	]
 };
-const iframe_view_base_definition: Definition = { // Iframe
+
+const iframeview_element: Definition = { // Iframe
 	subtype: ModelElementSubTypes.View_IFrame,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Iframe"),
 	attributes: [
@@ -1492,7 +1414,8 @@ const iframe_view_base_definition: Definition = { // Iframe
 
 	]
 };
-const empty_view_base_definition: Definition = { // Empty
+
+const emptyview_element: Definition = { // Empty
 	subtype: ModelElementSubTypes.View_IFrame,
 	matchCondition: (nodeContext) => isViewControl(nodeContext, "Empty"),
 	attributes: [],
@@ -1505,15 +1428,15 @@ const event_element: Definition = {
 	type: ModelElementTypes.Event,
 	description: "A specific event registration.",
 	attributes: [
-		dev_override_rights_attribute,
-		dev_ignore_modelcheck_attribute,
-		dev_ignore_modelcheck_justification_attribute,
-		dev_comment_attribute
+		override_rights_attribute,
+		ignore_modelcheck_attribute,
+		ignore_modelcheck_justification_attribute,
+		comment_attribute
 	],
 	children: event_children
 };
 
-const meta_name_options: AttributeOption[] = [
+const meta_name_attribute_options: AttributeOption[] = [
 	{
 		name: "view"
 	},
@@ -1537,8 +1460,8 @@ const meta_name_options: AttributeOption[] = [
 	}
 ];
 
-const include_block_meta_options: AttributeOption[] = [
-	...meta_name_options,
+const meta_attribute_options: AttributeOption[] = [
+	...meta_name_attribute_options,
 	{
 		name: "module"
 	},
@@ -2135,7 +2058,7 @@ const include_block_frontend_declaration_definition: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: include_block_meta_options
+				options: meta_attribute_options
 			}
 		},
 		{
@@ -2144,14 +2067,14 @@ const include_block_frontend_declaration_definition: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: include_block_meta_options
+				options: meta_attribute_options
 			}
 		}
 	]
 };
 
-const target_element_definition: Definition = {
-	...target_declaration_definition,
+const target_element: Definition = {
+	...target_element_partial,
 	attributes: [
 		{
 			name: "meta-name",
@@ -2160,7 +2083,7 @@ const target_element_definition: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: meta_name_options
+				options: meta_name_attribute_options
 			}
 		}
 	],
@@ -2177,7 +2100,7 @@ const decorator_context_entity_element: Definition = {
 			type:
 			{
 				type: AttributeTypes.Enum,
-				options: meta_name_options
+				options: meta_name_attribute_options
 			}
 		}
 	]
@@ -2186,7 +2109,7 @@ const decorator_context_entity_element: Definition = {
 export const FRONTEND_DEFINITION: Definitions = {
 	"view": [
 		{ // General (no control type)
-			...view_declaration_definition,
+			...view_element_partial,
 			description: "Add new view",
 			matchCondition: (nodeContext) => isViewControl(nodeContext, ""),
 			attributes: [
@@ -2198,238 +2121,238 @@ export const FRONTEND_DEFINITION: Definitions = {
 			]
 		},
 		{ // General (no control type) subview
-			...subview_definition,
+			...subview_element_partial,
 			description: "Add new view",
 			matchCondition: (nodeContext) => isViewControl(nodeContext, ""),
 			attributes: [
 				...default_view_attributes,
-				...default_reference_view_attributes,
+				...default_subview_attributes,
 			],
 			children: [
 				...default_view_children
 			]
 		},
 		{ // ObjectView as definition
-			...view_declaration_definition,
-			...objectview_base_definition,
+			...view_element_partial,
+			...objectview_element,
 			description: "ObjectView as a definition",
 
 			attributes: [
-				...objectview_base_definition.attributes,
+				...objectview_element.attributes,
 				...default_definition_view_attributes,
 			]
 		},
 		{ // ObjectView as subview
-			...subview_definition,
-			...objectview_base_definition,
+			...subview_element_partial,
+			...objectview_element,
 			description: "ObjectView as a child",
 			attributes: [
-				...objectview_base_definition.attributes,
-				...default_reference_view_attributes
+				...objectview_element.attributes,
+				...default_subview_attributes
 			]
 		},
 		{ // ListView as definition
-			...view_declaration_definition,
-			...listview_base_definition,
+			...view_element_partial,
+			...listview_element,
 			description: "ListView as a definition",
 			attributes: [
-				...listview_base_definition.attributes,
+				...listview_element.attributes,
 				...default_definition_view_attributes,
 			]
 		},
 		{ // ListView as subview
-			...subview_definition,
-			...listview_base_definition,
+			...subview_element_partial,
+			...listview_element,
 			description: "ListView as a child",
 			attributes: [
-				...listview_base_definition.attributes,
-				...default_reference_view_attributes,
+				...listview_element.attributes,
+				...default_subview_attributes,
 			]
 		},
 		{ // TreeView as definition
-			...view_declaration_definition,
-			...treeview_base_definition,
+			...view_element_partial,
+			...treeview_element,
 			description: "TreeView as a definition",
 			attributes: [
-				...treeview_base_definition.attributes,
+				...treeview_element.attributes,
 				...default_definition_view_attributes,
 			]
 		},
 		{ // TreeView as subview
-			...subview_definition,
-			...treeview_base_definition,
+			...subview_element_partial,
+			...treeview_element,
 			description: "TreeView as a child",
 			attributes: [
-				...treeview_base_definition.attributes,
-				...default_reference_view_attributes,
+				...treeview_element.attributes,
+				...default_subview_attributes,
 			]
 		},
 		{ // DataTree as definition
-			...view_declaration_definition,
-			...datatree_view_base_definition,
+			...view_element_partial,
+			...datatreeview_element,
 			description: "DataTree as a definition",
 			attributes: [
-				...datatree_view_base_definition.attributes,
+				...datatreeview_element.attributes,
 				...default_definition_view_attributes,
 			]
 		},
 		{ // DataTree as subview
-			...subview_definition,
-			...datatree_view_base_definition,
+			...subview_element_partial,
+			...datatreeview_element,
 			description: "DataTree as a child",
 			attributes: [
-				...datatree_view_base_definition.attributes,
-				...default_reference_view_attributes,
+				...datatreeview_element.attributes,
+				...default_subview_attributes,
 			]
 		},
 		{ // HTMLFile as definition
-			...view_declaration_definition,
-			...htmlfile_view_base_definition,
+			...view_element_partial,
+			...htmlview_element,
 			description: "HTMLFile as a definition",
 			attributes: [
-				...htmlfile_view_base_definition.attributes,
+				...htmlview_element.attributes,
 				...default_definition_view_attributes,
 			]
 		},
 		{ // HTMLFile as subview
-			...subview_definition,
-			...htmlfile_view_base_definition,
+			...subview_element_partial,
+			...htmlview_element,
 			description: "HTMLFile as a child",
 			attributes: [
-				...htmlfile_view_base_definition.attributes,
-				...default_reference_view_attributes,
+				...htmlview_element.attributes,
+				...default_subview_attributes,
 			]
 		},
 		{ // Organizer as definition
-			...view_declaration_definition,
-			...organizer_view_base_definition,
+			...view_element_partial,
+			...organizerview_element,
 			description: "Organizer as a definition",
 			attributes: [
-				...organizer_view_base_definition.attributes,
+				...organizerview_element.attributes,
 				...default_definition_view_attributes,
 			]
 		},
 		{ // Organizer as subview
-			...subview_definition,
-			...organizer_view_base_definition,
+			...subview_element_partial,
+			...organizerview_element,
 			description: "Organizer as a child",
 			attributes: [
-				...organizer_view_base_definition.attributes,
-				...default_reference_view_attributes,
+				...organizerview_element.attributes,
+				...default_subview_attributes,
 			]
 		},
 		{ // MediaPlayer as definition
-			...view_declaration_definition,
-			...mediaplayer_view_base_definition,
+			...view_element_partial,
+			...mediaplayerview_element,
 			description: "MediaPlayer as a definition",
 			attributes: [
-				...mediaplayer_view_base_definition.attributes,
+				...mediaplayerview_element.attributes,
 				...default_definition_view_attributes,
 			]
 		},
 		{ // MediaPlayer as subview
-			...subview_definition,
-			...mediaplayer_view_base_definition,
+			...subview_element_partial,
+			...mediaplayerview_element,
 			description: "MediaPlayer as a child",
 			attributes: [
-				...mediaplayer_view_base_definition.attributes,
-				...default_reference_view_attributes,
+				...mediaplayerview_element.attributes,
+				...default_subview_attributes,
 			]
 		},
 		{ // AnnotationTool as definition
-			...view_declaration_definition,
-			...annotationtool_view_base_definition,
+			...view_element_partial,
+			...annotationtoolview_element,
 			description: "AnnotationTool as a definition",
 			attributes: [
-				...annotationtool_view_base_definition.attributes,
+				...annotationtoolview_element.attributes,
 				...default_definition_view_attributes,
 			]
 		},
 		{ // AnnotationTool as subview
-			...subview_definition,
-			...annotationtool_view_base_definition,
+			...subview_element_partial,
+			...annotationtoolview_element,
 			description: "AnnotationTool as a child",
 			attributes: [
-				...annotationtool_view_base_definition.attributes,
-				...default_reference_view_attributes,
+				...annotationtoolview_element.attributes,
+				...default_subview_attributes,
 			]
 		},
 		{ // Tabber as definition
-			...view_declaration_definition,
-			...tabber_view_base_definition,
+			...view_element_partial,
+			...tabberview_element,
 			description: "Tabber as a definition",
 			attributes: [
-				...tabber_view_base_definition.attributes,
+				...tabberview_element.attributes,
 				...default_definition_view_attributes,
 			]
 		},
 		{ // Tabber as subview
-			...subview_definition,
-			...tabber_view_base_definition,
+			...subview_element_partial,
+			...tabberview_element,
 			description: "Tabber as a child",
 			attributes: [
-				...tabber_view_base_definition.attributes,
-				...default_reference_view_attributes,
+				...tabberview_element.attributes,
+				...default_subview_attributes,
 			]
 		},
 		{ // ViewContainer as definition
-			...view_declaration_definition,
-			...container_view_base_definition,
+			...view_element_partial,
+			...containerview_element,
 			description: "ViewContainer as a definition",
 			attributes: [
-				...container_view_base_definition.attributes,
+				...containerview_element.attributes,
 				...default_definition_view_attributes,
 			]
 		},
 		{ // ViewContainer as subview
-			...subview_definition,
-			...container_view_base_definition,
+			...subview_element_partial,
+			...containerview_element,
 			description: "ViewContainer as a child",
 			attributes: [
-				...container_view_base_definition.attributes,
-				...default_reference_view_attributes,
+				...containerview_element.attributes,
+				...default_subview_attributes,
 			]
 		},
 		{ // Iframe as definition
-			...view_declaration_definition,
-			...iframe_view_base_definition,
+			...view_element_partial,
+			...iframeview_element,
 			description: "Iframe as a definition",
 			attributes: [
-				...iframe_view_base_definition.attributes,
+				...iframeview_element.attributes,
 				...default_definition_view_attributes,
 			]
 		},
 		{ // Iframe as subview
-			...subview_definition,
-			...iframe_view_base_definition,
+			...subview_element_partial,
+			...iframeview_element,
 			description: "Iframe as a child",
 			attributes: [
-				...iframe_view_base_definition.attributes,
-				...default_reference_view_attributes,
+				...iframeview_element.attributes,
+				...default_subview_attributes,
 			]
 		},
 		{ // Empty as definition (which would be a bad practice...)
-			...view_declaration_definition,
-			...empty_view_base_definition,
+			...view_element_partial,
+			...emptyview_element,
 			description: "Empty as a definition",
 			attributes: [
-				...empty_view_base_definition.attributes,
+				...emptyview_element.attributes,
 				...default_definition_view_attributes,
 			]
 		},
 		{ // Empty as subview
-			...subview_definition,
-			...iframe_view_base_definition,
+			...subview_element_partial,
+			...iframeview_element,
 			description: "Empty as a child",
 			attributes: [
-				...empty_view_base_definition.attributes,
-				...default_reference_view_attributes,
+				...emptyview_element.attributes,
+				...default_subview_attributes,
 			]
 		}
 	],
 	"root": [{
 		description: "Project root of the frontend model.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "application",
@@ -2516,7 +2439,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			subtype: ModelElementSubTypes.IncludeBlock_ObjectView,
 			matchCondition: (x) => isIncludeBlockOfType(x, "ObjectView"),
 			children: [
-				...objectview_base_definition.children
+				...objectview_element.children
 			]
 		},
 		{ // listview
@@ -2524,7 +2447,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			subtype: ModelElementSubTypes.IncludeBlock_ListView,
 			matchCondition: (x) => isIncludeBlockOfType(x, "ListView"),
 			children: [
-				...listview_base_definition.children
+				...listview_element.children
 			]
 		},
 		{ // treeview
@@ -2532,7 +2455,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			subtype: ModelElementSubTypes.IncludeBlock_TreeView,
 			matchCondition: (x) => isIncludeBlockOfType(x, "TreeView"),
 			children: [
-				...treeview_base_definition.children
+				...treeview_element.children
 			]
 		},
 		{ // viewcontainer
@@ -2540,7 +2463,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			subtype: ModelElementSubTypes.IncludeBlock_ViewContainer,
 			matchCondition: (x) => isIncludeBlockOfType(x, "ViewContainer"),
 			children: [
-				...container_view_base_definition.children
+				...containerview_element.children
 			]
 		},
 		{ // generic view
@@ -2621,9 +2544,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 					default: "main.html"
 				}
 			},
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_comment_attribute
+			ignore_modelcheck_attribute,
+			ignore_modelcheck_justification_attribute,
+			comment_attribute
 		],
 		children: [
 			{
@@ -2648,15 +2571,15 @@ export const FRONTEND_DEFINITION: Definitions = {
 				autoadd: true
 			},
 			target_namespace_attribute,
-			dev_description_attribute,
-			dev_comment_attribute,
+			description_attribute,
+			comment_attribute,
 		],
 		children: module_children
 	}],
 	"model-condition": [model_condition_element],
 	"trees": [{
 		description: "Used to group navigation trees.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "tree"
@@ -2699,7 +2622,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 					relatedTo: ModelElementTypes.TargetView
 				}
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: [
 			{
@@ -2753,9 +2676,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "url",
 				description: "The URL to load in the target view when clicking this node."
 			},
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_comment_attribute
+			ignore_modelcheck_attribute,
+			ignore_modelcheck_justification_attribute,
+			comment_attribute
 		],
 		children: [
 			{
@@ -2774,7 +2697,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"toolbars": [{
 		description: "Used to group toolbars.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "toolbar"
@@ -2825,12 +2748,12 @@ export const FRONTEND_DEFINITION: Definitions = {
 					]
 				}
 			},
-			dev_comment_attribute,
-			dev_override_rights_attribute,
-			dev_is_declaration_attribute,
-			dev_is_public_attribute,
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute
+			comment_attribute,
+			override_rights_attribute,
+			is_declaration_attribute,
+			is_public_attribute,
+			ignore_modelcheck_attribute,
+			ignore_modelcheck_justification_attribute
 		],
 		children: [
 			{
@@ -2996,22 +2919,22 @@ export const FRONTEND_DEFINITION: Definitions = {
 					}
 				]
 			},
-			dev_override_rights_attribute,
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_comment_attribute
+			override_rights_attribute,
+			ignore_modelcheck_attribute,
+			ignore_modelcheck_justification_attribute,
+			comment_attribute
 		],
 		children: toolbarbutton_children
 	}],
 	"pagenumbers": [{
 		description: "Toolbar item for paged navigation.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"views": [{
 		description: "Used for grouping views.",
 		type: ModelElementTypes.Views,
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "view"
@@ -3032,10 +2955,22 @@ export const FRONTEND_DEFINITION: Definitions = {
 		view_argument_element,
 		action_argument_element
 	],
-	"events": [frontend_events_base_definition],
+	"events": [{
+		description: "Frontend event registrations.\"Events\":[EventsAndActions_ActionsOverview] are the predefined events at the client side. These trigger a server side or client side action, as a result of which an operation (on the server or in the screen) is initiated.",
+		attributes: [comment_attribute],
+		isGroupingElement: true,
+		children: [
+			{
+				element: "event",
+				required: true,
+				occurence: "at-least-once"
+			},
+			...default_children
+		]
+	}],
 	"server-events": [{
 		description: "",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "server-event"
@@ -3570,7 +3505,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			type: ModelElementTypes.Group,
 			subtype: ModelElementSubTypes.Group_Condition,
 			description: "A group set, used to filter.",
-			attributes: [dev_comment_attribute],
+			attributes: [comment_attribute],
 			children: [
 				{
 					element: "group"
@@ -3662,7 +3597,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	],
 	"separator": [{
 		description: "Separates nodes by a horizontal space.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"tabber": [{
@@ -3708,8 +3643,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "height",
 				description: ""
 			},
-			dev_override_rights_attribute,
-			dev_comment_attribute
+			override_rights_attribute,
+			comment_attribute
 		],
 		children: [
 			{
@@ -3789,8 +3724,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "height",
 				description: ""
 			},
-			dev_override_rights_attribute,
-			dev_comment_attribute
+			override_rights_attribute,
+			comment_attribute
 		],
 		children: [
 			{
@@ -3818,7 +3753,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"titlebar": [{
 		description: "Definition of the titlebar of the view, in which title buttons can be added. When loaded in a popup, the elements are added to the header.",
 		type: ModelElementTypes.TitleBar,
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "button"
@@ -3858,7 +3793,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"menu": [{
 		description: "The menu displayed when the dropdown opens.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "menuitem"
@@ -3874,7 +3809,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"menuitem": [{
 		description: "A menu item. Typically this will contain a button element.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		type: ModelElementTypes.MenuItem,
 		children: [
 			{
@@ -3891,7 +3826,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"menuheader": [{
 		description: "A menu header, that can be placed above a set of items to group them. Typically this will contain a text element.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "text",
@@ -3907,7 +3842,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"menudivider": [{
 		description: "A menu divider that can be used to separate groups of menu items.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"text": [{
@@ -3941,7 +3876,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"format": [{
 		description: "Defines a lay-out.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "image"
@@ -4110,9 +4045,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 					}
 				]
 			},
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_comment_attribute
+			ignore_modelcheck_attribute,
+			ignore_modelcheck_justification_attribute,
+			comment_attribute
 		],
 		children: action_children
 	}],
@@ -4128,9 +4063,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 					name: "name",
 					required: true
 				},
-				dev_ignore_modelcheck_attribute,
-				dev_ignore_modelcheck_justification_attribute,
-				dev_comment_attribute
+				ignore_modelcheck_attribute,
+				ignore_modelcheck_justification_attribute,
+				comment_attribute
 			],
 			children: []
 		}
@@ -4225,8 +4160,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 					]
 				}
 			},
-			dev_override_rights_attribute,
-			dev_comment_attribute
+			override_rights_attribute,
+			comment_attribute
 		],
 		children: [
 			{
@@ -4287,17 +4222,17 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"or": [{
 		description: "The or-operator between search columns. Use the group element to specify brackets.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"and": [{
 		description: "The and-operator between search columns. In fact, and is the default, so it can be omitted.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"then": [{
 		description: "The actions in the then will only be executed if the conditions succeed.",
-		attributes: [dev_override_rights_attribute],
+		attributes: [override_rights_attribute],
 		children: [
 			{
 				element: "action"
@@ -4310,7 +4245,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"else": [{
 		description: "The actions in or after the else will only be executed if the conditions fail.",
-		attributes: [dev_override_rights_attribute],
+		attributes: [override_rights_attribute],
 		children: [
 			{
 				element: "action"
@@ -4340,7 +4275,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"validations": [{
 		description: "This will allow validating the fields etc.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [{
 			element: "validation"
 		}]
@@ -4441,7 +4376,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "appearance-class",
 				description: "The appearance of the attachments."
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: []
 	}],
@@ -4498,7 +4433,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		]
 	}],
 	"IconConditions": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "IconCondition"
@@ -4560,48 +4495,48 @@ export const FRONTEND_DEFINITION: Definitions = {
 		children: []
 	}],
 	"units": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"appointments": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"filters": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"filter": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"agenda-view": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"month-view": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"timeline-view": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"units-view": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"week-view": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"year-view": [{
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: []
 	}],
 	"report-parameters": [{
 		description: "Parameters to pass to the report.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "report-parameter",
@@ -4634,7 +4569,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "rule",
 				description: "The name of the rule to retrieve the style variables from."
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: [
 			{
@@ -4648,7 +4583,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "name"
 			},
-			dev_comment_attribute
+			comment_attribute
 		],
 		children: [
 			{
@@ -4673,10 +4608,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 				name: "name",
 				description: "Unique identifier of the function."
 			},
-			dev_override_rights_attribute,
-			dev_ignore_modelcheck_attribute,
-			dev_ignore_modelcheck_justification_attribute,
-			dev_comment_attribute
+			override_rights_attribute,
+			ignore_modelcheck_attribute,
+			ignore_modelcheck_justification_attribute,
+			comment_attribute
 		],
 		children: [
 			{
@@ -4696,7 +4631,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"resources": [{
 		description: "References to include in the frontend.",
-		attributes: [dev_comment_attribute],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "script"
@@ -4815,66 +4750,66 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"decorator-input": [decorator_input_element],
 	"target": [
 		{ // none
-			...target_element_definition,
+			...target_element,
 			matchCondition: (x) => isIncludeBlockOfType(x, ""),
 			attributes: [
-				...target_element_definition.attributes,
+				...target_element.attributes,
 			]
 		},
 		{ // objectview
-			...target_element_definition,
+			...target_element,
 			subtype: ModelElementSubTypes.Target_ObjectView,
 			matchCondition: (x) => isIncludeBlockOfType(x, "ObjectView"),
 			attributes: [
-				...target_element_definition.attributes,
-				...objectview_base_definition.attributes
+				...target_element.attributes,
+				...objectview_element.attributes
 			],
 			children: [
-				...objectview_base_definition.children
+				...objectview_element.children
 			]
 		},
 		{ // listview
-			...target_element_definition,
+			...target_element,
 			subtype: ModelElementSubTypes.Target_ListView,
 			matchCondition: (x) => isIncludeBlockOfType(x, "ListView"),
 			attributes: [
-				...target_element_definition.attributes,
-				...listview_base_definition.attributes
+				...target_element.attributes,
+				...listview_element.attributes
 			],
 			children: [
-				...listview_base_definition.children
+				...listview_element.children
 			]
 		},
 		{ // viewcontainer
-			...target_element_definition,
+			...target_element,
 			subtype: ModelElementSubTypes.Target_ViewContainer,
 			matchCondition: (x) => isIncludeBlockOfType(x, "ViewContainer"),
 			attributes: [
-				...target_element_definition.attributes,
-				...container_view_base_definition.attributes
+				...target_element.attributes,
+				...containerview_element.attributes
 			],
 			children: [
-				...container_view_base_definition.children
+				...containerview_element.children
 			]
 		},
 		{ // treeview
-			...target_element_definition,
+			...target_element,
 			subtype: ModelElementSubTypes.Target_TreeView,
 			matchCondition: (x) => isIncludeBlockOfType(x, "TreeView"),
 			attributes: [
-				...target_element_definition.attributes,
-				...treeview_base_definition.attributes
+				...target_element.attributes,
+				...treeview_element.attributes
 			],
 			children: [
-				...treeview_base_definition.children
+				...treeview_element.children
 			]
 		},
 		{ // view
-			...target_element_definition,
+			...target_element,
 			subtype: ModelElementSubTypes.Target_TreeView,
 			matchCondition: (x) => isIncludeBlockOfType(x, "view"),
 			attributes: [
-				...target_element_definition.attributes,
+				...target_element.attributes,
 				...default_view_attributes
 			],
 			children: [
@@ -4882,11 +4817,11 @@ export const FRONTEND_DEFINITION: Definitions = {
 			]
 		},
 		{ // group
-			...target_element_definition,
+			...target_element,
 			subtype: ModelElementSubTypes.Target_Group,
 			matchCondition: (x) => isIncludeBlockOfType(x, "group"),
 			attributes: [
-				...target_element_definition.attributes,
+				...target_element.attributes,
 				...view_group_attributes
 			],
 			children: [
@@ -4894,11 +4829,11 @@ export const FRONTEND_DEFINITION: Definitions = {
 			]
 		},
 		{ // attribute
-			...target_element_definition,
+			...target_element,
 			subtype: ModelElementSubTypes.Target_Attribute,
 			matchCondition: (x) => isIncludeBlockOfType(x, "attribute"),
 			attributes: [
-				...target_element_definition.attributes,
+				...target_element.attributes,
 				...attribute_attributes
 			],
 			children: [
