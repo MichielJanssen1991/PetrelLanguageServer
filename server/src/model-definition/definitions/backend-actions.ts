@@ -1,5 +1,59 @@
-import { AttributeTypes, Definitions, ModelDetailLevel, ModelElementTypes } from '../symbolsAndReferences';
-import { action_definition_argument_element, default_yes_no_attribute_type, comment_attribute } from './shared';
+import { AttributeTypes, Definition, Definitions, ModelDetailLevel, ModelElementTypes } from '../symbolsAndReferences';
+import { default_yes_no_attribute_type, comment_attribute } from './shared';
+
+const action_definition_argument_element: Definition = {
+	description: "Allows to define attributes/inputs/outputs shared per module",
+	attributes: [
+		{
+			name: "name",
+			required: true
+		},
+		{
+			name: "type",
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name: "string"
+					},
+					{
+						name: "integer"
+					},
+					{
+						name: "boolean"
+					},
+					{
+						name: "numeric"
+					},
+					{
+						name: "xml"
+					},
+					{
+						name: "xml-string"
+					},
+					{
+						name: "mixed"
+					},
+					{
+						name: "iid"
+					},
+					{
+						name: "pipedlist"
+					},
+					{
+						name: "xml-list"
+					},
+				]
+			}
+		},
+	],
+	children: [
+		{
+			element: "annotation",
+			occurence: "once"
+		}
+	]
+};
 
 export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	"module": [{
