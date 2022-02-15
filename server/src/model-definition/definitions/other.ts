@@ -159,8 +159,8 @@ export const OTHER_DEFINITION: Definitions =
 	},
 		action_call_output_element],
 	"variable": [{
-		matchCondition: (nodeContext) => isInfosetOutput(nodeContext),
-		type: ModelElementTypes.Output,
+		matchCondition: (nodeContext) => isInfosetVariable(nodeContext),
+		type: ModelElementTypes.InfosetVariable,
 		detailLevel: ModelDetailLevel.Declarations,
 		isSymbolDeclaration: true,
 		attributes: [
@@ -434,7 +434,7 @@ export function isNonPetrelModelTag(tagName: string) {
 }
 
 
-export function isInfosetOutput(nodeContext: IXmlNodeContext): boolean {
+export function isInfosetVariable(nodeContext: IXmlNodeContext): boolean {
 	return ("infoset" == nodeContext.getParent()?.tag);
 }
 
