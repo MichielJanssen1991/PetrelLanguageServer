@@ -53,6 +53,9 @@ export class ModelManager extends SymbolAndReferenceManager {
 	public getSymbolOutputs(symbol: SymbolDeclaration) {
 		return symbol.children.filter(x => (x.type == ModelElementTypes.Output));
 	}
+	public getInfosetVariables(infoset: SymbolDeclaration) {
+		return infoset.children.filter(x => (x.type == ModelElementTypes.InfosetVariable)) as SymbolDeclaration[];
+	}
 
 	public getReferencedTypeAttributes(typeRef: Reference): string[] {
 		const type = typeRef ? this.getReferencedObject(typeRef) : undefined;
