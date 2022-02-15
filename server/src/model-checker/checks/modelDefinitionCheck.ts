@@ -66,15 +66,29 @@ export class ModelDefinitionCheck extends ModelCheck {
 			} 
 			// based on requiredConditions
 			else if (attr.requiredConditions){ 
+				let isRequiredAndMissing = false;
 				attr.requiredConditions.forEach(rc=>{
-					const attrElement: Attribute = element.attributes[rc.attribute] ;
+					const attrElement: Attribute = element.attributes[rc.attribute];
 					const attrDefElement: Attribute = element.attributes[attr.name];
 					switch (rc.condition) {
 						case "==":
 							if (
 								!attrElement && (!attrDefElement || attrDefElement?.value == "") && rc.value == "" ||
-								!attrDefElement && attrElement?.value == rc.value){
-								this.addMessage(element.range, "MDC0007", `Missing required attribute '${attr.name}' for element '${element.tag}'`);
+								!attrDefElement && attrElement?.value == rc.value){										
+									// default (empty) operator == "or"
+									isRequiredAndMissing = (rc.operator == "and" && isRequiredAndMissing) || (rc.operator != "and");
+							} else {
+								isRequiredAndMissing = (rc.operator != "and" && isRequiredAndMissing);
+							}
+							break;
+						case "!=":
+							if (
+								!attrDefElement && 
+								((attrElement && attrElement.value != "" && rc.value == "") || 
+								(attrElement && attrElement.value != rc.value))){
+									isRequiredAndMissing = (rc.operator == "and" && isRequiredAndMissing) || (rc.operator != "and");
+							} else {
+								isRequiredAndMissing = (rc.operator != "and" && isRequiredAndMissing);
 							}
 							break;
 						default:
@@ -82,6 +96,10 @@ export class ModelDefinitionCheck extends ModelCheck {
 							break;
 					}				
 				});
+
+				if (isRequiredAndMissing){
+					this.addMessage(element.range, "MDC0007", `Missing required attribute '${attr.name}' for element '${element.tag}'`);
+				}
 			}
 		});
 	}

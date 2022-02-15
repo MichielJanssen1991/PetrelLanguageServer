@@ -1462,9 +1462,10 @@ export const search_column_element: Definition =
 			name: "name",
 			description: "The column to be searched.",
 			required: true,
+			detailLevel: ModelDetailLevel.References,
 			type: {
 				type: AttributeTypes.Reference,
-				relatedTo: ModelElementTypes.Attribute,
+				relatedTo: ModelElementTypes.Attribute
 			},
 		},
 		{

@@ -351,6 +351,12 @@ export const RULE_DEFINITION: Definitions = {
 						attribute: "expression",
 						condition: "==",
 						value: ""
+					},
+					{
+						operator: "and",
+						attribute: "value",
+						condition: "==",
+						value: ""
 					}
 				]
 			},
