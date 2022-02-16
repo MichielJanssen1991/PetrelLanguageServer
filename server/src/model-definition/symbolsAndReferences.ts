@@ -87,6 +87,8 @@ export enum ModelElementSubTypes {
 	View_AnnotationTool = "AnnotationToolView",
 	View_Tabber = "TabberView",
 	View_IFrame = "IFrameView",
+	View_Empty = "EmptyView",
+
 	Group_View = "ViewGroup",
 	Group_Condition = "ConditionGroup",
 	IncludeBlock_Module = "IncludeBlockModule",

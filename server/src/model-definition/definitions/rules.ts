@@ -899,7 +899,7 @@ export const RULE_DEFINITION: Definitions = {
 		attributes: [comment_attribute],
 		children: []
 	}],
-	"include_blocks": [include_blocks_element],
+	"include-blocks": [include_blocks_element],
 	"include-block": [
 		{ // General
 			...include_block_rules_declaration_definition,
