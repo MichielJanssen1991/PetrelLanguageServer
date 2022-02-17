@@ -71,26 +71,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 				//required: true
 			}
 		],
-		children: [
-			{
-				element: "module"
-			},
-			{
-				element: "action"
-			},
-			{
-				element: "attribute"
-			},
-			{
-				element: "input"
-			},
-			{
-				element: "output"
-			},
-			{
-				element: "annotation"
-			}
-		]
+		children: [] //For grouping element parents children are used
 	}],
 	"actions": [{
 		description: "a collection of actions",

@@ -1,4 +1,4 @@
-import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ModelElementSubTypes, AttributeOption, Definition, ChildDefinition } from '../symbolsAndReferences';
+import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ModelElementSubTypes, AttributeOption, Definition } from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
 import { comment_attribute, description_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, obsolete_attribute, obsolete_message_attribute, override_rights_attribute, is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, search_children, search_attributes, input_element, single_aggregate_query_element, aggregate_attribute_element, aggregate_function_element, default_children, in_element, search_group_element, full_text_query_element, and_element, or_element, search_column_submatch_element, search_column_element, include_block_declaration_definition } from './shared';
 
@@ -15,26 +15,6 @@ const meta_attribute_options: AttributeOption[] = [
 	{
 		name: "searchcolumn"
 	}
-];
-
-const module_children: ChildDefinition[] = [
-	{
-		element: "module"
-	},
-	{
-		element: "infoset"
-	},
-	{
-		element: "include-blocks"
-	},
-	{
-		element: "include-block"
-	},
-	{
-		element: "decorations",
-		occurence: "once"
-	},
-	...default_children
 ];
 
 const include_block_infoset_declaration_definition: Definition = {
@@ -177,7 +157,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			description_attribute,
 			comment_attribute,
 		],
-		children: module_children
+		children: [] //For grouping element parents children are used
 	}],
 	"search": [{
 		type: ModelElementTypes.Search,
@@ -677,17 +657,7 @@ export const INFOSET_DEFINITION: Definitions = {
 		}
 	],
 	"include": [include_element],
-	"model-condition": [
-		{
-			...model_condition_element,
-			subtype: ModelElementSubTypes.ModelCondition_Module,
-			ancestors: [
-				{ type: ModelElementTypes.Module},
-				{ type: ModelElementTypes.Infosets}
-			],
-			children: module_children
-		},
-	],
+	"model-condition": [model_condition_element],
 	"auto-key": [{
 		description: "Automatically generates a value, based on some counting method.</summary>This can be used e.g. for sequence numbers. The value of this attribute is automatically incremented with each new record.",
 		attributes: [

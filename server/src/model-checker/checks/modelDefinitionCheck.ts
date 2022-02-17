@@ -1,3 +1,4 @@
+import { ModelFileContext } from '../../model-definition/modelDefinitionManager';
 import { Attribute, AttributeTypes, Definition, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
 import { attributeValueIsAVariable } from '../../util/other';
 import { ModelCheck } from '../modelCheck';
@@ -11,12 +12,14 @@ export class ModelDefinitionCheck extends ModelCheck {
 	protected checkInternal(node: TreeNode): void {
 		const modelFileContext = this.modelManager.getModelFileContextForFile(node.uri);
 		const tagDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
-		
+		const tagDefinitionNonGrouping = this.getFirstNonGroupingElementDefinition(modelFileContext,node);
 		this.allNodeAttributes = Object.values(node.attributes);
 		
 		if (!(node.type==ModelElementTypes.Document || node.tag == ModelElementTypes.Document.toLowerCase())){
 			if (tagDefinition){
-				this.checkChildOccurrences(node, tagDefinition);
+				if(tagDefinitionNonGrouping){
+					this.checkChildOccurrences(node, tagDefinitionNonGrouping);
+				}
 				this.checkAttributeOccurrences(node, tagDefinition);
 				this.checkAttributeValues(node, tagDefinition);
 			} else {
@@ -24,6 +27,15 @@ export class ModelDefinitionCheck extends ModelCheck {
 			}
 		}
 		
+	}
+
+	//Returns defintion of node if it is not a grouping element. Otherwise return first parent which is not a grouping element
+	private getFirstNonGroupingElementDefinition(modelFileContext:ModelFileContext, node:TreeNode):Definition|undefined{
+		const tagDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
+		if(tagDefinition?.isGroupingElement && node.parent){
+			return this.getFirstNonGroupingElementDefinition(modelFileContext, node.parent);
+		}
+		return tagDefinition;
 	}
 
 	private checkChildOccurrences(element: TreeNode, definition: Definition): void {

@@ -183,21 +183,7 @@ export const RULE_DEFINITION: Definitions = {
 			description_attribute,
 			comment_attribute,
 		],
-		children: [
-			{
-				element: "module"
-			},
-			{
-				element: "rule"
-			},
-			{
-				element: "include-blocks"
-			},
-			{
-				element: "include-block"
-			},
-			...default_children
-		]
+		children: [] //For grouping element parents children are used
 	}],
 	"rule": [{
 		type: ModelElementTypes.Rule,

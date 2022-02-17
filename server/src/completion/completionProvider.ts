@@ -241,7 +241,15 @@ export class CompletionProvider {
 	 */
 	private getChildElementCompletions(modelFileContext: ModelFileContext, context: ActionContext): CompletionItem[] {
 		const node = context.currentNode as TreeNode;
+		return this.getChildElementCompletionsForNode(modelFileContext, node);
+	}
+
+	private getChildElementCompletionsForNode(modelFileContext: ModelFileContext, node: TreeNode): CompletionItem[]{
 		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
+		//Return parents children if the current node is a grouping element
+		if(elementDefinition?.isGroupingElement && node.parent){
+			return this.getChildElementCompletionsForNode(modelFileContext, node.parent);
+		}
 		if (elementDefinition && elementDefinition.children.length > 0) {
 			return this.mapChildrenToCompletionItems(elementDefinition.children, modelFileContext);
 		}

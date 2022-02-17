@@ -591,7 +591,7 @@ export const model_condition_element: Definition =
 				autoadd: true
 			},
 		],
-		children: []
+		children: [] //For grouping element parents children are used
 	};
 
 export const include_element: Definition =

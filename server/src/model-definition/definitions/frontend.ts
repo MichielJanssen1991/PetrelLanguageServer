@@ -708,10 +708,10 @@ const view_element_partial: Partial<Definition> = {
 const subview_element_partial: Partial<Definition> = {
 	type: ModelElementTypes.SubView,
 	ancestors: [
-		{ type: ModelElementTypes.SubView }, 
-		{ type: ModelElementTypes.View }, 
-		{ type: ModelElementTypes.ActionCall }, 
-		{ type: ModelElementTypes.MainView }, 
+		{ type: ModelElementTypes.SubView },
+		{ type: ModelElementTypes.View },
+		{ type: ModelElementTypes.ActionCall },
+		{ type: ModelElementTypes.MainView },
 		{ type: ModelElementTypes.Node }]
 };
 
@@ -2009,43 +2009,6 @@ const attribute_children: ChildDefinition[] = [
 	...default_children
 ];
 
-const module_children: ChildDefinition[] = [
-	{
-		element: "module"
-	},
-	{
-		element: "include-blocks"
-	},
-	{
-		element: "include-block"
-	},
-	{
-		element: "decorators"
-	},
-	{
-		element: "toolbar"
-	},
-	{
-		element: "functions"
-	},
-	{
-		element: "function"
-	},
-	{
-		element: "tree"
-	},
-	{
-		element: "views"
-	},
-	{
-		element: "view"
-	},
-	{
-		element: "main-view"
-	},
-	...default_children
-];
-
 const include_block_frontend_declaration_definition: Definition = {
 	...include_block_declaration_definition,
 	attributes: [
@@ -2431,7 +2394,40 @@ export const FRONTEND_DEFINITION: Definitions = {
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Module,
 			matchCondition: (x) => isIncludeBlockOfType(x, "module"),
-			children: module_children
+			children: [{
+				element: "module"
+			},
+			{
+				element: "include-blocks"
+			},
+			{
+				element: "include-block"
+			},
+			{
+				element: "decorators"
+			},
+			{
+				element: "toolbar"
+			},
+			{
+				element: "functions"
+			},
+			{
+				element: "function"
+			},
+			{
+				element: "tree"
+			},
+			{
+				element: "views"
+			},
+			{
+				element: "view"
+			},
+			{
+				element: "main-view"
+			},
+			...default_children]
 		},
 		{ // objectview
 			...include_block_frontend_declaration_definition,
@@ -2563,7 +2559,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description_attribute,
 			comment_attribute,
 		],
-		children: module_children
+		children: [] //For grouping element parents children are used
 	}],
 	"model-condition": [model_condition_element],
 	"trees": [{
@@ -3440,7 +3436,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{
 			ancestors: [{
 				type: ModelElementTypes.View
-			}, 
+			},
 			{
 				type: ModelElementTypes.SubView
 			},
@@ -3518,7 +3514,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				type: ModelElementTypes.SubView
-			}, 
+			},
 			{
 				type: ModelElementTypes.TitleBar
 			},

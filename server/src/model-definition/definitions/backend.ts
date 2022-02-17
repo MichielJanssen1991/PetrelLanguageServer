@@ -1,6 +1,6 @@
-import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, Definition, AttributeOption, ChildDefinition, ModelElementSubTypes, ElementAttribute} from '../symbolsAndReferences';
+import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, Definition, AttributeOption, ChildDefinition, ModelElementSubTypes, ElementAttribute } from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
-import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, model_condition_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, backend_action_call_element, single_aggregate_query_element, aggregate_attribute_element, aggregate_function_element, default_children, action_call_children, comment_attribute, target_namespace_attribute, description_attribute, obsolete_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, include_block_declaration_definition, target_element_partial, decorator_context_entity_element_partial, search_children, in_element, search_group_element, full_text_query_element, or_element, and_element, search_column_submatch_element, search_column_element } from './shared';
+import { action_argument_element, action_call_output_element, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, backend_action_call_element, single_aggregate_query_element, aggregate_attribute_element, aggregate_function_element, default_children, action_call_children, comment_attribute, target_namespace_attribute, description_attribute, obsolete_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, include_block_declaration_definition, target_element_partial, decorator_context_entity_element_partial, search_children, in_element, search_group_element, full_text_query_element, or_element, and_element, search_column_submatch_element, search_column_element, model_condition_element } from './shared';
 
 const meta_name_attribute_options: AttributeOption[] = [
 	{
@@ -37,7 +37,6 @@ const meta_attribute_options: AttributeOption[] = [
 ];
 
 const type_element_attributes: ElementAttribute[] = [
-	
 	{
 		name: "type",
 		description: "A type this type inherits from.",
@@ -745,27 +744,7 @@ const server_event_children: ChildDefinition[] = [
 	...default_children
 ];
 
-const module_children: ChildDefinition[] = [
-	{
-		element: "module"
-	},
-	{
-		element: "type"
-	},
-	{
-		element: "include-blocks"
-	},
-	{
-		element: "include-block"
-	},
-	{
-		element: "decorators",
-		occurence: "once"
-	},
-	...default_children
-];
-
-const attribute_children: ChildDefinition[] =  [
+const attribute_children: ChildDefinition[] = [
 	{
 		element: "option"
 	},
@@ -864,7 +843,7 @@ const include_block_backend_declaration_definition: Definition = {
 				type: AttributeTypes.Enum,
 				options: meta_attribute_options
 			}
-		}		
+		}
 	]
 };
 
@@ -945,7 +924,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			description_attribute,
 			comment_attribute,
 		],
-		children: module_children
+		children: []//
 	}],
 	"type": [{
 		type: ModelElementTypes.Type,
@@ -1259,37 +1238,37 @@ export const BACKEND_DEFINITION: Definitions = {
 	"decorator": [decorator_element],
 	"decorator-input": [decorator_input_element],
 	"target": [
-	{ // none
-		...target_element,
-		matchCondition: (x)=>isIncludeBlockOfType(x, ""),
-		attributes: [
-			...target_element.attributes,
-		]
-	},
-	{ // objectview
-		...target_element,
-		subtype: ModelElementSubTypes.Target_Type,
-		matchCondition: (x)=>isIncludeBlockOfType(x, "type"),
-		attributes: [
-			...target_element.attributes,
-			...type_element_attributes_non_required
-		],
-		children: [
-			...type_children
-		]
-	},
-	{ // attribute
-		...target_element,
-		subtype: ModelElementSubTypes.Target_Type,
-		matchCondition: (x)=>isIncludeBlockOfType(x, "attribute"),
-		attributes: [
-			...target_element.attributes,
-			...attribute_attributes
-		],
-		children: [
-			...attribute_children
-		]
-	},
+		{ // none
+			...target_element,
+			matchCondition: (x) => isIncludeBlockOfType(x, ""),
+			attributes: [
+				...target_element.attributes,
+			]
+		},
+		{ // objectview
+			...target_element,
+			subtype: ModelElementSubTypes.Target_Type,
+			matchCondition: (x) => isIncludeBlockOfType(x, "type"),
+			attributes: [
+				...target_element.attributes,
+				...type_element_attributes_non_required
+			],
+			children: [
+				...type_children
+			]
+		},
+		{ // attribute
+			...target_element,
+			subtype: ModelElementSubTypes.Target_Type,
+			matchCondition: (x) => isIncludeBlockOfType(x, "attribute"),
+			attributes: [
+				...target_element.attributes,
+				...attribute_attributes
+			],
+			children: [
+				...attribute_children
+			]
+		},
 	],
 	"decorator-context-entity": [decorator_context_entity_element],
 	"argument": [action_argument_element],
@@ -1298,20 +1277,36 @@ export const BACKEND_DEFINITION: Definitions = {
 	"include-block": [
 		{ // General
 			...include_block_backend_declaration_definition,
-			matchCondition: (x)=>isIncludeBlockOfType(x, ""),
+			matchCondition: (x) => isIncludeBlockOfType(x, ""),
 		},
 		{ // module
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Module,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "module"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "module"),
 			children: [
-				...module_children
+				{
+					element: "module"
+				},
+				{
+					element: "type"
+				},
+				{
+					element: "include-blocks"
+				},
+				{
+					element: "include-block"
+				},
+				{
+					element: "decorators",
+					occurence: "once"
+				},
+				...default_children
 			]
 		},
 		{ // type
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Type,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "type"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "type"),
 			children: [
 				...type_children
 			]
@@ -1319,7 +1314,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // attribute
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Attribute,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "attribute"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "attribute"),
 			children: [
 				...attribute_children
 			]
@@ -1327,7 +1322,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // server-events
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ServerEvents,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "server-events"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "server-events"),
 			children: [
 				...server_events_children
 			]
@@ -1335,7 +1330,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // server-event
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ServerEvent,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "server-event"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "server-event"),
 			children: [
 				...server_event_children
 			]
@@ -1343,7 +1338,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // keys
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Keys,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "keys"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "keys"),
 			children: [
 				...keys_children
 			]
@@ -1351,7 +1346,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // key
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Keys,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "key"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "key"),
 			children: [
 				...key_children
 			]
@@ -1359,7 +1354,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // action
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Action,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "action"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "action"),
 			children: [
 				...action_call_children
 			]
@@ -1367,40 +1362,14 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // search
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Search,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "search"),
+			matchCondition: (x) => isIncludeBlockOfType(x, "search"),
 			children: [
 				...search_children
 			]
 		},
 	],
 	"include": [include_element],
-	"model-condition": [
-		{
-			...model_condition_element,
-			subtype: ModelElementSubTypes.ModelCondition_Attribute,
-			ancestors: [{ type: ModelElementTypes.Attribute}],
-			children: attribute_children
-		},
-		{
-			...model_condition_element,
-			subtype: ModelElementSubTypes.ModelCondition_ServerEvent,
-			ancestors: [{ type: ModelElementTypes.ServerEvent}],
-			children: server_event_children
-		},
-		{
-			...model_condition_element,
-			subtype: ModelElementSubTypes.ModelCondition_ServerEvents,
-			ancestors: [{ type: ModelElementTypes.ServerEvents}],
-			children: server_events_children
-		},
-		{
-			...model_condition_element,
-			subtype: ModelElementSubTypes.ModelCondition_Type,
-			ancestors: [{ type: ModelElementTypes.Type}],
-			children: type_children
-		},
-		
-	],
+	"model-condition": [model_condition_element],
 	"auto-key": [{
 		"description": "Automatically generates a value, based on some counting method. This can be used e.g. for sequence numbers. The value of this attribute is automatically incremented with each new record.",
 		attributes: [
@@ -1485,8 +1454,8 @@ export const BACKEND_DEFINITION: Definitions = {
 	"in": [in_element],
 	"full-text-query": [full_text_query_element],
 	"file-categories": [{
-			attributes: [],
-			children: [{element: "category"}]
+		attributes: [],
+		children: [{ element: "category" }]
 	}],
 	"category": [{
 		description: "",
@@ -1498,13 +1467,13 @@ export const BACKEND_DEFINITION: Definitions = {
 			name: "caption",
 			required: true
 		}],
-		children: []	
+		children: []
 	}],
-	"messages":[{
+	"messages": [{
 		description: "Error message formats.",
 		attributes: [],
-		children:[{
-			element:"message"
+		children: [{
+			element: "message"
 		}]
 	}],
 	"message": [{
@@ -1516,36 +1485,36 @@ export const BACKEND_DEFINITION: Definitions = {
 				type: AttributeTypes.Enum,
 				options: [
 					{
-						name:"DuplicateKey",
-						description:"A record with this key already exists."
+						name: "DuplicateKey",
+						description: "A record with this key already exists."
 					},
 					{
-						name:"CannotFindObject",
-						description:"Cannot find the object."
+						name: "CannotFindObject",
+						description: "Cannot find the object."
 					},
 					{
-						name:"CannotDelete",
-						description:"Cannot delete this record because it is used in another type."
+						name: "CannotDelete",
+						description: "Cannot delete this record because it is used in another type."
 					},
 					{
-						name:"RecordModified",
-						description:"The record is modified by another user."
+						name: "RecordModified",
+						description: "The record is modified by another user."
 					},
 					{
-						name:"NotAllowedView",
-						description:"It is not allowed to view the record."
+						name: "NotAllowedView",
+						description: "It is not allowed to view the record."
 					},
 					{
-						name:"NotAllowedEdit",
-						description:"It is not allowed to edit the record."
+						name: "NotAllowedEdit",
+						description: "It is not allowed to edit the record."
 					},
 					{
-						name:"NotAllowedCreate",
-						description:"It is not allowed to create the record."
+						name: "NotAllowedCreate",
+						description: "It is not allowed to create the record."
 					},
 					{
-						name:"NotAllowedRemove",
-						description:"It is not allowed to remove the record."
+						name: "NotAllowedRemove",
+						description: "It is not allowed to remove the record."
 					}
 				]
 			}
@@ -1554,6 +1523,6 @@ export const BACKEND_DEFINITION: Definitions = {
 			name: "value",
 			required: true
 		}],
-		children: []	
+		children: []
 	}],
 };
