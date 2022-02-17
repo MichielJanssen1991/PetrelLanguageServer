@@ -106,6 +106,7 @@ export enum ModelElementSubTypes {
 	IncludeBlock_TreeView = "IncludeBlockTreeView",
 	IncludeBlock_ViewContainer = "IncludeBlockViewContainer",
 	IncludeBlock_Event = "IncludeBlockEvent",
+	IncludeBlock_Events = "IncludeBlockEvents",
 	IncludeBlock_Group = "IncludeBlockGroup",
 	IncludeBlock_Button = "IncludeBlockButton",
 	IncludeBlock_Rule = "IncludeBlockRule",
@@ -119,6 +120,7 @@ export enum ModelElementSubTypes {
 	IncludeBlock_Node = "IncludeBlockNode",
 	IncludeBlock_Tab = "IncludeBlockTab",
 	IncludeBlock_MenuItem = "IncludeBlockMenuItem",
+	IncludeBlock_Tree = "IncludeBlockTree",
 
 	ModelCondition_Attribute = "ModelConditionAttribute",
 	ModelCondition_ServerEvents = "ModelConditionServerEvents",

@@ -1357,6 +1357,24 @@ export const event_children: ChildDefinition[] =
 	...default_children
 ];
 
+export const events_children: ChildDefinition[] = 
+[
+	{
+		element: "event",
+		required: true,
+		occurence: "at-least-once"
+	},
+	...default_children
+];
+
+export const tree_children: ChildDefinition[] = 
+[
+	{
+		element: "node"
+	},
+	...default_children
+];
+
 export const in_element: Definition = 
 {
 	description: "Applies a querying condition to a relation. This may be a relation from the queried type to another type, or vice versa. It may even be applied to non-relation attributes.",

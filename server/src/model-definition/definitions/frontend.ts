@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption, Definition, ModelElementSubTypes } from '../symbolsAndReferences';
 import { isIncludeBlockOfType, isViewControl } from './other';
-import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_partial, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, is_declaration_attribute, is_public_attribute, override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element_partial, target_namespace_attribute, view_argument_element, view_group_attributes } from './shared';
+import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_partial, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, is_declaration_attribute, is_public_attribute, override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element_partial, target_namespace_attribute, view_argument_element, view_group_attributes, events_children, tree_children } from './shared';
 
 const button_attributes: ElementAttribute[] =
 	[
@@ -2431,97 +2431,85 @@ export const FRONTEND_DEFINITION: Definitions = {
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Module,
 			matchCondition: (x) => isIncludeBlockOfType(x, "module"),
-			children: [
-				...module_children
-			]
+			children: module_children
 		},
 		{ // objectview
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ObjectView,
 			matchCondition: (x) => isIncludeBlockOfType(x, "ObjectView"),
-			children: [
-				...objectview_element.children
-			]
+			children: objectview_element.children
 		},
 		{ // listview
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ListView,
 			matchCondition: (x) => isIncludeBlockOfType(x, "ListView"),
-			children: [
-				...listview_element.children
-			]
+			children: listview_element.children
 		},
 		{ // treeview
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_TreeView,
 			matchCondition: (x) => isIncludeBlockOfType(x, "TreeView"),
-			children: [
-				...treeview_element.children
-			]
+			children: treeview_element.children
 		},
 		{ // viewcontainer
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ViewContainer,
 			matchCondition: (x) => isIncludeBlockOfType(x, "ViewContainer"),
-			children: [
-				...containerview_element.children
-			]
+			children: containerview_element.children
 		},
 		{ // generic view
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_View,
 			matchCondition: (x) => isIncludeBlockOfType(x, "view"),
-			children: [
-				...default_view_children
-			]
+			children: default_view_children
 		},
 		{ // attribute
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Attribute,
 			matchCondition: (x) => isIncludeBlockOfType(x, "attribute"),
-			children: [
-				...attribute_children
-			]
+			children: attribute_children
 		},
 		{ // group
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Group,
 			matchCondition: (x) => isIncludeBlockOfType(x, "group"),
-			children: [
-				...view_group_children
-			]
+			children: view_group_children
 		},
 		{ // button
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Button,
 			matchCondition: (x) => isIncludeBlockOfType(x, "button"),
-			children: [
-				...button_children
-			]
+			children: button_children
 		},
 		{ // action
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Action,
 			matchCondition: (x) => isIncludeBlockOfType(x, "action"),
-			children: [
-				...action_children
-			]
+			children: action_children
 		},
 		{ // event
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Event,
 			matchCondition: (x) => isIncludeBlockOfType(x, "event"),
-			children: [
-				...event_children
-			]
+			children: event_children
+		},
+		{ // events
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Events,
+			matchCondition: (x) => isIncludeBlockOfType(x, "events"),
+			children: events_children
 		},
 		{ // toolbarbutton
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ToolbarButton,
 			matchCondition: (x) => isIncludeBlockOfType(x, "toolbarbutton"),
-			children: [
-				...toolbarbutton_children
-			]
+			children: toolbarbutton_children
+		},
+		{ // tree
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Tree,
+			matchCondition: (x) => isIncludeBlockOfType(x, "tree"),
+			children: tree_children
 		},
 
 
@@ -2625,12 +2613,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			comment_attribute
 		],
-		children: [
-			{
-				element: "node"
-			},
-			...default_children
-		]
+		children: tree_children
 	}],
 	"node": [{
 		description: "Navigation tree node, which may be expandable into more nodes.",
@@ -2960,14 +2943,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		description: "Frontend event registrations.\"Events\":[EventsAndActions_ActionsOverview] are the predefined events at the client side. These trigger a server side or client side action, as a result of which an operation (on the server or in the screen) is initiated.",
 		attributes: [comment_attribute],
 		isGroupingElement: true,
-		children: [
-			{
-				element: "event",
-				required: true,
-				occurence: "at-least-once"
-			},
-			...default_children
-		]
+		children: events_children
 	}],
 	"server-events": [{
 		description: "",
