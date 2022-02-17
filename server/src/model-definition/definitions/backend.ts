@@ -1500,4 +1500,60 @@ export const BACKEND_DEFINITION: Definitions = {
 		}],
 		children: []	
 	}],
+	"messages":[{
+		description: "Error message formats.",
+		attributes: [],
+		children:[{
+			element:"message"
+		}]
+	}],
+	"message": [{
+		description: "A specific error message format.",
+		attributes: [{
+			name: "name",
+			required: true,
+			type: {
+				type: AttributeTypes.Enum,
+				options: [
+					{
+						name:"DuplicateKey",
+						description:"A record with this key already exists."
+					},
+					{
+						name:"CannotFindObject",
+						description:"Cannot find the object."
+					},
+					{
+						name:"CannotDelete",
+						description:"Cannot delete this record because it is used in another type."
+					},
+					{
+						name:"RecordModified",
+						description:"The record is modified by another user."
+					},
+					{
+						name:"NotAllowedView",
+						description:"It is not allowed to view the record."
+					},
+					{
+						name:"NotAllowedEdit",
+						description:"It is not allowed to edit the record."
+					},
+					{
+						name:"NotAllowedCreate",
+						description:"It is not allowed to create the record."
+					},
+					{
+						name:"NotAllowedRemove",
+						description:"It is not allowed to remove the record."
+					}
+				]
+			}
+		},
+		{
+			name: "value",
+			required: true
+		}],
+		children: []	
+	}],
 };
