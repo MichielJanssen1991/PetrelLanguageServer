@@ -1,9 +1,8 @@
 import * as fs from 'fs';
-import { promisify } from 'util';
 import { DocumentUri, Position, TextDocument } from 'vscode-languageserver-textdocument';
 
 import { filePathToFileURI, fileURIToFilePath, getFileExtension, getJavascriptFilePaths, getModelFilePaths } from '../util/fs';
-import { ModelDetailLevel } from '../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes } from '../model-definition/symbolsAndReferences';
 import { time, timeEnd } from 'console';
 import { getContextFromLine, wordAtPoint } from '../util/xml';
 import { ModelParser } from './parser/modelParser';
@@ -15,8 +14,6 @@ import { Connection, Diagnostic, DidChangeTextDocumentParams, Range, TextDocumen
 import { rangeIsInRange } from '../util/other';
 import { ModelChecker } from '../model-checker/modelChecker';
 import { IncrementalModelParser } from './parser/incrementalModelParser';
-
-const readFileAsync = promisify(fs.readFile);
 
 /**
  * The Analyzer uses an xml parser to find definitions, reference, etc. 
@@ -107,7 +104,7 @@ export class Analyzer {
 	}
 
 	public async analyzeDocument(uri: DocumentUri) {
-		const parsingDiagnostics = await this.analyze(uri, ModelDetailLevel.All, true);
+		const parsingDiagnostics = this.analyze(uri, ModelDetailLevel.All, true);
 		const checkerDiagnostics = await this.validateTextDocument(uri);
 		return [...parsingDiagnostics, ...checkerDiagnostics];
 	}
@@ -116,8 +113,8 @@ export class Analyzer {
 	 * Analyze the document for the provided uri to find declarations and references.
 	 * Returns syntax errors that occurred while parsing the file
 	 */
-	public async analyze(uri: DocumentUri, detailLevel: ModelDetailLevel, incrementalIfPossible: boolean): Promise<Diagnostic[]> {
-		const contents = await this.getFileContent(uri);
+	public analyze(uri: DocumentUri, detailLevel: ModelDetailLevel, incrementalIfPossible: boolean): Diagnostic[] {
+		const contents = this.getFileContent(uri);
 
 		time("Parsing file");
 		const parser: FileParser = this.getParserForFile(uri, detailLevel, incrementalIfPossible);
@@ -153,7 +150,7 @@ export class Analyzer {
 	 * Returns syntax errors that occurred while parsing the file
 	 */
 	public async analyzeDocumentIncrementally(uri: DocumentUri, changes: TextDocumentContentChangeEvent[]): Promise<Diagnostic[]> {
-		const diagnostics = changes.map(change => { this.analyzeSingleDocumentChange(uri, change); }).pop();
+		const diagnostics = changes.map(change => { return this.analyzeSingleDocumentChange(uri, change); }).pop();
 		return diagnostics || [];
 	}
 
@@ -161,23 +158,26 @@ export class Analyzer {
 	 * Analyze the document single increment for the provided uri to update the tree.
 	 * Returns syntax errors that occurred while parsing the file
 	 */
-	public async analyzeSingleDocumentChange(uri: DocumentUri, change: TextDocumentContentChangeEvent): Promise<Diagnostic[]> {
+	public analyzeSingleDocumentChange(uri: DocumentUri, change: TextDocumentContentChangeEvent): Diagnostic[] {
 		let problems: Diagnostic[] = [];
 		time("Parsing file increment");
 		if (TextDocumentContentChangeEvent.isIncremental(change)) {
 			//Determine ranges of the section to be reparsed.
 			//oldRange: section to be reparsed, newRange: corresponding range after changes where applied
-			const coveringNode = this.symbolAndReferenceManager.getNodeCoveringRange(uri, change.range);
-			const oldRange = coveringNode.fullRange;
-			const newRange = this.determineRangeAfterChanges(coveringNode.fullRange, change.range, change.text);
-			const contents = await this.getFileContent(uri, newRange);
+			const coveringNode = this.symbolAndReferenceManager.getNodeCoveringRange(uri, change.range).parent;
+			if (coveringNode && coveringNode.type! + ModelElementTypes.Document) {
+				const oldRange = coveringNode.fullRange;
+				const newRange = this.determineRangeAfterChanges(coveringNode.fullRange, change.range, change.text);
+				const contents = this.getFileContent(uri, newRange);
 
-			const parser: IncrementalParser = this.uriToIncrementalParsers[uri];
-			const results = parser.updateFile(oldRange, newRange, contents);
-			this.symbolAndReferenceManager.updateTree(uri, results.tree, results.modelFileContext);
-			problems = results.problems;
+				const parser: IncrementalParser = this.uriToIncrementalParsers[uri];
+				const results = parser.updateFile(oldRange, newRange, contents);
+				this.symbolAndReferenceManager.updateTree(uri, results.tree, results.modelFileContext);
+				problems = results.problems;
+			} else {
+				return this.analyze(uri, ModelDetailLevel.All, true);
+			}
 		}
-
 
 		timeEnd("Parsing file increment");
 		return problems;
@@ -226,12 +226,12 @@ export class Analyzer {
 	/**
 	 * Get the content for a given file. If it is an open workspace document get it directly, otherwise read it from disk
 	 */
-	private async getFileContent(uri: string, range?: Range) {
+	private getFileContent(uri: string, range?: Range) {
 		const document = this.uriToTextDocument[uri];
 		if (document) {
 			return document.getText(range);
 		} else {
-			return await readFileAsync(fileURIToFilePath(uri), 'utf8');
+			return fs.readFileSync(fileURIToFilePath(uri), 'utf8');
 		}
 	}
 
