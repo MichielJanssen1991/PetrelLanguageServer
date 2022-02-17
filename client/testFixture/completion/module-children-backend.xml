@@ -1,4 +1,8 @@
 <?cp-edit petrel/backend?>
-<module>
+<root>
+    <application >
+        <module name="MyModule" target-namespace="">
 
-</module>
+        </module>
+    </application>
+</root>

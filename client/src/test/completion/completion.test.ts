@@ -17,10 +17,11 @@ suite('Should do completion', () => {
 		});
 	});
 
-	test('Completes child elements for module', async () => {
+	test.only('Completes child elements for module', async () => {
 		const docUri = getDocUri('completion\\module-children-backend.xml');
-		await testCompletionEquals(docUri, new vscode.Position(2, 0), {
+		await testCompletionEquals(docUri, new vscode.Position(4, 0), {
 			items: [
+				{ label: 'decorations', kind: vscode.CompletionItemKind.Snippet },
 				{ label: 'decorators', kind: vscode.CompletionItemKind.Snippet },
 				{ label: 'include', kind: vscode.CompletionItemKind.Snippet },
 				{ label: 'include-block', kind: vscode.CompletionItemKind.Snippet },
