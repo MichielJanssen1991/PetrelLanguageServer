@@ -70,6 +70,9 @@ export enum ModelElementTypes {
 	ToolbarButton = "ToolbarButton",
 	Appearance = "Appearance",
 	AppearanceClass = "AppearanceClass", // this could be a list of all classes from the scss files (it can be filtered by the type of mixin it's using)
+	// Premium types
+	ModelingObject = "ModelingObject",
+	ModelCode = "ModelCode",
 	// Pseudo types 
 	RuleContext = "RuleContext",
 }
@@ -158,6 +161,11 @@ export enum ModelElementSubTypes {
 	Event_ToolBarButton = "ToolBarButtonEvent",
 	Event_View = "ViewEvent",
 
+	//Premium
+	ModelingObject_Module = "ModelingObject_Module",
+	ModelingObject_NonModule= "ModelingObject_NonModule",
+	ModelCode_Module = "ModelCode_Module",
+	ModelCode_NonModule= "ModelCode_NonModule",
 }
 
 export enum ValidationLevels {

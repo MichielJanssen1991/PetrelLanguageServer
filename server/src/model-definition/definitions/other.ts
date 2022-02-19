@@ -5,30 +5,6 @@ import { action_argument_element, action_call_output_element, comment_attribute,
 //Defines a list of possible refrerences and declarations for each opening tag
 export const OTHER_DEFINITION: Definitions =
 {
-	"rule": [{
-		type: ModelElementTypes.Rule,
-		attributes: [comment_attribute],
-		prefixNameSpace: true,
-		isSymbolDeclaration: true,
-		detailLevel: ModelDetailLevel.Declarations,
-		matchCondition: (nodeContext) => !isProfileRule(nodeContext),
-		children: []
-	},
-	{
-		matchCondition: (nodeContext) => isProfileRule(nodeContext),
-		type: ModelElementTypes.Rule,
-		attributes: [comment_attribute],
-		detailLevel: ModelDetailLevel.References,
-		children: []
-	}],
-	"infoset": [{
-		type: ModelElementTypes.Infoset,
-		attributes: [comment_attribute],
-		isSymbolDeclaration: true,
-		prefixNameSpace: true,
-		detailLevel: ModelDetailLevel.Declarations,
-		children: []
-	}],
 	"searchcolumn": [{
 		type: ModelElementTypes.SearchColumn,
 		detailLevel: ModelDetailLevel.Declarations,
@@ -158,23 +134,6 @@ export const OTHER_DEFINITION: Definitions =
 		children: []
 	},
 		action_call_output_element],
-	"variable": [{
-		matchCondition: (nodeContext) => isInfosetVariable(nodeContext),
-		type: ModelElementTypes.InfosetVariable,
-		detailLevel: ModelDetailLevel.Declarations,
-		isSymbolDeclaration: true,
-		attributes: [
-			{
-				name: "attribute",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Attribute,
-				},
-				detailLevel: ModelDetailLevel.SubReferences
-			}
-		],
-		children: []
-	}],
 	"action": [{
 		matchCondition: (nodeContext: IXmlNodeContext) => isActionDefinition(nodeContext),
 		type: ModelElementTypes.Action,
@@ -306,137 +265,7 @@ export const OTHER_DEFINITION: Definitions =
 		isSymbolDeclaration: true,
 		children: []
 	}],
-	// ---------- Premium tags ----------
-	"ProfileType": [{
-		detailLevel: ModelDetailLevel.References,
-		attributes: [{
-			type: {
-				type: AttributeTypes.Reference,
-				relatedTo: ModelElementTypes.Type,
-			},
-			detailLevel: ModelDetailLevel.References,
-			name: "TypeName"
-		}],
-		children: []
-	}],
-	"ProfileView": [{
-		detailLevel: ModelDetailLevel.References,
-		attributes: [{
-			type: {
-				type: AttributeTypes.Reference,
-				relatedTo: ModelElementTypes.View,
-			},
-			detailLevel: ModelDetailLevel.References,
-			name: "ViewName"
-		}],
-		children: []
-	}],
-	"ProfileRule": [{
-		detailLevel: ModelDetailLevel.References,
-		attributes: [{
-			type: {
-				type: AttributeTypes.Reference,
-				relatedTo: ModelElementTypes.Rule,
-			},
-			detailLevel: ModelDetailLevel.References,
-			name: "RuleName"
-		}],
-		children: []
-	}],
-	"DataConversion": [{
-		type: ModelElementTypes.Rule,
-		detailLevel: ModelDetailLevel.References,
-		attributes: [{
-			type: {
-				type: AttributeTypes.Reference,
-				relatedTo: ModelElementTypes.Rule,
-			},
-			detailLevel: ModelDetailLevel.References,
-			name: "RuleName"
-		}],
-		children: []
-	}],
-	"Types": [{
-		type: ModelElementTypes.Unknown,
-		attributes: [comment_attribute],
-		detailLevel: ModelDetailLevel.Declarations,
-		children: []
-	}],
-	"CForms": [{
-		type: ModelElementTypes.Unknown,
-		attributes: [comment_attribute],
-		detailLevel: ModelDetailLevel.Declarations,
-		children: []
-	}],
-	"Views": [{
-		type: ModelElementTypes.Unknown,
-		attributes: [comment_attribute],
-		detailLevel: ModelDetailLevel.Declarations,
-		children: []
-	}],
-	"ControllerEvents": [{
-		type: ModelElementTypes.Unknown,
-		attributes: [comment_attribute],
-		detailLevel: ModelDetailLevel.Declarations,
-		children: []
-	}],
-	"Functions": [{
-		type: ModelElementTypes.Unknown,
-		attributes: [comment_attribute],
-		detailLevel: ModelDetailLevel.Declarations,
-		children: []
-	}],
-	"Function": [{
-		type: ModelElementTypes.Unknown,
-		attributes: [comment_attribute],
-		detailLevel: ModelDetailLevel.Declarations,
-		children: []
-	}],
-	"Rules": [{
-		type: ModelElementTypes.Unknown,
-		attributes: [comment_attribute],
-		detailLevel: ModelDetailLevel.Declarations,
-		children: []
-	}],
-	"Rule": [{
-		type: ModelElementTypes.Unknown,
-		attributes: [comment_attribute],
-		detailLevel: ModelDetailLevel.Declarations,
-		children: []
-	}],
-	"CQueries": [{
-		type: ModelElementTypes.Unknown,
-		attributes: [comment_attribute],
-		detailLevel: ModelDetailLevel.Declarations,
-		children: []
-	}],
-	"Infosets": [{
-		type: ModelElementTypes.Unknown,
-		attributes: [comment_attribute],
-		detailLevel: ModelDetailLevel.Declarations,
-		children: []
-	}],
-	"Infoset": [{
-		type: ModelElementTypes.Unknown,
-		attributes: [comment_attribute],
-		detailLevel: ModelDetailLevel.Declarations,
-		children: []
-	}]
 };
-
-const nonPetrelModelTags = new Set(
-	["ProfileType", "ProfileView", "ProfileRule", "DataConversion",
-		"Types", "CForms", "Views", "ControllerEvents", "Functions",
-		"Function", "Rules", "Rule", "CQueries", "Infosets", "Infoset"]
-);
-export function isNonPetrelModelTag(tagName: string) {
-	return nonPetrelModelTags.has(tagName);
-}
-
-
-export function isInfosetVariable(nodeContext: IXmlNodeContext): boolean {
-	return ("infoset" == nodeContext.getParent()?.tag);
-}
 
 export function isActionDefinition(nodeContext: IXmlNodeContext): boolean {
 	return nodeContext.hasParentTag("actions");

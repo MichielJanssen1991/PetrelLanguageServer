@@ -1,5 +1,4 @@
 import { Range } from 'vscode-languageserver-types';
-import { isNonPetrelModelTag } from '../../model-definition/definitions/other';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
 import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, IXmlNodeContext, TreeNode, Definition, ModelElementTypes, Attribute, ElementAttribute, newTreeNode } from '../../model-definition/symbolsAndReferences';
 import { FileParser } from './fileParser';
@@ -58,9 +57,10 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	}
 
 	public getAttributeRanges(attribute: { name: string; value: string; }) {
-		return { 
-			range: this.parser.getAttributeValueRange(attribute), 
-			fullRange: this.parser.getAttributeRange(attribute) };
+		return {
+			range: this.parser.getAttributeValueRange(attribute),
+			fullRange: this.parser.getAttributeRange(attribute)
+		};
 	}
 
 	//Namespace and other context qualifiers
@@ -90,8 +90,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	}
 
 	private onOpenTag(node: XmlNode) {
-		const tagName = node.name;
-		this.deduceContextFromTag(tagName);
+		this.deduceContextFromNode(node);
 		this.parseNode(node);
 		this.attributeRanges = {};
 	}
@@ -114,11 +113,37 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		return;
 	}
 
-	private deduceContextFromTag(tagName: string) {
+	private deduceContextFromNode(node: XmlNode) {
+		const tagName = node.name;
 		//To be compatible with premium files the modelFileContext is swithed to Other when premium specific tags are found
-		if (isNonPetrelModelTag(tagName)) {
-			this.setModelFileContext(ModelFileContext.Unknown);
+		switch (tagName) {
+			case "CForms":
+				this.setModelFileContext(ModelFileContext.Premium_CForm);
+				break;
+			case "ControllerEvents":
+				this.setModelFileContext(ModelFileContext.Premium_ControllerEvent);
+				break;
+			case "CQueries":
+				this.setModelFileContext(ModelFileContext.Premium_CQuery);
+				break;
+			case "Profile":
+				this.setModelFileContext(ModelFileContext.Premium_Profile);
+				break;
+			case "DataConversion":
+				this.setModelFileContext(ModelFileContext.Premium_DataConversion);
+				break;
+			case "ModelingObject":
+				switch (node.attributes["ObjectType"]) {
+					case "Infoset":
+						this.setModelFileContext(ModelFileContext.Premium_ModelingObject_Infoset);
+						break;
+					case "Rule":
+						this.setModelFileContext(ModelFileContext.Premium_ModelingObject_Rule);
+						break;
+				}
+				break;
 		}
+
 		return;
 	}
 

@@ -3,6 +3,12 @@ import { BACKEND_ACTIONS_DEFINITION } from './definitions/backend-actions';
 import { FRONTEND_DEFINITION } from './definitions/frontend';
 import { INFOSET_DEFINITION } from './definitions/infosets';
 import { OTHER_DEFINITION } from './definitions/other';
+import { CFORM_DEFINITION } from './definitions/premium-runtime/cform';
+import { CONTROLLER_EVENT_DEFINITION } from './definitions/premium-runtime/controllerevent';
+import { CQUERY_DEFINITION } from './definitions/premium-runtime/cquery';
+import { MODELING_OBJECT_INFOSET_DEFINITION } from './definitions/premium-runtime/modelingObjects/modeling-object-infoset';
+import { MODELING_OBJECT_RULE_DEFINITION } from './definitions/premium-runtime/modelingObjects/modeling-object-rule';
+import { PROFILE_DEFINITION } from './definitions/premium-runtime/profile';
 import { RULE_DEFINITION } from './definitions/rules';
 import { IXmlNodeContext, Definitions, ModelElementTypes, Definition, TreeNode, ModelElementSubTypes } from './symbolsAndReferences';
 
@@ -12,11 +18,23 @@ export enum ModelFileContext {
 	Frontend,
 	Rules,
 	Infosets,
-	Unknown
+	Unknown,
+	Premium_CForm,
+	Premium_ControllerEvent,
+	Premium_CQuery,
+	Premium_Profile,
+	Premium_DataConversion,
+	Premium_ModelingObject_Infoset,
+	Premium_ModelingObject_Rule
 }
 
 export class ModelDefinitionManager {
-	private contextToModelDefinition: Record<ModelFileContext, Definitions> = { "0": {}, "1": {}, "2": {}, "3": {}, "4": {}, "5": {} }
+	private contextToModelDefinition: Record<ModelFileContext, Definitions> = {
+		"0": {}, "1": {}, "2": {}, "3": {},
+		"4": {}, "5": {}, "6": {}, "7": {},
+		"8": {}, "9": {}, "10": {}, "11": {},
+		"12": {}
+	}
 
 	constructor() {
 		this.contextToModelDefinition[ModelFileContext.Backend] = BACKEND_DEFINITION;
@@ -25,6 +43,14 @@ export class ModelDefinitionManager {
 		this.contextToModelDefinition[ModelFileContext.Frontend] = FRONTEND_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.Unknown] = OTHER_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.BackendActions] = BACKEND_ACTIONS_DEFINITION;
+		//Premium files
+		this.contextToModelDefinition[ModelFileContext.Premium_CForm] = CFORM_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.Premium_ControllerEvent] = CONTROLLER_EVENT_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.Premium_CQuery] = CQUERY_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.Premium_Profile] = PROFILE_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.Premium_DataConversion] = PROFILE_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.Premium_ModelingObject_Infoset] = MODELING_OBJECT_INFOSET_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.Premium_ModelingObject_Rule] = MODELING_OBJECT_RULE_DEFINITION;
 	}
 
 	public getModelDefinition(context: ModelFileContext) {
@@ -58,9 +84,9 @@ export class ModelDefinitionManager {
 		return matchConditionOk && ancestorOk;
 	}
 
-	private ancestorMatches(ancestorsDef: any, ancestor?: TreeNode):boolean {
+	private ancestorMatches(ancestorsDef: any, ancestor?: TreeNode): boolean {
 		const ancestorOk = ancestor?.type == (ancestorsDef.type || ModelElementTypes.Unknown)
-			&& (ancestorsDef.subtypes?ancestorsDef.subtypes.includes(ancestor?.subtype): true);
+			&& (ancestorsDef.subtypes ? ancestorsDef.subtypes.includes(ancestor?.subtype) : true);
 		return ancestorOk;
 	}
 
@@ -105,7 +131,7 @@ export class ModelDefinitionManager {
 	}
 
 	private tagAndTypeMatches(def: Definition, type: ModelElementTypes, subtype?: ModelElementSubTypes): boolean {
-		const typeMatches = ((def.type||ModelElementTypes.Unknown) == type) || type == ModelElementTypes.All;
+		const typeMatches = ((def.type || ModelElementTypes.Unknown) == type) || type == ModelElementTypes.All;
 		const subTypeMatchesOrEmpty = (subtype == undefined) || (def.subtype == subtype) || subtype == ModelElementSubTypes.All;
 		return typeMatches && subTypeMatchesOrEmpty;
 	}
