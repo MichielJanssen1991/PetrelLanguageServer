@@ -10,10 +10,16 @@ import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbo
 import { JavascriptParser } from './parser/javascriptParser';
 import { FileParser, IncrementalParser } from './parser/fileParser';
 import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
-import { Connection, Diagnostic, DidChangeTextDocumentParams, Range, TextDocumentContentChangeEvent } from 'vscode-languageserver';
-import { rangeIsInRange } from '../util/other';
+import { Connection, Diagnostic, DidChangeTextDocumentParams, Range, TextDocumentContentChangeEvent, uinteger } from 'vscode-languageserver';
+import { positionIsGreaterThan, rangeIsInRange } from '../util/other';
 import { ModelChecker } from '../model-checker/modelChecker';
 import { IncrementalModelParser } from './parser/incrementalModelParser';
+
+interface IncrementalTextDocumentContentChangeEvent {
+	range: Range;
+	rangeLength?: uinteger;
+	text: string;
+}
 
 /**
  * The Analyzer uses an xml parser to find definitions, reference, etc. 
@@ -57,11 +63,11 @@ export class Analyzer {
 
 			const filePaths: string[] = await getModelFilePaths(rootPath, options);
 			connection.console.log(`Glob resolved with ${filePaths.length} model files`);
-			await analyzer.analyzeFiles(filePaths, connection, ModelDetailLevel.References);
+			analyzer.analyzeFiles(filePaths, connection, ModelDetailLevel.References);
 
 			const javascriptFilePaths: string[] = await getJavascriptFilePaths(rootPath, options);
 			connection.console.log(`Glob resolved with ${javascriptFilePaths.length} javascript files`);
-			await analyzer.analyzeFiles(javascriptFilePaths, connection, ModelDetailLevel.References);
+			analyzer.analyzeFiles(javascriptFilePaths, connection, ModelDetailLevel.References);
 
 			connection.console.log(`Analyzer finished after ${getTimePassed()}`);
 		}
@@ -69,14 +75,14 @@ export class Analyzer {
 		return analyzer;
 	}
 
-	private async analyzeFiles(filepaths: string[], connection: Connection, detailLevel: ModelDetailLevel) {
+	private analyzeFiles(filepaths: string[], connection: Connection, detailLevel: ModelDetailLevel) {
 		const numberOfFiles = filepaths.length; let i = 1;
 		for (const filePath of filepaths) {
 			const uri = filePathToFileURI(filePath);
 			connection.console.log(`Analyzing file (${i}/${numberOfFiles}): ${uri}`);
 
 			try {
-				await this.analyze(uri, detailLevel, false);
+				this.analyze(uri, detailLevel, false);
 			} catch (error) {
 				connection.console.warn(`Failed analyzing ${uri}. Error: ${(error as Error).message}`);
 			}
@@ -85,27 +91,27 @@ export class Analyzer {
 		return { numberOfFiles, i };
 	}
 
-	public async updateDocument(change: DidChangeTextDocumentParams) {
+	public updateDocument(change: DidChangeTextDocumentParams) {
 		const uri = change.textDocument.uri;
 		const document = this.uriToTextDocument[uri];
 		const updatedDocument = TextDocument.update(document, change.contentChanges, change.textDocument.version);
 		this.uriToTextDocument[uri] = updatedDocument;
-		const parsingDiagnostics = await this.analyzeDocumentIncrementally(uri, change.contentChanges);
-		const checkerDiagnostics = await this.validateTextDocument(uri);
+		const parsingDiagnostics = this.analyzeDocumentIncrement(uri, change.contentChanges);
+		const checkerDiagnostics = this.validateTextDocument(uri);
 		return [...parsingDiagnostics, ...checkerDiagnostics];
 	}
 
-	public async openDocument(document: TextDocument) {
+	public openDocument(document: TextDocument) {
 		const uri = document.uri;
 		this.uriToTextDocument[uri] = document;
-		const parsingDiagnostics = await this.analyze(uri, ModelDetailLevel.All, true);
-		const checkerDiagnostics = await this.validateTextDocument(uri);
+		const parsingDiagnostics = this.analyze(uri, ModelDetailLevel.All, true);
+		const checkerDiagnostics = this.validateTextDocument(uri);
 		return [...parsingDiagnostics, ...checkerDiagnostics];
 	}
 
-	public async analyzeDocument(uri: DocumentUri) {
+	public analyzeDocument(uri: DocumentUri) {
 		const parsingDiagnostics = this.analyze(uri, ModelDetailLevel.All, true);
-		const checkerDiagnostics = await this.validateTextDocument(uri);
+		const checkerDiagnostics = this.validateTextDocument(uri);
 		return [...parsingDiagnostics, ...checkerDiagnostics];
 	}
 
@@ -149,25 +155,23 @@ export class Analyzer {
 	 * Analyze the document increment for the provided uri to update the tree.
 	 * Returns syntax errors that occurred while parsing the file
 	 */
-	public async analyzeDocumentIncrementally(uri: DocumentUri, changes: TextDocumentContentChangeEvent[]): Promise<Diagnostic[]> {
-		const diagnostics = changes.map(change => { return this.analyzeSingleDocumentChange(uri, change); }).pop();
-		return diagnostics || [];
-	}
-
-	/**
-	 * Analyze the document single increment for the provided uri to update the tree.
-	 * Returns syntax errors that occurred while parsing the file
-	 */
-	public analyzeSingleDocumentChange(uri: DocumentUri, change: TextDocumentContentChangeEvent): Diagnostic[] {
+	public analyzeDocumentIncrement(uri: DocumentUri, changes: TextDocumentContentChangeEvent[]): Diagnostic[] {
 		let problems: Diagnostic[] = [];
 		time("Parsing file increment");
-		if (TextDocumentContentChangeEvent.isIncremental(change)) {
+		if (TextDocumentContentChangeEvent.isIncremental(changes[0])) {
+			//Typecast to IncrementalTextDocumentContentChangeEvent. A own interfacte introduced to treat the whole set as incrementals
+			const increments = changes as IncrementalTextDocumentContentChangeEvent[];
 			//Determine ranges of the section to be reparsed.
 			//oldRange: section to be reparsed, newRange: corresponding range after changes where applied
-			const coveringNode = this.symbolAndReferenceManager.getNodeCoveringRange(uri, change.range).parent;
+			const incrementsSorted = increments.sort((a: IncrementalTextDocumentContentChangeEvent, b: IncrementalTextDocumentContentChangeEvent) => positionIsGreaterThan(a.range.start, b.range.start) ? 1 : -1);
+			const fullRange = {
+				start: incrementsSorted[0]?.range.start,
+				end: incrementsSorted[incrementsSorted.length-1]?.range.end
+			} as Range; // there always is at least one change
+			const coveringNode = this.symbolAndReferenceManager.getNodeCoveringRange(uri, fullRange);
 			if (coveringNode && coveringNode.type! + ModelElementTypes.Document) {
 				const oldRange = coveringNode.fullRange;
-				const newRange = this.determineRangeAfterChanges(coveringNode.fullRange, change.range, change.text);
+				const newRange = this.determineRangeAfterChanges(coveringNode.fullRange, incrementsSorted);
 				const contents = this.getFileContent(uri, newRange);
 
 				const parser: IncrementalParser = this.uriToIncrementalParsers[uri];
@@ -183,14 +187,21 @@ export class Analyzer {
 		return problems;
 	}
 
-	private async validateTextDocument(uri: DocumentUri): Promise<Diagnostic[]> {
+	private validateTextDocument(uri: DocumentUri): Diagnostic[] {
 		time("Checking file");
 		const diagnostics = this.modelChecker.checkFile(uri, { detailLevel: ModelDetailLevel.All });
 		timeEnd("Checking file");
 		return diagnostics;
 	}
 
-	private determineRangeAfterChanges(range: Range, changeRange: Range, newText: string) {
+	private determineRangeAfterChanges(range: Range, changes: IncrementalTextDocumentContentChangeEvent[]) {
+		return changes.reduce(
+			(result: Range, change: IncrementalTextDocumentContentChangeEvent) =>
+				this.determineRangeAfterChange(result, change.range, change.text),
+			range);
+	}
+
+	private determineRangeAfterChange(range: Range, changeRange: Range, newText: string) {
 		const verifyChangeRangeIsInRange = rangeIsInRange(changeRange, range);
 		console.log(verifyChangeRangeIsInRange);
 

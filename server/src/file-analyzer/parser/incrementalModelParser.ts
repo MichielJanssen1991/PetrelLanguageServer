@@ -22,16 +22,14 @@ export class IncrementalModelParser extends ModelParser implements IncrementalPa
 	}
 
 	public updateFile(oldRange: Range, newRange: Range, contents: string) {
-		// console.log("BEFORE");
-		// printTree(this.results.tree);
+		// this.logStartUpdateFile(contents);
 		
 		this.newContent = contents;
 		this.newRange = newRange;
 		this.oldRange = oldRange;
 		this.walknodes(this.results.tree);
 		
-		// console.log("AFTER");
-		// printTree(this.results.tree);
+		// this.logFinishUpdateFile();
 		return this.results;
 	}
 
@@ -85,10 +83,10 @@ export class IncrementalModelParser extends ModelParser implements IncrementalPa
 	}
 
 	private translateNodeRangesForReparsedPart(node: TreeNode) {
-		const line = this.newRange.start.line;
-		const character = this.newRange.start.character;
-		this.translateNodeAndAttributesVertically(node, line);
-		this.translateNodeAndAttributesHorizontallyIfOnLine(node, character, line);
+		const startLine = this.newRange.start.line;
+		const startCharacter = this.newRange.start.character;
+		this.translateNodeAndAttributesVertically(node, startLine);
+		this.translateNodeAndAttributesHorizontallyIfOnLine(node, startCharacter, startLine);
 		node.children.forEach(child => this.translateNodeRangesForReparsedPart(child));
 	}
 
@@ -139,8 +137,32 @@ export class IncrementalModelParser extends ModelParser implements IncrementalPa
 		if (nodeOrAttribute.range.end.line == line) {
 			nodeOrAttribute.range.end.character += x;
 		}
+		if (nodeOrAttribute.fullRange.start.line == line) {
+			nodeOrAttribute.fullRange.start.character += x;
+		}
 		if (nodeOrAttribute.fullRange.end.line == line) {
 			nodeOrAttribute.fullRange.end.character += x;
 		}
 	}
+
+	//Logging statements
+	// private logFinishUpdateFile() {
+	// 	console.log("AFTER");
+	// 	printTree(this.results.tree);
+	// }
+
+	// private logStartUpdateFile(contents: string) {
+	// 	console.log("BEFORE");
+	// 	printTree(this.results.tree);
+
+	// 	console.log("REPARSING");
+	// 	const lines = contents.split("\n");
+	// 	if (lines.length == 1) {
+	// 		console.log(lines[0]);
+	// 	} else {
+	// 		console.log(lines[0]);
+	// 		console.log("...");
+	// 		console.log(lines[lines.length - 1]);
+	// 	}
+	// }
 }
