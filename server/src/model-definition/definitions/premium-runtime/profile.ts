@@ -4,9 +4,27 @@ export const PROFILE_DEFINITION: Definitions = {
 	"Profile": [{
 		attributes: [],
 		children: [
+			{element:"ProfileTypes"},
+			{element:"ProfileViews"},
+			{element:"ProfileRules"},
+		]
+	}],
+	"ProfileTypes": [{
+		attributes: [],
+		children: [
 			{element:"ProfileType"},
+		]
+	}],
+	"ProfileViews": [{
+		attributes: [],
+		children: [
 			{element:"ProfileView"},
-			{element:"ProfileRule"},
+		]
+	}],
+	"ProfileRules": [{
+		attributes: [],
+		children: [
+			{element:"ProfileType"},
 		]
 	}],
 	"ProfileType": [{
