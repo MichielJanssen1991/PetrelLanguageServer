@@ -84,7 +84,8 @@ const if_elseif_children: ChildDefinition[] = [
 
 const meta_attribute_options: AttributeOption[] = [
 	{
-		name: "module"
+		name: "module",
+		obsolete: true
 	},
 	{
 		name: "rule"
@@ -887,10 +888,6 @@ export const RULE_DEFINITION: Definitions = {
 	}],
 	"include-blocks": [include_blocks_element],
 	"include-block": [
-		{ // General
-			...include_block_rules_declaration_definition,
-			matchCondition: (x)=>isIncludeBlockOfType(x, ""),
-		},
 		{ // rule
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Rule,
@@ -955,6 +952,9 @@ export const RULE_DEFINITION: Definitions = {
 				...then_else_children
 			]
 		},
+		{ // General
+			...include_block_rules_declaration_definition
+		}		
 	],
 	"include": [include_element],
 	"merge-instruction": [merge_instruction_element],

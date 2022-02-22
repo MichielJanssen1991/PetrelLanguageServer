@@ -300,7 +300,7 @@ export function isViewControl(nodeContext: IXmlNodeContext, controlType: string)
 }
 
 export function isIncludeBlockOfType(nodeContext: IXmlNodeContext, metaType: string): boolean {
-	return (nodeContext.getCurrentXmlNode().attributes["meta-name"] == metaType || nodeContext.getCurrentXmlNode().attributes["meta-index"] == metaType);
+	return (nodeContext.getCurrentXmlNode().attributes["meta-name"]?.toLowerCase() == metaType?.toLowerCase() || nodeContext.getCurrentXmlNode().attributes["meta-index"]?.toLowerCase() == metaType?.toLowerCase());
 }
 
 //Objects which can be referenced without requiring the context

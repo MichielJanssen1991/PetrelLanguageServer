@@ -184,6 +184,12 @@ export enum AttributeTypes {
 	Date = "date"
 }
 
+export enum AncestorTypes {
+	Parent = "parent",
+	GrandParent = "grand-parent",
+	Full = "full"
+}
+
 export type ContextQualifiers = {
 	isObsolete?: boolean,
 	frontendOrBackend?: "Frontend" | "Backend",
@@ -308,6 +314,15 @@ export type Definition = {
 	ancestors?: { type: ModelElementTypes, subtypes?: ModelElementSubTypes[] }[],
 	// isGroupingElement is used as a signal to the parser that the element can be skipped when looking for the parent (for example rule in a module within rules, module is a grouping element) 
 	isGroupingElement?: boolean
+}
+
+export type MatchDefinition = {
+	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
+	ancestors?: { 
+		type: ModelElementTypes, 
+		subtypes?: ModelElementSubTypes[], 
+		ancestorType?: AncestorTypes // default full
+	}[],	
 }
 
 export type ChildDefinition = {
