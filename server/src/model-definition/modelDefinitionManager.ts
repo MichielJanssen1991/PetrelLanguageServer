@@ -13,7 +13,7 @@ import { MODELING_OBJECT_TYPE_DEFINITION } from './definitions/premium-runtime/m
 import { MODELING_OBJECT_VIEW_DEFINITION } from './definitions/premium-runtime/modelingObjects/modeling-object-view';
 import { PROFILE_DEFINITION } from './definitions/premium-runtime/profile';
 import { RULE_DEFINITION } from './definitions/rules';
-import { IXmlNodeContext, Definitions, ModelElementTypes, Definition, TreeNode, ModelElementSubTypes } from './symbolsAndReferences';
+import { IXmlNodeContext, Definitions, ModelElementTypes, Definition, TreeNode, ModelElementSubTypes, AncestorDefinition, AncestorTypes } from './symbolsAndReferences';
 
 export enum ModelFileContext {
 	Backend,
@@ -84,29 +84,50 @@ export class ModelDefinitionManager {
 	}
 
 	private conditionAndAncestorMatches(modelFileContext: ModelFileContext, def: Definition, nodeContext: IXmlNodeContext): boolean {
-		const matchConditionOk = def.matchCondition && nodeContext
-			? def.matchCondition(nodeContext)
-			: true;
-		//TODO: Maybe this condition should be improved to allow for ancestors instead of parents. Or the name should be changed to parent
-		const ancestor = this.getFirstNonGroupingElementAncestor(modelFileContext, nodeContext);
-		const ancestorOk = def.ancestors ? def.ancestors.some(ancestorDef => this.ancestorMatches(ancestorDef, ancestor)) : true;
-		return matchConditionOk && ancestorOk;
+		if (!def.matchCondition) {
+			return true;
+		} else {
+			const matchConditionOk = def.matchCondition.matchFunction && nodeContext
+				? def.matchCondition.matchFunction(nodeContext)
+				: true;
+			const ancestorOk = def.matchCondition.ancestors
+				? def.matchCondition.ancestors.some(ancestorDef => this.ancestorMatches(modelFileContext, ancestorDef, nodeContext))
+				: true;
+			return matchConditionOk && ancestorOk;
+		}
 	}
 
-	private ancestorMatches(ancestorsDef: any, ancestor?: TreeNode): boolean {
+	private ancestorMatches(modelFileContext: ModelFileContext, ancestorsDef: AncestorDefinition, nodeContext: IXmlNodeContext): boolean {
+		let ancestor;
+		switch (ancestorsDef.ancestorType) {
+			case AncestorTypes.Parent:
+				ancestor = this.getNonGroupingElementAncestor(modelFileContext, nodeContext, 1);
+				break;
+			case AncestorTypes.GrandParent:
+				ancestor = this.getNonGroupingElementAncestor(modelFileContext, nodeContext, 2);
+				break;
+			default:
+				ancestor = this.getNonGroupingElementAncestor(modelFileContext, nodeContext, 1);
+				break;
+		}
 		const ancestorOk = ancestor?.type == (ancestorsDef.type || ModelElementTypes.Unknown)
-			&& (ancestorsDef.subtypes ? ancestorsDef.subtypes.includes(ancestor?.subtype) : true);
+			&& (ancestorsDef.subtypes ? ancestorsDef.subtypes.includes(ancestor?.subtype || ModelElementSubTypes.Unknown) : true);
 		return ancestorOk;
 	}
 
-	private getFirstNonGroupingElementAncestor(modelFileContext: ModelFileContext, nodeContext: IXmlNodeContext, ancestorIndex = 1): TreeNode | undefined {
+	private getNonGroupingElementAncestor(modelFileContext: ModelFileContext, nodeContext: IXmlNodeContext, level: number, ancestorIndex = 1): TreeNode | undefined {
 		const ancestor = nodeContext.getAncestor(ancestorIndex);
 		if (ancestor) {
 			const ancestorDefinition = this.getModelDefinitionForTagAndType(modelFileContext, ancestor.tag, ancestor.type);
 			if (ancestorDefinition?.isGroupingElement) {
-				return this.getFirstNonGroupingElementAncestor(modelFileContext, nodeContext, ancestorIndex + 1);
+				return this.getNonGroupingElementAncestor(modelFileContext, nodeContext, level, ancestorIndex + 1);
 			} else {
-				return ancestor;
+				if (level > 1) {
+					return this.getNonGroupingElementAncestor(modelFileContext, nodeContext, level - 1, ancestorIndex + 1);
+				}
+				else {
+					return ancestor;
+				}
 			}
 		}
 	}

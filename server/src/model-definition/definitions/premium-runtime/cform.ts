@@ -3,8 +3,8 @@ import { BACKEND_DEFINITION } from '../backend';
 import { FRONTEND_DEFINITION } from '../frontend';
 
 export const CFORM_DEFINITION: Definitions = {
-	...BACKEND_DEFINITION,
 	...FRONTEND_DEFINITION,
+	...BACKEND_DEFINITION,
 	"CForms": [{
 		attributes: [],
 		children: [

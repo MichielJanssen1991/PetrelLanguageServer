@@ -6,7 +6,9 @@ export function isModule(nodeContext: IXmlNodeContext) {
 
 export const modeling_object_element_module: Definition = {
 	attributes: [],
-	matchCondition: (nodeContext: IXmlNodeContext) => isModule(nodeContext),
+	matchCondition: {
+		matchFunction: (nodeContext: IXmlNodeContext) => isModule(nodeContext),
+	},
 	type: ModelElementTypes.ModelingObject,
 	subtype: ModelElementSubTypes.ModelingObject_Module,
 	children: [
@@ -18,7 +20,9 @@ export const modeling_object_element_module: Definition = {
 
 export const modeling_object_element_non_module: Definition = {
 	attributes: [],
-	matchCondition: (nodeContext: IXmlNodeContext) => !isModule(nodeContext),
+	matchCondition: {
+		matchFunction: (nodeContext: IXmlNodeContext) => !isModule(nodeContext),
+	},
 	type: ModelElementTypes.ModelingObject,
 	subtype: ModelElementSubTypes.ModelingObject_NonModule,
 	children: [
@@ -32,7 +36,9 @@ export const modelcode_element_module: Definition = {
 	attributes: [],
 	type: ModelElementTypes.ModelCode,
 	subtype: ModelElementSubTypes.ModelingObject_Module,
-	ancestors: [{ type: ModelElementTypes.ModelingObject, subtypes: [ModelElementSubTypes.ModelingObject_Module] }],
+	matchCondition: { 
+		ancestors: [{ type: ModelElementTypes.ModelingObject, subtypes: [ModelElementSubTypes.ModelingObject_Module] }] 
+	},
 	children: []
 };
 
@@ -40,7 +46,9 @@ export const modelcode_element_non_module: Definition = {
 	attributes: [],
 	type: ModelElementTypes.ModelCode,
 	subtype: ModelElementSubTypes.ModelingObject_NonModule,
-	ancestors: [{ type: ModelElementTypes.ModelingObject, subtypes: [ModelElementSubTypes.ModelingObject_NonModule] }],
+	matchCondition: { 
+		ancestors: [{ type: ModelElementTypes.ModelingObject, subtypes: [ModelElementSubTypes.ModelingObject_NonModule] }] 
+	},
 	children: []
 };
 

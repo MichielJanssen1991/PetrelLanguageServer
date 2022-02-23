@@ -139,7 +139,7 @@ const include_block_rules_declaration_definition: Definition = {
 				type: AttributeTypes.Enum,
 				options: meta_attribute_options
 			}
-		}		
+		}
 	]
 };
 
@@ -297,13 +297,15 @@ export const RULE_DEFINITION: Definitions = {
 	"input": [input_element],
 	"output": [{
 		type: ModelElementTypes.Output,
-		ancestors: [{
-			type: ModelElementTypes.Rule
+		matchCondition: {
+			ancestors: [{
+				type: ModelElementTypes.Rule
+			},
+			{
+				type: ModelElementTypes.IncludeBlock,
+				subtypes: [ModelElementSubTypes.IncludeBlock_Rule]
+			}]
 		},
-		{
-			type: ModelElementTypes.IncludeBlock,
-			subtypes: [ModelElementSubTypes.IncludeBlock_Rule]
-		}],
 		isSymbolDeclaration: true,
 		detailLevel: ModelDetailLevel.Declarations,
 		description: "Output of the rule. The rule will return (name, expression) as one of its value pairs. Any valid C# expression can be used; the syntax for parameters is {..}.",
@@ -383,7 +385,7 @@ export const RULE_DEFINITION: Definitions = {
 		],
 		children: []
 	},
-	action_call_output_element
+		action_call_output_element
 	],
 	"argument": [{
 		type: ModelElementTypes.Argument,
@@ -891,7 +893,9 @@ export const RULE_DEFINITION: Definitions = {
 		{ // rule
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Rule,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "rule"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "rule"),
+			},
 			children: [
 				...rule_children
 			]
@@ -899,7 +903,9 @@ export const RULE_DEFINITION: Definitions = {
 		{ // action
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Action,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "action"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "action"),
+			},
 			children: [
 				...action_call_children
 			]
@@ -907,7 +913,9 @@ export const RULE_DEFINITION: Definitions = {
 		{ // if
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_If,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "if"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "if"),
+			},
 			children: [
 				...if_elseif_children
 			]
@@ -915,7 +923,9 @@ export const RULE_DEFINITION: Definitions = {
 		{ // then
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Then,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "then"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "then"),
+			},
 			children: [
 				...then_else_children
 			]
@@ -923,7 +933,9 @@ export const RULE_DEFINITION: Definitions = {
 		{ // else
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Else,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "else"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "else"),
+			},
 			children: [
 				...then_else_children
 			]
@@ -931,7 +943,9 @@ export const RULE_DEFINITION: Definitions = {
 		{ // elseif
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ElseIf,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "elseif"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "elseif"),
+			},
 			children: [
 				...if_elseif_children
 			]
@@ -939,7 +953,9 @@ export const RULE_DEFINITION: Definitions = {
 		{ // switch
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Switch,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "switch"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "switch"),
+			},
 			children: [
 				...switch_children
 			]
@@ -947,14 +963,16 @@ export const RULE_DEFINITION: Definitions = {
 		{ // case
 			...include_block_rules_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Case,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "case"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "case"),
+			},
 			children: [
 				...then_else_children
 			]
 		},
 		{ // General
 			...include_block_rules_declaration_definition
-		}		
+		}
 	],
 	"include": [include_element],
 	"merge-instruction": [merge_instruction_element],

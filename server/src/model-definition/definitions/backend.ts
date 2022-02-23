@@ -1240,7 +1240,9 @@ export const BACKEND_DEFINITION: Definitions = {
 	"target": [
 		{ // none
 			...target_element,
-			matchCondition: (x) => isIncludeBlockOfType(x, ""),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, ""),
+			},
 			attributes: [
 				...target_element.attributes,
 			]
@@ -1248,7 +1250,9 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // objectview
 			...target_element,
 			subtype: ModelElementSubTypes.Target_Type,
-			matchCondition: (x) => isIncludeBlockOfType(x, "type"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "type"),
+			},
 			attributes: [
 				...target_element.attributes,
 				...type_element_attributes_non_required
@@ -1260,7 +1264,9 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // attribute
 			...target_element,
 			subtype: ModelElementSubTypes.Target_Type,
-			matchCondition: (x) => isIncludeBlockOfType(x, "attribute"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "attribute"),
+			},
 			attributes: [
 				...target_element.attributes,
 				...attribute_attributes
@@ -1277,12 +1283,16 @@ export const BACKEND_DEFINITION: Definitions = {
 	"include-block": [
 		{ // General
 			...include_block_backend_declaration_definition,
-			matchCondition: (x) => isIncludeBlockOfType(x, ""),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, ""),
+			},
 		},
 		{ // module
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Module,
-			matchCondition: (x) => isIncludeBlockOfType(x, "module"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "module"),
+			},
 			children: [
 				{
 					element: "module"
@@ -1306,7 +1316,9 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // type
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Type,
-			matchCondition: (x) => isIncludeBlockOfType(x, "type"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "type"),
+			},
 			children: [
 				...type_children
 			]
@@ -1314,7 +1326,9 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // attribute
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Attribute,
-			matchCondition: (x) => isIncludeBlockOfType(x, "attribute"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "attribute"),
+			},
 			children: [
 				...attribute_children
 			]
@@ -1322,7 +1336,9 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // server-events
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ServerEvents,
-			matchCondition: (x) => isIncludeBlockOfType(x, "server-events"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "server-events"),
+			},
 			children: [
 				...server_events_children
 			]
@@ -1330,7 +1346,9 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // server-event
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_ServerEvent,
-			matchCondition: (x) => isIncludeBlockOfType(x, "server-event"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "server-event"),
+			},
 			children: [
 				...server_event_children
 			]
@@ -1338,7 +1356,9 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // keys
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Keys,
-			matchCondition: (x) => isIncludeBlockOfType(x, "keys"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "keys"),
+			},
 			children: [
 				...keys_children
 			]
@@ -1346,7 +1366,9 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // key
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Keys,
-			matchCondition: (x) => isIncludeBlockOfType(x, "key"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "key"),
+			},
 			children: [
 				...key_children
 			]
@@ -1354,7 +1376,9 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // action
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Action,
-			matchCondition: (x) => isIncludeBlockOfType(x, "action"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "action"),
+			},
 			children: [
 				...action_call_children
 			]
@@ -1362,7 +1386,9 @@ export const BACKEND_DEFINITION: Definitions = {
 		{ // search
 			...include_block_backend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Search,
-			matchCondition: (x) => isIncludeBlockOfType(x, "search"),
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "search"),
+			},
 			children: [
 				...search_children
 			]

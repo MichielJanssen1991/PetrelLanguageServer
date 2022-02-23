@@ -9,6 +9,7 @@ export enum ModelElementTypes {
 	All = "All",
 	Argument = "Argument",
 	Attribute = "Attribute",
+	Case = "Case",
 	Constant = "Constant",
 	Condition = "Condition",
 	Count = "Count",
@@ -79,6 +80,7 @@ export enum ModelElementTypes {
 
 export enum ModelElementSubTypes {
 	All = "All",
+	Unknown = "Unknown",
 	View_ObjectView = "ObjectView",
 	View_ListView = "ListView",
 	View_Tree = "TreeView",
@@ -186,8 +188,7 @@ export enum AttributeTypes {
 
 export enum AncestorTypes {
 	Parent = "parent",
-	GrandParent = "grand-parent",
-	Full = "full"
+	GrandParent = "grand-parent"
 }
 
 export type ContextQualifiers = {
@@ -309,20 +310,21 @@ export type Definition = {
 	isSymbolDeclaration?: boolean,
 	detailLevel?: ModelDetailLevel,
 	contextQualifiers?: (nodeContext: IXmlNodeContext) => ContextQualifiers
-	// matchCondition and ancestor are used to distinguish same tag definitions with different ModelElementTypes (for example action call output or rule output)
-	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
-	ancestors?: { type: ModelElementTypes, subtypes?: ModelElementSubTypes[] }[],
+	matchCondition?: MatchDefinition,
 	// isGroupingElement is used as a signal to the parser that the element can be skipped when looking for the parent (for example rule in a module within rules, module is a grouping element) 
 	isGroupingElement?: boolean
 }
 
+// matchFunction and ancestor can be used to distinguish same tag definitions with different ModelElementTypes (for example action call output or rule output)
 export type MatchDefinition = {
-	matchCondition?: (nodeContext: IXmlNodeContext) => boolean,
-	ancestors?: { 
-		type: ModelElementTypes, 
-		subtypes?: ModelElementSubTypes[], 
-		ancestorType?: AncestorTypes // default full
-	}[],	
+	matchFunction?: (nodeContext: IXmlNodeContext) => boolean,
+	ancestors?: AncestorDefinition[],	
+}
+
+export type AncestorDefinition = { 
+	type: ModelElementTypes, 
+	subtypes?: ModelElementSubTypes[], 
+	ancestorType?: AncestorTypes // default parent
 }
 
 export type ChildDefinition = {

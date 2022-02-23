@@ -650,7 +650,9 @@ export const INFOSET_DEFINITION: Definitions = {
 		{ // search
 			...include_block_infoset_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Search,
-			matchCondition: (x)=>isIncludeBlockOfType(x, "search"),
+			matchCondition:{
+				matchFunction: (x)=>isIncludeBlockOfType(x, "search"),
+			},
 			children: [
 				...search_children
 			]
