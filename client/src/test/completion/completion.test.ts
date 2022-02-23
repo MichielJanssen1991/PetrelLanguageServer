@@ -17,7 +17,7 @@ suite('Should do completion', () => {
 		});
 	});
 
-	test.only('Completes child elements for module', async () => {
+	test('Completes child elements for module', async () => {
 		const docUri = getDocUri('completion\\module-children-backend.xml');
 		await testCompletionEquals(docUri, new vscode.Position(4, 0), {
 			items: [
