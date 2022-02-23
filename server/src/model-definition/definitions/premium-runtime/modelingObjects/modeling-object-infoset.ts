@@ -18,7 +18,8 @@ export const MODELING_OBJECT_INFOSET_DEFINITION: Definitions = {
 		{
 			...modelcode_element_module,
 			children: [
-				{ element: "module" }
+				{ element: "module" },
+				{ element: "infoset" }
 			]
 		}
 	],

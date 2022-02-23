@@ -6,8 +6,11 @@ import { OTHER_DEFINITION } from './definitions/other';
 import { CFORM_DEFINITION } from './definitions/premium-runtime/cform';
 import { CONTROLLER_EVENT_DEFINITION } from './definitions/premium-runtime/controllerevent';
 import { CQUERY_DEFINITION } from './definitions/premium-runtime/cquery';
+import { MODELING_OBJECT_FUNCTION_DEFINITION } from './definitions/premium-runtime/modelingObjects/modeling-object-function';
 import { MODELING_OBJECT_INFOSET_DEFINITION } from './definitions/premium-runtime/modelingObjects/modeling-object-infoset';
 import { MODELING_OBJECT_RULE_DEFINITION } from './definitions/premium-runtime/modelingObjects/modeling-object-rule';
+import { MODELING_OBJECT_TYPE_DEFINITION } from './definitions/premium-runtime/modelingObjects/modeling-object-type';
+import { MODELING_OBJECT_VIEW_DEFINITION } from './definitions/premium-runtime/modelingObjects/modeling-object-view';
 import { PROFILE_DEFINITION } from './definitions/premium-runtime/profile';
 import { RULE_DEFINITION } from './definitions/rules';
 import { IXmlNodeContext, Definitions, ModelElementTypes, Definition, TreeNode, ModelElementSubTypes } from './symbolsAndReferences';
@@ -25,7 +28,10 @@ export enum ModelFileContext {
 	Premium_Profile,
 	Premium_DataConversion,
 	Premium_ModelingObject_Infoset,
-	Premium_ModelingObject_Rule
+	Premium_ModelingObject_Rule,
+	Premium_ModelingObject_Function,
+	Premium_ModelingObject_Type,
+	Premium_ModelingObject_View
 }
 
 export class ModelDefinitionManager {
@@ -33,7 +39,7 @@ export class ModelDefinitionManager {
 		"0": {}, "1": {}, "2": {}, "3": {},
 		"4": {}, "5": {}, "6": {}, "7": {},
 		"8": {}, "9": {}, "10": {}, "11": {},
-		"12": {}
+		"12": {}, "13": {}, "14": {}, "15": {}
 	}
 
 	constructor() {
@@ -51,6 +57,9 @@ export class ModelDefinitionManager {
 		this.contextToModelDefinition[ModelFileContext.Premium_DataConversion] = PROFILE_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.Premium_ModelingObject_Infoset] = MODELING_OBJECT_INFOSET_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.Premium_ModelingObject_Rule] = MODELING_OBJECT_RULE_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.Premium_ModelingObject_Function] = MODELING_OBJECT_FUNCTION_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.Premium_ModelingObject_Type] = MODELING_OBJECT_TYPE_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.Premium_ModelingObject_View] = MODELING_OBJECT_VIEW_DEFINITION;
 	}
 
 	public getModelDefinition(context: ModelFileContext) {

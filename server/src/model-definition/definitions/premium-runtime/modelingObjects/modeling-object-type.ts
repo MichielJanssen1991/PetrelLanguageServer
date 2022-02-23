@@ -1,9 +1,9 @@
 import { Definitions } from '../../../symbolsAndReferences';
-import { RULE_DEFINITION } from '../../rules';
+import { BACKEND_DEFINITION } from '../../backend';
 import { modelcode_element_module, modelcode_element_non_module, modeling_object_element_module, modeling_object_element_non_module } from './modeling-object-shared';
 
-export const MODELING_OBJECT_RULE_DEFINITION: Definitions = {
-	...RULE_DEFINITION,
+export const MODELING_OBJECT_TYPE_DEFINITION: Definitions = {
+	...BACKEND_DEFINITION,
 	"ModelingObject": [
 		modeling_object_element_module,
 		modeling_object_element_non_module,
@@ -12,17 +12,27 @@ export const MODELING_OBJECT_RULE_DEFINITION: Definitions = {
 		{
 			...modelcode_element_non_module,
 			children: [
-				{ element: "rule" }
+				{ element: "type" }
 			]
 		},
 		{
 			...modelcode_element_module,
 			children: [
 				{ element: "module" },
-				{ element: "rule" }
+				{ element: "type" }
 			]
 		}
 	],
+	"ModelingObjectSubObjects": [{
+		attributes: [],
+		children: [
+			{element: "ModelingObjectSubObject"}
+		]
+	}],
+	"ModelingObjectSubObject": [{
+		attributes: [],
+		children: []
+	}],
 	"Hash": [{
 		attributes: [],
 		children: []

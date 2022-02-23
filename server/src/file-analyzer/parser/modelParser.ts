@@ -140,6 +140,15 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 					case "Rule":
 						this.setModelFileContext(ModelFileContext.Premium_ModelingObject_Rule);
 						break;
+					case "Type":
+						this.setModelFileContext(ModelFileContext.Premium_ModelingObject_Type);
+						break;
+					case "View":
+						this.setModelFileContext(ModelFileContext.Premium_ModelingObject_View);
+						break;
+					case "Function":
+						this.setModelFileContext(ModelFileContext.Premium_ModelingObject_Function);
+						break;
 				}
 				break;
 		}

@@ -11,6 +11,7 @@ export const modeling_object_element_module: Definition = {
 	subtype: ModelElementSubTypes.ModelingObject_Module,
 	children: [
 		{ element: "ModelCode" },
+		{ element: "ModelingObjectSubObjects" },
 		{ element: "Hash" },
 	]
 };
@@ -22,6 +23,7 @@ export const modeling_object_element_non_module: Definition = {
 	subtype: ModelElementSubTypes.ModelingObject_NonModule,
 	children: [
 		{ element: "ModelCode" },
+		{ element: "ModelingObjectSubObjects" },
 		{ element: "Hash" },
 	]
 };
