@@ -1,4 +1,5 @@
-<module>
+<?cp-edit petrel/rules?>
+<rules>
 	<rule name="RuleWithReferencesToOtherTestObjects" comment="To avoid not referenced problems in all test cases">
 		<action name="Rule" rulename="ExampleRule"/>
 		<action name="Rule" rulename="KnownRuleWithMandatoryInputs"/>
@@ -11,4 +12,4 @@
 		<action name="Select" type="test2"/>
 		<action name="Select" type="abc"/>
 	</rule>
-</module>
+</rules>

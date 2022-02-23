@@ -1,3 +1,4 @@
-<module>
+<?cp-edit petrel/rules?>
+<rules>
   <rule name="KnownRule"/>
-</module>
+</rules>

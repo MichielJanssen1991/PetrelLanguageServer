@@ -1,6 +1,7 @@
-<module>
+<?cp-edit petrel/infosets?>
+<infosets>
   <infoset name="KnownInfoset">
     <search type="KnownType"/>
     <variable name="KnownInfosetOutput"/>
   </infoset>
-</module>
+</infosets>

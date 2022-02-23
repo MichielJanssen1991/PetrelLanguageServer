@@ -1,5 +1,6 @@
-<module>
+<?cp-edit petrel/infosets?>
+<infosets>
   <infoset name="KnownInfosetWithMandatoryInput">
     <input name="MandatoryInfosetInput" required="yes"/>
   </infoset>
-</module>
+</infosets>

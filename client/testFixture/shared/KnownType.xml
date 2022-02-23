@@ -1,5 +1,10 @@
-<module>
-  <type name="KnownType">
-  <attribute name="KnownAttribute"/>
-  </type>
-</module>
+<?cp-edit petrel/backend?>
+<root>
+  <application >
+    <types>
+      <type name="KnownType">
+        <attribute name="KnownAttribute"/>
+      </type>
+    </types>
+  </application>
+</root>
