@@ -12,7 +12,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 	protected checkInternal(node: TreeNode): void {
 		const modelFileContext = this.modelManager.getModelFileContextForFile(node.uri);
 		const tagDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
-		const tagDefinitionNonGrouping = this.getFirstNonGroupingElementDefinition(modelFileContext,node);
+		const tagDefinitionNonGrouping = this.getFirstNonGroupingElementDefinition(modelFileContext, node);
 		this.allNodeAttributes = Object.values(node.attributes);
 		
 		if (!(node.type==ModelElementTypes.Document || node.tag == ModelElementTypes.Document.toLowerCase())){

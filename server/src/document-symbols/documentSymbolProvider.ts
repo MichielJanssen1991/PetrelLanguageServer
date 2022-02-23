@@ -38,41 +38,41 @@ export class DocumentSymbolProvider {
 				return this.getNameDetailsAndKindForActionCall(node);
 				break;
 			case ModelElementTypes.Module:
-				name = node.tag;
-				details = node.attributes[NAMES.ATTRIBUTE_TARGETNAMESPACE]
+				name = node.attributes[NAMES.ATTRIBUTE_TARGETNAMESPACE]
 					? `${node.attributes[NAMES.ATTRIBUTE_NAME]?.value} (${node.attributes[NAMES.ATTRIBUTE_TARGETNAMESPACE]?.value})`
 					: `${node.attributes[NAMES.ATTRIBUTE_NAME]?.value}`;
-				kind = SymbolKind.Object;
+				details = node.tag;
+				kind = SymbolKind.Module;
 				break;
 			case ModelElementTypes.Rule:
 			case ModelElementTypes.Function:
-				name = node.tag;
-				details = `${node.attributes[NAMES.ATTRIBUTE_NAME]?.value}`;
+				name = `${node.attributes[NAMES.ATTRIBUTE_NAME]?.value}`;
+				details = node.tag;
 				kind = SymbolKind.Function;
 				break;
 			case ModelElementTypes.Input:
 			case ModelElementTypes.Output:
-				name = node.tag;
-				details = `${node.attributes[NAMES.ATTRIBUTE_NAME]?.value}`;
+				name = `${node.attributes[NAMES.ATTRIBUTE_NAME]?.value}`;
+				details = node.tag;
 				if(node.attributes[NAMES.ATTRIBUTE_REQUIRED]?.value=="yes")
 				{
-					details+="*";
+					details+=" (required)";
 				}
 				kind = SymbolKind.TypeParameter;
 				break;
 			case ModelElementTypes.Argument:
-				name = node.tag;
-				details = this.formatArgumentMapping(node);
+				name = this.formatArgumentMapping(node);
+				details = node.tag;
 				kind = SymbolKind.Variable;
 				break;
 			case ModelElementTypes.ActionCallOutput:
-				name = node.tag;
-				details = this.formatOutputArgumentMapping(node);
+				name = this.formatOutputArgumentMapping(node);
+				details = node.tag;
 				kind = SymbolKind.Variable;
 				break;
 			case ModelElementTypes.Condition:
-				name = node.tag;
-				details = "";
+				name = this.formatCondition(node);
+				details = node.tag;
 				kind = SymbolKind.Operator;
 				break;
 			case ModelElementTypes.If:
@@ -86,6 +86,11 @@ export class DocumentSymbolProvider {
 				details = "";
 				kind = SymbolKind.File;
 				break;
+			case ModelElementTypes.Case:
+				name = `case: ${node.attributes[NAMES.ATTRIBUTE_VALUE]?.value}`;
+				details = "";
+				kind = SymbolKind.File;
+				break;
 			default:
 				name = node.tag;
 				details = (node as SymbolDeclaration).name;
@@ -96,20 +101,20 @@ export class DocumentSymbolProvider {
 	}
 
 	private getNameDetailsAndKindForActionCall(node: TreeNode | SymbolDeclaration) {
-		const name = node.tag;
+		const details = node.tag;
 		const kind = SymbolKind.Event;
-		let details;
-		const actionName = node.attributes.name.value;
+		let name;
+		const actionName = node.attributes.name?.value||"";
 		switch (actionName.toLowerCase()) {
 			case "rule":
-				details = `Rule:${node.attributes[NAMES.ATTRIBUTE_RULE]?.value}`;
+				name = `Rule:${node.attributes[NAMES.ATTRIBUTE_RULE]?.value}`;
 				break;
 			case "infoset":
-				details = `Infoset:${node.attributes[NAMES.ATTRIBUTE_INFOSET]?.value}`;
+				name = `Infoset:${node.attributes[NAMES.ATTRIBUTE_INFOSET]?.value}`;
 				break;
 
 			default:
-				details = actionName;
+				name = actionName;
 				break;
 		}
 		return { name, details, kind };
@@ -135,5 +140,19 @@ export class DocumentSymbolProvider {
 		const from = remoteName?.value
 			|| localName?.value;
 		return `${to} <- ${from}`;
+	}
+
+	private formatCondition(node: TreeNode) {
+		const variable = node.attributes[NAMES.ATTRIBUTE_VARIABLE];
+		const operator = node.attributes[NAMES.ATTRIBUTE_OPERATOR];
+		const value = node.attributes[NAMES.ATTRIBUTE_VALUE];
+		const expression = node.attributes[NAMES.ATTRIBUTE_EXPRESSION];
+		const constant = node.attributes[NAMES.ATTRIBUTE_CONSTANT];
+		const prefix = node.attributes[NAMES.ATTRIBUTE_PREFIX];
+		const postfix = node.attributes[NAMES.ATTRIBUTE_POSTFIX];
+		const rightSide = (value ? `"${value?.value}"` : undefined)
+			|| (expression ? `"${expression?.value}"` : undefined)
+			|| constant?.value||"";
+		return `${prefix?.value||""}${variable?.value} ${operator?.value} ${rightSide}${postfix?.value||""}`;
 	}
 }
