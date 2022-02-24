@@ -1697,5 +1697,5 @@ export function isViewArgument(nodeContext: IXmlNodeContext): boolean {
 
 export function isOutputDeclaration(nodeContext: IXmlNodeContext): boolean {
 	return (["rule", "infoset", "function"].includes(nodeContext.getParent()?.tag || "NONE"))
-		|| (nodeContext.getParent()?.tag == "action" && nodeContext.hasParentTag("actions"));
+		|| (nodeContext.getParent()?.tag == "action" && nodeContext.hasAncestorTag("actions"));
 }

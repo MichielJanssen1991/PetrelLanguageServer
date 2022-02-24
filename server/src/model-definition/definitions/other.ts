@@ -1,13 +1,26 @@
 import { NAMES } from '../constants';
-import { AttributeTypes, Definitions, IXmlNodeContext, ModelDetailLevel, ModelElementTypes } from '../symbolsAndReferences';
+import { AttributeTypes, Definitions, IXmlNodeContext, MatchDefinition, ModelDetailLevel, ModelElementTypes } from '../symbolsAndReferences';
 
 //Defines a list of possible refrerences and declarations for each opening tag
 export const OTHER_DEFINITION: Definitions =
 {
-	"action": [
+	"action": [{
+		matchCondition: {
+			matchFunction: (nodeContext: IXmlNodeContext) => isActionDefinition(nodeContext),
+		},
+		type: ModelElementTypes.Action,
+		attributes: [],
+		prefixNameSpace: true,
+		detailLevel: ModelDetailLevel.Declarations,
+		isSymbolDeclaration: true,
+		children: []
+	},
 	{
 		type: ModelElementTypes.ActionCall,
 		detailLevel: ModelDetailLevel.References,
+		matchCondition: {
+			matchFunction: (nodeContext: IXmlNodeContext) => !isActionDefinition(nodeContext) && !isModelCheckRuleAction(nodeContext),
+		},
 		attributes: [{
 			type: {
 				type: AttributeTypes.Reference,
@@ -60,31 +73,11 @@ export const OTHER_DEFINITION: Definitions =
 };
 
 export function isActionDefinition(nodeContext: IXmlNodeContext): boolean {
-	return nodeContext.hasParentTag("actions");
-}
-
-export function isFilterDeclaration(nodeContext: IXmlNodeContext): boolean {
-	return nodeContext.hasParentTag("filters") || nodeContext.hasParentTag("virtual-filter");
-}
-
-export function isProfileType(nodeContext: IXmlNodeContext): boolean {
-	return nodeContext.hasParentTag("profile") || nodeContext.hasParentTag("include-block") || nodeContext.hasParentTag("include-block2");
-}
-
-export function isProfileRule(nodeContext: IXmlNodeContext): boolean {
-	return nodeContext.hasParentTag("profile") || nodeContext.hasParentTag("include-block") || nodeContext.hasParentTag("include-block2");
-}
-
-export function isProfileView(nodeContext: IXmlNodeContext): boolean {
-	return nodeContext.hasParentTag("profile") || nodeContext.hasParentTag("include-block") || nodeContext.hasParentTag("include-block2");
+	return nodeContext.hasAncestorTag("actions");
 }
 
 export function isModelCheckRuleAction(nodeContext: IXmlNodeContext): boolean {
-	return nodeContext.hasParentTag("xml-rules");
-}
-
-export function isViewDeclaration(nodeContext: IXmlNodeContext): boolean {
-	return !(nodeContext.getParent()?.tag == "action" || nodeContext.getParent()?.tag == "view");
+	return nodeContext.hasAncestorTag("xml-rules");
 }
 
 export function isViewControl(nodeContext: IXmlNodeContext, controlType: string): boolean {
@@ -93,6 +86,14 @@ export function isViewControl(nodeContext: IXmlNodeContext, controlType: string)
 
 export function isIncludeBlockOfType(nodeContext: IXmlNodeContext, metaType: string): boolean {
 	return (nodeContext.getCurrentXmlNode().attributes["meta-name"]?.toLowerCase() == metaType?.toLowerCase() || nodeContext.getCurrentXmlNode().attributes["meta-index"]?.toLowerCase() == metaType?.toLowerCase());
+}
+
+export function combineMatchConditions(condition1: MatchDefinition | undefined, condition2: MatchDefinition | undefined): MatchDefinition {
+	const ancestors = [...(condition1?.ancestors || []), ...(condition2?.ancestors || [])];
+	const matchFunction = (nodeContext: IXmlNodeContext) =>
+		(condition1?.matchFunction ? condition1.matchFunction(nodeContext) : true)
+		&& (condition2?.matchFunction ? condition2.matchFunction(nodeContext) : true);
+	return { ancestors, matchFunction };
 }
 
 //Objects which can be referenced without requiring the context

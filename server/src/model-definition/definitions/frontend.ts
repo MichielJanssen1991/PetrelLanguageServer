@@ -1,5 +1,5 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption, Definition, ModelElementSubTypes, AncestorTypes } from '../symbolsAndReferences';
-import { isIncludeBlockOfType, isViewControl } from './other';
+import { combineMatchConditions, isIncludeBlockOfType, isViewControl } from './other';
 import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_partial, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, is_declaration_attribute, is_public_attribute, override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element_partial, target_namespace_attribute, view_argument_element, view_group_attributes, events_children, tree_children } from './shared';
 
 const button_attributes: ElementAttribute[] =
@@ -709,16 +709,16 @@ const view_element_partial: Partial<Definition> = {
 
 const subview_element_partial: Partial<Definition> = {
 	type: ModelElementTypes.SubView,
-	matchCondition: {
-		ancestors: [
-			{ type: ModelElementTypes.SubView },
-			{ type: ModelElementTypes.View },
-			{ type: ModelElementTypes.ActionCall },
-			{ type: ModelElementTypes.MainView },
-			{ type: ModelElementTypes.Node },
-			{ type: ModelElementTypes.Group, subtypes: [ModelElementSubTypes.Group_View] }
-		]
-	},
+	// matchCondition: {
+	// 	ancestors: [
+	// 		{ type: ModelElementTypes.SubView },
+	// 		{ type: ModelElementTypes.View },
+	// 		{ type: ModelElementTypes.ActionCall },
+	// 		{ type: ModelElementTypes.MainView },
+	// 		{ type: ModelElementTypes.Node },
+	// 		{ type: ModelElementTypes.Group, subtypes: [ModelElementSubTypes.Group_View] }
+	// 	]
+	// },
 };
 
 const objectview_element: Definition = {
@@ -2102,12 +2102,249 @@ const decorator_context_entity_element: Definition = {
 
 export const FRONTEND_DEFINITION: Definitions = {
 	"view": [
+		{ // ObjectView as definition
+			...view_element_partial,
+			...objectview_element,
+			matchCondition: combineMatchConditions(view_element_partial.matchCondition, objectview_element.matchCondition),
+			description: "ObjectView as a definition",
+			attributes: [
+				...objectview_element.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // ObjectView as subview
+			...subview_element_partial,
+			...objectview_element,
+			matchCondition: combineMatchConditions(subview_element_partial.matchCondition, objectview_element.matchCondition),
+			description: "ObjectView as a child",
+			attributes: [
+				...objectview_element.attributes,
+				...default_subview_attributes
+			]
+		},
+		{ // ListView as definition
+			...view_element_partial,
+			...listview_element,
+			matchCondition: combineMatchConditions(view_element_partial.matchCondition, listview_element.matchCondition),
+			description: "ListView as a definition",
+			attributes: [
+				...listview_element.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // ListView as subview
+			...subview_element_partial,
+			...listview_element,
+			matchCondition: combineMatchConditions(subview_element_partial.matchCondition, listview_element.matchCondition),
+			description: "ListView as a child",
+			attributes: [
+				...listview_element.attributes,
+				...default_subview_attributes,
+			]
+		},
+		{ // TreeView as definition
+			...view_element_partial,
+			...treeview_element,
+			matchCondition: combineMatchConditions(view_element_partial.matchCondition, treeview_element.matchCondition),
+			description: "TreeView as a definition",
+			attributes: [
+				...treeview_element.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // TreeView as subview
+			...subview_element_partial,
+			...treeview_element,
+			matchCondition: combineMatchConditions(subview_element_partial.matchCondition, treeview_element.matchCondition),
+			description: "TreeView as a child",
+			attributes: [
+				...treeview_element.attributes,
+				...default_subview_attributes,
+			]
+		},
+		{ // DataTree as definition
+			...view_element_partial,
+			...datatreeview_element,
+			matchCondition: combineMatchConditions(view_element_partial.matchCondition, datatreeview_element.matchCondition),
+			description: "DataTree as a definition",
+			attributes: [
+				...datatreeview_element.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // DataTree as subview
+			...subview_element_partial,
+			...datatreeview_element,
+			matchCondition: combineMatchConditions(subview_element_partial.matchCondition, datatreeview_element.matchCondition),
+			description: "DataTree as a child",
+			attributes: [
+				...datatreeview_element.attributes,
+				...default_subview_attributes,
+			]
+		},
+		{ // HTMLFile as definition
+			...view_element_partial,
+			...htmlview_element,
+			matchCondition: combineMatchConditions(view_element_partial.matchCondition, htmlview_element.matchCondition),
+			description: "HTMLFile as a definition",
+			attributes: [
+				...htmlview_element.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // HTMLFile as subview
+			...subview_element_partial,
+			...htmlview_element,
+			matchCondition: combineMatchConditions(subview_element_partial.matchCondition, htmlview_element.matchCondition),
+			description: "HTMLFile as a child",
+			attributes: [
+				...htmlview_element.attributes,
+				...default_subview_attributes,
+			]
+		},
+		{ // Organizer as definition
+			...view_element_partial,
+			...organizerview_element,
+			matchCondition: combineMatchConditions(view_element_partial.matchCondition, organizerview_element.matchCondition),
+			description: "Organizer as a definition",
+			attributes: [
+				...organizerview_element.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // Organizer as subview
+			...subview_element_partial,
+			...organizerview_element,
+			matchCondition: combineMatchConditions(subview_element_partial.matchCondition, organizerview_element.matchCondition),
+			description: "Organizer as a child",
+			attributes: [
+				...organizerview_element.attributes,
+				...default_subview_attributes,
+			]
+		},
+		{ // MediaPlayer as definition
+			...view_element_partial,
+			...mediaplayerview_element,
+			matchCondition: combineMatchConditions(view_element_partial.matchCondition, mediaplayerview_element.matchCondition),
+			description: "MediaPlayer as a definition",
+			attributes: [
+				...mediaplayerview_element.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // MediaPlayer as subview
+			...subview_element_partial,
+			...mediaplayerview_element,
+			matchCondition: combineMatchConditions(subview_element_partial.matchCondition, mediaplayerview_element.matchCondition),
+			description: "MediaPlayer as a child",
+			attributes: [
+				...mediaplayerview_element.attributes,
+				...default_subview_attributes,
+			]
+		},
+		{ // AnnotationTool as definition
+			...view_element_partial,
+			...annotationtoolview_element,
+			matchCondition: combineMatchConditions(view_element_partial.matchCondition, annotationtoolview_element.matchCondition),
+			description: "AnnotationTool as a definition",
+			attributes: [
+				...annotationtoolview_element.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // AnnotationTool as subview
+			...subview_element_partial,
+			...annotationtoolview_element,
+			matchCondition: combineMatchConditions(subview_element_partial.matchCondition, annotationtoolview_element.matchCondition),
+			description: "AnnotationTool as a child",
+			attributes: [
+				...annotationtoolview_element.attributes,
+				...default_subview_attributes,
+			]
+		},
+		{ // Tabber as definition
+			...view_element_partial,
+			...tabberview_element,
+			matchCondition: combineMatchConditions(view_element_partial.matchCondition, tabberview_element.matchCondition),
+			description: "Tabber as a definition",
+			attributes: [
+				...tabberview_element.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // Tabber as subview
+			...subview_element_partial,
+			...tabberview_element,
+			matchCondition: combineMatchConditions(subview_element_partial.matchCondition, tabberview_element.matchCondition),
+			description: "Tabber as a child",
+			attributes: [
+				...tabberview_element.attributes,
+				...default_subview_attributes,
+			]
+		},
+		{ // ViewContainer as definition
+			...view_element_partial,
+			...containerview_element,
+			matchCondition: combineMatchConditions(view_element_partial.matchCondition, containerview_element.matchCondition),
+			description: "ViewContainer as a definition",
+			attributes: [
+				...containerview_element.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // ViewContainer as subview
+			...subview_element_partial,
+			...containerview_element,
+			matchCondition: combineMatchConditions(subview_element_partial.matchCondition, containerview_element.matchCondition),
+			description: "ViewContainer as a child",
+			attributes: [
+				...containerview_element.attributes,
+				...default_subview_attributes,
+			]
+		},
+		{ // Iframe as definition
+			...view_element_partial,
+			...iframeview_element,
+			matchCondition: combineMatchConditions(view_element_partial.matchCondition, iframeview_element.matchCondition),
+			description: "Iframe as a definition",
+			attributes: [
+				...iframeview_element.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // Iframe as subview
+			...subview_element_partial,
+			...iframeview_element,
+			matchCondition: combineMatchConditions(subview_element_partial.matchCondition, iframeview_element.matchCondition),
+			description: "Iframe as a child",
+			attributes: [
+				...iframeview_element.attributes,
+				...default_subview_attributes,
+			]
+		},
+		{ // Empty as definition (which would be a bad practice...)
+			...view_element_partial,
+			...emptyview_element,
+			matchCondition: combineMatchConditions(view_element_partial.matchCondition, emptyview_element.matchCondition),
+			description: "Empty as a definition",
+			attributes: [
+				...emptyview_element.attributes,
+				...default_definition_view_attributes,
+			]
+		},
+		{ // Empty as subview
+			...subview_element_partial,
+			...iframeview_element,
+			matchCondition: combineMatchConditions(subview_element_partial.matchCondition, iframeview_element.matchCondition),
+			description: "Empty as a child",
+			attributes: [
+				...emptyview_element.attributes,
+				...default_subview_attributes,
+			]
+		},
 		{ // General (no control type)
 			...view_element_partial,
 			description: "Add new view",
-			matchCondition: {
-				matchFunction: (nodeContext) => isViewControl(nodeContext, ""),
-			},
 			attributes: [
 				...default_view_attributes,
 				...default_definition_view_attributes,
@@ -2119,9 +2356,6 @@ export const FRONTEND_DEFINITION: Definitions = {
 		{ // General (no control type) subview
 			...subview_element_partial,
 			description: "Add new view",
-			matchCondition: {
-				matchFunction: (nodeContext) => isViewControl(nodeContext, ""),
-			},
 			attributes: [
 				...default_view_attributes,
 				...default_subview_attributes,
@@ -2130,223 +2364,6 @@ export const FRONTEND_DEFINITION: Definitions = {
 				...default_view_children
 			]
 		},
-		{ // ObjectView as definition
-			...view_element_partial,
-			...objectview_element,
-			description: "ObjectView as a definition",
-
-			attributes: [
-				...objectview_element.attributes,
-				...default_definition_view_attributes,
-			]
-		},
-		{ // ObjectView as subview
-			...subview_element_partial,
-			...objectview_element,
-			description: "ObjectView as a child",
-			attributes: [
-				...objectview_element.attributes,
-				...default_subview_attributes
-			]
-		},
-		{ // ListView as definition
-			...view_element_partial,
-			...listview_element,
-			description: "ListView as a definition",
-			attributes: [
-				...listview_element.attributes,
-				...default_definition_view_attributes,
-			]
-		},
-		{ // ListView as subview
-			...subview_element_partial,
-			...listview_element,
-			description: "ListView as a child",
-			attributes: [
-				...listview_element.attributes,
-				...default_subview_attributes,
-			]
-		},
-		{ // TreeView as definition
-			...view_element_partial,
-			...treeview_element,
-			description: "TreeView as a definition",
-			attributes: [
-				...treeview_element.attributes,
-				...default_definition_view_attributes,
-			]
-		},
-		{ // TreeView as subview
-			...subview_element_partial,
-			...treeview_element,
-			description: "TreeView as a child",
-			attributes: [
-				...treeview_element.attributes,
-				...default_subview_attributes,
-			]
-		},
-		{ // DataTree as definition
-			...view_element_partial,
-			...datatreeview_element,
-			description: "DataTree as a definition",
-			attributes: [
-				...datatreeview_element.attributes,
-				...default_definition_view_attributes,
-			]
-		},
-		{ // DataTree as subview
-			...subview_element_partial,
-			...datatreeview_element,
-			description: "DataTree as a child",
-			attributes: [
-				...datatreeview_element.attributes,
-				...default_subview_attributes,
-			]
-		},
-		{ // HTMLFile as definition
-			...view_element_partial,
-			...htmlview_element,
-			description: "HTMLFile as a definition",
-			attributes: [
-				...htmlview_element.attributes,
-				...default_definition_view_attributes,
-			]
-		},
-		{ // HTMLFile as subview
-			...subview_element_partial,
-			...htmlview_element,
-			description: "HTMLFile as a child",
-			attributes: [
-				...htmlview_element.attributes,
-				...default_subview_attributes,
-			]
-		},
-		{ // Organizer as definition
-			...view_element_partial,
-			...organizerview_element,
-			description: "Organizer as a definition",
-			attributes: [
-				...organizerview_element.attributes,
-				...default_definition_view_attributes,
-			]
-		},
-		{ // Organizer as subview
-			...subview_element_partial,
-			...organizerview_element,
-			description: "Organizer as a child",
-			attributes: [
-				...organizerview_element.attributes,
-				...default_subview_attributes,
-			]
-		},
-		{ // MediaPlayer as definition
-			...view_element_partial,
-			...mediaplayerview_element,
-			description: "MediaPlayer as a definition",
-			attributes: [
-				...mediaplayerview_element.attributes,
-				...default_definition_view_attributes,
-			]
-		},
-		{ // MediaPlayer as subview
-			...subview_element_partial,
-			...mediaplayerview_element,
-			description: "MediaPlayer as a child",
-			attributes: [
-				...mediaplayerview_element.attributes,
-				...default_subview_attributes,
-			]
-		},
-		{ // AnnotationTool as definition
-			...view_element_partial,
-			...annotationtoolview_element,
-			description: "AnnotationTool as a definition",
-			attributes: [
-				...annotationtoolview_element.attributes,
-				...default_definition_view_attributes,
-			]
-		},
-		{ // AnnotationTool as subview
-			...subview_element_partial,
-			...annotationtoolview_element,
-			description: "AnnotationTool as a child",
-			attributes: [
-				...annotationtoolview_element.attributes,
-				...default_subview_attributes,
-			]
-		},
-		{ // Tabber as definition
-			...view_element_partial,
-			...tabberview_element,
-			description: "Tabber as a definition",
-			attributes: [
-				...tabberview_element.attributes,
-				...default_definition_view_attributes,
-			]
-		},
-		{ // Tabber as subview
-			...subview_element_partial,
-			...tabberview_element,
-			description: "Tabber as a child",
-			attributes: [
-				...tabberview_element.attributes,
-				...default_subview_attributes,
-			]
-		},
-		{ // ViewContainer as definition
-			...view_element_partial,
-			...containerview_element,
-			description: "ViewContainer as a definition",
-			attributes: [
-				...containerview_element.attributes,
-				...default_definition_view_attributes,
-			]
-		},
-		{ // ViewContainer as subview
-			...subview_element_partial,
-			...containerview_element,
-			description: "ViewContainer as a child",
-			attributes: [
-				...containerview_element.attributes,
-				...default_subview_attributes,
-			]
-		},
-		{ // Iframe as definition
-			...view_element_partial,
-			...iframeview_element,
-			description: "Iframe as a definition",
-			attributes: [
-				...iframeview_element.attributes,
-				...default_definition_view_attributes,
-			]
-		},
-		{ // Iframe as subview
-			...subview_element_partial,
-			...iframeview_element,
-			description: "Iframe as a child",
-			attributes: [
-				...iframeview_element.attributes,
-				...default_subview_attributes,
-			]
-		},
-		{ // Empty as definition (which would be a bad practice...)
-			...view_element_partial,
-			...emptyview_element,
-			description: "Empty as a definition",
-			attributes: [
-				...emptyview_element.attributes,
-				...default_definition_view_attributes,
-			]
-		},
-		{ // Empty as subview
-			...subview_element_partial,
-			...iframeview_element,
-			description: "Empty as a child",
-			attributes: [
-				...emptyview_element.attributes,
-				...default_subview_attributes,
-			]
-		}
 	],
 	"root": [{
 		description: "Project root of the frontend model.",
@@ -2420,12 +2437,6 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"include-blocks": [include_blocks_element],
 	"include-block": [
-		{ // General
-			...include_block_frontend_declaration_definition,
-			matchCondition: {
-				matchFunction: (x) => isIncludeBlockOfType(x, ""),
-			},
-		},
 		{ // module
 			...include_block_frontend_declaration_definition,
 			subtype: ModelElementSubTypes.IncludeBlock_Module,
@@ -2571,9 +2582,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			children: tree_children
 		},
-
-
-
+		{ // General
+			...include_block_frontend_declaration_definition,
+		},
 	],
 	"include": [include_element],
 	"main-view": [{

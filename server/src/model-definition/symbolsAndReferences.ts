@@ -206,7 +206,7 @@ export interface IXmlNodeContext {
 	getCurrentXmlNode: () => XmlNode
 	getParent: () => TreeNode | undefined,
 	getAncestor: (level: number) => TreeNode | undefined,
-	hasParentTag: (name: string) => boolean
+	hasAncestorTag: (name: string) => boolean
 }
 
 export enum IsSymbolOrReference {

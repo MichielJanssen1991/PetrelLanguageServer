@@ -47,7 +47,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		return this.parser.tag;
 	}
 
-	public hasParentTag(name: string) {
+	public hasAncestorTag(name: string) {
 		return this.parsedObjectStack.some(item => item.parsedObject.tag == name);
 	}
 
