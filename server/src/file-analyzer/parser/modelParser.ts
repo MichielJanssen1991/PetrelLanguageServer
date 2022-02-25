@@ -179,8 +179,10 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 			const { parsedObject, definition } = item;
 			const parentIndex = this.parsedObjectStack.length - 1;
 			const parent = parentIndex >= 0 ? this.parsedObjectStack[parentIndex] : undefined;
-			//If no definition is found only add the parsed tag when detail level is All 
-			if (this.detailLevel == ModelDetailLevel.All || definition) {
+			
+			//If no definition is found or detail level is specified only add the parsed tag when detail level is All
+			const defDetailLevel = definition?.detailLevel!=undefined ? definition.detailLevel : ModelDetailLevel.All;
+			if (this.detailLevel >= defDetailLevel) {
 				parsedObject.contextQualifiers = context;
 				parsedObject.fullRange.end = this.getTagRange().end;
 				if (parent) {
@@ -203,7 +205,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	private parseNode(node: XmlNode) {
 		let object;
 		//Parse object for definition
-		const definition = this.getModelDefinitionForCurrentNodeAndDetailLevel();
+		const definition = this.getModelDefinitionForCurrentNode();
 		if (definition) {
 			object = this.parseNodeForDefinition(node, definition);
 		} else {
@@ -321,14 +323,8 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		return name;
 	}
 
-	private getModelDefinitionForCurrentNodeAndDetailLevel(): Definition | undefined {
+	private getModelDefinitionForCurrentNode(): Definition | undefined {
 		const definition = this.modelDefinitionManager.getModelDefinitionForCurrentNode(this.context, this);
-		if (definition) {
-			const defDetailLevel = definition.detailLevel != undefined ? definition.detailLevel : ModelDetailLevel.All;
-			if (this.detailLevel >= defDetailLevel) {
-				return definition;
-			}
-		}
-		return undefined;
+		return definition;
 	}
 }

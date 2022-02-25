@@ -38,7 +38,7 @@ export const CFORM_DEFINITION: Definitions = {
 	}],
 	"View": [{
 		attributes: [],
-		type: ModelElementTypes.Views,//By using Views as type it allows view subelements
+		type: ModelElementTypes.Views, //By using Views as type it matches for view subelements
 		children: [
 			{ element: "view" },
 		]
