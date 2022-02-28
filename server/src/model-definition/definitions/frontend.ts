@@ -2714,6 +2714,11 @@ export const FRONTEND_DEFINITION: Definitions = {
 			{
 				name: "view",
 				description: "The view to show when the node is clicked.",
+				detailLevel: ModelDetailLevel.References,
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.View
+				},
 				visibilityConditions: [
 					{
 						attribute: "childnode-view",	// TODO: check on childnodes instead of attribute
