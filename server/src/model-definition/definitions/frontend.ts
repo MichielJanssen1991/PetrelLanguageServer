@@ -3006,6 +3006,11 @@ export const FRONTEND_DEFINITION: Definitions = {
 				element: "main-view"
 			},
 			{
+				element: "include-block",
+				obsolete: true,
+				obsoleteMessage: "place element within include-blocks"
+			},
+			{
 				element: "include-blocks"
 			},
 			...default_children

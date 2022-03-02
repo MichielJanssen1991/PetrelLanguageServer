@@ -103,10 +103,21 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		if (instruction.name == "cp-edit") {
 			switch (instruction.body.split("/")[1]) {
 				case "rules": this.setModelFileContext(ModelFileContext.Rules); break;
+				case "rule-tests": this.setModelFileContext(ModelFileContext.RuleTests); break;
 				case "backend": this.setModelFileContext(ModelFileContext.Backend); break;
 				case "frontend": this.setModelFileContext(ModelFileContext.Frontend); break;
 				case "infosets": this.setModelFileContext(ModelFileContext.Infosets); break;
+				case "infoset-tests": this.setModelFileContext(ModelFileContext.InfosetTests); break;
+				case "security": this.setModelFileContext(ModelFileContext.Security); break;
+				case "security-tests": this.setModelFileContext(ModelFileContext.SecurityTests); break;
 				case "actions.backend": this.setModelFileContext(ModelFileContext.BackendActions); break;
+				case "actions": this.setModelFileContext(ModelFileContext.FrontendActions); break;
+				case "users": this.setModelFileContext(ModelFileContext.Users); break;
+				case "userprofiles": this.setModelFileContext(ModelFileContext.UserProfiles); break;
+				case "themes": this.setModelFileContext(ModelFileContext.Themes); break;
+				case "layouts": this.setModelFileContext(ModelFileContext.Layouts); break;
+				case "components": this.setModelFileContext(ModelFileContext.Components); break;
+				case "constants": this.setModelFileContext(ModelFileContext.Constants); break;
 				default: break;
 			}
 		}

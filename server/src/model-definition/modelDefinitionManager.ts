@@ -1,5 +1,6 @@
 import { BACKEND_DEFINITION } from './definitions/backend';
 import { BACKEND_ACTIONS_DEFINITION } from './definitions/backend-actions';
+import { COMPONENTS_DEFINITION } from './definitions/components';
 import { FRONTEND_DEFINITION } from './definitions/frontend';
 import { INFOSET_DEFINITION } from './definitions/infosets';
 import { OTHER_DEFINITION } from './definitions/other';
@@ -18,9 +19,20 @@ import { IXmlNodeContext, Definitions, ModelElementTypes, Definition, TreeNode, 
 export enum ModelFileContext {
 	Backend,
 	BackendActions,
+	FrontendActions,
 	Frontend,
 	Rules,
+	RuleTests,
 	Infosets,
+	InfosetTests,
+	Security,
+	SecurityTests,
+	Users,
+	UserProfiles,
+	Themes,
+	Layouts,
+	Components,
+	Constants,
 	Unknown,
 	Premium_CForm,
 	Premium_ControllerEvent,
@@ -39,7 +51,10 @@ export class ModelDefinitionManager {
 		"0": {}, "1": {}, "2": {}, "3": {},
 		"4": {}, "5": {}, "6": {}, "7": {},
 		"8": {}, "9": {}, "10": {}, "11": {},
-		"12": {}, "13": {}, "14": {}, "15": {}
+		"12": {}, "13": {}, "14": {}, "15": {},
+		"16": {}, "17": {}, "18": {}, "19": {},
+		"20": {}, "21": {}, "22": {}, "23": {},
+		"24": {}, "25": {}, "26": {}
 	}
 
 	constructor() {
@@ -49,6 +64,16 @@ export class ModelDefinitionManager {
 		this.contextToModelDefinition[ModelFileContext.Frontend] = FRONTEND_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.Unknown] = OTHER_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.BackendActions] = BACKEND_ACTIONS_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.FrontendActions] = {};
+		this.contextToModelDefinition[ModelFileContext.RuleTests] = {};
+		this.contextToModelDefinition[ModelFileContext.InfosetTests] = {};
+		this.contextToModelDefinition[ModelFileContext.SecurityTests] = {};
+		this.contextToModelDefinition[ModelFileContext.Constants] = {};
+		this.contextToModelDefinition[ModelFileContext.Components] = COMPONENTS_DEFINITION;
+		this.contextToModelDefinition[ModelFileContext.Themes] = {};		// deprecated?
+		this.contextToModelDefinition[ModelFileContext.Layouts] = {};		// deprecated?
+		this.contextToModelDefinition[ModelFileContext.Users] = {};
+		this.contextToModelDefinition[ModelFileContext.UserProfiles] = {};
 		//Premium files
 		this.contextToModelDefinition[ModelFileContext.Premium_CForm] = CFORM_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.Premium_ControllerEvent] = CONTROLLER_EVENT_DEFINITION;
