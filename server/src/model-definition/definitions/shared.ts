@@ -102,6 +102,12 @@ export const description_attribute: ElementAttribute =
 	description: "Description of contents and purpose."
 };
 
+export const description_autoadd_attribute: ElementAttribute =
+{
+	...description_attribute,
+	autoadd: true
+};
+
 export const ignore_modelcheck_attribute: ElementAttribute =
 {
 	name: "ignore-modelcheck",
@@ -295,10 +301,7 @@ export const include_blocks_element: Definition =
 			name: "name",
 			description: "Unique identifier."
 		},
-		{
-			name: "description",
-			description: "Description of contents and purpose."
-		},
+		description_attribute,
 		comment_attribute
 	],
 	children: [

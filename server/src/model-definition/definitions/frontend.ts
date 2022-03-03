@@ -4159,9 +4159,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		description: "The code beneath this condition will be executed conditionally, i.e., when the condition succeeds.</summary>To restrict further (logical 'and'), nest conditions (by adding an extra condition under this condition).",
 		type: ModelElementTypes.Condition,
 		attributes: [
-			{
-				name: "description"
-			},
+			description_attribute,
 			{
 				name: "mode",
 				description: "The mode of the view as a condition. The values may be split by bars, e.g. \"new|edit\". When used in a function, the mode of the target view of the function (which is default the calling view) will be compared.",

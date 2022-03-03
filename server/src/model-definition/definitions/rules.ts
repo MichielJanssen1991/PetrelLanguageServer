@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ValidationLevels, ModelDetailLevel, Definition, AttributeOption, ModelElementSubTypes, ChildDefinition } from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
-import { comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_element, backend_action_call_element, obsolete_attribute, obsolete_message_attribute, is_declaration_attribute, override_rights_attribute, input_element, include_block_declaration_definition, default_children, action_call_children } from './shared';
+import { comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_element, backend_action_call_element, obsolete_attribute, obsolete_message_attribute, is_declaration_attribute, override_rights_attribute, input_element, include_block_declaration_definition, default_children, action_call_children, description_autoadd_attribute } from './shared';
 
 const switch_children: ChildDefinition[] = [
 	{
@@ -50,16 +50,16 @@ const then_else_children: ChildDefinition[] = [
 	{
 		element: "switch"
 	},
+	{
+		element: "output",
+		type: ModelElementTypes.Output
+	},
 	...default_children
 ];
 
 const rule_children: ChildDefinition[] = [
 	{
 		element: "input"
-	},
-	{
-		element: "output",
-		type: ModelElementTypes.Output
 	},
 	...then_else_children
 ];
@@ -147,12 +147,7 @@ export const RULE_DEFINITION: Definitions = {
 	"rules": [{
 		type: ModelElementTypes.Rules,
 		description: "",
-		attributes: [
-			{
-				name: "comment",
-				description: "Developer's comment on this element"
-			}
-		],
+		attributes: [comment_attribute],
 		children: [
 			{
 				element: "module"
@@ -495,15 +490,8 @@ export const RULE_DEFINITION: Definitions = {
 		type: ModelElementTypes.If,
 		description: "Starts a condition.",
 		attributes: [
-			{
-				name: "description",
-				description: "Developers' annotation.",
-				autoadd: true
-			},
-			{
-				name: "comment",
-				description: "Developer's comment on this element."
-			}
+			description_autoadd_attribute,
+			comment_attribute
 		],
 		children: if_elseif_children
 	}],
@@ -511,15 +499,8 @@ export const RULE_DEFINITION: Definitions = {
 		type: ModelElementTypes.ElseIf,
 		description: "Indicates a new if statement in case the conditions of the current if statement are not fulfilled. Else-if elements have to be placed as siblings next to if elements or else-if elements, which themselves have no else element defined.",
 		attributes: [
-			{
-				name: "description",
-				description: "Developers' annotation.",
-				autoadd: true
-			},
-			{
-				name: "comment",
-				description: "Developer's comment on this element."
-			}
+			description_autoadd_attribute,
+			comment_attribute
 		],
 		children: if_elseif_children
 	}],
@@ -742,22 +723,14 @@ export const RULE_DEFINITION: Definitions = {
 					]
 				}
 			},
-			{
-				name: "comment",
-				description: "Developer's comment on this element."
-			}
+			comment_attribute
 		],
 		children: []
 	}],
 	"then": [{
 		type: ModelElementTypes.Unknown,
 		description: "Indicates what should happen if the conditions are fulfilled.",
-		attributes: [
-			{
-				name: "comment",
-				description: "Developer's comment on this element."
-			}
-		],
+		attributes: [comment_attribute],
 		children: then_else_children
 	}],
 	"else": [{
@@ -822,14 +795,8 @@ export const RULE_DEFINITION: Definitions = {
 				name: "expression",
 				description: "Expression value."
 			},
-			{
-				name: "description",
-				description: "Developers' annotation."
-			},
-			{
-				name: "comment",
-				description: "Developer's comment on this element."
-			}
+			description_attribute,
+			comment_attribute
 		],
 		children: switch_children
 	}],
