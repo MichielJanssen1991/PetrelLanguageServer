@@ -297,8 +297,16 @@ export const RULE_DEFINITION: Definitions = {
 				type: ModelElementTypes.Rule
 			},
 			{
+				type: ModelElementTypes.Unknown
+			},
+			{
 				type: ModelElementTypes.IncludeBlock,
-				subtypes: [ModelElementSubTypes.IncludeBlock_Rule]
+				subtypes: [
+					ModelElementSubTypes.IncludeBlock_Rule,
+					ModelElementSubTypes.IncludeBlock_Then,
+					ModelElementSubTypes.IncludeBlock_Else,
+					ModelElementSubTypes.IncludeBlock_ElseIf
+				]
 			}]
 		},
 		isSymbolDeclaration: true,
