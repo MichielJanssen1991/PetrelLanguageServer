@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ValidationLevels, ModelDetailLevel, Definition, AttributeOption, ModelElementSubTypes, ChildDefinition } from '../symbolsAndReferences';
 import { isIncludeBlockOfType } from './other';
-import { comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, target_namespace_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_element, backend_action_call_element, obsolete_attribute, obsolete_message_attribute, is_declaration_attribute, override_rights_attribute, input_element, include_block_declaration_definition, default_children, action_call_children, description_autoadd_attribute, module_element } from './shared';
+import { comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_element, backend_action_call_element, obsolete_attribute, obsolete_message_attribute, is_declaration_attribute, override_rights_attribute, input_element, include_block_declaration_definition, default_children, action_call_children, description_autoadd_attribute, module_element } from './shared';
 
 const switch_children: ChildDefinition[] = [
 	{
