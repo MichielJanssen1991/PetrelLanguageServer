@@ -84,6 +84,10 @@ export function isViewControl(nodeContext: IXmlNodeContext, controlType: string)
 	return (nodeContext.getCurrentXmlNode().attributes.control?.toLowerCase() || "") == controlType.toLowerCase();
 }
 
+export function isTypeOfAction(nodeContext: IXmlNodeContext, controlType: string): boolean {
+	return (nodeContext.getCurrentXmlNode().attributes.name?.toLowerCase() || "") == controlType.toLowerCase();
+}
+
 export function isIncludeBlockOfType(nodeContext: IXmlNodeContext, metaType: string): boolean {
 	return (nodeContext.getCurrentXmlNode().attributes["meta-name"]?.toLowerCase() == metaType?.toLowerCase() || nodeContext.getCurrentXmlNode().attributes["meta-index"]?.toLowerCase() == metaType?.toLowerCase());
 }
@@ -100,6 +104,7 @@ export function combineMatchConditions(condition1: MatchDefinition | undefined, 
 export const standaloneObjectTypes = new Set([
 	ModelElementTypes.View,
 	ModelElementTypes.Infoset,
+	ModelElementTypes.InfosetVariable,
 	ModelElementTypes.Type,
 	ModelElementTypes.Function,
 	ModelElementTypes.Rule,

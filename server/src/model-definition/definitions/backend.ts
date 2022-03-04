@@ -1412,7 +1412,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		],
 		children: []
 	}],
-	"output": [action_call_output_element],
+	"output": [...action_call_output_element],
 	"filters": [{
 		description: "Defines search filters for this type.",
 		attributes: [comment_attribute],

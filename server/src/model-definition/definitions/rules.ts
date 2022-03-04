@@ -372,7 +372,7 @@ export const RULE_DEFINITION: Definitions = {
 		],
 		children: []
 	},
-		action_call_output_element
+		...action_call_output_element
 	],
 	"argument": [{
 		type: ModelElementTypes.Argument,

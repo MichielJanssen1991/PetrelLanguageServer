@@ -4059,7 +4059,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		children: action_children
 	}],
 	"output": [
-		action_call_output_element,
+		...action_call_output_element,
 		{
 			matchCondition: {
 				ancestors: [{ type: ModelElementTypes.Function }]

@@ -1,5 +1,6 @@
 import { NAMES } from '../constants';
 import { AttributeTypes, ElementAttribute, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType, ChildDefinition, ModelElementSubTypes } from '../symbolsAndReferences';
+import { isTypeOfAction } from './other';
 
 // export const guidelines
 // <name_element>_element e.g. module_element
@@ -1049,29 +1050,13 @@ export const action_argument_element: Definition = {
 	children: []
 };
 
-export const action_call_output_element: Definition =
-{
-	description: "Output of the action.",
-	matchCondition: {
-		ancestors: [{
-			type: ModelElementTypes.ActionCall
-		},
-		{
-			type: ModelElementTypes.IncludeBlock,
-			subtypes: [ModelElementSubTypes.IncludeBlock_Action]
-		}]
-	},
+const action_output_element: Definition = {
 	type: ModelElementTypes.ActionCallOutput,
 	detailLevel: ModelDetailLevel.SubReferences,
 	attributes: [
 		{
 			name: "local-name",
 			description: "Name for a local field or variable.",
-			autoadd: true
-		},
-		{
-			name: "remote-name",
-			description: "Name for a destination field or variable.",
 			autoadd: true
 		},
 		{
@@ -1113,6 +1098,59 @@ export const action_call_output_element: Definition =
 	],
 	children: []
 };
+
+export const action_call_output_element: Definition[] = [
+	{
+		...action_output_element,
+		description: "Output of the infoset action.",
+		matchCondition: {
+			matchFunction: (x) => isTypeOfAction(x, "Infoset"),
+			ancestors: [{
+				type: ModelElementTypes.ActionCall
+			},
+			{
+				type: ModelElementTypes.IncludeBlock,
+				subtypes: [ModelElementSubTypes.IncludeBlock_Action]
+			}]
+		},
+		attributes: [
+			...action_output_element.attributes,
+			{
+				name: "remote-name",
+				description: "Name for a destination field or variable.",
+				autoadd: true,
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.InfosetVariable,
+				}
+			}
+		],
+		children: []
+	},
+	{
+		...action_output_element,
+		description: "Output of the action.",
+		matchCondition: {
+			ancestors: [{
+				type: ModelElementTypes.ActionCall
+			},
+			{
+				type: ModelElementTypes.IncludeBlock,
+				subtypes: [ModelElementSubTypes.IncludeBlock_Action]
+			}]
+		},
+		attributes: [
+			...action_output_element.attributes,
+			{
+				name: "remote-name",
+				description: "Name for a destination field or variable.",
+				autoadd: true
+			},
+			
+		],
+		children: []
+	}
+];
 
 export const include_block_declaration_definition: Definition = {
 	type: ModelElementTypes.IncludeBlock,
