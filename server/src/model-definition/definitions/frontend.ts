@@ -1,6 +1,6 @@
 import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ElementAttribute, ChildDefinition, AttributeOption, Definition, ModelElementSubTypes, AncestorTypes } from '../symbolsAndReferences';
 import { combineMatchConditions, isIncludeBlockOfType, isViewControl } from './other';
-import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_partial, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, is_declaration_attribute, is_public_attribute, override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element_partial, target_namespace_attribute, view_argument_element, view_group_attributes, events_children, tree_children } from './shared';
+import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_partial, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, is_declaration_attribute, is_public_attribute, override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element_partial, view_argument_element, view_group_attributes, events_children, tree_children, module_element } from './shared';
 
 const button_attributes: ElementAttribute[] =
 	[
@@ -2619,23 +2619,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			...default_children
 		]
 	}],
-	"module": [{
-		type: ModelElementTypes.Module,
-		detailLevel: ModelDetailLevel.Declarations,
-		isGroupingElement: true,
-		description: "Used for grouping model entities and model namespacing.",
-		attributes: [
-			{
-				name: "name",
-				description: "The module name.",
-				autoadd: true
-			},
-			target_namespace_attribute,
-			description_attribute,
-			comment_attribute,
-		],
-		children: [] //For grouping element parents children are used
-	}],
+	"module": [module_element],
 	"model-condition": [model_condition_element],
 	"trees": [{
 		description: "Used to group navigation trees.",
