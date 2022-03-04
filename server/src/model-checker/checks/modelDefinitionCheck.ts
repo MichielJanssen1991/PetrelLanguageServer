@@ -18,7 +18,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 		if (!(node.type==ModelElementTypes.Document || node.tag == ModelElementTypes.Document.toLowerCase())){
 			if (tagDefinition){
 				if(tagDefinitionNonGrouping){
-					this.checkChildOccurrences(node, tagDefinitionNonGrouping);
+					this.checkChildOccurrences(node, tagDefinitionNonGrouping, tagDefinition);
 				}
 				this.checkAttributeOccurrences(node, tagDefinition);
 				this.checkAttributeValues(node, tagDefinition);
@@ -38,7 +38,7 @@ export class ModelDefinitionCheck extends ModelCheck {
 		return tagDefinition;
 	}
 
-	private checkChildOccurrences(element: TreeNode, definition: Definition): void {
+	private checkChildOccurrences(element: TreeNode, definition: Definition, definitionOriginal: Definition): void {
 		// check element on invalid child nodes
 		element.children.forEach(child => {
 			if (Array.isArray(definition.children) && !definition.children?.map(x=>x.element?.toLowerCase()).includes(child.tag.toLowerCase())){
@@ -55,12 +55,12 @@ export class ModelDefinitionCheck extends ModelCheck {
 					case "once":
 						if (childOccurrences > 1) {
 							this.addMessage(element.range, "MDC0003", `Invalid child node occurence '${x.element}' for element '${element.tag}'. Element '${x.element}' could only be applied once to parent '${element.tag}'`);
-						} else if (childOccurrences == 0 && x.required){
+						} else if (childOccurrences == 0 && x.required && definitionOriginal.isGroupingElement == false){
 							this.addMessage(element.range, "MDC0004", `Missing required '${x.element}' for element '${element.tag}'.`);
 						}
 						break;
 					case "at-least-once":
-						if (childOccurrences == 0){
+						if (childOccurrences == 0 && definitionOriginal.isGroupingElement == false){
 							this.addMessage(element.range, "MDC0005", `Invalid child node occurence '${x.element}' for element '${element.tag}'. Element '${x.element}' should be applied at least once to parent '${element.tag}'`);
 						}
 						break;
