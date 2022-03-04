@@ -52,6 +52,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 				}
 			case ModelElementTypes.Argument:
 				{
+					this.processLocalNameHardCodedValueAttribute(node, NAMES.ATTRIBUTE_LOCALNAME);
 					this.processLocalNameReferenceAttribute(node, NAMES.ATTRIBUTE_LOCALNAME);
 					this.processExpressionAttribute(node, NAMES.ATTRIBUTE_EXPRESSION);
 					break;
@@ -89,6 +90,14 @@ export class RuleDeclarationCheck extends ModelCheck {
 	private processLocalNameDefinitionAttribute(node: TreeNode, attributeName: string) {
 		const localName = node.attributes[attributeName];
 		if (localName) {
+			this.ruleLocalNames.push(localName);
+		}
+	}
+
+	private processLocalNameHardCodedValueAttribute(node: TreeNode, attributeName: string) {
+		const localName = node.attributes[attributeName];
+		const localValue = node.attributes["value"];
+		if (node.type == ModelElementTypes.Argument && localValue && localValue.value != "") {
 			this.ruleLocalNames.push(localName);
 		}
 	}

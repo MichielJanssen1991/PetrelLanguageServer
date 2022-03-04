@@ -2972,7 +2972,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		children: event_children
 	}],
 	"event": [
-		{
+		{	// attribute
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Attribute,
 			matchCondition: {
@@ -3020,7 +3020,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				}
 			]
 		},
-		{
+		{	// button
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Button,
 			matchCondition: {
@@ -3052,7 +3052,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				},
 			]
 		},
-		{
+		{	// toolbarbutton
 			...event_element,
 			subtype: ModelElementSubTypes.Event_ToolBarButton,
 			matchCondition: {
@@ -3084,7 +3084,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				}
 			]
 		},
-		{
+		{	// node
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Node,
 			matchCondition: {
@@ -3112,7 +3112,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				}
 			]
 		},
-		{
+		{	// group
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Group,
 			matchCondition: {
@@ -3144,7 +3144,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				}
 			]
 		},
-		{
+		{	// tab
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Tab,
 			matchCondition: {
@@ -3176,7 +3176,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				}
 			]
 		},
-		{
+		{	// action
 			...event_element,
 			subtype: ModelElementSubTypes.Event_Action,
 			matchCondition: {
@@ -3203,7 +3203,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				},
 			]
 		},
-		{
+		{	// menuitem
 			...event_element,
 			subtype: ModelElementSubTypes.Event_MenuItem,
 			matchCondition: {
@@ -3231,14 +3231,21 @@ export const FRONTEND_DEFINITION: Definitions = {
 				},
 			]
 		},
-		{
+		{	// view
 			...event_element,
 			subtype: ModelElementSubTypes.Event_View,
 			matchCondition: {
 				ancestors: [
 					{ type: ModelElementTypes.View, ancestorType: AncestorTypes.GrandParent },
 					{ type: ModelElementTypes.SubView, ancestorType: AncestorTypes.GrandParent },
-					{ type: ModelElementTypes.IncludeBlock, subtypes: [ModelElementSubTypes.IncludeBlock_View], ancestorType: AncestorTypes.GrandParent }
+					{ 
+						type: ModelElementTypes.IncludeBlock, 
+						subtypes: [
+							ModelElementSubTypes.IncludeBlock_View, 
+							ModelElementSubTypes.IncludeBlock_ObjectView, 
+							ModelElementSubTypes.IncludeBlock_ListView, 
+						], 
+						ancestorType: AncestorTypes.GrandParent }
 				]
 			},
 			attributes: [
@@ -3466,7 +3473,9 @@ export const FRONTEND_DEFINITION: Definitions = {
 					type: ModelElementTypes.IncludeBlock,
 					subtypes: [
 						ModelElementSubTypes.IncludeBlock_Group,
-						ModelElementSubTypes.IncludeBlock_View
+						ModelElementSubTypes.IncludeBlock_View,
+						ModelElementSubTypes.IncludeBlock_ObjectView,
+						ModelElementSubTypes.IncludeBlock_ListView
 					]
 				},
 				{

@@ -2,6 +2,7 @@ import { BACKEND_DEFINITION } from './definitions/backend';
 import { BACKEND_ACTIONS_DEFINITION } from './definitions/backend-actions';
 import { COMPONENTS_DEFINITION } from './definitions/components';
 import { FRONTEND_DEFINITION } from './definitions/frontend';
+import { FRONTEND_ACTIONS_DEFINITION } from './definitions/frontend-actions';
 import { INFOSET_DEFINITION } from './definitions/infosets';
 import { OTHER_DEFINITION } from './definitions/other';
 import { CFORM_DEFINITION } from './definitions/premium-runtime/cform';
@@ -64,7 +65,7 @@ export class ModelDefinitionManager {
 		this.contextToModelDefinition[ModelFileContext.Frontend] = FRONTEND_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.Unknown] = OTHER_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.BackendActions] = BACKEND_ACTIONS_DEFINITION;
-		this.contextToModelDefinition[ModelFileContext.FrontendActions] = {};
+		this.contextToModelDefinition[ModelFileContext.FrontendActions] = FRONTEND_ACTIONS_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.RuleTests] = {};
 		this.contextToModelDefinition[ModelFileContext.InfosetTests] = {};
 		this.contextToModelDefinition[ModelFileContext.SecurityTests] = {};
