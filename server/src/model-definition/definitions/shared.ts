@@ -842,6 +842,24 @@ export const decorator_input_element: Definition =
 	children: []
 };
 
+export const module_element: Definition = {
+	type: ModelElementTypes.Module,
+	detailLevel: ModelDetailLevel.Declarations,
+	isGroupingElement: true,
+	description: "Used for grouping model entities and model namespacing.",
+	attributes: [
+		{
+			name: "name",
+			description: "The module name.",
+			autoadd: true
+		},
+		target_namespace_attribute,
+		description_attribute,
+		comment_attribute,
+	],
+	children: [] //For grouping element parents children are used
+};
+
 export const target_element_partial: Partial<Definition> = {
 	type: ModelElementTypes.Target,
 	description: "This element is mandatory and is a 'placeholder' for the element on which the decorator is applied. It can be extended with attributes and elements. Elements outside this element will occur outside the target element also.",
