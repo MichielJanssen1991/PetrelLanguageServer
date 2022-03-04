@@ -280,14 +280,6 @@ const default_view_attributes: ElementAttribute[] = [
 				},
 				{
 					name: "edit"
-				},
-				{
-					name: "viewdefaults",
-					obsolete: true
-				},
-				{
-					name: "design",
-					obsolete: true
 				}
 			]
 		}
@@ -382,16 +374,6 @@ const default_view_attributes: ElementAttribute[] = [
 		]
 	},
 	{
-		name: "appearance",
-		description: "The style of this view.",
-		obsolete: true,	// appearance is something that is hardly used, so it should be deprecated
-		obsoleteMessage: "use something else :)",
-		type: {
-			type: AttributeTypes.Reference,
-			relatedTo: ModelElementTypes.Appearance
-		}
-	},
-	{
 		name: "appearance-class",
 		description: "A specific style for the view element.",
 		type: {
@@ -457,13 +439,6 @@ const default_view_attributes: ElementAttribute[] = [
 	{
 		name: "help-code",
 		description: "The tag of the Help page to show when displaying help. When not specified, the view name is used as tag."
-	},
-	{
-		name: "designable",
-		description: "Whether the view is designable by a user having designer rights.",
-		obsolete: true,
-		obsoleteMessage: "This shouldn't be a feature",
-		type: default_yes_no_attribute_type
 	},
 	{
 		name: "lookup-width",
@@ -650,13 +625,6 @@ const default_view_children: ChildDefinition[] = [
 
 // const default_view_unknown_children: ChildDefinition[] = [
 // 	{
-// 		element: "layout",			// not in use
-// 		occurence: "once"
-// 	},
-// 	{
-// 		element: "design"			// not in use
-// 	},
-// 	{
 // 		element: "column"			// for portlets
 // 	},
 // 	{
@@ -665,16 +633,6 @@ const default_view_children: ChildDefinition[] = [
 // 	{
 // 		element: "function" 		// TODO: remove... this is a bad practice. Define functions in the functions part
 // 	},
-// 	{
-// 		element: "IconConditions"	// TODO: remove; not in use
-// 	},
-// 	{
-// 		element: "source"			// no idea what this is....
-// 	},
-// 	{
-// 		element: "report-parameters",	// for Graph?
-// 		occurence: "once"
-// 	}
 // ];
 
 const default_view_record_children: ChildDefinition[] = [
@@ -728,15 +686,6 @@ const objectview_element: Definition = {
 	},
 	attributes: [
 		detail_height_attribute,	// object/list
-		{
-			name: "layoutable",
-			description: "Whether or not a layout can be created by the Inspector. If set to 'yes' then the view should also have a name.",
-			type: default_yes_no_attribute_type
-		},
-		{
-			name: "layout",
-			description: "The explicit name of the layout in the layout.xml file. Usually this value is empty, because layoutable='yes' will compute a name automatically. If the layout is set then the view should also have a name."
-		},
 		{
 			name: "focus-field",
 			description: "The field to give initial focus when the object view loads.",
@@ -1761,14 +1710,6 @@ const attribute_attributes: ElementAttribute[] = [
 		}
 	},
 	{
-		name: "attribute-template",		// TODO: check if platform still supports this
-		description: "A template this attribute is based on.",
-		type: {
-			type: AttributeTypes.Reference,
-			relatedTo: ModelElementTypes.Attribute // TODO: change this to AttributeTemplates once it's clear that platform it still supports
-		}
-	},
-	{
 		name: "sort",
 		description: "A consecutive numeric value (starting with 1) which indicates the sort order index.",
 		type: {
@@ -2384,16 +2325,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"application": [{
 		description: "",
-		attributes: [
-			{
-				name: "appearance",
-				description: "Main style, as defined in styles.xml.",
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.Style
-				}
-			}
-		],
+		attributes: [],
 		children: [
 			{
 				element: "views",
@@ -4498,44 +4430,6 @@ export const FRONTEND_DEFINITION: Definitions = {
 			}
 		]
 	}],
-	"IconConditions": [{
-		attributes: [comment_attribute],
-		children: [
-			{
-				element: "IconCondition"
-			}
-		]
-	}],
-	"IconCondition": [{
-		attributes: [
-			{
-				name: "Value"
-			},
-			{
-				name: "IconPath"
-			}
-		],
-		children: []
-	}],
-	"design": [{
-		attributes: [
-			{
-				name: "design-base-view",
-				description: "The view to inherit from, when going to design mode. Currently the only suited view in the platform model is Platform.Designer.StartLayoutSidebar (but one could inherit or create another view)."
-			},
-			{
-				name: "draggable",
-				description: "If set to \"no\" the components cannot be moved",
-				type: default_yes_no_attribute_type
-			},
-			{
-				name: "multiselect",
-				description: "If set to \"no\" only single selection is possible",
-				type: default_yes_no_attribute_type
-			},
-		],
-		children: []
-	}],
 	"source": [{
 		attributes: [
 			{
@@ -4598,34 +4492,6 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"year-view": [{
 		attributes: [comment_attribute],
-		children: []
-	}],
-	"report-parameters": [{
-		description: "Parameters to pass to the report.",
-		attributes: [comment_attribute],
-		children: [
-			{
-				element: "report-parameter",
-				occurence: "at-least-once"
-			}
-		]
-	}],
-	"report-parameter": [{
-		description: "A parameter to pass to the report.",
-		attributes: [
-			{
-				name: "name",
-				description: "Name of a destination field or variable in the report."
-			},
-			{
-				name: "argument-name",
-				description: "The argument name within the view, if the value is not constant."
-			},
-			{
-				name: "value",
-				description: "A constant value to pass instead of an argument."
-			}
-		],
 		children: []
 	}],
 	"style-variables": [{

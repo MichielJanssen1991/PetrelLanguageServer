@@ -561,20 +561,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			obsolete_message_attribute,
 			comment_attribute
 		],
-		children: [ // HUH? ... WHY??
-			{
-				element: "input"
-			},
-			{
-				element: "search"
-			},
-			{
-				element: "query"
-			},
-			{
-				element: "action"
-			}
-		]
+		children: []
 	}],
 	"decorators": [decorators_element],
 	"decorator": [decorator_element],

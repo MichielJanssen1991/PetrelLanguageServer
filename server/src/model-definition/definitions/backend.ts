@@ -430,14 +430,6 @@ const attribute_attributes: ElementAttribute[] = [
 		}
 	},
 	{
-		name: "attribute-template",		// TODO: check if platform still supports this
-		description: "A template this attribute is based on.",
-		type: {
-			type: AttributeTypes.Reference,
-			relatedTo: ModelElementTypes.Attribute // TODO: change this to AttributeTemplates once it's clear that platform it still supports
-		}
-	},
-	{
 		name: "allow-existing",
 		description: "When set to 'no', an existing option is not allowed.",
 		type: default_yes_no_attribute_type,
