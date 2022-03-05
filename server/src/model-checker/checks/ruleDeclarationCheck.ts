@@ -52,8 +52,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 				}
 			case ModelElementTypes.Argument:
 				{
-					this.processLocalNameHardCodedValueAttribute(node, NAMES.ATTRIBUTE_LOCALNAME);
-					this.processLocalNameReferenceAttribute(node, NAMES.ATTRIBUTE_LOCALNAME);
+					this.processLocalNameReferenceActionArgument(node);
 					this.processExpressionAttribute(node, NAMES.ATTRIBUTE_EXPRESSION);
 					break;
 				}
@@ -94,11 +93,12 @@ export class RuleDeclarationCheck extends ModelCheck {
 		}
 	}
 
-	private processLocalNameHardCodedValueAttribute(node: TreeNode, attributeName: string) {
-		const localName = node.attributes[attributeName];
-		const localValue = node.attributes["value"];
-		if (node.type == ModelElementTypes.Argument && localValue && localValue.value != "") {
-			this.ruleLocalNames.push(localName);
+	private processLocalNameReferenceActionArgument(node: TreeNode) {
+		const value = node.attributes[NAMES.ATTRIBUTE_VALUE];
+		const expression = node.attributes[NAMES.ATTRIBUTE_EXPRESSION];
+		//Only consider the local name attribute a reference to a local name if no value/expression are filled
+		if (value && value.value != "" && expression && expression.value != "") {
+			this.processLocalNameReferenceAttribute(node, NAMES.ATTRIBUTE_LOCALNAME);
 		}
 	}
 
