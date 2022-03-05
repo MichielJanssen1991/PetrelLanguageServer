@@ -1,14 +1,14 @@
-import { NAMES } from '../../model-definition/constants';
-import { ModelElementTypes, IsSymbolOrReference, SymbolDeclaration, Attribute, TreeNode, ModelDetailLevel } from '../../model-definition/symbolsAndReferences';
+import { NAMES } from '../../model-definition/types/constants';
+import { SymbolDeclaration, Attribute, TreeNode } from '../../model-definition/types/tree';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
 import { CHECKS_MESSAGES } from '../messages';
+import { ModelDetailLevel, ModelElementTypes } from '../../model-definition/types/definitions';
 
 export class RuleDeclarationCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.Rule;
 	protected detailLevel: ModelDetailLevel = ModelDetailLevel.All;
-	protected objectType = IsSymbolOrReference.Symbol
 	protected matchCondition = undefined
 	private ruleLocalNames: Attribute[] = [];
 	private ruleLocalNameReferences: Attribute[] = [];

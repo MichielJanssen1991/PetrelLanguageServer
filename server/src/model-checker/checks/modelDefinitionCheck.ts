@@ -1,5 +1,6 @@
 import { ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { Attribute, AttributeTypes, Definition, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
+import { AttributeTypes, Definition, ModelDetailLevel, ModelElementTypes } from '../../model-definition/types/definitions';
+import { Attribute, TreeNode } from '../../model-definition/types/tree';
 import { attributeValueIsAVariable } from '../../util/other';
 import { ModelCheck } from '../modelCheck';
 

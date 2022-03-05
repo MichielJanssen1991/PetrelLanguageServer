@@ -1,5 +1,5 @@
 import * as LSP from 'vscode-languageserver';
-import { ModelDetailLevel, SymbolDeclaration, TreeNode } from '../model-definition/symbolsAndReferences';
+import { SymbolDeclaration, TreeNode } from '../model-definition/types/tree';
 import { removeFilesFromDirectories } from '../util/fs';
 import { ModelCheck } from './modelCheck';
 import { InfosetDeclarationCheck } from './checks/infosetDeclarationCheck';
@@ -16,6 +16,7 @@ import { RuleDeclarationCheck } from './checks/ruleDeclarationCheck';
 import { ModelDefinitionCheck } from './checks/modelDefinitionCheck';
 import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
 import { DiagnosticsCollection } from '../generic/diagnosticsCollection';
+import { ModelDetailLevel } from '../model-definition/types/definitions';
 
 export type ModelCheckerOptions = {
 	maxNumberOfProblems?: number,

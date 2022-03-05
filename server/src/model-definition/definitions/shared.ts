@@ -1,5 +1,5 @@
-import { NAMES } from '../constants';
-import { AttributeTypes, ElementAttribute, ModelElementTypes, Definition, ModelDetailLevel, IXmlNodeContext, ValidationLevels, AttributeType, ChildDefinition, ModelElementSubTypes } from '../symbolsAndReferences';
+import { NAMES } from '../types/constants';
+import { AttributeType, AttributeTypes, ChildDefinition, Definition, ElementAttribute, IXmlNodeContext, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes, ValidationLevels } from '../types/definitions';
 import { isTypeOfAction } from './other';
 
 // export const guidelines

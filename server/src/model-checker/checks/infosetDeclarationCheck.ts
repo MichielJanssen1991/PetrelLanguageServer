@@ -1,14 +1,14 @@
-import { NAMES } from '../../model-definition/constants';
-import { ModelElementTypes, IsSymbolOrReference, SymbolDeclaration, TreeNode, Reference, ModelDetailLevel } from '../../model-definition/symbolsAndReferences';
+import { NAMES } from '../../model-definition/types/constants';
+import { SymbolDeclaration, TreeNode, Reference } from '../../model-definition/types/tree';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { ModelCheckerOptions } from '../modelChecker';
 import { CHECKS_MESSAGES } from '../messages';
 import { attributeValueIsAVariable } from '../../util/other';
+import { ModelDetailLevel, ModelElementTypes } from '../../model-definition/types/definitions';
 
 export class InfosetDeclarationCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.Infoset
-	protected objectType = IsSymbolOrReference.Symbol
 	protected matchCondition = undefined
 	private infosetInputs: string[] = [];
 	protected detailLevel: ModelDetailLevel = ModelDetailLevel.Declarations;

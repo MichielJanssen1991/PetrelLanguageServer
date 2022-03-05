@@ -1,6 +1,7 @@
 import { DocumentSymbol, SymbolKind, SymbolTag } from 'vscode-languageserver';
-import { NAMES } from '../model-definition/constants';
-import { ModelElementTypes, SymbolDeclaration, TreeNode } from '../model-definition/symbolsAndReferences';
+import { NAMES } from '../model-definition/types/constants';
+import { ModelElementTypes } from '../model-definition/types/definitions';
+import { SymbolDeclaration, TreeNode } from '../model-definition/types/tree';
 import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 
 export class DocumentSymbolProvider {

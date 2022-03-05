@@ -2,7 +2,8 @@ import * as LSP from 'vscode-languageserver';
 import { Diagnostic, Range } from 'vscode-languageserver';
 import { DiagnosticsCollection } from '../../generic/diagnosticsCollection';
 import { ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { ModelDetailLevel, ModelElementTypes, newTreeNode, TreeNode } from '../../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes } from '../../model-definition/types/definitions';
+import { newTreeNode, TreeNode } from '../../model-definition/types/tree';
 
 export abstract class FileParser extends DiagnosticsCollection {
 	protected uri: string;

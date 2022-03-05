@@ -1,9 +1,10 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from 'vscode-languageserver';
-import { AttributeTypes, ChildDefinition, ModelElementTypes, Definition, Reference, SymbolDeclaration, TreeNode, ElementAttribute } from '../model-definition/symbolsAndReferences';
+import { Reference, SymbolDeclaration, TreeNode } from '../model-definition/types/tree';
 import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbolAndReferenceManager';
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { ActionContext } from '../generic/actionContext';
-import { NAMES } from '../model-definition/constants';
+import { NAMES } from '../model-definition/types/constants';
+import { AttributeTypes, ChildDefinition, Definition, ElementAttribute, ModelElementTypes } from '../model-definition/types/definitions';
 
 export class CompletionProvider {
 	private symbolAndReferenceManager: SymbolAndReferenceManager;

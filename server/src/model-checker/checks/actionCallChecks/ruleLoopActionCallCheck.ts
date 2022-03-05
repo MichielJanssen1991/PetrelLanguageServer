@@ -1,5 +1,6 @@
-import { NAMES } from '../../../model-definition/constants';
-import { ModelElementTypes, TreeNode, Reference, SymbolDeclaration } from '../../../model-definition/symbolsAndReferences';
+import { NAMES } from '../../../model-definition/types/constants';
+import { ModelElementTypes } from '../../../model-definition/types/definitions';
+import { TreeNode, Reference, SymbolDeclaration } from '../../../model-definition/types/tree';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
 import { CHECKS_MESSAGES } from '../../messages';
 import { ActionCallCheck } from './actionCallCheck';

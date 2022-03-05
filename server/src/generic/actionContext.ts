@@ -1,4 +1,5 @@
-import { Attribute, ModelElementTypes, Reference, TreeNode, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
+import { ModelElementTypes } from '../model-definition/types/definitions';
+import { Attribute, Reference, TreeNode, SymbolDeclaration } from '../model-definition/types/tree';
 
 export class ActionContext {
 	public inAttribute: boolean;

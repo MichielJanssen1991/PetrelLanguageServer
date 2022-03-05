@@ -1,22 +1,22 @@
 //VSCode languageserver
-import { CompletionItem, TextDocumentPositionParams, DocumentSymbolParams, DocumentSymbol, DidChangeTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams } from 'vscode-languageserver/node';
 import * as LSP from 'vscode-languageserver';
+import { CompletionItem, TextDocumentPositionParams, DocumentSymbolParams, DocumentSymbol, DidChangeTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams } from 'vscode-languageserver/node';
+import { TextDocument } from 'vscode-languageserver-textdocument';
 
 //Own
 import { Analyzer } from './file-analyzer/analyzer';
-import { ModelDetailLevel } from './model-definition/symbolsAndReferences';
+import { ModelDetailLevel } from './model-definition/types/definitions';
 import { CompletionProvider } from './completion/completionProvider';
 import { ModelChecker } from './model-checker/modelChecker';
+import { ModelDefinitionManager } from './model-definition/modelDefinitionManager';
+import { ModelManager } from './symbol-and-reference-manager/modelManager';
+import { ActionContext } from './generic/actionContext';
+import { DocumentSymbolProvider } from './document-symbols/documentSymbolProvider';
+import { DefinitionAndReferenceProvider } from './on-definition-or-reference/DefinitionAndReferenceProvider';
 
 //Other
 import * as fs from 'fs';
 import path = require('path');
-import { ModelManager } from './symbol-and-reference-manager/modelManager';
-import { ModelDefinitionManager } from './model-definition/modelDefinitionManager';
-import { ActionContext } from './generic/actionContext';
-import { DocumentSymbolProvider } from './document-symbols/documentSymbolProvider';
-import { DefinitionAndReferenceProvider } from './on-definition-or-reference/DefinitionAndReferenceProvider';
-import { TextDocument } from 'vscode-languageserver-textdocument';
 
 interface DocumentSettings {
 	maxNumberOfProblems: number;

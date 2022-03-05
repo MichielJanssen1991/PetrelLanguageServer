@@ -1,4 +1,4 @@
-import { AttributeTypes, Definition, Definitions, ModelDetailLevel, ModelElementTypes } from '../symbolsAndReferences';
+import { AttributeTypes, Definition, Definitions, ModelDetailLevel, ModelElementTypes } from '../types/definitions';
 import { default_yes_no_attribute_type, comment_attribute, description_attribute } from './shared';
 
 const action_definition_argument_element: Definition = {

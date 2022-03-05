@@ -1,4 +1,4 @@
-import { Definitions } from '../../symbolsAndReferences';
+import { Definitions } from '../../types/definitions';
 import { FRONTEND_DEFINITION } from '../frontend';
 import { RULE_DEFINITION } from '../rules';
 

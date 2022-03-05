@@ -15,7 +15,8 @@ import { MODELING_OBJECT_TYPE_DEFINITION } from './definitions/premium-runtime/m
 import { MODELING_OBJECT_VIEW_DEFINITION } from './definitions/premium-runtime/modelingObjects/modeling-object-view';
 import { PROFILE_DEFINITION } from './definitions/premium-runtime/profile';
 import { RULE_DEFINITION } from './definitions/rules';
-import { IXmlNodeContext, Definitions, ModelElementTypes, Definition, TreeNode, ModelElementSubTypes, AncestorDefinition, AncestorTypes } from './symbolsAndReferences';
+import { AncestorDefinition, AncestorTypes, Definition, Definitions, IXmlNodeContext, ModelElementSubTypes, ModelElementTypes } from './types/definitions';
+import { TreeNode, } from './types/tree';
 
 export enum ModelFileContext {
 	Backend,

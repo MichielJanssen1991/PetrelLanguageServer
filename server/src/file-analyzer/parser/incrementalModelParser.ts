@@ -1,6 +1,7 @@
 import { Range } from 'vscode-languageserver';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { Attribute, ModelDetailLevel, ModelElementTypes, TreeNode } from '../../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes } from '../../model-definition/types/definitions';
+import { Attribute, TreeNode } from '../../model-definition/types/tree';
 import { positionIsGreaterThan, rangeIsInRange, rangeIsRange } from '../../util/other';
 // import { printTree } from '../../util/print';
 import { IncrementalParser } from './fileParser';

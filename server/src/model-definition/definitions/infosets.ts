@@ -1,4 +1,4 @@
-import { AttributeTypes, ModelElementTypes, Definitions, ModelDetailLevel, ModelElementSubTypes, AttributeOption, Definition } from '../symbolsAndReferences';
+import { AttributeOption, AttributeTypes, Definition, Definitions, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes } from '../types/definitions';
 import { isIncludeBlockOfType } from './other';
 import { comment_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, obsolete_attribute, obsolete_message_attribute, override_rights_attribute, is_declaration_attribute, decorations_element, decorators_element, decorator_element, decoration_element, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, search_children, search_attributes, input_element, single_aggregate_query_element, aggregate_attribute_element, aggregate_function_element, default_children, in_element, search_group_element, full_text_query_element, and_element, or_element, search_column_submatch_element, search_column_element, include_block_declaration_definition, module_element } from './shared';
 

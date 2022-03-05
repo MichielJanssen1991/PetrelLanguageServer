@@ -1,6 +1,6 @@
 import { Location, LocationLink } from 'vscode-languageserver-protocol';
 import { ActionContext } from '../generic/actionContext';
-import { Reference, SymbolDeclaration } from '../model-definition/symbolsAndReferences';
+import { Reference, SymbolDeclaration } from '../model-definition/types/tree';
 import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 
 export class DefinitionAndReferenceProvider {

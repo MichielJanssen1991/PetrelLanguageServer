@@ -1,7 +1,8 @@
 import * as LSP from 'vscode-languageserver';
 import { DiagnosticsCollection } from '../generic/diagnosticsCollection';
 import { ModelDefinitionManager } from '../model-definition/modelDefinitionManager';
-import { ModelDetailLevel, ModelElementTypes, TreeNode } from '../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes } from '../model-definition/types/definitions';
+import { TreeNode } from '../model-definition/types/tree';
 import { ModelManager } from '../symbol-and-reference-manager/modelManager';
 import { ModelCheckerOptions } from './modelChecker';
 

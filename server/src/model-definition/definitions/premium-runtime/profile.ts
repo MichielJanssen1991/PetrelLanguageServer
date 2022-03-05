@@ -1,4 +1,4 @@
-import { AttributeTypes, Definitions, ModelDetailLevel, ModelElementTypes } from '../../symbolsAndReferences';
+import { AttributeTypes, Definitions, ModelDetailLevel, ModelElementTypes } from '../../types/definitions';
 
 export const PROFILE_DEFINITION: Definitions = {
 	"Profile": [{

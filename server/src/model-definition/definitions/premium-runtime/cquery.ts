@@ -1,4 +1,4 @@
-import { Definitions } from '../../symbolsAndReferences';
+import { Definitions } from '../../types/definitions';
 import { INFOSET_DEFINITION } from '../infosets';
 
 export const CQUERY_DEFINITION: Definitions = {

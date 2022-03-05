@@ -1,4 +1,4 @@
-import { Definitions } from '../../../symbolsAndReferences';
+import { Definitions } from '../../../types/definitions';
 import { RULE_DEFINITION } from '../../rules';
 import { modelcode_element_module, modelcode_element_non_module, modeling_object_element_module, modeling_object_element_non_module } from './modeling-object-shared';
 

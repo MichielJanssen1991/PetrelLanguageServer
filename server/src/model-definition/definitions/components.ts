@@ -1,4 +1,4 @@
-import { AttributeTypes, Definitions, ModelElementTypes } from '../symbolsAndReferences';
+import { AttributeTypes, Definitions, ModelElementTypes } from '../types/definitions';
 import { comment_attribute, default_yes_no_attribute_type} from './shared';
 
 export const COMPONENTS_DEFINITION: Definitions = {

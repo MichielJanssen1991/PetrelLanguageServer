@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { DocumentUri, Position, TextDocument } from 'vscode-languageserver-textdocument';
 
 import { filePathToFileURI, fileURIToFilePath, getFileExtension, getJavascriptFilePaths, getModelFilePaths } from '../util/fs';
-import { ModelDetailLevel, ModelElementTypes } from '../model-definition/symbolsAndReferences';
+import { ModelDetailLevel, ModelElementTypes } from '../model-definition/types/definitions';
 import { time, timeEnd } from 'console';
 import { getContextFromLine, wordAtPoint } from '../util/xml';
 import { ModelParser } from './parser/modelParser';

@@ -1,4 +1,4 @@
-import { Definitions, ModelElementTypes } from '../../symbolsAndReferences';
+import { Definitions, ModelElementTypes } from '../../types/definitions';
 import { BACKEND_DEFINITION } from '../backend';
 import { FRONTEND_DEFINITION } from '../frontend';
 

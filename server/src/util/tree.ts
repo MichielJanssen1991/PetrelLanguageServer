@@ -1,4 +1,4 @@
-import { Attribute, TreeNode } from '../model-definition/symbolsAndReferences';
+import { Attribute, TreeNode } from '../model-definition/types/tree';
 
 export function walkTree(node: TreeNode, actionForNodes: (node: TreeNode) => void, actionForAttributes: (attribute: Attribute) => void) {
 	actionForNodes(node);

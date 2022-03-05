@@ -1,5 +1,5 @@
-import { NAMES } from '../constants';
-import { AttributeTypes, Definitions, IXmlNodeContext, MatchDefinition, ModelDetailLevel, ModelElementTypes } from '../symbolsAndReferences';
+import { NAMES } from '../types/constants';
+import { AttributeTypes, Definitions, IXmlNodeContext, MatchDefinition, ModelDetailLevel, ModelElementTypes } from '../types/definitions';
 
 //Defines a list of possible refrerences and declarations for each opening tag
 export const OTHER_DEFINITION: Definitions =

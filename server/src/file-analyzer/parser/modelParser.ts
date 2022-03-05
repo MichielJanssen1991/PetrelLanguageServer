@@ -1,6 +1,7 @@
 import { Range } from 'vscode-languageserver-types';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
-import { newReference, Reference, newSymbolDeclaration, ModelDetailLevel, ContextQualifiers, IXmlNodeContext, TreeNode, Definition, ModelElementTypes, Attribute, ElementAttribute, newTreeNode } from '../../model-definition/symbolsAndReferences';
+import { ContextQualifiers, Definition, ElementAttribute, IXmlNodeContext, ModelDetailLevel, ModelElementTypes } from '../../model-definition/types/definitions';
+import { newReference, Reference, newSymbolDeclaration, TreeNode, Attribute, newTreeNode } from '../../model-definition/types/tree';
 import { FileParser } from './fileParser';
 import { ISaxParserExtended, newSaxParserExtended, XmlNode, ProcessingInstruction } from './saxParserExtended';
 

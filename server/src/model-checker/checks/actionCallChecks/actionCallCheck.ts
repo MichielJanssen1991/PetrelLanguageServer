@@ -1,10 +1,11 @@
-import { ModelElementTypes, TreeNode, SymbolDeclaration, Reference, ModelDetailLevel } from '../../../model-definition/symbolsAndReferences';
+import { TreeNode, SymbolDeclaration, Reference } from '../../../model-definition/types/tree';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
 import { flattenArray } from '../../../util/array';
 import { ModelCheck } from '../../modelCheck';
 import { CHECKS_MESSAGES } from '../../messages';
 import { ModelCheckerOptions } from '../../modelChecker';
-import { NAMES } from '../../../model-definition/constants';
+import { NAMES } from '../../../model-definition/types/constants';
+import { ModelDetailLevel, ModelElementTypes } from '../../../model-definition/types/definitions';
 
 export abstract class ActionCallCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.ActionCall

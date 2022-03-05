@@ -1,5 +1,5 @@
-import * as LSP from 'vscode-languageserver';
-import { XmlNode } from '../file-analyzer/parser/saxParserExtended';
+import { XmlNode } from '../../file-analyzer/parser/saxParserExtended';
+import { TreeNode } from './tree';
 
 export enum ModelElementTypes {
 	Action = "Action",
@@ -48,7 +48,7 @@ export enum ModelElementTypes {
 	SetVar = "SetVar",
 	Switch = "Switch",
 	Target = "Target",
-	TargetView = "TargetView",	// this is not a list of elements of TargetViews, but a list of Views filled with attribute "TargetName"
+	TargetView = "TargetView",
 	Type = "Type",
 	TitleBar = "TitleBar",
 	TypeFilter = "TypeFilter",
@@ -69,12 +69,13 @@ export enum ModelElementTypes {
 	Node = "Node",
 	MenuItem = "MenuItem",
 	ToolbarButton = "ToolbarButton",
-	AppearanceClass = "AppearanceClass", // this could be a list of all classes from the scss files (it can be filtered by the type of mixin it's using)
+	AppearanceClass = "AppearanceClass",
+
 	// Premium types
 	ModelingObject = "ModelingObject",
 	ModelCode = "ModelCode",
 	// Pseudo types 
-	RuleContext = "RuleContext",
+	RuleContext = "RuleContext"
 }
 
 export enum ModelElementSubTypes {
@@ -164,9 +165,22 @@ export enum ModelElementSubTypes {
 
 	//Premium
 	ModelingObject_Module = "ModelingObject_Module",
-	ModelingObject_NonModule= "ModelingObject_NonModule",
+	ModelingObject_NonModule = "ModelingObject_NonModule",
 	ModelCode_Module = "ModelCode_Module",
-	ModelCode_NonModule= "ModelCode_NonModule",
+	ModelCode_NonModule = "ModelCode_NonModule"
+}
+
+export type ContextQualifiers = {
+	isObsolete?: boolean;
+	frontendOrBackend?: "Frontend" | "Backend";
+	nameSpace?: string;
+};
+
+export enum ModelDetailLevel {
+	Declarations,
+	References,
+	SubReferences,
+	All
 }
 
 export enum ValidationLevels {
@@ -190,112 +204,6 @@ export enum AncestorTypes {
 	GrandParent = "grand-parent"
 }
 
-export type ContextQualifiers = {
-	isObsolete?: boolean,
-	frontendOrBackend?: "Frontend" | "Backend",
-	nameSpace?: string
-}
-
-/**
- * The IXmlNodeContext interface is the bare minimum required for the modelparser to find the correct 
- * definitions using the matchCondition. The definition should stay small such that it remains easy 
- * for other classes or context objects to provide the necessary information to find the correct definition. 
- */
-export interface IXmlNodeContext {
-	getCurrentXmlNode: () => XmlNode
-	getParent: () => TreeNode | undefined,
-	getAncestor: (level: number) => TreeNode | undefined,
-	hasAncestorTag: (name: string) => boolean
-}
-
-export enum IsSymbolOrReference {
-	Symbol,
-	Reference
-}
-
-export enum ModelDetailLevel {
-	Declarations,
-	References,
-	SubReferences,
-	All
-}
-
-export interface TreeNode {
-	tag: string,
-	type: ModelElementTypes,
-	subtype?: ModelElementSubTypes,
-	range: LSP.Range,
-	fullRange: LSP.Range,
-	uri: string,
-	isSymbolDeclaration: boolean,
-	children: (TreeNode | SymbolDeclaration)[],
-	attributes: Record<string, Attribute | Reference>,
-	comment?: string,
-	contextQualifiers: ContextQualifiers,
-	parent?: TreeNode
-}
-
-export interface Attribute {
-	name: string,
-	range: LSP.Range,
-	fullRange: LSP.Range,
-	value: string,
-	isReference?: boolean,
-	type?: ModelElementTypes
-}
-export interface Reference extends Attribute {
-	isReference: true,
-	type: ModelElementTypes,
-	uri: string
-}
-
-export interface SymbolDeclaration extends TreeNode {
-	isSymbolDeclaration: true,
-	name: string,
-}
-
-export function newReference(name: string, value: string, type: ModelElementTypes, range: LSP.Range, fullRange: LSP.Range, uri: string): Reference {
-	return {
-		name,
-		value,
-		type,
-		range: {start: {...range.start}, end: {...range.end}},//Make copy
-		fullRange: {start: {...fullRange.start}, end: {...fullRange.end}},//Make copy
-		uri,
-		isReference: true
-	};
-}
-
-export function newTreeNode(tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, subtype?: ModelElementSubTypes): TreeNode {
-	return {
-		type,
-		subtype,
-		tag,
-		range: {start: {...range.start}, end: {...range.end}},//Make copy
-		fullRange: {start: {...range.start}, end: {...range.end}},//Make copy
-		uri,
-		children: [],
-		attributes: {},
-		contextQualifiers: {},
-		isSymbolDeclaration: false
-	};
-}
-export function newSymbolDeclaration(name: string, tag: string, type: ModelElementTypes, range: LSP.Range, uri: string, subtype?: ModelElementSubTypes): SymbolDeclaration {
-	return {
-		name,
-		type,
-		subtype,
-		tag,
-		range: {start: {...range.start}, end: {...range.end}},
-		fullRange: {start: {...range.start}, end: {...range.end}},
-		uri,
-		children: [],
-		attributes: {},
-		contextQualifiers: {},
-		isSymbolDeclaration: true
-	};
-}
-
 export type Definitions = Record<string, Definition[]>
 
 export type Definition = {
@@ -308,8 +216,8 @@ export type Definition = {
 	prefixNameSpace?: boolean,
 	isSymbolDeclaration?: boolean,
 	detailLevel?: ModelDetailLevel,
-	contextQualifiers?: (nodeContext: IXmlNodeContext) => ContextQualifiers
 	matchCondition?: MatchDefinition,
+	contextQualifiers?: (nodeContext: IXmlNodeContext) => ContextQualifiers
 	// isGroupingElement is used as a signal to the parser that the element can be skipped when looking for the parent (for example rule in a module within rules, module is a grouping element) 
 	isGroupingElement?: boolean
 }
@@ -318,6 +226,18 @@ export type Definition = {
 export type MatchDefinition = {
 	matchFunction?: (nodeContext: IXmlNodeContext) => boolean,
 	ancestors?: AncestorDefinition[],	
+}
+
+/**
+ * The IXmlNodeContext interface is the bare minimum required for the modelparser to find the correct
+ * definitions using the matchCondition. The definition should stay small such that it remains easy
+ * for other classes or context objects to provide the necessary information to find the correct definition.
+ */
+ export interface IXmlNodeContext {
+	getCurrentXmlNode: () => XmlNode;
+	getParent: () => TreeNode | undefined;
+	getAncestor: (level: number) => TreeNode | undefined;
+	hasAncestorTag: (name: string) => boolean;
 }
 
 export type AncestorDefinition = { 

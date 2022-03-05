@@ -1,5 +1,5 @@
 import { Range } from 'vscode-languageserver-types';
-import { TreeNode } from '../model-definition/symbolsAndReferences';
+import { TreeNode } from '../model-definition/types/tree';
 
 /**
  * printTree: Prints the inputted tree to the console. Prints up to a maximum depth of 3. Mainly used for debugging purposes

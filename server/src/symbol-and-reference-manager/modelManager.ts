@@ -1,5 +1,6 @@
-import { NAMES } from '../model-definition/constants';
-import { ModelElementTypes, Reference, SymbolDeclaration, TreeNode } from '../model-definition/symbolsAndReferences';
+import { NAMES } from '../model-definition/types/constants';
+import { ModelElementTypes } from '../model-definition/types/definitions';
+import { Reference, SymbolDeclaration, TreeNode } from '../model-definition/types/tree';
 import { SymbolAndReferenceManager } from './symbolAndReferenceManager';
 
 /**

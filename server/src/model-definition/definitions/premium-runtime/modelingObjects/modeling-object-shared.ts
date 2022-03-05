@@ -1,4 +1,4 @@
-import { Definition, IXmlNodeContext, ModelElementSubTypes, ModelElementTypes } from '../../../symbolsAndReferences';
+import { Definition, IXmlNodeContext, ModelElementSubTypes, ModelElementTypes } from '../../../types/definitions';
 
 export function isModule(nodeContext: IXmlNodeContext) {
 	return nodeContext.getCurrentXmlNode().attributes["IsModule"] == "1";

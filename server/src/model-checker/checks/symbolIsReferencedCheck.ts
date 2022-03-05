@@ -1,8 +1,9 @@
-import { ModelDetailLevel, ModelElementTypes, SymbolDeclaration, TreeNode } from '../../model-definition/symbolsAndReferences';
+import { SymbolDeclaration, TreeNode } from '../../model-definition/types/tree';
 import { ModelManager } from '../../symbol-and-reference-manager/modelManager';
 import { ModelCheck } from '../modelCheck';
 import { CHECKS_MESSAGES } from '../messages';
 import { standaloneObjectTypes } from '../../model-definition/definitions/other';
+import { ModelDetailLevel, ModelElementTypes } from '../../model-definition/types/definitions';
 
 export class SymbolIsReferencedCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.All;
