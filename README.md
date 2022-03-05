@@ -27,12 +27,14 @@ It also includes an End-to-End test.
         │                              components and delegates requests (autocomplete/analyze files/find definition...) 
         │                              to the components 
         ├── completion // Anything related to completion requests 
+        ├── document-symbol // Defines the document symbol provider which returns document symbols for a open document. The document symbols are used for the outline view as well as searching symbols in the current document. 
         ├── file-analyzer
         │   ├── analyzer.ts // Responsible for gathering files and passing them to a parser, updates the symbolAndReferenceManager 
         │   │                  with  the output
         │   └── parser // Includes various parserss
         ├── model-checker // Anything related to model validation
         ├── model-definition // Definition of the model used for parsing files, autocompletes and performing validations
+        ├── on-definition-or-reference // Anything related to providing definitions (go-to-definition) or references (go-to-references)
         ├── symbol-and-reference-manager
         │   ├── symbolAndReferenceManager.ts // Holds de parsed model trees and provides efficients ways to query the results.          
         │   │                                   Is injected into various other components which require access to the model.
