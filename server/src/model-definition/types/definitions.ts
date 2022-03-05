@@ -172,7 +172,6 @@ export enum ModelElementSubTypes {
 
 export type ContextQualifiers = {
 	isObsolete?: boolean;
-	frontendOrBackend?: "Frontend" | "Backend";
 	nameSpace?: string;
 };
 
@@ -217,7 +216,6 @@ export type Definition = {
 	isSymbolDeclaration?: boolean,
 	detailLevel?: ModelDetailLevel,
 	matchCondition?: MatchDefinition,
-	contextQualifiers?: (nodeContext: IXmlNodeContext) => ContextQualifiers
 	// isGroupingElement is used as a signal to the parser that the element can be skipped when looking for the parent (for example rule in a module within rules, module is a grouping element) 
 	isGroupingElement?: boolean
 }
@@ -225,7 +223,7 @@ export type Definition = {
 // matchFunction and ancestor can be used to distinguish same tag definitions with different ModelElementTypes (for example action call output or rule output)
 export type MatchDefinition = {
 	matchFunction?: (nodeContext: IXmlNodeContext) => boolean,
-	ancestors?: AncestorDefinition[],	
+	ancestors?: AncestorDefinition[],
 }
 
 /**
@@ -233,16 +231,16 @@ export type MatchDefinition = {
  * definitions using the matchCondition. The definition should stay small such that it remains easy
  * for other classes or context objects to provide the necessary information to find the correct definition.
  */
- export interface IXmlNodeContext {
+export interface IXmlNodeContext {
 	getCurrentXmlNode: () => XmlNode;
 	getParent: () => TreeNode | undefined;
 	getAncestor: (level: number) => TreeNode | undefined;
 	hasAncestorTag: (name: string) => boolean;
 }
 
-export type AncestorDefinition = { 
-	type: ModelElementTypes, 
-	subtypes?: ModelElementSubTypes[], 
+export type AncestorDefinition = {
+	type: ModelElementTypes,
+	subtypes?: ModelElementSubTypes[],
 	ancestorType?: AncestorTypes // default parent
 }
 

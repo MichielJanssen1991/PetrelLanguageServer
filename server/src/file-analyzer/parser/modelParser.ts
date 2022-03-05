@@ -1,5 +1,6 @@
 import { Range } from 'vscode-languageserver-types';
 import { ModelDefinitionManager, ModelFileContext } from '../../model-definition/modelDefinitionManager';
+import { NAMES } from '../../model-definition/types/constants';
 import { ContextQualifiers, Definition, ElementAttribute, IXmlNodeContext, ModelDetailLevel, ModelElementTypes } from '../../model-definition/types/definitions';
 import { newReference, Reference, newSymbolDeclaration, TreeNode, Attribute, newTreeNode } from '../../model-definition/types/tree';
 import { FileParser } from './fileParser';
@@ -240,7 +241,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		}
 
 		object.attributes = this.parseAttributes(definition, node);
-		object.contextQualifiers = this.parseContextQualifiers(definition, node);
+		object.contextQualifiers = this.parseContextQualifiers(node);
 		return object;
 	}
 
@@ -310,14 +311,13 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		return attribute;
 	}
 
-	private parseContextQualifiers(definition: Definition, node: XmlNode) {
-		const contextQualifierDefinition = definition.contextQualifiers;
-		const contextQualifiers = contextQualifierDefinition ? contextQualifierDefinition(this) : {};
+	private parseContextQualifiers(node: XmlNode) {
+		const contextQualifiers:ContextQualifiers = {};
 		if (node.attributes.obsolete == "yes") {
 			contextQualifiers.isObsolete = true;
 		}
 		if (node.name == "module") {
-			const nameSpace: string = node.attributes["target-namespace"];
+			const nameSpace: string = node.attributes[NAMES.ATTRIBUTE_TARGETNAMESPACE];
 			if (nameSpace) {
 				contextQualifiers.nameSpace = nameSpace;
 			}
