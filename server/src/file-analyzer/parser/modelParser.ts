@@ -184,6 +184,11 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		return this.parsedObjectStack[this.parsedObjectStack.length - 1];
 	}
 
+	// Pop parsed object stack
+	protected popParsedObjectStack() {
+		return this.parsedObjectStack.pop();
+	}
+
 	// Process parsed objects from the parsedObjectStack based on the depth the parser currently is in the xml structure 
 	private processParsedObjectStack() {
 		const context = this.getContextQualifiers();

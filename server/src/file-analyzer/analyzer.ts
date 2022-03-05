@@ -166,10 +166,10 @@ export class Analyzer {
 			const incrementsSorted = increments.sort((a: IncrementalTextDocumentContentChangeEvent, b: IncrementalTextDocumentContentChangeEvent) => positionIsGreaterThan(a.range.start, b.range.start) ? 1 : -1);
 			const fullRange = {
 				start: incrementsSorted[0]?.range.start,
-				end: incrementsSorted[incrementsSorted.length-1]?.range.end
+				end: incrementsSorted[incrementsSorted.length - 1]?.range.end
 			} as Range; // there always is at least one change
 			const coveringNode = this.symbolAndReferenceManager.getNodeCoveringRange(uri, fullRange);
-			if (coveringNode && coveringNode.type! + ModelElementTypes.Document) {
+			if (coveringNode && coveringNode.type != ModelElementTypes.Document) {
 				const oldRange = coveringNode.fullRange;
 				const newRange = this.determineRangeAfterChanges(coveringNode.fullRange, incrementsSorted);
 				const contents = this.getFileContent(uri, newRange);

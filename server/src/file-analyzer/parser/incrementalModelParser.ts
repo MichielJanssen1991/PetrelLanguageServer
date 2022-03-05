@@ -13,10 +13,10 @@ enum IncrementalModelParserState {
 	Is,
 	After
 }
-export class IncrementalModelParser extends ModelParser implements IncrementalParser{
-	private newRange: Range = Range.create(0,0,0,0);
-	private oldRange: Range = Range.create(0,0,0,0);
-	private newContent="";
+export class IncrementalModelParser extends ModelParser implements IncrementalParser {
+	private newRange: Range = Range.create(0, 0, 0, 0);
+	private oldRange: Range = Range.create(0, 0, 0, 0);
+	private newContent = "";
 
 	constructor(uri: string, detailLevel: ModelDetailLevel, modelDefinitionManager: ModelDefinitionManager) {
 		super(uri, detailLevel, modelDefinitionManager);
@@ -24,44 +24,73 @@ export class IncrementalModelParser extends ModelParser implements IncrementalPa
 
 	public updateFile(oldRange: Range, newRange: Range, contents: string) {
 		// this.logStartUpdateFile(contents);
-		
+
 		this.newContent = contents;
 		this.newRange = newRange;
 		this.oldRange = oldRange;
 		this.walknodes(this.results.tree);
-		
+
 		// this.logFinishUpdateFile();
 		return this.results;
 	}
 
 	public walknodes(node: TreeNode) {
-		// A node can be the before/after/in the to be reparsed part of code. 
+		// A node can be before/after/in the to be reparsed part of code. 
 		// Furthermore nodes before the part to be reparsed can be relevant parents or siblings
 		// The parents are used to initialize the object stack used in parsing the part to be reparsed
-		let newNode: TreeNode;
 		switch (this.determineStateForNode(node)) {
 			case IncrementalModelParserState.Before:
 				//No action needed
 				break;
 			case IncrementalModelParserState.Parent:
-				//Build context using parsed object stack
-				this.pushToParsedObjectStack(node,
-					this.modelDefinitionManager.getModelDefinitionForTreeNode(this.results.modelFileContext || ModelFileContext.Unknown, node)
-				);
-				node.children.forEach(child => this.walknodes(child));
-				this.translateNodeRangesParentsOfReparsedPart(node);
+				this.processParentNode(node);
 				break;
 			case IncrementalModelParserState.Is:
-				this.parseFile(this.newContent);
-				newNode = this.getLatestParsedObjectFromStack().parsedObject.children.pop() as TreeNode;
-				this.translateNodeRangesForReparsedPart(newNode);
-				Object.keys(newNode).forEach(key => { (node as any)[key] = (newNode as any)[key]; }
-				);
+				this.processNodeToBeReparsed(node);
 				break;
 			case IncrementalModelParserState.After:
-				this.translateNodeRangesAfterReparsedPart(node);
+				this.processNodeAfterReparsedPart(node);
 				break;
 		}
+	}
+
+	private processParentNode(node: TreeNode) {
+		//Build context using parsed object stack
+		const definition = this.modelDefinitionManager.getModelDefinitionForTreeNode(this.results.modelFileContext || ModelFileContext.Unknown, node);
+		this.pushToParsedObjectStack(node, definition);
+		//Process children
+		node.children.forEach(child => this.walknodes(child));
+		//Clear stack
+		this.popParsedObjectStack();
+		//Translate node ranges of this node (end of fullrange should be moved)
+		this.translateNodeRangesParentsOfReparsedPart(node);
+	}
+
+	private processNodeToBeReparsed(node: TreeNode) {
+		const parent = node.parent;
+		if (parent) {
+			const indexInParent = parent.children.findIndex(n => n == node);
+			const siblingsAfterNode = parent.children.splice(indexInParent + 1);//Removes siblings after node and returns
+			parent.children.pop(); //Remove to be reparsed node itself 
+
+			//Reparse node which will add it to the parent again (top node in parsed object stack)
+			this.parseFile(this.newContent);
+
+			//Translate the new node (as the parseFile only parsed a small piece of code it needs to be translated)
+			this.translateNodeRangesForReparsedPart(parent.children[indexInParent]);
+
+			//Again add the siblings coming after the reparsed node
+			siblingsAfterNode.forEach(sibling => parent.children.push(sibling));
+		} else {
+			//Should never occur
+			throw("Incremental parsing is not implemented for complete document. In this case reparsing should happen using the non-incremental parsing.");
+		}
+	}
+
+	private processNodeAfterReparsedPart(node: TreeNode) {
+		const lines = this.newRange.end.line - this.oldRange.end.line;
+		this.translateNodeAndAttributesVertically(node, lines);
+		node.children.forEach(child => this.processNodeAfterReparsedPart(child));
 	}
 
 	private determineStateForNode(node: TreeNode) {
@@ -83,18 +112,13 @@ export class IncrementalModelParser extends ModelParser implements IncrementalPa
 		return IncrementalModelParserState.After;
 	}
 
+	//Various node translation functions which update the node ranges
 	private translateNodeRangesForReparsedPart(node: TreeNode) {
 		const startLine = this.newRange.start.line;
 		const startCharacter = this.newRange.start.character;
 		this.translateNodeAndAttributesVertically(node, startLine);
 		this.translateNodeAndAttributesHorizontallyIfOnLine(node, startCharacter, startLine);
 		node.children.forEach(child => this.translateNodeRangesForReparsedPart(child));
-	}
-
-	private translateNodeRangesAfterReparsedPart(node: TreeNode) {
-		const lines = this.newRange.end.line - this.oldRange.end.line;
-		this.translateNodeAndAttributesVertically(node, lines);
-		node.children.forEach(child => this.translateNodeRangesAfterReparsedPart(child));
 	}
 
 	private translateNodeRangesParentsOfReparsedPart(node: TreeNode) {
