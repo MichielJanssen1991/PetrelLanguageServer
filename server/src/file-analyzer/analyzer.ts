@@ -70,6 +70,8 @@ export class Analyzer {
 			analyzer.analyzeFiles(javascriptFilePaths, connection, ModelDetailLevel.References);
 
 			connection.console.log(`Analyzer finished after ${getTimePassed()}`);
+
+			analyzer.symbolAndReferenceManager.printLinesOfCodeSummary();
 		}
 
 		return analyzer;
@@ -88,7 +90,6 @@ export class Analyzer {
 			}
 			i++;
 		}
-		this.symbolAndReferenceManager.printLinesOfCodeSummary();
 	}
 
 	public updateDocument(change: DidChangeTextDocumentParams) {
