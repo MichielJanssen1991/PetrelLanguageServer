@@ -2448,7 +2448,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 			matchCondition: {
 				matchFunction: (x) => isIncludeBlockOfType(x, "view"),
 			},
-			children: default_view_children
+			children: [
+				...default_view_children,
+				...default_view_record_children
+			]
 		},
 		{ // attribute
 			...include_block_frontend_declaration_definition,

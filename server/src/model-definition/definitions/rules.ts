@@ -1,6 +1,6 @@
 import { AttributeOption, AttributeTypes, ChildDefinition, Definition, Definitions, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes, ValidationLevels } from '../types/definitions';
 import { isIncludeBlockOfType } from './other';
-import { comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_element, backend_action_call_element, obsolete_attribute, obsolete_message_attribute, is_declaration_attribute, override_rights_attribute, input_element, include_block_declaration_definition, default_children, action_call_children, description_autoadd_attribute, module_element } from './shared';
+import { comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_element, backend_action_call_element, obsolete_attribute, obsolete_message_attribute, is_declaration_attribute, override_rights_attribute, input_element, include_block_declaration_definition, default_children, action_call_children, description_autoadd_attribute, module_element, clear_var_element } from './shared';
 
 const switch_children: ChildDefinition[] = [
 	{
@@ -462,22 +462,7 @@ export const RULE_DEFINITION: Definitions = {
 		],
 		children: []
 	}],
-	"clear-var": [{
-		type: ModelElementTypes.SetVar,
-		description: "Clears the local variable.",
-		attributes: [
-			{
-				name: "name",
-				description: "Name of the local variable to clear.",
-				required: true,
-				autoadd: true
-			},
-			ignore_modelcheck_attribute,
-			ignore_modelcheck_justification_attribute,
-			comment_attribute
-		],
-		children: []
-	}],
+	"clear-var": [clear_var_element],
 	"if": [{
 		type: ModelElementTypes.If,
 		description: "Starts a condition.",

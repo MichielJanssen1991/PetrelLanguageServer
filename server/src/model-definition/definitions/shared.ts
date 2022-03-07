@@ -294,6 +294,23 @@ export const input_element: Definition = {
 	children: []
 };
 
+export const clear_var_element:Definition = {
+	type: ModelElementTypes.ClearVar,
+	description: "Clears the local variable.",
+	attributes: [
+		{
+			name: "name",
+			description: "Name of the local variable to clear.",
+			required: true,
+			autoadd: true
+		},
+		ignore_modelcheck_attribute,
+		ignore_modelcheck_justification_attribute,
+		comment_attribute
+	],
+	children: []
+};
+
 export const include_blocks_element: Definition =
 {
 	description: "Use to group include blocks.",
@@ -788,6 +805,7 @@ export const decorator_element: Definition =
 {
 	type: ModelElementTypes.Decorator,
 	isSymbolDeclaration: true,
+	prefixNameSpace: true,
 	detailLevel: ModelDetailLevel.Declarations,
 	description: "Definition to decorate a target element with extra elements or attributes. It will always get a default argument, named \"TargetName\", which contains the name attribute of the element on which this decorator is applied.",
 	attributes: [
