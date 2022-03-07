@@ -213,6 +213,49 @@ export class SymbolAndReferenceManager {
 		}
 	}
 
+	/**
+	 * printLinesOfCodeSummary: Print a summary of the lines of code and the number of object analyzed
+	 */
+	public printLinesOfCodeSummary() {
+		const lines = {
+			total: 0,
+			rules: 0,
+			views: 0,
+			types: 0,
+			functions: 0,
+			infosets: 0,
+		};
+		const counts = {
+			rules: 0,
+			views: 0,
+			types: 0,
+			functions: 0,
+			infosets: 0,
+		};
+		Object.values(this.uriToTree).forEach(tree => {
+			const lastChildOrEmpty = tree.children.reverse().find(() => true);
+			lines.total += lastChildOrEmpty ? lastChildOrEmpty?.fullRange.end.line : 0;
+			walkTree(
+				tree,
+				node => {
+					const nLines = node.fullRange.end.line - node.fullRange.start.line;
+					switch (node.type) {
+						case ModelElementTypes.Rule: lines.rules += nLines; counts.rules++; break;
+						case ModelElementTypes.View: lines.views += nLines; counts.views++; break;
+						case ModelElementTypes.Type: lines.types += nLines; counts.types++; break;
+						case ModelElementTypes.Function: lines.functions += nLines; counts.functions++; break;
+						case ModelElementTypes.Infoset: lines.infosets += nLines; counts.infosets++; break;
+					}
+				},
+				() => { return; }
+			);
+		});
+		console.log("Number of code lines analyzed:");
+		console.log(lines);
+		console.log("Number of objects analyzed:");
+		console.log(counts);
+	}
+
 	// Below code section contains code for updating the various lookup tables given a update of the parsed tree
 	private processNodeForDeclarations(node: TreeNode) {
 		if (node.isSymbolDeclaration) {

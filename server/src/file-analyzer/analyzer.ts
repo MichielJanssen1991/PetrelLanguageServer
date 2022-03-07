@@ -88,7 +88,7 @@ export class Analyzer {
 			}
 			i++;
 		}
-		return { numberOfFiles, i };
+		this.symbolAndReferenceManager.printLinesOfCodeSummary();
 	}
 
 	public updateDocument(change: DidChangeTextDocumentParams) {

@@ -10,6 +10,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 	protected modelElementType = ModelElementTypes.Rule;
 	protected detailLevel: ModelDetailLevel = ModelDetailLevel.All;
 	protected matchCondition = undefined
+	
 	private ruleLocalNames: Attribute[] = [];
 	private ruleLocalNameReferences: Attribute[] = [];
 
