@@ -12,10 +12,10 @@ export const profile_include_element: Definition =
 			name: "profile",
 			description: "The profile to grant to the user.",
 			autoadd: true,
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Profile
-			}
+			}]
 		},
 		comment_attribute
 	],
@@ -30,37 +30,37 @@ const profile_type_element: Definition = {
 			autoadd: true,
 			description: "The type reference.",
 			required: true,
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Type
-			}
+			}]
 		},
 		{
 			name: "read",
 			autoadd: true,
-			type: default_permission_attribute_type
+			types: [default_permission_attribute_type]
 		},
 		{
 			name: "update",
-			type: default_permission_attribute_type
+			types: [default_permission_attribute_type]
 		},
 		{
 			name: "create",
-			type: default_permission_attribute_type
+			types: [default_permission_attribute_type]
 		},
 		{
 			name: "delete",
-			type: default_permission_attribute_type
+			types: [default_permission_attribute_type]
 		},
 		{
 			name: "inherit-base-type-filters",
 			description: "inherit base type filters",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "override-inherited",
 			description: "override inherited",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -71,7 +71,7 @@ const profile_type_element: Definition = {
 						name: "",
 						description: "none"
 					}]
-			}
+			}]
 		},
 		ignore_modelcheck_attribute],
 	children: [
@@ -154,20 +154,18 @@ const include_block_security_declaration_definition: Definition = {
 			description: "For which element to apply security.",
 			required: true,
 			autoadd: true,
-			type:
-			{
+			types: [{
 				type: AttributeTypes.Enum,
 				options: meta_attribute_options
-			}
+			}]
 		},
 		{
 			name: "meta-index",
 			description: "For which element to apply security.",
-			type:
-			{
+			types: [{
 				type: AttributeTypes.Enum,
 				options: meta_attribute_options
-			}
+			}]
 		}
 	]
 };
@@ -429,7 +427,7 @@ export const SECURITY_DEFINITION: Definitions = {
 			{
 				name: "overwrite-relation-filter",
 				description: "overwrite relation filter",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			comment_attribute
 		],
@@ -488,7 +486,7 @@ export const SECURITY_DEFINITION: Definitions = {
 		attributes: [{
 			name: "start-mode",
 			autoadd: true,
-			type: default_startmode_attribute_type
+			types: [default_startmode_attribute_type]
 		}],
 		children: [
 			{
@@ -513,22 +511,22 @@ export const SECURITY_DEFINITION: Definitions = {
 				required: true,
 				autoadd: true,
 				description: "Reference to the rule.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Rule
-				}
+				}]
 			},
 			{
 				name: "external-invocable",
 				autoadd: true,
 				description: "Allow this rule to be invoked externally, e.g. from the frontend or a webservice. Setting this flag to 'yes' implies that a hacker can invoke the rule with any input.",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "apply-sal",
 				autoadd: true,
 				description: "Apply SAL. Rule can be created to the placed in an unsafe environment by setting the flag apply-sal to 'no'. (Everything in this unsafe environment (inclusive events) got executed without sal checks!)",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			ignore_modelcheck_attribute,
 			comment_attribute],
@@ -542,10 +540,10 @@ export const SECURITY_DEFINITION: Definitions = {
 				description: "The view reference.",
 				required: true,
 				autoadd: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.View
-				}
+				}]
 			},
 			{
 				name: "type",
@@ -554,19 +552,19 @@ export const SECURITY_DEFINITION: Definitions = {
 			},
 			{
 				name: "read",
-				type: default_permission_attribute_type
+				types: [default_permission_attribute_type]
 			},
 			{
 				name: "update",
-				type: default_permission_attribute_type
+				types: [default_permission_attribute_type]
 			},
 			{
 				name: "create",
-				type: default_permission_attribute_type
+				types: [default_permission_attribute_type]
 			},
 			{
 				name: "delete",
-				type: default_permission_attribute_type
+				types: [default_permission_attribute_type]
 			},
 			ignore_modelcheck_attribute],
 		children: []
@@ -583,16 +581,16 @@ export const SECURITY_DEFINITION: Definitions = {
 			{
 				name: "username-expiration-minutes",
 				description: "Sign authentication: The time that the user name is automatically pre-filled in minutes.",
-				type: {
+				types: [{
 					type: AttributeTypes.Numeric
-				}
+				}]
 			},
 			{
 				name: "expiration-minutes",
 				description: "Sign authentication: The time the authentication of this authenticator remains valid in minutes.",
-				type: {
+				types: [{
 					type: AttributeTypes.Numeric
-				}
+				}]
 			},
 			{
 				name: "token-minimum-size",
@@ -602,9 +600,9 @@ export const SECURITY_DEFINITION: Definitions = {
 					condition: "==",
 					value: "Token"
 				}],
-				type: {
+				types: [{
 					type: AttributeTypes.Numeric
-				}
+				}]
 			},
 			{
 				name: "token-skip-verification-attributes",
@@ -620,7 +618,7 @@ export const SECURITY_DEFINITION: Definitions = {
 					condition: "==",
 					value: "Token"
 				}],
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "verification-type",
@@ -636,10 +634,10 @@ export const SECURITY_DEFINITION: Definitions = {
 					condition: "==",
 					value: "Token"
 				}],
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Type
-				}
+				}]
 			},
 			{
 				name: "verification-type-id-attribute-name",
@@ -655,10 +653,10 @@ export const SECURITY_DEFINITION: Definitions = {
 					condition: "==",
 					value: "Token"
 				}],
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Attribute // TODO: Limit to Attributes of verification-type
-				}
+				}]
 			},
 			{
 				name: "verification-attribute",
@@ -674,10 +672,10 @@ export const SECURITY_DEFINITION: Definitions = {
 					condition: "==",
 					value: "Token"
 				}],
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Attribute // TODO: Limit to Attributes of verification-type
-				}
+				}]
 			},
 
 		],
@@ -701,10 +699,10 @@ export const SECURITY_DEFINITION: Definitions = {
 		description: "Excludes the relation (only applicable when start mode is 'all').",
 		attributes: [{
 			name: "relation", // Attr
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Attribute
-			}
+			}]
 		}],
 		children: [{
 			element: "type" // TODO: Parent type reference

@@ -1876,7 +1876,7 @@ export const search_element: Definition = {
 		{
 			name: "add-relations",
 			description: "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "filter",
@@ -1885,7 +1885,7 @@ export const search_element: Definition = {
 		{
 			name: "all-when-empty-filter",
 			description: "If 'no' the search returns nothing (matches no record) when the filter is empty or if all the parameter based search columns are left out; if 'yes' it  all records (matches all records).",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		comment_attribute
 	],
