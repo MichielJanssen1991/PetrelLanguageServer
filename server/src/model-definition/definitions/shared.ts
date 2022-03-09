@@ -1132,6 +1132,7 @@ const action_output_element: Definition = {
 export const action_call_output_elements: Definition[] = [
 	{	// infoset output remote name
 		...action_output_element,
+		detailLevel: ModelDetailLevel.References,
 		description: "Output of the infoset action.",
 		matchCondition: {
 			matchFunction: (x) => !isLocalNameReference(x),
@@ -1158,6 +1159,7 @@ export const action_call_output_elements: Definition[] = [
 	{	// infoset output local name
 		...action_output_element,
 		description: "Output of the infoset action.",
+		detailLevel: ModelDetailLevel.References, 
 		matchCondition: {
 			matchFunction: (x) => isLocalNameReference(x),
 			ancestors: [{
