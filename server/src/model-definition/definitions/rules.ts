@@ -1,5 +1,5 @@
 import { AttributeOption, AttributeTypes, ChildDefinition, Definition, Definitions, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes, ValidationLevels } from '../types/definitions';
-import { isIncludeBlockOfType, isTypeOfAction } from './other';
+import { isIncludeBlockOfType} from './other';
 import { comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_elements, obsolete_attribute, obsolete_message_attribute, is_declaration_attribute, override_rights_attribute, input_element, include_block_declaration_definition, default_children, action_call_children, description_autoadd_attribute, module_element, clear_var_element, backend_action_call_elements } from './shared';
 
 const switch_children: ChildDefinition[] = [
@@ -275,7 +275,6 @@ export const RULE_DEFINITION: Definitions = {
 		{
 			type: ModelElementTypes.Output,
 			matchCondition: {
-				matchFunction: (x) => isTypeOfAction(x, "Rule"),
 				ancestors: [{
 					type: ModelElementTypes.Rule
 				},
