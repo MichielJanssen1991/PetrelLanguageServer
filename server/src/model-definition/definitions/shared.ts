@@ -230,7 +230,6 @@ export const default_children: ChildDefinition[] = [
 	},
 	{
 		element: "merge-instruction",
-		occurence: "once"
 	},
 	{
 		element: "model-condition"
@@ -294,7 +293,7 @@ export const input_element: Definition = {
 	children: []
 };
 
-export const clear_var_element:Definition = {
+export const clear_var_element: Definition = {
 	type: ModelElementTypes.ClearVar,
 	description: "Clears the local variable.",
 	attributes: [
@@ -1192,7 +1191,6 @@ export const action_call_output_elements: Definition[] = [
 				description: "Name for a destination field or variable.",
 				autoadd: true
 			},
-			
 		],
 		children: []
 	}
@@ -1742,6 +1740,32 @@ export const search_column_element: Definition =
 		},
 	],
 	children: []
+};
+
+export const scalar_aggregate_query_element: Definition =
+{
+	description: "Specifies an aggregate query that returns a single value.",
+	attributes: [
+		{
+			name: "type",
+			description: "The type to query.",
+			required: true
+		},
+		{
+			name: "filter",
+			description: "A reference to a filter on the type being queryed. May also be defined inline.",
+		}
+	],
+	children: [
+		{
+			element: "search",
+			occurence: "once"
+		},
+		{
+			element: "aggregate-function",
+			occurence: "at-least-once"
+		},
+	]
 };
 
 export const search_column_submatch_element: Definition =
