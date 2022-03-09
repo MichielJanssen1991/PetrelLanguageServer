@@ -56,10 +56,9 @@
         ],
         "languages": [
             {
-                "id": "xml",
+                "id": "petrel",
                 "aliases": [
-                    "petrel",
-                    "xml"
+                    "Petrel"
                 ],
                 "extensions": [
                     ".xml"
@@ -69,7 +68,7 @@
         ],
         "grammars": [
             {
-                "language": "xml",
+                "language": "petrel",
                 "scopeName": "text.Petrel",
                 "path": "./syntaxes/petrel.tmLanguage.json"
             }
