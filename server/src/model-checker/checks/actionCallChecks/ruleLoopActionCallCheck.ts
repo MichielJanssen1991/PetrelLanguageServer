@@ -33,7 +33,7 @@ export class RuleLoopActionCallCheck extends ActionCallCheck {
 		const actionArguments = this.modelManager.getActionArguments(node);
 		const referencedSymbol = this.modelManager.getReferencedObject(subRef);
 		const argumentNames = new Set(actionArguments.map(x => this.modelManager.getActionArgumentRemoteName(x)));
-		if (subRef.type == ModelElementTypes.Rule) {
+		if (subRef.types.includes(ModelElementTypes.Rule)) {
 			const infosetRef = node.attributes[NAMES.ATTRIBUTE_INFOSET] as Reference;
 			const infoset = infosetRef ? this.modelManager.getReferencedObject(infosetRef) : undefined;
 			if (infoset) {

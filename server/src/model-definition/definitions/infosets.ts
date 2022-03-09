@@ -26,20 +26,18 @@ const include_block_infoset_declaration_definition: Definition = {
 			description: "For which element to apply rules.",
 			required: true,
 			autoadd: true,
-			type:
-			{
+			types: [{
 				type: AttributeTypes.Enum,
 				options: meta_attribute_options
-			}
+			}]
 		},
 		{
 			name: "meta-index",
 			description: "For which element to apply rules.",
-			type:
-			{
+			types: [{
 				type: AttributeTypes.Enum,
 				options: meta_attribute_options
-			}
+			}]
 		}		
 	]
 };
@@ -151,22 +149,22 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				name: "type",
 				description: "The data type of the query.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Type
-				},
+				}],
 			},
 			{
 				name: "sort",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "sort-column",
 				description: "A single column on which the result is sorted.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Attribute
-				},
+				}],
 				visibilityConditions: [
 					{
 						attribute: "sort",
@@ -179,7 +177,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				name: "sort-order",
 				description: "The order how the sort-column is ordered.",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -196,7 +194,7 @@ export const INFOSET_DEFINITION: Definitions = {
 							description: "sort order descending"
 						},
 					]
-				},
+				}],
 				visibilityConditions: [
 					{
 						attribute: "sort-column",
@@ -208,7 +206,7 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				name: "add-count",
 				description: "Use add-count=\"no\" on infosets to gain performance if the count is not used. By default (when the setting default-add-count-in-search' is not defined), the count of the records is included when the infoset XML list is calculated, setting the attribute \"total-records\" on the XML list. However, this comes with a performance cost: the query to compute the total amount of records is heavy. (Notice this does not apply to a computed piped list of IIDs.) If the infoset is used in the frontend, the count is necessary if the total number of records has to be shown; this will be computed automatically. (Notice it is also possible to use the \"More\" button in a list view to avoid computing the total number of records.)",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -223,14 +221,13 @@ export const INFOSET_DEFINITION: Definitions = {
 							default: true
 						}
 					]
-				}
-	
+				}]
 			},
 			{
 				name: "add-relations",
 				description: "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
 				autoadd: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -241,25 +238,24 @@ export const INFOSET_DEFINITION: Definitions = {
 							default: true
 						}
 					]
-				}
-	
+				}]	
 			},
 			{
 				name: "filter",
 				description: "The type filter to apply for search.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					options: [
 						{
 							name: "$type/filters/search/@name"	// TODO
 						}
 					]
-				}
+				}]
 			},
 			{
 				name: "all-when-empty-filter",
 				description: "If 'no' the search returns nothing (matches no record) when the filter is empty or if all the parameter based search columns are left out; if 'yes' it returns all records (matches all records).",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -270,7 +266,7 @@ export const INFOSET_DEFINITION: Definitions = {
 							name: "no"
 						}
 					]
-				}
+				}]
 			},
 			{
 				name: "alias",
@@ -363,9 +359,9 @@ export const INFOSET_DEFINITION: Definitions = {
 				name: "steps",
 				description: "Integer that specifies in how much steps to divide max-min x-values.",
 				required: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Numeric
-				}
+				}]
 			},
 		],
 		children: []
@@ -381,32 +377,32 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				name: "filter",
 				description: "A reference to a filter on the type being queryed. May also be defined inline.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.TypeFilter // TODO: should not be visible if child group is added
-				}
+				}]
 			},
 			{
 				name: "page-size",
 				description: "The number of results per page. Default, no paging is used.",
-				type: {
+				types: [{
 					type: AttributeTypes.Numeric
-				}
+				}]
 			},
 			{
 				name: "page-number",
 				description: "The number of the page to return. Default, the first page is returned.",
-				type: {
+				types:[ {
 					type: AttributeTypes.Numeric
-				}
+				}]
 			},
 			{
 				name: "result-type",
 				description: "The result type of the aggregate results. If not specified, returns results of the Platform.AggregateResults type.</summary>Define a type inheriting from Platform.AggregateResults. Relation attributes may be added to this type, and views can be created for it.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Type
-				}
+				}]
 			},
 			{
 				name: "grouping",
@@ -459,16 +455,16 @@ export const INFOSET_DEFINITION: Definitions = {
 				name: "name",
 				description: "Specifies an attribute of the type to order by.",
 				required: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Attribute
-				}
+				}]
 			},
 			{
 				name: "order",
 				description: "The type of ordering over the values of the property to order by.",
 				autoadd: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -481,7 +477,7 @@ export const INFOSET_DEFINITION: Definitions = {
 							description: "Descending"
 						},
 					]
-				}
+				}]
 			},
 		],
 		children: []
@@ -523,16 +519,16 @@ export const INFOSET_DEFINITION: Definitions = {
 				name: "attribute",
 				description: "One of the attributes in the result data. If left empty, the 'iid' attribute will be fetched.",
 				required: true,
-				type: {		// TODO: add iid to the list of references since it is not a defined attribute of the type
+				types: [{		// TODO: add iid to the list of references since it is not a defined attribute of the type
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Attribute,
-				},
+				}],
 				detailLevel: ModelDetailLevel.SubReferences
 			},
 			{
 				name: "operator",
 				description: "May be used as a scalar over the result data. When left empty, the ''attribute'' value of the first record is returned.",
-				type: {		
+				types: [{		
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -552,7 +548,7 @@ export const INFOSET_DEFINITION: Definitions = {
 							obsolete: true
 						},
 					]
-				},
+				}],
 				detailLevel: ModelDetailLevel.SubReferences
 			},
 			ignore_modelcheck_attribute,
@@ -573,11 +569,10 @@ export const INFOSET_DEFINITION: Definitions = {
 		attributes: [
 			{
 				name: "name",
-				type:
-				{
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Action,
-				}
+				}]
 			},
 			{
 				name: "input-all"
@@ -637,21 +632,21 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				name: "type",
 				description: "The counter representation.",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
 							name: "numeric"
 						}
 					]
-				}
+				}]
 			},
 			{
 				name: "places",
 				description: "Length of string. Empty means: not restricted.",
-				type: {
+				types: [{
 					type: AttributeTypes.Numeric
-				}
+				}]
 			},
 			comment_attribute
 		],
@@ -665,10 +660,10 @@ export const INFOSET_DEFINITION: Definitions = {
 				name: "type",
 				required: true,
 				description: "The type of the data object to delete.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Type
-				}
+				}]
 			},
 			{
 				name: "iid",
@@ -702,34 +697,34 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				name: "add-relations",
 				description: "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "pagesize",
 				description: "The number of occurrences in a page.",
-				type: {
+				types: [{
 					type: AttributeTypes.Numeric
-				}
+				}]
 			},
 			{
 				name: "pagenumber",
 				description: "The page number to be retrieved.",
-				type: {
+				types: [{
 					type: AttributeTypes.Numeric
-				}
+				}]
 			},
 			{
 				name: "sort-column",
 				description: "A single column on which the result is sorted.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Attribute
-				}
+				}]
 			},
 			{
 				name: "sort-order",
 				description: "The order how the sort-column is ordered.",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -741,7 +736,7 @@ export const INFOSET_DEFINITION: Definitions = {
 							description: "Descending"
 						},
 					]
-				},
+				}],
 				visibilityConditions: [
 					{
 						attribute: "sort-column",
@@ -787,20 +782,20 @@ export const INFOSET_DEFINITION: Definitions = {
 			{
 				name: "all-when-empty-filter",
 				description: "If 'no' the search returns nothing (matches no record) when the filter is empty or if all the parameter based search columns are left out; if 'yes' it returns all records (matches all records).",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "add-relations",
 				description: "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "filter",
 				description: "The type filter to apply for search.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Type
-				}
+				}]
 			},
 			{
 				name: "alias",

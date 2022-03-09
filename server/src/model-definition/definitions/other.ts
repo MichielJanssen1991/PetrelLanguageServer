@@ -22,57 +22,57 @@ export const OTHER_DEFINITION: Definitions =
 			matchFunction: (nodeContext: IXmlNodeContext) => !isActionDefinition(nodeContext) && !isModelCheckRuleAction(nodeContext),
 		},
 		attributes: [{
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Action,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 			name: NAMES.ATTRIBUTE_NAME
 		}, {
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Rule,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 			name: NAMES.ATTRIBUTE_RULE
 		},
 		{
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Rule,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 			name: NAMES.ATTRIBUTE_ONERRORRULE
 		},
 		{
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Infoset,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 			name: NAMES.ATTRIBUTE_INFOSET
 		},
 		{
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.InfosetVariable,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 			name: NAMES.ATTRIBUTE_VARIABLE
 		},
 		{
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Function,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 			name: NAMES.ATTRIBUTE_FUNCTION
 		},
 		{
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Type,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 			name: NAMES.ATTRIBUTE_TYPE
 		}],

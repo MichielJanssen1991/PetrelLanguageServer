@@ -23,20 +23,22 @@ export class ReferencedObjectExistsCheck extends ModelCheck {
 	}
 
 	private verifyReferencedObjectExists(reference: Reference, options:ModelCheckerOptions) {
-		if (!standaloneObjectTypes.has(reference.type)) { return; } //Nodes which require context are checked as part of their parent
+		if (!reference.types.some(type=>standaloneObjectTypes.has(type))) { return; } //Nodes which require context are checked as part of their parent
+		
 		const referencedSymbol = this.modelManager.getReferencedObject(reference);
 		const name = reference.value;
-		const referenceNotFound = !referencedSymbol && name && !attributeValueIsAVariable(name); 
+		const referenceNotFound = (!referencedSymbol && name && !attributeValueIsAVariable(name)) as boolean;
 		if (referenceNotFound) {
 			this.addMessage(reference.range, "ROC0001", CHECKS_MESSAGES.REFERENCE_NOT_FOUND(reference));
 		}
 		if (referencedSymbol && name != referencedSymbol.name && name.toLowerCase() == referencedSymbol.name.toLowerCase() && options.detailLevel >= ModelDetailLevel.SubReferences) {
 			this.addMessage(reference.range, "ROC0002", CHECKS_MESSAGES.REFERENCE_CAPITALIZATION(referencedSymbol, reference));
 		}
-		const symbolIsObsolete = referencedSymbol && referencedSymbol.contextQualifiers.isObsolete;
+		const symbolIsObsolete = (referencedSymbol && referencedSymbol.contextQualifiers.isObsolete) as boolean;
 		if (symbolIsObsolete) {
 			this.addMessage(reference.range, "ROC0003", CHECKS_MESSAGES.REFERENCE_OBSOLETE(reference));
 		}
+		
 		return !symbolIsObsolete && !referenceNotFound;
 		
 	}

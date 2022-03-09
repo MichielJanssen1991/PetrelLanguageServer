@@ -201,29 +201,31 @@ export class CompletionProvider {
 		if (attribute && elementDefinition && elementDefinition.attributes) {
 			const attrName = typeof (attribute) == 'string' ? attribute : (attribute as Reference).name;
 			const attrDefinition = elementDefinition.attributes.find(attr => attr.name == attrName);
-			const type = attrDefinition?.type;
-			if (attrDefinition && type) {
-				if (type.type == AttributeTypes.Reference && type.relatedTo) {
-					switch (type.relatedTo) {
-						case ModelElementTypes.RuleContext:
-							symbols = context
-								.getFromContext(ModelElementTypes.Rule, [
-									{type: ModelElementTypes.ActionCallOutput, attribute: NAMES.ATTRIBUTE_LOCALNAME},
-									{type: ModelElementTypes.Input, attribute: NAMES.ATTRIBUTE_NAME},
-									{type: ModelElementTypes.SetVar, attribute: NAMES.ATTRIBUTE_NAME}
-								])
-								?.availableParams.filter(param=>param!=undefined).map(param => ({ label: param })) || [
-									{ label: "no params found" },
-								];
-							break;
-						default:
-							symbols = this.symbolAndReferenceManager.getAllSymbolsForType(type.relatedTo).filter(x=>x.name!=undefined).map(x=>({ label: x.name })) || [
-								{ label: `no ${type.relatedTo}s found` }];
-							break;
+			const types = attrDefinition?.types;
+			if (attrDefinition && types) {
+				types.forEach(type => {
+					if (type.type == AttributeTypes.Reference && type.relatedTo) {
+						switch (type.relatedTo) {
+							case ModelElementTypes.RuleContext:
+								symbols = context
+									.getFromContext(ModelElementTypes.Rule, [
+										{type: ModelElementTypes.ActionCallOutput, attribute: NAMES.ATTRIBUTE_LOCALNAME},
+										{type: ModelElementTypes.Input, attribute: NAMES.ATTRIBUTE_NAME},
+										{type: ModelElementTypes.SetVar, attribute: NAMES.ATTRIBUTE_NAME}
+									])
+									?.availableParams.filter(param=>param!=undefined).map(param => ({ label: param })) || [
+										{ label: "no params found" },
+									];
+								break;
+							default:
+								symbols = this.symbolAndReferenceManager.getAllSymbolsForType(type.relatedTo).filter(x=>x.name!=undefined).map(x=>({ label: x.name })) || [
+									{ label: `no ${type.relatedTo}s found` }];
+								break;
+						}
+					} else if (type.type == AttributeTypes.Enum && type.options) {
+						symbols = type.options.filter(option=>!option.obsolete).map(option => ({ label: option.name }));
 					}
-				} else if (type.type == AttributeTypes.Enum && type.options) {
-					symbols = type.options.filter(option=>!option.obsolete).map(option => ({ label: option.name }));
-				}
+				});
 			}
 		}
 		return symbols;
@@ -302,16 +304,17 @@ export class CompletionProvider {
 		const attributes = childsAttributes?.filter(attribute => (attribute.autoadd || attribute.required)).map((attribute, i) => {
 			// get element attributes. When element is not a child element (because of the recursive call) then the 'tabs' are applied
 			let attributeOptions = "";
-			const attributeType = attribute.type;
-			if (attributeType) {
-				if (attributeType.type == AttributeTypes.Enum && attributeType.options) {
-					if (attributeType.options.find(option => option.default)) {
-						attributeOptions = `|${attributeType.options.find(option => option.default)?.name}|`;
-					} else if (tabIndent == "") {
-						attributeOptions += `|${attributeType.options.map(option => option.name).join(',')}|`;
+			attribute.types?.forEach(attributeType => {
+				if (attributeType) {
+					if (attributeType.type == AttributeTypes.Enum && attributeType.options) {
+						if (attributeType.options.find(option => option.default)) {
+							attributeOptions = `|${attributeType.options.find(option => option.default)?.name}|`;
+						} else if (tabIndent == "") {
+							attributeOptions += `|${attributeType.options.map(option => option.name).join(',')}|`;
+						}
 					}
 				}
-			}
+			});
 			// only parent node can use tabs... (tabIndent empty is only on the top element level. Recursive children gets a \t in the tabIndent)
 			const attrValue = (tabIndent == "") ? `\${${i + 1}${attributeOptions}}` : `${attributeOptions.replace(/\|/g, "")}`;
 

@@ -36,7 +36,7 @@ export const obsolete_attribute: ElementAttribute =
 {
 	name: "obsolete",
 	description: "Set to yes if this model entity is obsolete. This means another way of modeling is prefered and this old functionality may be removed in the next version.",
-	type: default_yes_no_attribute_type
+	types: [default_yes_no_attribute_type]
 };
 
 export const obsolete_message_attribute: ElementAttribute =
@@ -56,7 +56,7 @@ export const override_rights_attribute: ElementAttribute =
 {
 	name: "override-rights",
 	description: "May restrict which layers can override / extend this declaration.",
-	type: {
+	types: [{
 		type: AttributeTypes.Enum,
 		options: [
 			{
@@ -80,21 +80,21 @@ export const override_rights_attribute: ElementAttribute =
 				description: "No override allowed, not even on the same level"
 			}
 		]
-	}
+	}]
 };
 
 export const is_declaration_attribute: ElementAttribute =
 {
 	name: "is-declaration",
 	description: "May be used to have a metadata item which only specifies override rights and not specifies an instance.",
-	type: default_yes_no_attribute_type
+	types: [default_yes_no_attribute_type]
 };
 
 export const is_public_attribute: ElementAttribute =
 {
 	name: "is-public",
 	description: "Indicates whether this entity is part of the public API and exposed to other models using it. NOTE: There is currently no validation of the contract, and this property is only used for the unused entities model check, but features may be added later.",
-	type: default_yes_no_attribute_type
+	types: [default_yes_no_attribute_type]
 };
 
 export const description_attribute: ElementAttribute =
@@ -273,7 +273,7 @@ export const input_element: Definition = {
 			description: "If required is set to yes, an exception will be thrown if the input argument is not present.",
 			autoadd: true,
 			detailLevel: ModelDetailLevel.Declarations,
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -284,7 +284,7 @@ export const input_element: Definition = {
 						name: "no"
 					}
 				]
-			}
+			}]
 		},
 		ignore_modelcheck_attribute,
 		ignore_modelcheck_justification_attribute,
@@ -339,7 +339,7 @@ export const merge_instruction_element: Definition =
 			name: "value",
 			description: "",
 			required: true,
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -349,7 +349,7 @@ export const merge_instruction_element: Definition =
 						name: "inheritance-insertion-point"
 					},
 				]
-			}
+			}]
 		},
 		comment_attribute
 	],
@@ -368,18 +368,18 @@ export const single_aggregate_query_element: Definition =
 		{
 			name: "filter",
 			description: "A reference to a filter on the type being queryed. May also be defined inline.",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.TypeFilter // TODO: should not be visible if child group is added
-			}
+			}]
 		},
 		{
 			name: "result-type",
 			description: "The result type of the aggregate results. If not specified, returns results of the Platform.AggregateResults type.</summary>Define a type inheriting from Platform.AggregateResults. Relation attributes may be added to this type, and views can be created for it.",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Type
-			}
+			}]
 		}
 	],
 	children: [
@@ -423,7 +423,7 @@ export const aggregate_function_element: Definition =
 		{
 			name: "name",
 			description: "The function to apply.",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -446,7 +446,7 @@ export const aggregate_function_element: Definition =
 						name: "count"
 					},
 				]
-			}
+			}]
 		},
 		{
 			name: "attribute",
@@ -474,20 +474,20 @@ const action_call_element: Definition = {
 			description: "The action to perform.",
 			autoadd: true,
 			required: true,
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Action
-			}
+			}]
 		},
 		{
 			name: "input-all",
 			description: "If yes, all available local variables (in the frontend, the non-data bound as well as the data bound variables) will be passed to the action. Default is no.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "output-all",
 			description: "If yes, all outputs returned by the action will be made available locally (in the frontend as non-data bound variables). Default is no.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		ignore_modelcheck_attribute,
 		ignore_modelcheck_justification_attribute,
@@ -509,7 +509,7 @@ export const backend_action_call_elements: Definition[] = [
 			{
 				name: "user-created",
 				description: "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
-				type: default_yes_no_attribute_type,
+				types: [default_yes_no_attribute_type],
 				visibilityConditions: [
 					{
 						attribute: "name",
@@ -524,10 +524,10 @@ export const backend_action_call_elements: Definition[] = [
 				// Despite it is not visible, the attribute value context provider uses the type definition
 				name: "rulename",
 				description: "",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Rule
-				},
+				}],
 				visibilityConditions: [
 					{
 						attribute: "name",
@@ -567,7 +567,7 @@ export const model_condition_element: Definition =
 			name: "operator",
 			description: "The operator to compare the setting value and the specified value.",
 			autoadd: true,
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -610,7 +610,7 @@ export const model_condition_element: Definition =
 						description: "less than (string compare)"
 					},
 				]
-			}
+			}]
 		},
 		{
 			name: "value",
@@ -631,10 +631,10 @@ export const include_element: Definition =
 			name: "block",
 			description: "A block to include.",
 			autoadd: true,
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.IncludeBlock
-			},
+			}],
 			visibilityConditions: [
 				{
 					attribute: "file",
@@ -657,18 +657,18 @@ export const include_element: Definition =
 		{
 			name: "is-fragment",
 			description: "If the include is a fragment such that there is no overlap with other parts: the code is included without looking for identical entities to merge.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "in-modeler",
 			description: "If the value from this attribute is no, the include file is not loaded in the modeler as include.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "precedence",
 			description: "If the included block has import precedence. Default, included XML has no import precedence (thus the included XML can be overridden by the includer). When setting precedence to an include, the present XML is overridden by the included.",
 			obsolete: true,
-			type: default_yes_no_attribute_type,
+			types: [default_yes_no_attribute_type],
 			visibilityConditions: [
 				{
 					attribute: "is-fragment",
@@ -680,7 +680,7 @@ export const include_element: Definition =
 		{
 			name: "move-merged-childs",
 			description: "If the included block moves children that the included block and the current context have in common up to the include point. Default, merged children are moved.",
-			type: default_yes_no_attribute_type,
+			types: [default_yes_no_attribute_type],
 			visibilityConditions: [
 				{
 					attribute: "is-fragment",
@@ -693,7 +693,7 @@ export const include_element: Definition =
 			name: "include-once",
 			description: "If this include should be skipped if the file was already included before. (Notice that this only looks to includes specified *before* this include, not to possible includes coming *after* this include. This is also inevitable for preserving 'precendence' behaviour.) (Due to the look-behind behaviour, 'precedence' does not work together with this attribute.)",
 			autoadd: true,
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -704,7 +704,7 @@ export const include_element: Definition =
 						name: "no"
 					}
 				]
-			},
+			}],
 			visibilityConditions: [
 				{
 					attribute: "presedence",
@@ -760,10 +760,10 @@ export const decoration_element: Definition =
 			name: "name",
 			required: true,
 			autoadd: true,
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Decorator
-			}
+			}]
 		},
 		comment_attribute
 	],
@@ -849,8 +849,7 @@ export const decorator_input_element: Definition =
 		{
 			name: "required",
 			autoadd: true,
-			type:
-			{
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -861,7 +860,7 @@ export const decorator_input_element: Definition =
 						name: "no"
 					}
 				]
-			}
+			}]
 		},
 	],
 	children: []
@@ -940,7 +939,7 @@ export const view_argument_element: Definition = {
 		{
 			name: "parseType",
 			description: "The type to which the argument value should be parsed.",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -948,12 +947,12 @@ export const view_argument_element: Definition = {
 						default: true
 					}
 				]
-			}
+			}]
 		},
 		{
 			name: "precondition",
 			description: "A condition to check the value with.",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -961,22 +960,22 @@ export const view_argument_element: Definition = {
 						default: true
 					}
 				]
-			}
+			}]
 		},
 		{
 			name: "bounded",
 			description: "This indicates whether the field corresponds with a field from the related type.</summary> If the field is \"data bound\":[Model_Frontend_Bounded] (saved in the data). Useful when displaying values not in the persistence. A non-data bound field is a free form field that is not linked to a database attribute.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "search",
 			description: "If the argument has to be used as a filter on the corresponding attribute. Default = yes.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "condition",
 			description: "The search condition",
-			type: search_condition_options_attribute_type,
+			types: [search_condition_options_attribute_type],
 			visibilityConditions: [
 				{
 					attribute: "search",
@@ -988,7 +987,7 @@ export const view_argument_element: Definition = {
 		{
 			name: "search-when-empty",
 			description: "If the filter argument has to be used when null.",
-			type: default_yes_no_attribute_type,
+			types: [default_yes_no_attribute_type],
 			visibilityConditions: [
 				{
 					attribute: "search",
@@ -1000,7 +999,7 @@ export const view_argument_element: Definition = {
 		{
 			name: "fill-as-default",
 			description: "If the argument has to be used as a default value for attribute with that name. Default = yes.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		ignore_modelcheck_attribute,
 		ignore_modelcheck_justification_attribute,
@@ -1039,7 +1038,7 @@ export const action_argument_element: Definition = {
 		{
 			name: "parseType",
 			description: "The type to which the argument value should be parsed.",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -1047,12 +1046,12 @@ export const action_argument_element: Definition = {
 						default: true
 					}
 				]
-			}
+			}]
 		},
 		{
 			name: "precondition",
 			description: "A condition to check the value with.",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -1060,12 +1059,12 @@ export const action_argument_element: Definition = {
 						default: true
 					}
 				]
-			}
+			}]
 		},
 		{
 			name: "bounded",
 			description: "This indicates whether the field corresponds with a field from the related type.</summary> If the field is \"data bound\":[Model_Frontend_Bounded] (saved in the data). Useful when displaying values not in the persistence. A non-data bound field is a free form field that is not linked to a database attribute.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		ignore_modelcheck_attribute,
 		ignore_modelcheck_justification_attribute,
@@ -1096,19 +1095,19 @@ const action_output_element: Definition = {
 		{
 			name: "postcondition",
 			description: "A condition to check the value with.",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
 						name: "is not empty"
 					}
 				]
-			}
+			}]
 		},
 		{
 			name: "override-inherited",
 			description: "A condition to check the value with.",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -1120,7 +1119,7 @@ const action_output_element: Definition = {
 						description: "no"
 					}
 				]
-			}
+			}]
 		},
 		comment_attribute,
 		ignore_modelcheck_attribute,
@@ -1147,10 +1146,16 @@ export const action_call_output_elements: Definition[] = [
 				name: "remote-name",
 				description: "Name for a destination field or variable.",
 				autoadd: true,
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.InfosetVariable,
-				},
+				types: [ 
+					{
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.InfosetVariable,
+					},
+					{
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.Infoset,
+					},
+				],
 				detailLevel: ModelDetailLevel.References
 			}
 		],
@@ -1173,10 +1178,10 @@ export const action_call_output_elements: Definition[] = [
 				name: "local-name",
 				description: "Name for a destination field or variable.",
 				autoadd: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.InfosetVariable,
-				},
+				}],
 				detailLevel: ModelDetailLevel.References
 			}
 		],
@@ -1219,10 +1224,10 @@ export const search_attributes: ElementAttribute[] =
 			name: "type",
 			description: "Type of object to be retrieved.",
 			required: true,
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Type
-			}
+			}]
 		},
 		{
 			name: "name",
@@ -1231,28 +1236,28 @@ export const search_attributes: ElementAttribute[] =
 		{
 			name: "field",
 			description: "Attribute of the data to scalar.",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Attribute // TODO: filter attributes on type
-			}
+			}]
 		},
 		{
 			name: "add-relations",
 			description: "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "filter",
 			description: "The type filter to apply for search.",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.TypeFilter	// TODO: filter on typename
-			}
+			}]
 		},
 		{
 			name: "all-when-empty-filter",
 			description: "If 'no' the search returns nothing (matches no record) when the filter is empty or if all the parameter based search columns are left out; if 'yes' it returns all records (matches all records).",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "alias",
@@ -1275,17 +1280,17 @@ export const view_group_attributes: ElementAttribute[] =
 		{
 			name: "show",
 			description: "If the group is initially visible.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "show-in-listview",
 			description: "If the group should be visible as a group in the list view.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "sortable",
 			description: "If the column should be sortable by the specified sort field.",
-			type: default_yes_no_attribute_type,
+			types: [default_yes_no_attribute_type],
 			visibilityConditions: [
 				{
 					attribute: "show-in-listview",
@@ -1297,10 +1302,10 @@ export const view_group_attributes: ElementAttribute[] =
 		{
 			name: "sort-field",
 			description: "The field to sort by if the column showed in the list view is sortable.",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Attribute // filter current view
-			},
+			}],
 			visibilityConditions: [
 				{
 					attribute: "sortable",
@@ -1323,15 +1328,15 @@ export const view_group_attributes: ElementAttribute[] =
 		{
 			name: "appearance-class",
 			description: "A specific style for the view element.",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.AppearanceClass
-			}
+			}]
 		},
 		{
 			name: "float",
 			description: "Whether the view is floated",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -1344,12 +1349,12 @@ export const view_group_attributes: ElementAttribute[] =
 						name: "right"
 					}
 				]
-			}
+			}]
 		},
 		{
 			name: "clear",
 			description: "Specifies the sides of the view where other floating elements are not allowed.",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -1362,7 +1367,7 @@ export const view_group_attributes: ElementAttribute[] =
 						name: "right"
 					}
 				]
-			}
+			}]
 		},
 		{
 			name: "background-image",
@@ -1375,12 +1380,12 @@ export const view_group_attributes: ElementAttribute[] =
 		{
 			name: "collapsable",
 			description: "Whether the user should be able to expand and collapse the field set box.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "collapsed",
 			description: "If the field set is initially expanded. Collapsed will make the fieldset visible by title only (and expandable by a button).",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -1391,7 +1396,7 @@ export const view_group_attributes: ElementAttribute[] =
 						name: "expanded"
 					}
 				]
-			},
+			}],
 			visibilityConditions: [
 				{
 					attribute: "collapsable",
@@ -1403,7 +1408,7 @@ export const view_group_attributes: ElementAttribute[] =
 		{
 			name: "page-break-before",
 			description: "",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -1416,7 +1421,7 @@ export const view_group_attributes: ElementAttribute[] =
 						name: "avoid"
 					}
 				]
-			}
+			}]
 		},
 		override_rights_attribute,
 		ignore_modelcheck_attribute,
@@ -1493,20 +1498,20 @@ export const in_element: Definition =
 		{
 			name: "field",
 			description: "The name of the attribute defined at the type of which the value is compared with the set returned by the sub query.",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Attribute	// TODO filter on type + add iid to the list
-			}
+			}]
 		},
 		{
 			name: "include-empty",
 			description: "If results where the relation is empty are included too.",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "condition",
 			description: "The condition to apply for filtering the relation field using the filter applied to the relation instances.",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -1518,20 +1523,20 @@ export const in_element: Definition =
 						description: "is not included in"
 					}
 				]
-			}
+			}]
 		},
 		{
 			name: "search-when-empty",
 			description: "Whether to drop this where-in condition if the filter is empty (if all the parameter based search columns are left out).",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "sub-filter-select-field",
 			description: "The attribute of the type queried in the sub query to match on. Default is the IID.",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Attribute	// TODO add iid to the list
-			}
+			}]
 		}
 	],
 	children: [
@@ -1590,24 +1595,34 @@ export const search_column_element: Definition =
 			description: "The column to be searched.",
 			required: true,
 			detailLevel: ModelDetailLevel.References,
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Attribute
-			},
+			}
+			// },
+			// {
+			// 	type: AttributeTypes.Enum,
+			// 	options: [
+			// 		{
+			// 			name: "iid"
+			// 		}
+			// 	]
+			// }
+			],
 		},
 		{
 			name: "is-context-info",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "search-relation-iids",
 			description: "Only applicable to relation searchcolumns. Decides if the type will be searched by the specified display-as attribute (search-relation-iids = false) or by IId (search-relation-iids = true).",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "condition",
 			description: "The search condition.",
-			type: search_condition_options_attribute_type
+			types: [search_condition_options_attribute_type]
 		},
 		{
 			name: "value",
@@ -1663,10 +1678,10 @@ export const search_column_element: Definition =
 		{
 			name: "rule",
 			description: "A rule that computes the value to compare with. Only for rules with no required inputs.",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Rule,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 			visibilityConditions: [
 				{
@@ -1685,10 +1700,10 @@ export const search_column_element: Definition =
 		{
 			name: "rule-output",
 			description: "The name of the output argument of the rule to take for the value of this search column.",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Output,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 			visibilityConditions: [
 				{
@@ -1708,19 +1723,19 @@ export const search_column_element: Definition =
 		{
 			name: "search-when-empty",
 			description: "Whether to use this condition or not if the value is empty",
-			type: default_yes_no_attribute_type,
+			types: [default_yes_no_attribute_type],
 		},
 		{
 			name: "sort",
 			description: "The sequence in which multiple columns should be sorted.",
-			type: {
+			types: [{
 				type: AttributeTypes.Numeric
-			},
+			}],
 		},
 		{
 			name: "sort-order",
 			description: "The order how the sort-column is ordered.",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -1736,7 +1751,7 @@ export const search_column_element: Definition =
 						description: "Takes the default sort order for this attribute."
 					},
 				]
-			},
+			}],
 		},
 	],
 	children: []
@@ -1779,12 +1794,12 @@ export const search_column_submatch_element: Definition =
 		},
 		{
 			name: "is-context-info",
-			type: default_yes_no_attribute_type
+			types: [default_yes_no_attribute_type]
 		},
 		{
 			name: "search-relation-iids",
 			description: "Only applicable to relation searchcolumns. Decides if the type will be searched by the specified display-as attribute (search-relation-iids = false) or by IId (search-relation-iids = true).",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -1794,13 +1809,13 @@ export const search_column_submatch_element: Definition =
 						name: "false"
 					},
 				]
-			}
+			}]
 		},
 		{
 			name: "condition",
 			description: "The search condition.",
 			required: true,
-			type: search_condition_options_attribute_type
+			types: [search_condition_options_attribute_type]
 		}
 	],
 	children: [

@@ -21,12 +21,11 @@ export interface Attribute {
 	range: LSP.Range,
 	fullRange: LSP.Range,
 	value: string,
-	isReference?: boolean,
-	type?: ModelElementTypes
+	isReference?: boolean
 }
 export interface Reference extends Attribute {
 	isReference: true,
-	type: ModelElementTypes,
+	types: ModelElementTypes[],
 	uri: string
 }
 
@@ -35,11 +34,11 @@ export interface SymbolDeclaration extends TreeNode {
 	name: string,
 }
 
-export function newReference(name: string, value: string, type: ModelElementTypes, range: LSP.Range, fullRange: LSP.Range, uri: string): Reference {
+export function newReference(name: string, value: string, types: ModelElementTypes[], range: LSP.Range, fullRange: LSP.Range, uri: string): Reference {
 	return {
 		name,
 		value,
-		type,
+		types,
 		range: {start: {...range.start}, end: {...range.end}},//Make copy
 		fullRange: {start: {...fullRange.start}, end: {...fullRange.end}},//Make copy
 		uri,

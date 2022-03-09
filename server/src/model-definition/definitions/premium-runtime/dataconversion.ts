@@ -6,10 +6,10 @@ export const DATACONVERSION_DEFINITION: Definitions = {
 		detailLevel: ModelDetailLevel.References,
 		attributes: [{
 			name: "RuleName",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Rule,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 		}],
 		children: []

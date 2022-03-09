@@ -10,7 +10,7 @@ const action_definition_argument_element: Definition = {
 		},
 		{
 			name: "type",
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -44,7 +44,7 @@ const action_definition_argument_element: Definition = {
 						name: "xml-list"
 					},
 				]
-			}
+			}]
 		},
 	],
 	children: [
@@ -151,7 +151,7 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 			{
 				name: "xml:lang",
 				description: "language",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -167,7 +167,7 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 							description: "English"
 						},
 					]
-				}
+				}]
 			},
 			comment_attribute
 		],
@@ -249,7 +249,7 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 			{
 				name: "type",
 				description: "",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -280,37 +280,37 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 							name: "lookup"
 						},
 					]
-				}				
+				}]				
 			},
 			{
 				name: "required",
 				description: "",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "unique",
 				description: "",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "only-unique-if-set",
 				description: "",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "use-as-caption",
 				description: "Indicates whether the value of this attribute is shown in the element label.",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "default",
 				description: "",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "readonly",
 				description: "",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "validatestring",
@@ -372,7 +372,7 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 			{
 				name: "negate",
 				description: "",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -382,7 +382,7 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 							name: "false"
 						},
 					]
-				}
+				}]
 			},
 			comment_attribute
 		],
@@ -427,15 +427,15 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 			{
 				name: "attribute",
 				required: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Attribute	// TODO: filter in ancestor attributes
-				}
+				}]
 			},
 			{
 				name: "compare",
 				required: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -451,7 +451,7 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 							description: "equals (case insensitive)"
 						}
 					]
-				}
+				}]
 			},
 			{
 				name: "value",
@@ -466,10 +466,10 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 			{
 				name: "name",
 				required: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Attribute	// TODO: filter in root attributes
-				}
+				}]
 			},
 			comment_attribute
 		],

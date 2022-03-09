@@ -125,20 +125,18 @@ const include_block_rules_declaration_definition: Definition = {
 			description: "For which element to apply rules.",
 			required: true,
 			autoadd: true,
-			type:
-			{
+			types: [{
 				type: AttributeTypes.Enum,
 				options: meta_attribute_options
-			}
+			}]
 		},
 		{
 			name: "meta-index",
 			description: "For which element to apply rules.",
-			type:
-			{
+			types: [{
 				type: AttributeTypes.Enum,
 				options: meta_attribute_options
-			}
+			}]
 		}
 	]
 };
@@ -194,8 +192,7 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "cache-level",
 				description: "cache-level could be set to increase performance. If the cache-level is User, it will cache the output value based on the rule name, the project/application/company/user and the inputs that were passed to the rule. Setting the cache-level is only valid if this combined key always returns the same output. See [Caching rule invocations].",
-				type:
-				{
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -215,7 +212,7 @@ export const RULE_DEFINITION: Definitions = {
 							description: ""
 						}
 					]
-				},
+				}],
 				visibilityConditions: [
 					{
 						attribute: "import",
@@ -238,7 +235,7 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "ignore-empty-action-outputs",
 				description: "Whether to ignore empty action outputs when used for variable assignments, or allow them to overwrite filled variables. By default these empty action outputs are ignored, i.e. not allowed to overwrite a filled variable.",
-				type: default_yes_no_attribute_type,
+				types: [default_yes_no_attribute_type],
 				visibilityConditions: [
 					{
 						attribute: "import",
@@ -250,10 +247,10 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "import",
 				description: "Refers to a different rule.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Rule
-				},
+				}],
 				visibilityConditions: [
 					{
 						attribute: "name",
@@ -309,7 +306,7 @@ export const RULE_DEFINITION: Definitions = {
 					name: "attribute",
 					description: "A local variable name, a constant, or a data element (not supported in drop-down).",
 					autoadd: true,
-					type: {
+					types: [{
 						type: AttributeTypes.Reference,
 						relatedTo: ModelElementTypes.RuleContext,
 						options: [
@@ -323,7 +320,7 @@ export const RULE_DEFINITION: Definitions = {
 								name: ModelElementTypes.Output
 							}
 						]
-					},
+					}],
 					requiredConditions: [
 						{
 							attribute: "expression",
@@ -383,10 +380,10 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "local-name",
 				autoadd: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.RuleContext
-				}
+				}]
 			},
 			{
 				name: "remote-name",
@@ -399,26 +396,26 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "parseType",
 				description: "The type to which the argument value should be parsed.",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
 							name: "Petrel.ModelPath"
 						}
 					]
-				}
+				}]
 			},
 			{
 				name: "precondition",
 				description: "A condition to check the value with.",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
 							name: "is not empty"
 						}
 					]
-				}
+				}]
 			},
 		],
 		children: []
@@ -441,18 +438,18 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "infoset",
 				description: "An infoset which' contents to return.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Infoset
-				}
+				}]
 			},
 			{
 				name: "infoset-variable",
 				description: "A variable from an infoset to be returned. If the rule engine wants to use a variable that is defined in the infosets.xml file, first all {..} parameters in the search query are resolved. Then Petrel is called with this query. The records are returned, one by one: from each record, the attribute with the defined name is taken, and on all of these values, an aggregation like operator is used",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Variable
-				}
+				}]
 			},
 			{
 				name: "value",
@@ -490,7 +487,7 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "prefix",
 				description: "Used to group conditions.",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -578,14 +575,14 @@ export const RULE_DEFINITION: Definitions = {
 							name: "OR NOT(((("
 						},
 					]
-				}
+				}]
 			},
 			{
 				name: "variable",
 				description: "Left hand side of condition. Can be an expression as well (using {}).",
 				required: true,
 				autoadd: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.RuleContext,
 					options: [
@@ -599,13 +596,13 @@ export const RULE_DEFINITION: Definitions = {
 							name: ModelElementTypes.Output,
 						}
 					]
-				}
+				}]
 			},
 			{
 				name: "operator",
 				required: true,
 				autoadd: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -663,7 +660,7 @@ export const RULE_DEFINITION: Definitions = {
 						},
 
 					]
-				}
+				}]
 			},
 			{
 				name: "value",
@@ -672,10 +669,10 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "constant",
 				description: "A constant as right hand side.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Constant
-				}
+				}]
 			},
 			{
 				name: "expression",
@@ -684,7 +681,7 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "postfix",
 				description: "Used to group conditions.",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -700,7 +697,7 @@ export const RULE_DEFINITION: Definitions = {
 							name: "))))"
 						},
 					]
-				}
+				}]
 			},
 			comment_attribute
 		],
@@ -725,7 +722,7 @@ export const RULE_DEFINITION: Definitions = {
 			{
 				name: "scope-option",
 				description: "The meaning of the transaction scope change.",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -741,7 +738,7 @@ export const RULE_DEFINITION: Definitions = {
 							description: "Starts a new transaction, even if there is already an outer transaction running. Effectively the same as suppress + required."
 						}
 					]
-				}
+				}]
 			}
 		],
 		children: then_else_children
@@ -754,7 +751,7 @@ export const RULE_DEFINITION: Definitions = {
 				name: "variable",
 				description: "A local variable name, a constant, or a data element (not supported in drop-down).",
 				autoadd: true,
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.RuleContext,
 					options: [
@@ -768,7 +765,7 @@ export const RULE_DEFINITION: Definitions = {
 							name: ModelElementTypes.Output
 						},
 					]
-				}
+				}]
 			},
 			{
 				name: "expression",

@@ -147,9 +147,9 @@ export class SymbolAndReferenceManager {
 	 * Find the referenced object for a given Reference.
 	 */
 	public getReferencedObject(reference: Reference) {
-		const caseSensitive = !(reference.type == ModelElementTypes.Action);
+		const caseSensitive = !(reference.types[0] == ModelElementTypes.Action);
 		const name = caseSensitive ? reference.value : reference.value.toLowerCase();
-		const referencedSymbol = (this.symbolLookupTable.getForName(name) || []).find(x => (x.type == reference.type));
+		const referencedSymbol = (this.symbolLookupTable.getForName(name) || []).find(x => (x.type == reference.types[0]));
 		return referencedSymbol;
 	}
 
@@ -159,7 +159,7 @@ export class SymbolAndReferenceManager {
 	public getReferencesForSymbol(symbol: SymbolDeclaration) {
 		const caseSensitive = !(symbol.type == ModelElementTypes.Action);
 		const name = caseSensitive ? symbol.name : symbol.name.toLowerCase();
-		const referencesToSymbol = (this.referenceLookupTable.getForName(name) || []).filter(x => (x.type == symbol.type));
+		const referencesToSymbol = (this.referenceLookupTable.getForName(name) || []).filter(x => (x.types[0] == symbol.type));
 		return referencesToSymbol;
 	}
 
@@ -270,10 +270,12 @@ export class SymbolAndReferenceManager {
 	private processAttributeForReferences(attribute: Attribute) {
 		if (attribute.isReference) {
 			const ref = attribute as Reference;
-			if (standaloneObjectTypes.has(ref.type)) {
-				const name = this.getReferenceKeyNameForLookupTable(ref);
-				this.referenceLookupTable.addObject(ref, name);
-			}
+			ref.types.forEach(type=>{
+				if (standaloneObjectTypes.has(type)) {
+					const name = this.getReferenceKeyNameForLookupTable(ref);
+					this.referenceLookupTable.addObject(ref, name);
+				}
+			});
 		}
 	}
 
@@ -281,6 +283,6 @@ export class SymbolAndReferenceManager {
 		return symbol.type == ModelElementTypes.Action ? symbol.name.toLowerCase() : symbol.name;
 	}
 	private getReferenceKeyNameForLookupTable(reference: Reference) {
-		return reference.type == ModelElementTypes.Action ? reference.value.toLowerCase() : reference.value;
+		return reference.types[0] == ModelElementTypes.Action ? reference.value.toLowerCase() : reference.value;
 	}
 }

@@ -273,7 +273,7 @@ export type ElementAttribute = {
 	autoadd?: boolean,						// mark attribute to auto add when (parent) element is created
 	visibilityConditions?: ValidationMatches[],
 	requiredConditions?: ValidationMatches[],
-	type?: AttributeType,
+	types?: AttributeType[],
 	detailLevel?: ModelDetailLevel,
 	obsolete?: boolean,
 	obsoleteMessage?: string

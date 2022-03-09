@@ -305,12 +305,14 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		const attributeValue = node.attributes[attributeName];
 		if (attributeValue) {
 			const { range, fullRange } = this.attributeRanges[attributeName];
-			const relatedto = attributeDefinition.type?.relatedTo;
-			if (relatedto) {
-				attribute = newReference(attributeName, attributeValue, relatedto, range, fullRange, this.uri);
-			}
-			else {
-				attribute = { name: attributeName, value: attributeValue, range, fullRange };
+			if (attributeDefinition.types){
+				const relatedToTypes: ModelElementTypes[] = attributeDefinition.types.filter(type=>type.relatedTo).map(type=>type.relatedTo as ModelElementTypes);
+				if (relatedToTypes) {
+					attribute = newReference(attributeName, attributeValue, relatedToTypes, range, fullRange, this.uri);
+				}
+				else {
+					attribute = { name: attributeName, value: attributeValue, range, fullRange };
+				}
 			}
 		}
 		return attribute;

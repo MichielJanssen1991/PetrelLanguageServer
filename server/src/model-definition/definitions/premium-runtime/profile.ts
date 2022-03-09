@@ -31,10 +31,10 @@ export const PROFILE_DEFINITION: Definitions = {
 		detailLevel: ModelDetailLevel.References,
 		attributes: [{
 			name: "TypeName",
-			type: {
+			types:[ {
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Type,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 		}],
 		children: []
@@ -43,10 +43,10 @@ export const PROFILE_DEFINITION: Definitions = {
 		detailLevel: ModelDetailLevel.References,
 		attributes: [{
 			name: "ViewName",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.View,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 		}],
 		children: []
@@ -55,10 +55,10 @@ export const PROFILE_DEFINITION: Definitions = {
 		detailLevel: ModelDetailLevel.References,
 		attributes: [{
 			name: "RuleName",
-			type: {
+			types: [{
 				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Rule,
-			},
+			}],
 			detailLevel: ModelDetailLevel.References,
 		}],
 		children: []

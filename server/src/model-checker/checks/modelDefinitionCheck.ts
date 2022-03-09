@@ -132,22 +132,24 @@ export class ModelDefinitionCheck extends ModelCheck {
 		});
 
 		// check attribute types
-		definition.attributes.filter(da=>da.type && this.allNodeAttributes.map(x=>x.name).includes(da.name)).forEach(da=>{
+		definition.attributes.filter(da=>da.types && this.allNodeAttributes.map(x=>x.name).includes(da.name)).forEach(da=>{
 			const attrValue: string = this.allNodeAttributes.find(x=>x.name==da.name)?.value || "";
 			
 			if(!attributeValueIsAVariable(attrValue)){
-				switch(da.type?.type){
-					case AttributeTypes.Enum:
-						if (da.type?.options && !da.type?.options?.map(o=>o.name.toLowerCase()).some(o=>o==attrValue.toLowerCase() || o=="*")){
-							this.addMessage(element.range, "MDC0009", `Invalid value for '${da.name}': '${attrValue}' is not a valid option`);
-						}
-						break;
-					case AttributeTypes.Numeric:
-						if (!Number(attrValue) && attrValue != "0") {
-							this.addMessage(element.range, "MDC0010", `Invalid value for '${da.name}': '${attrValue}' is not a number`);
-						}
-						break;
-				}
+				da.types?.forEach(attrType => {
+					switch(attrType.type){
+						case AttributeTypes.Enum:
+							if (attrType.options && !attrType.options?.map(o=>o.name.toLowerCase()).some(o=>o==attrValue.toLowerCase() || o=="*")){
+								this.addMessage(element.range, "MDC0009", `Invalid value for '${da.name}': '${attrValue}' is not a valid option`);
+							}
+							break;
+						case AttributeTypes.Numeric:
+							if (!Number(attrValue) && attrValue != "0") {
+								this.addMessage(element.range, "MDC0010", `Invalid value for '${da.name}': '${attrValue}' is not a number`);
+							}
+							break;
+					}	
+				});				
 			}
 		});
 	}

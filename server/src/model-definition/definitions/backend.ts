@@ -40,10 +40,10 @@ const type_element_attributes: ElementAttribute[] = [
 	{
 		name: "type",
 		description: "A type this type inherits from.",
-		type: {
+		types: [{
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.Type
-		},
+		}],
 		detailLevel: ModelDetailLevel.References
 	},
 	{
@@ -58,29 +58,29 @@ const type_element_attributes: ElementAttribute[] = [
 	{
 		name: "is-abstract",
 		description: "If the type is abstract, that is, cannot have instances. Can be used for type inheritance structures.",
-		type: default_yes_no_attribute_type
+		types: [default_yes_no_attribute_type]
 	},
 	{
 		name: "system-table",
 		description: "If the type is a system type. This influences, e.g., if the type is included in Export.",
-		type: default_yes_no_attribute_type
+		types: [default_yes_no_attribute_type]
 	},
 	{
 		name: "iid-field",
 		description: "The field which contains the identifier of the instances.",
-		type: {
+		types: [{
 			type: AttributeTypes.Numeric
-		}
+		}]
 	},
 	{
 		name: "store-context-info",
 		description: "If context info storage should be enabled for this type specifically. May be used for logging types. See also the corresponding application setting.",
-		type: default_yes_no_attribute_type
+		types: [default_yes_no_attribute_type]
 	},
 	{
 		name: "persistence",
 		description: "The way the data for this type is retrieved and saved.",
-		type: {
+		types: [{
 			type: AttributeTypes.Enum,
 			"options": [
 				{
@@ -109,12 +109,12 @@ const type_element_attributes: ElementAttribute[] = [
 				},
 
 			]
-		}
+		}]
 	},
 	{
 		name: "company-specific-caching",
 		description: "If the persistence is set to cache, this specifies whether or not to use the company name as key for the caching. By default it does (yes). If no, then the key will be company inspecific, hence the cache will be company inspecific.",
-		type: default_yes_no_attribute_type,
+		types: [default_yes_no_attribute_type],
 		visibilityConditions: [
 			{
 				attribute: "persistence",
@@ -126,7 +126,7 @@ const type_element_attributes: ElementAttribute[] = [
 	{
 		name: "base-persistence",
 		description: "The persistence used as base persistence.",
-		type: {
+		types: [{
 			type: AttributeTypes.Enum,
 			"options": [
 				{
@@ -138,7 +138,7 @@ const type_element_attributes: ElementAttribute[] = [
 					description: "A table multiple companies share."
 				}
 			]
-		},
+		}],
 		visibilityConditions: [
 			{
 				attribute: "persistence",
@@ -150,11 +150,10 @@ const type_element_attributes: ElementAttribute[] = [
 	{
 		name: "persistent-in-type",
 		description: "The type on which the virtual persistence is based.",
-		type:
-		{
+		types: [{
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.Type
-		},
+		}],
 		visibilityConditions: [
 			{
 				attribute: "persistence",
@@ -184,7 +183,7 @@ const type_element_attributes: ElementAttribute[] = [
 	{
 		name: "include-persistencetype-checks",
 		description: "If the server events on the type that is used for persistence should be executed. This is only of technical use to provide a lightweight view of a type, e.g. skipping validation and other default loading actions.",
-		type: default_yes_no_attribute_type
+		types: [default_yes_no_attribute_type]
 		,
 		visibilityConditions: [
 			{
@@ -197,7 +196,7 @@ const type_element_attributes: ElementAttribute[] = [
 	{
 		name: "cache-persistence",
 		description: "The persistence the cache persistence uses for loading data.",
-		type: {
+		types: [{
 			type: AttributeTypes.Enum,
 			"options": [
 				{
@@ -213,7 +212,7 @@ const type_element_attributes: ElementAttribute[] = [
 					description: "Any other type of persistence (just type)"
 				},
 			]
-		},
+		}],
 		visibilityConditions: [
 			{
 				attribute: "persistence",
@@ -225,12 +224,12 @@ const type_element_attributes: ElementAttribute[] = [
 	{
 		name: "audit-trail",
 		description: "Specifies if changes to the type instances should be logged in an audit log table.The audit log includes timestamp, user, and the change.",
-		type: default_yes_no_attribute_type
+		types: [default_yes_no_attribute_type]
 	},
 	{
 		name: "skip-privacy-protection",
 		description: "If the type doesn't store private information such as PHI in its attributes or attached files, this property may be set to \"yes\" for performance (such as caching on the client).",
-		type: default_yes_no_attribute_type
+		types: [default_yes_no_attribute_type]
 	},
 	{
 		name: "x-elementName",
@@ -243,12 +242,12 @@ const type_element_attributes: ElementAttribute[] = [
 	{
 		name: "x-isParentElement",
 		description: "is metadata XML parent element",
-		type: default_yes_no_attribute_type
+		types: [default_yes_no_attribute_type]
 	},
 	{
 		name: "x-isOverload",
 		description: "If the type is a child of a type that is not abstract, and should not be used while parsing.",
-		type: default_yes_no_attribute_type
+		types: [default_yes_no_attribute_type]
 	},
 	{
 		name: "x-acceptedChilds",
@@ -311,8 +310,7 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "type",
 		description: "Determines field type and the saved attribute value.",
-		type:
-		{
+		types: [{
 			type: AttributeTypes.Enum,
 			options: [
 				{
@@ -370,7 +368,7 @@ const attribute_attributes: ElementAttribute[] = [
 					obsolete: true
 				},
 			]
-		},
+		}],
 		visibilityConditions: [
 			{
 				attribute: "relation-type",
@@ -388,8 +386,7 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "empty-allowed",
 		description: "If the attribute or field can be left empty.",
-		type:
-		{
+		types: [{
 			type: AttributeTypes.Enum,
 			"options": [
 				{
@@ -400,7 +397,7 @@ const attribute_attributes: ElementAttribute[] = [
 					name: "no"
 				}
 			]
-		},
+		}],
 		visibilityConditions: [
 			{
 				attribute: "type",
@@ -412,7 +409,7 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "key",
 		description: "One or more attributes of a type can be defined as key. These attributes together determine the primary key, which allows for a default sort order and ensures uniqueness of the fields.",
-		type: default_yes_no_attribute_type,
+		types: [default_yes_no_attribute_type],
 		visibilityConditions: [
 			{
 				attribute: "relation-field",
@@ -424,15 +421,15 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "attribute",
 		description: "An attribute to inherit all properties from.",
-		type: {
+		types: [{
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.Attribute // TODO: add Context of current type
-		}
+		}]
 	},
 	{
 		name: "allow-existing",
 		description: "When set to 'no', an existing option is not allowed.",
-		type: default_yes_no_attribute_type,
+		types: [default_yes_no_attribute_type],
 		visibilityConditions: [
 			{
 				attribute: "relation-type",
@@ -444,7 +441,7 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "delete-cascade",
 		description: "Specifies if with the removal of the referred object it is allowed to remove this relation. Indicates that when removing the parent to which this attribute is related, child records also have to be deleted. This is only useful for an identifying relation of e.g. \"Consults per patient\" (as children) to parent \"Patient\". If false (default) an exception is thrown when one tries to delete the refered object and the relation still exists.",
-		type: default_yes_no_attribute_type,
+		types: [default_yes_no_attribute_type],
 		visibilityConditions: [
 			{
 				attribute: "relation-type",
@@ -456,14 +453,14 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "sort",
 		description: "A consecutive numeric value (starting with 1) which indicates the sort order index.",
-		type: {
+		types: [{
 			type: AttributeTypes.Numeric
-		}
+		}]
 	},
 	{
 		name: "sort-type",
 		description: "If the sorting on this field should be ascending or descending.",
-		type: {
+		types: [{
 			type: AttributeTypes.Enum,
 			options: [
 				{
@@ -475,7 +472,7 @@ const attribute_attributes: ElementAttribute[] = [
 					description: "Descending"
 				}
 			]
-		},
+		}],
 		visibilityConditions: [
 			{
 				attribute: "sort",
@@ -487,10 +484,10 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "relation-type",
 		description: "Set relation type to let this attribute represent a relation to an object of this type. For example, the attribute 'Patient' in a type 'Consults per patient' has as relation type value 'Patients'. When the relation type is specified, the attribute can have linked relation attributes using the relation field property (see below).",
-		type: {
+		types: [{
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.Type
-		},
+		}],
 		visibilityConditions: [
 			{
 				attribute: "type",
@@ -508,10 +505,10 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "relation-field",
 		description: "Set relation field to let this attribute represent another attribute of a related type. This type of attribute is called a \"relation attribute\". Relation attributes *must* be defined in the backend because the backend otherwise will not send data to the frontend.",
-		type: {
+		types: [{
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.Attribute
-		},
+		}],
 		visibilityConditions: [
 			{
 				attribute: "type",
@@ -529,7 +526,7 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "allow-new",
 		description: "If it is allowed to enter a new not existing item as relation. This relation will be saved then to the related type.</summary>To this end it is necessary that the compulsory fields are present as not-read-only relation attributes, otherwise the record can not be saved.",
-		type: {
+		types: [{
 			type: AttributeTypes.Enum,
 			"options": [
 				{
@@ -540,7 +537,7 @@ const attribute_attributes: ElementAttribute[] = [
 					description: "no"
 				}
 			]
-		},
+		}],
 		visibilityConditions: [
 			{
 				attribute: "relation-type-multiple",
@@ -558,11 +555,10 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "display-as",
 		description: "An attribute of the related type to display. Display-as can only be used when a relation type or relation field is specified.",
-		type:
-		{
+		types: [{
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.Attribute	// TODO add specification what attributes need to be displayed. Filter on parent type name OR related type attribute
-		},
+		}],
 		visibilityConditions: [
 			{
 				attribute: "relation-type",
@@ -586,16 +582,16 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "max-length",
 		description: "Specifies the field width, defined in number of characters displayed.",
-		type: {
+		types: [{
 			type: AttributeTypes.Numeric
-		}
+		}]
 	},
 	{
 		name: "display-length",
 		description: "Specifies the field width, defined in number of characters displayed.",
-		type: {
+		types: [{
 			type: AttributeTypes.Numeric
-		}
+		}]
 	},
 	{
 		name: "allowed-file-extensions",
@@ -617,9 +613,9 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "max-list-items",
 		description: "Limit the enum list to a maximum",
-		type: {
+		types: [{
 			type: AttributeTypes.Numeric
-		},
+		}],
 		visibilityConditions: [
 			{
 				attribute: "type",
@@ -631,7 +627,7 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "show-colorfield",
 		description: "Show the field with the color value",
-		type: default_yes_no_attribute_type,
+		types: [default_yes_no_attribute_type],
 		visibilityConditions: [
 			{
 				attribute: "type",
@@ -665,17 +661,17 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "translatable",
 		description: "If this attribute is multilingual. If so, the attribute will store a translation ID. The attribute will be translated before sending it to the front-end. See [Multilingual data]",
-		type: default_yes_no_attribute_type
+		types: [default_yes_no_attribute_type]
 	},
 	{
 		name: "always-in-sidedata",
 		description: "If the attribute should be stored in side data by default. This may be necessary for advanced querying possibilities.",
-		type: default_yes_no_attribute_type
+		types: [default_yes_no_attribute_type]
 	},
 	{
 		name: "always-in-multidata",
 		description: "",
-		type: default_yes_no_attribute_type,
+		types: [default_yes_no_attribute_type],
 		visibilityConditions: [
 			{
 				attribute: "type",
@@ -687,7 +683,7 @@ const attribute_attributes: ElementAttribute[] = [
 	{
 		name: "encrypted",
 		description: "Relation attributes are encrypted at the type to which they belong.",
-		type: default_yes_no_attribute_type,
+		types: [default_yes_no_attribute_type],
 		visibilityConditions: [
 			{
 				attribute: "relation-field",
@@ -802,11 +798,10 @@ const target_element: Definition = {
 			name: "meta-name",
 			description: "For which element to apply rules.",
 			required: true,
-			type:
-			{
+			types: [{
 				type: AttributeTypes.Enum,
 				options: meta_name_attribute_options
-			}
+			}]
 		}
 	],
 	children: []
@@ -821,20 +816,18 @@ const include_block_backend_declaration_definition: Definition = {
 			description: "For which element to apply rules.",
 			required: true,
 			autoadd: true,
-			type:
-			{
+			types: [{
 				type: AttributeTypes.Enum,
 				options: meta_attribute_options
-			}
+			}]
 		},
 		{
 			name: "meta-index",
 			description: "For which element to apply rules.",
-			type:
-			{
+			types: [{
 				type: AttributeTypes.Enum,
 				options: meta_attribute_options
-			}
+			}]
 		}
 	]
 };
@@ -846,11 +839,10 @@ const decorator_context_entity_element: Definition = {
 			name: "meta-name",
 			description: "For which element to apply rules.",
 			required: true,
-			type:
-			{
+			types: [{
 				type: AttributeTypes.Enum,
 				options: meta_name_attribute_options
-			}
+			}]
 		}
 	],
 	children: []
@@ -946,19 +938,19 @@ export const BACKEND_DEFINITION: Definitions = {
 				name: "relation-type",
 				required: true,
 				description: "The related type containing the foreign relation.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Type
-				}
+				}]
 			},
 			{
 				name: "foreign-relation-field",
 				required: true,
 				description: "The simple relation field that refers to this type.",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Attribute
-				}
+				}]
 			}
 		],
 		children: []
@@ -1066,7 +1058,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				name: "is-unique",
 				description: "Defines an unique key. The combination of all fields contained in the key have to be unique.",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			comment_attribute
 		],
@@ -1079,10 +1071,10 @@ export const BACKEND_DEFINITION: Definitions = {
 				name: "name",
 				required: true,
 				description: "The link to the field in the type which has to be included in this key. (Notice this is only useful for attributes (including relations), not for relation attributes.)",
-				type: {
+				types: [{
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.Attribute // TODO: filter on parent type
-				}
+				}]
 			}
 		],
 		children: []
@@ -1138,7 +1130,7 @@ export const BACKEND_DEFINITION: Definitions = {
 				name: "name",
 				required: true,
 				description: "The type of event to listen to.",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -1194,7 +1186,7 @@ export const BACKEND_DEFINITION: Definitions = {
 							description: "After failure of deleting a record"
 						},
 					]
-				}
+				}]
 			},
 			{
 				name: "assembly",
@@ -1382,7 +1374,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				name: "type",
 				description: "The counter representation.",
-				type: {
+				types: [{
 					type: AttributeTypes.Enum,
 					options: [
 						{
@@ -1390,14 +1382,14 @@ export const BACKEND_DEFINITION: Definitions = {
 							default: true
 						}
 					]
-				}
+				}]
 			},
 			{
 				name: "places",
 				description: "Length of string. Empty means: not restricted.",
-				type: {
+				types: [{
 					type: AttributeTypes.Numeric
-				}
+				}]
 			},
 			comment_attribute
 		],
@@ -1437,7 +1429,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				name: "add-relations",
 				description: "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			{
 				name: "filter",
@@ -1446,7 +1438,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			{
 				name: "all-when-empty-filter",
 				description: "If 'no' the search returns nothing (matches no record) when the filter is empty or if all the parameter based search columns are left out; if 'yes' it  all records (matches all records).",
-				type: default_yes_no_attribute_type
+				types: [default_yes_no_attribute_type]
 			},
 			comment_attribute
 		],
@@ -1487,7 +1479,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		attributes: [{
 			name: "name",
 			required: true,
-			type: {
+			types: [{
 				type: AttributeTypes.Enum,
 				options: [
 					{
@@ -1523,7 +1515,7 @@ export const BACKEND_DEFINITION: Definitions = {
 						description: "It is not allowed to remove the record."
 					}
 				]
-			}
+			}]
 		},
 		{
 			name: "value",
