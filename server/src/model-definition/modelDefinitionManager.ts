@@ -17,6 +17,7 @@ import { PROFILE_DEFINITION } from './definitions/premium-runtime/profile';
 import { RULE_DEFINITION } from './definitions/rules';
 import { AncestorDefinition, AncestorTypes, Definition, Definitions, IXmlNodeContext, ModelElementSubTypes, ModelElementTypes } from './types/definitions';
 import { TreeNode, } from './types/tree';
+import { SECURITY_DEFINITION } from './definitions/security';
 
 export enum ModelFileContext {
 	Backend,
@@ -69,6 +70,7 @@ export class ModelDefinitionManager {
 		this.contextToModelDefinition[ModelFileContext.FrontendActions] = FRONTEND_ACTIONS_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.RuleTests] = {};
 		this.contextToModelDefinition[ModelFileContext.InfosetTests] = {};
+		this.contextToModelDefinition[ModelFileContext.Security] = SECURITY_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.SecurityTests] = {};
 		this.contextToModelDefinition[ModelFileContext.Constants] = {};
 		this.contextToModelDefinition[ModelFileContext.Components] = COMPONENTS_DEFINITION;
