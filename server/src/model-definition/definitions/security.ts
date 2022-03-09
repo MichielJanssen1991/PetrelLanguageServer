@@ -540,15 +540,27 @@ export const SECURITY_DEFINITION: Definitions = {
 				description: "The view reference.",
 				required: true,
 				autoadd: true,
-				types: [{
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.View
-				}]
+				types: [
+					{
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.View
+					},
+					{
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.MainView
+					},
+				]
 			},
 			{
 				name: "type",
 				obsolete: true,
-				description: "A specific data type for the view to declare permissions for."
+				description: "A specific data type for the view to declare permissions for.",
+				types: [
+					{
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.Type
+					}
+				]
 			},
 			{
 				name: "read",

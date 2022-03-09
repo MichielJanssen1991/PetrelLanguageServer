@@ -115,6 +115,7 @@ export function combineMatchConditions(condition1: MatchDefinition | undefined, 
 //Objects which can be referenced without requiring the context
 export const standaloneObjectTypes = new Set([
 	ModelElementTypes.View,
+	ModelElementTypes.MainView,
 	ModelElementTypes.Infoset,
 	ModelElementTypes.InfosetVariable,
 	ModelElementTypes.Type,

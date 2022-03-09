@@ -2518,6 +2518,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"main-view": [{
 		description: "A page framework in which views are to be rendered.",
 		type: ModelElementTypes.MainView,
+		detailLevel: ModelDetailLevel.Declarations,
 		attributes: [
 			{
 				name: "name",

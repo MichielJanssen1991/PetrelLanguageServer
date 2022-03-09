@@ -146,11 +146,12 @@ export class SymbolAndReferenceManager {
 	/**
 	 * Find the referenced object for a given Reference.
 	 */
-	public getReferencedObject(reference: Reference) {
-		const caseSensitive = !(reference.types[0] == ModelElementTypes.Action);
-		const name = caseSensitive ? reference.value : reference.value.toLowerCase();
-		const referencedSymbol = (this.symbolLookupTable.getForName(name) || []).find(x => (x.type == reference.types[0]));
-		return referencedSymbol;
+	public getReferencedObject(reference: Reference): SymbolDeclaration | void{
+		const referredSymbol = (this.symbolLookupTable.getForName(reference.value) || []).find(x => reference.types.includes(x.type));
+		if (!referredSymbol && reference.types.includes(ModelElementTypes.Action)){
+			return (this.symbolLookupTable.getForName(reference.value.toLowerCase()) || []).find(x => reference.types.includes(x.type));
+		}
+		return referredSymbol;
 	}
 
 	/**
