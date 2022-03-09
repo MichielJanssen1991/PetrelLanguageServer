@@ -26,6 +26,37 @@ export const default_yes_no_attribute_type: AttributeType =
 		]
 	} as AttributeType;
 
+export const default_permission_attribute_type: AttributeType =
+	{
+		"options": [
+			{
+				name: "true"
+			},
+			{
+				name: "false"
+			},
+			{
+				name: "",
+				description: "(not set)"
+			}
+		]
+	} as AttributeType;
+
+export const default_startmode_attribute_type: AttributeType =
+	{
+		"options": [
+			{
+				name: "yes"
+			},
+			{
+				name: "none"
+			},
+			{
+				name: "all"
+			}
+		]
+	} as AttributeType;
+
 export const comment_attribute: ElementAttribute =
 {
 	name: "comment",
@@ -1818,6 +1849,32 @@ export const search_column_submatch_element: Definition =
 		},
 		...default_children
 	]
+};
+
+export const search_element: Definition = {
+	description: "A filter on the instances of a type.",
+	attributes: [
+		{
+			name: "name",
+			description: "Unique filter identifier."
+		},
+		{
+			name: "add-relations",
+			description: "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
+			type: default_yes_no_attribute_type
+		},
+		{
+			name: "filter",
+			description: "The type filter to apply for search."
+		},
+		{
+			name: "all-when-empty-filter",
+			description: "If 'no' the search returns nothing (matches no record) when the filter is empty or if all the parameter based search columns are left out; if 'yes' it  all records (matches all records).",
+			type: default_yes_no_attribute_type
+		},
+		comment_attribute
+	],
+	children: search_children
 };
 
 export function isViewArgument(nodeContext: IXmlNodeContext): boolean {
