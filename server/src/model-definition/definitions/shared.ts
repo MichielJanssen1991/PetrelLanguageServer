@@ -1075,12 +1075,18 @@ export const action_argument_element: Definition = {
 };
 
 const action_output_element: Definition = {
+	description: "Output of the action.",
 	type: ModelElementTypes.ActionCallOutput,
 	detailLevel: ModelDetailLevel.SubReferences,
 	attributes: [
 		{
 			name: "local-name",
 			description: "Name for a local field or variable.",
+			autoadd: true
+		},
+		{
+			name: "remote-name",
+			description: "Name for a destination field or variable.",
 			autoadd: true
 		},
 		{
@@ -1143,7 +1149,8 @@ export const action_call_output_elements: Definition[] = [
 				type: {
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.InfosetVariable,
-				}
+				},
+				detailLevel: ModelDetailLevel.References
 			}
 		],
 		children: []
@@ -1167,14 +1174,14 @@ export const action_call_output_elements: Definition[] = [
 				type: {
 					type: AttributeTypes.Reference,
 					relatedTo: ModelElementTypes.InfosetVariable,
-				}
+				},
+				detailLevel: ModelDetailLevel.References
 			}
 		],
 		children: []
 	},
 	{	// default
 		...action_output_element,
-		description: "Output of the action.",
 		matchCondition: {
 			ancestors: [{
 				type: ModelElementTypes.ActionCall
@@ -1183,16 +1190,7 @@ export const action_call_output_elements: Definition[] = [
 				type: ModelElementTypes.IncludeBlock,
 				subtypes: [ModelElementSubTypes.IncludeBlock_Action]
 			}]
-		},
-		attributes: [
-			...action_output_element.attributes,
-			{
-				name: "remote-name",
-				description: "Name for a destination field or variable.",
-				autoadd: true
-			},
-		],
-		children: []
+		}
 	}
 ];
 
