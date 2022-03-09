@@ -1,6 +1,6 @@
 import { AttributeOption, AttributeTypes, ChildDefinition, Definition, Definitions, ElementAttribute, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes } from '../types/definitions';
 import { isIncludeBlockOfType } from './other';
-import { action_argument_element, action_call_output_elements, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, single_aggregate_query_element, aggregate_attribute_element, aggregate_function_element, default_children, action_call_children, comment_attribute, obsolete_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, include_block_declaration_definition, target_element_partial, decorator_context_entity_element_partial, search_children, in_element, search_group_element, full_text_query_element, or_element, and_element, search_column_submatch_element, search_column_element, model_condition_element, module_element, clear_var_element, backend_action_call_elements, scalar_aggregate_query_element } from './shared';
+import { action_argument_element, action_call_output_elements, default_yes_no_attribute_type, include_blocks_element, include_element, merge_instruction_element, decorations_element, decoration_element, decoration_argument_element, decorators_element, decorator_element, decorator_input_element, single_aggregate_query_element, aggregate_attribute_element, aggregate_function_element, default_children, action_call_children, comment_attribute, obsolete_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, include_block_declaration_definition, target_element_partial, decorator_context_entity_element_partial, search_children, in_element, search_group_element, full_text_query_element, or_element, and_element, search_column_submatch_element, search_column_element, model_condition_element, module_element, clear_var_element, backend_action_call_elements, scalar_aggregate_query_element, search_element } from './shared';
 
 const meta_name_attribute_options: AttributeOption[] = [
 	{
@@ -1419,31 +1419,7 @@ export const BACKEND_DEFINITION: Definitions = {
 			...default_children
 		]
 	}],
-	"search": [{
-		description: "A filter on the instances of a type.",
-		attributes: [
-			{
-				name: "name",
-				description: "Unique filter identifier."
-			},
-			{
-				name: "add-relations",
-				description: "Select relation attributes too. Set to 'yes' if you want to link a variable to a related attribute.",
-				types: [default_yes_no_attribute_type]
-			},
-			{
-				name: "filter",
-				description: "The type filter to apply for search."
-			},
-			{
-				name: "all-when-empty-filter",
-				description: "If 'no' the search returns nothing (matches no record) when the filter is empty or if all the parameter based search columns are left out; if 'yes' it  all records (matches all records).",
-				types: [default_yes_no_attribute_type]
-			},
-			comment_attribute
-		],
-		children: search_children
-	}],
+	"search": [search_element],
 	"searchcolumn": [search_column_element],
 	"searchcolumn-submatch": [search_column_submatch_element],
 	"or": [or_element],

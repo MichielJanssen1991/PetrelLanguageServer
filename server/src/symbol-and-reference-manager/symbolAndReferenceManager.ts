@@ -224,6 +224,7 @@ export class SymbolAndReferenceManager {
 			types: 0,
 			functions: 0,
 			infosets: 0,
+			profiles: 0,
 		};
 		const counts = {
 			rules: 0,
@@ -231,6 +232,7 @@ export class SymbolAndReferenceManager {
 			types: 0,
 			functions: 0,
 			infosets: 0,
+			profiles: 0,
 		};
 		Object.values(this.uriToTree).forEach(tree => {
 			const lastChildOrEmpty = tree.children.reverse().find(() => true);
@@ -245,6 +247,7 @@ export class SymbolAndReferenceManager {
 						case ModelElementTypes.Type: lines.types += nLines; counts.types++; break;
 						case ModelElementTypes.Function: lines.functions += nLines; counts.functions++; break;
 						case ModelElementTypes.Infoset: lines.infosets += nLines; counts.infosets++; break;
+						case ModelElementTypes.Profile: lines.profiles += nLines; counts.profiles++; break;
 					}
 				},
 				() => { return; }
