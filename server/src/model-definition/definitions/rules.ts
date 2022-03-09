@@ -1,6 +1,6 @@
 import { AttributeOption, AttributeTypes, ChildDefinition, Definition, Definitions, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes, ValidationLevels } from '../types/definitions';
-import { isIncludeBlockOfType } from './other';
-import { comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_element, backend_action_call_element, obsolete_attribute, obsolete_message_attribute, is_declaration_attribute, override_rights_attribute, input_element, include_block_declaration_definition, default_children, action_call_children, description_autoadd_attribute, module_element, clear_var_element } from './shared';
+import { isIncludeBlockOfType, isTypeOfAction } from './other';
+import { comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, include_blocks_element, include_element, merge_instruction_element, model_condition_element, default_yes_no_attribute_type, action_call_output_elements, obsolete_attribute, obsolete_message_attribute, is_declaration_attribute, override_rights_attribute, input_element, include_block_declaration_definition, default_children, action_call_children, description_autoadd_attribute, module_element, clear_var_element, backend_action_call_elements } from './shared';
 
 const switch_children: ChildDefinition[] = [
 	{
@@ -272,107 +272,109 @@ export const RULE_DEFINITION: Definitions = {
 		],
 		children: rule_children
 	}],
-	"action": [backend_action_call_element],
+	"action": [...backend_action_call_elements],
 	"input": [input_element],
-	"output": [{
-		type: ModelElementTypes.Output,
-		matchCondition: {
-			ancestors: [{
-				type: ModelElementTypes.Rule
+	"output": [
+		{
+			type: ModelElementTypes.Output,
+			matchCondition: {
+				matchFunction: (x) => isTypeOfAction(x, "Rule"),
+				ancestors: [{
+					type: ModelElementTypes.Rule
+				},
+				{
+					type: ModelElementTypes.Unknown
+				},
+				{
+					type: ModelElementTypes.IncludeBlock,
+					subtypes: [
+						ModelElementSubTypes.IncludeBlock_Rule,
+						ModelElementSubTypes.IncludeBlock_Then,
+						ModelElementSubTypes.IncludeBlock_Else,
+						ModelElementSubTypes.IncludeBlock_ElseIf
+					]
+				}]
 			},
-			{
-				type: ModelElementTypes.Unknown
-			},
-			{
-				type: ModelElementTypes.IncludeBlock,
-				subtypes: [
-					ModelElementSubTypes.IncludeBlock_Rule,
-					ModelElementSubTypes.IncludeBlock_Then,
-					ModelElementSubTypes.IncludeBlock_Else,
-					ModelElementSubTypes.IncludeBlock_ElseIf
-				]
-			}]
-		},
-		isSymbolDeclaration: true,
-		detailLevel: ModelDetailLevel.Declarations,
-		description: "Output of the rule. The rule will return (name, expression) as one of its value pairs. Any valid C# expression can be used; the syntax for parameters is {..}.",
-		attributes: [
-			{
-				name: "name",
-				description: "Unique identifier for the output.",
-				required: true,
-				autoadd: true
-			},
-			{
-				name: "attribute",
-				description: "A local variable name, a constant, or a data element (not supported in drop-down).",
-				autoadd: true,
-				type: {
-					type: AttributeTypes.Reference,
-					relatedTo: ModelElementTypes.RuleContext,
-					options: [
+			isSymbolDeclaration: true,
+			detailLevel: ModelDetailLevel.Declarations,
+			description: "Output of the rule. The rule will return (name, expression) as one of its value pairs. Any valid C# expression can be used; the syntax for parameters is {..}.",
+			attributes: [
+				{
+					name: "name",
+					description: "Unique identifier for the output.",
+					required: true,
+					autoadd: true
+				},
+				{
+					name: "attribute",
+					description: "A local variable name, a constant, or a data element (not supported in drop-down).",
+					autoadd: true,
+					type: {
+						type: AttributeTypes.Reference,
+						relatedTo: ModelElementTypes.RuleContext,
+						options: [
+							{
+								name: ModelElementTypes.Input
+							},
+							{
+								name: ModelElementTypes.SetVar
+							},
+							{
+								name: ModelElementTypes.Output
+							}
+						]
+					},
+					requiredConditions: [
 						{
-							name: ModelElementTypes.Input
+							attribute: "expression",
+							condition: "==",
+							value: ""
 						},
 						{
-							name: ModelElementTypes.SetVar
-						},
-						{
-							name: ModelElementTypes.Output
+							operator: "and",
+							attribute: "value",
+							condition: "==",
+							value: ""
 						}
 					]
 				},
-				requiredConditions: [
-					{
-						attribute: "expression",
-						condition: "==",
-						value: ""
-					},
-					{
-						operator: "and",
-						attribute: "value",
-						condition: "==",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "expression",
-				description: "Expression value.",
-				visibilityConditions: [
-					{
-						attribute: "attribute",
-						condition: "==",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "value",
-				description: "Fixed value.",
-				visibilityConditions: [
-					{
-						attribute: "attribute",
-						condition: "==",
-						value: ""
-					}
-				]
-			},
-			{
-				name: "format",
-				description: "Indicates how numeric values will be formatted; for example '0.00'."
-			},
-			{
-				name: "postcondition",
-				description: "A condition to check the value with."
-			},
-			ignore_modelcheck_attribute,
-			ignore_modelcheck_justification_attribute,
-			comment_attribute
-		],
-		children: []
-	},
-		...action_call_output_element
+				{
+					name: "expression",
+					description: "Expression value.",
+					visibilityConditions: [
+						{
+							attribute: "attribute",
+							condition: "==",
+							value: ""
+						}
+					]
+				},
+				{
+					name: "value",
+					description: "Fixed value.",
+					visibilityConditions: [
+						{
+							attribute: "attribute",
+							condition: "==",
+							value: ""
+						}
+					]
+				},
+				{
+					name: "format",
+					description: "Indicates how numeric values will be formatted; for example '0.00'."
+				},
+				{
+					name: "postcondition",
+					description: "A condition to check the value with."
+				},
+				ignore_modelcheck_attribute,
+				ignore_modelcheck_justification_attribute,
+				comment_attribute
+			],
+			children: []
+		},
+		...action_call_output_elements
 	],
 	"argument": [{
 		type: ModelElementTypes.Argument,

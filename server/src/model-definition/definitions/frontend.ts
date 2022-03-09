@@ -1,6 +1,6 @@
 import { AncestorTypes, AttributeOption, AttributeTypes, ChildDefinition, Definition, Definitions, ElementAttribute, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes } from '../types/definitions';
 import { combineMatchConditions, isIncludeBlockOfType, isViewControl } from './other';
-import { action_argument_element, action_call_output_element, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_partial, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, is_declaration_attribute, is_public_attribute, override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element_partial, view_argument_element, view_group_attributes, events_children, tree_children, module_element } from './shared';
+import { action_argument_element, action_call_output_elements, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_partial, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, is_declaration_attribute, is_public_attribute, override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element_partial, view_argument_element, view_group_attributes, events_children, tree_children, module_element } from './shared';
 
 const button_attributes: ElementAttribute[] =
 	[
@@ -4062,7 +4062,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 		children: action_children
 	}],
 	"output": [
-		...action_call_output_element,
+		...action_call_output_elements,
 		{
 			matchCondition: {
 				ancestors: [{ type: ModelElementTypes.Function }]

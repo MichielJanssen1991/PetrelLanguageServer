@@ -1,6 +1,6 @@
 import { NAMES } from '../types/constants';
 import { AttributeType, AttributeTypes, ChildDefinition, Definition, ElementAttribute, IXmlNodeContext, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes, ValidationLevels } from '../types/definitions';
-import { isTypeOfAction } from './other';
+import { isLocalNameReference, isTypeOfAction } from './other';
 
 // export const guidelines
 // <name_element>_element e.g. module_element
@@ -463,8 +463,8 @@ export const aggregate_function_element: Definition =
 	],
 	children: []
 };
-export const backend_action_call_element: Definition =
-{
+
+const action_call_element: Definition = {
 	type: ModelElementTypes.ActionCall,
 	detailLevel: ModelDetailLevel.References,
 	description: "An action.",
@@ -490,60 +490,67 @@ export const backend_action_call_element: Definition =
 			description: "If yes, all outputs returned by the action will be made available locally (in the frontend as non-data bound variables). Default is no.",
 			type: default_yes_no_attribute_type
 		},
-		{
-			name: "dataless",
-			description: "If the standard added data argument should be left out. It is now left out by default for performance (unless input-all is set). (Currently, only applicable for frontend calls to server actions.)",
-			type: {
-				type: AttributeTypes.Enum,
-				options: [
-					{
-						name: "default"
-					},
-					{
-						name: "yes"
-					},
-					{
-						name: "no"
-					}
-				]
-			}
-		},
-		{
-			name: "user-created",
-			description: "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
-			type: default_yes_no_attribute_type,
-			visibilityConditions: [
-				{
-					attribute: "name",
-					condition: "==",
-					value: "rule"
-				}
-			]
-		},
-		{
-			// rulename is already loaded via backendactions. 
-			// The xxx (in visibilityConditions) ensures that this item is never visible in attribute context provider
-			// Despite it is not visible, the attribute value context provider uses the type definition
-			name: "rulename",
-			description: "",
-			type: {
-				type: AttributeTypes.Reference,
-				relatedTo: ModelElementTypes.Rule
-			},
-			visibilityConditions: [
-				{
-					attribute: "name",
-					condition: "==",
-					value: "xxx"
-				}
-			]
-		},
 		ignore_modelcheck_attribute,
 		ignore_modelcheck_justification_attribute,
 		comment_attribute
 	],
 	children: action_call_children
 };
+
+export const backend_action_call_elements: Definition[] = [
+	{	// rule
+		...action_call_element,
+		subtype: ModelElementSubTypes.RuleAction,
+		matchCondition: {
+			matchFunction: (x) => isTypeOfAction(x, "Rule")
+		},
+		description: "A rule action call.",
+		attributes: [
+			...action_call_element.attributes,
+			{
+				name: "user-created",
+				description: "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
+				type: default_yes_no_attribute_type,
+				visibilityConditions: [
+					{
+						attribute: "name",
+						condition: "==",
+						value: "rule"
+					}
+				]
+			},
+			{
+				// rulename is already loaded via backendactions. 
+				// The xxx (in visibilityConditions) ensures that this item is never visible in attribute context provider
+				// Despite it is not visible, the attribute value context provider uses the type definition
+				name: "rulename",
+				description: "",
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.Rule
+				},
+				visibilityConditions: [
+					{
+						attribute: "name",
+						condition: "==",
+						value: "xxx"
+					}
+				]
+			}
+		]
+	},
+	{	// infoset
+		...action_call_element,
+		subtype: ModelElementSubTypes.InfosetAction,
+		matchCondition: {
+			matchFunction: (x) => isTypeOfAction(x, "Infoset")
+		},
+		description: "An infoset action call."
+	},
+	{	// default
+		...action_call_element
+	}
+];
 
 export const model_condition_element: Definition =
 {
@@ -1117,18 +1124,15 @@ const action_output_element: Definition = {
 	children: []
 };
 
-export const action_call_output_element: Definition[] = [
-	{
+export const action_call_output_elements: Definition[] = [
+	{	// infoset output remote name
 		...action_output_element,
 		description: "Output of the infoset action.",
 		matchCondition: {
-			matchFunction: (x) => isTypeOfAction(x, "Infoset"),
+			matchFunction: (x) => !isLocalNameReference(x),
 			ancestors: [{
-				type: ModelElementTypes.ActionCall
-			},
-			{
-				type: ModelElementTypes.IncludeBlock,
-				subtypes: [ModelElementSubTypes.IncludeBlock_Action]
+				type: ModelElementTypes.ActionCall,
+				subtypes: [ModelElementSubTypes.InfosetAction]
 			}]
 		},
 		attributes: [
@@ -1145,7 +1149,31 @@ export const action_call_output_element: Definition[] = [
 		],
 		children: []
 	},
-	{
+	{	// infoset output local name
+		...action_output_element,
+		description: "Output of the infoset action.",
+		matchCondition: {
+			matchFunction: (x) => isLocalNameReference(x),
+			ancestors: [{
+				type: ModelElementTypes.ActionCall,
+				subtypes: [ModelElementSubTypes.InfosetAction]
+			}]
+		},
+		attributes: [
+			...action_output_element.attributes,
+			{
+				name: "local-name",
+				description: "Name for a destination field or variable.",
+				autoadd: true,
+				type: {
+					type: AttributeTypes.Reference,
+					relatedTo: ModelElementTypes.InfosetVariable,
+				}
+			}
+		],
+		children: []
+	},
+	{	// default
 		...action_output_element,
 		description: "Output of the action.",
 		matchCondition: {

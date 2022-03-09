@@ -55,6 +55,14 @@ export const OTHER_DEFINITION: Definitions =
 		{
 			type: {
 				type: AttributeTypes.Reference,
+				relatedTo: ModelElementTypes.InfosetVariable,
+			},
+			detailLevel: ModelDetailLevel.References,
+			name: NAMES.ATTRIBUTE_VARIABLE
+		},
+		{
+			type: {
+				type: AttributeTypes.Reference,
 				relatedTo: ModelElementTypes.Function,
 			},
 			detailLevel: ModelDetailLevel.References,
@@ -86,6 +94,10 @@ export function isViewControl(nodeContext: IXmlNodeContext, controlType: string)
 
 export function isTypeOfAction(nodeContext: IXmlNodeContext, controlType: string): boolean {
 	return (nodeContext.getCurrentXmlNode().attributes.name?.toLowerCase() || "") == controlType.toLowerCase();
+}
+
+export function isLocalNameReference(nodeContext: IXmlNodeContext): boolean {
+	return (nodeContext.getCurrentXmlNode().attributes['remote-name'] == undefined);
 }
 
 export function isIncludeBlockOfType(nodeContext: IXmlNodeContext, metaType: string): boolean {

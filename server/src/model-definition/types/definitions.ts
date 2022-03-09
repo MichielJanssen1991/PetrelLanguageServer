@@ -80,6 +80,10 @@ export enum ModelElementTypes {
 
 export enum ModelElementSubTypes {
 	All = "All",
+	
+	InfosetAction = "InfosetAction",
+	RuleAction = "RuleAction",
+
 	Unknown = "Unknown",
 	View_ObjectView = "ObjectView",
 	View_ListView = "ListView",
