@@ -26,22 +26,6 @@ export const default_yes_no_attribute_type: AttributeType =
 		]
 	} as AttributeType;
 
-export const default_permission_attribute_type: AttributeType =
-	{
-		"options": [
-			{
-				name: "true"
-			},
-			{
-				name: "false"
-			},
-			{
-				name: "",
-				description: "(not set)"
-			}
-		]
-	} as AttributeType;
-
 export const default_startmode_attribute_type: AttributeType =
 	{
 		"options": [
@@ -1190,7 +1174,7 @@ export const action_call_output_elements: Definition[] = [
 	{	// infoset output local name
 		...action_output_element,
 		description: "Output of the infoset action.",
-		detailLevel: ModelDetailLevel.References, 
+		detailLevel: ModelDetailLevel.References,
 		matchCondition: {
 			matchFunction: (x) => isLocalNameReference(x),
 			ancestors: [{

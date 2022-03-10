@@ -1,26 +1,23 @@
-import { AttributeOption, AttributeTypes, ChildDefinition, Definition, Definitions, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes } from '../types/definitions';
+import { AttributeOption, AttributeType, AttributeTypes, ChildDefinition, Definition, Definitions, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes } from '../types/definitions';
 import { isIncludeBlockOfType } from './other';
-import { and_element, comment_attribute, default_children, default_permission_attribute_type, default_startmode_attribute_type, default_yes_no_attribute_type, full_text_query_element, ignore_modelcheck_attribute, include_blocks_element, include_block_declaration_definition, include_element, in_element, model_condition_element, module_element, or_element, search_children, search_column_element, search_column_submatch_element, search_element, search_group_element } from './shared';
+import { and_element, comment_attribute, default_children, default_startmode_attribute_type, default_yes_no_attribute_type, full_text_query_element, ignore_modelcheck_attribute, include_blocks_element, include_block_declaration_definition, include_element, in_element, model_condition_element, module_element, or_element, search_children, search_column_element, search_column_submatch_element, search_element, search_group_element } from './shared';
 
-export const profile_include_element: Definition =
-{
-	description: "Grants the referenced profile to all users that have the current profile. It is possible to include more profiles into one profile.",
-	type: ModelElementTypes.ProfileInclude,
-	detailLevel: ModelDetailLevel.References,
-	attributes: [
-		{
-			name: "profile",
-			description: "The profile to grant to the user.",
-			autoadd: true,
-			type: {
-				type: AttributeTypes.Reference,
-				relatedTo: ModelElementTypes.Profile
+const default_permission_attribute_type: AttributeType =
+	{
+		"options": [
+			{
+				name: "true",
+				default: true
+			},
+			{
+				name: "false"
+			},
+			{
+				name: "",
+				description: "(not set)"
 			}
-		},
-		comment_attribute
-	],
-	children: []
-};
+		]
+	} as AttributeType;
 
 const profile_type_element: Definition = {
 	description: "Permission declaration for a specific type.",
@@ -554,6 +551,7 @@ export const SECURITY_DEFINITION: Definitions = {
 			},
 			{
 				name: "read",
+				autoadd: true,
 				type: default_permission_attribute_type
 			},
 			{
