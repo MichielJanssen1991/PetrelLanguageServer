@@ -1,5 +1,5 @@
 import { AttributeTypes, Definition, Definitions, ModelDetailLevel, ModelElementTypes } from '../types/definitions';
-import { default_yes_no_attribute_type, comment_attribute, description_attribute } from './shared';
+import { default_yes_no_attribute_type, comment_attribute, description_attribute, include_element } from './shared';
 
 const action_definition_argument_element: Definition = {
 	description: "Allows to define attributes/inputs/outputs shared per module",
@@ -63,11 +63,12 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 			{
 				name: "name",
 				description: "Namespace caption.",
-				required: true
+				autoadd: true
 			},
 			{
 				name: "description",
 				description: "Caption to show to the user.",
+				autoadd: true
 				//required: true
 			}
 		],
@@ -288,10 +289,18 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 							name: "bool"
 						},
 						{
-							name: "int"
+							name: "int",
+							obsolete: true // use numeric
+						},
+						{
+							name: "numeric"
 						},
 						{
 							name: "enum"
+						},
+						{
+							name: "radio",
+							obsolete: true // use enum
 						},
 						{
 							name: "text"
@@ -525,5 +534,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 		children: []
 		// only useful for modeler
 	}],
+	"include": [include_element]
+
 
 };

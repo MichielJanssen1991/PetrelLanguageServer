@@ -1,5 +1,5 @@
 import { AttributeTypes, Definition, Definitions, ModelDetailLevel, ModelElementTypes } from '../types/definitions';
-import { default_yes_no_attribute_type, comment_attribute, description_attribute } from './shared';
+import { default_yes_no_attribute_type, comment_attribute, description_attribute, include_element } from './shared';
 
 const action_definition_argument_element: Definition = {
 	description: "Allows to define attributes/inputs/outputs shared per module",
@@ -97,7 +97,17 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 			{
 				element: "element",
 				occurence: "once"
-			}
+			},
+			{
+				element: "include"
+			},
+			// following is needed because of the 'is-grouping-element' on modules
+			{
+				element: "attribute"
+			},
+			{
+				element: "input"
+			},
 		]
 	}],
 	"action": [{
@@ -495,6 +505,5 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 		attributes: [comment_attribute],
 		children: []
 		// only useful for modeler
-	}],
-
+	}]
 };
