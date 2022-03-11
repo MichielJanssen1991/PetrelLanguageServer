@@ -158,10 +158,11 @@ export class SymbolAndReferenceManager {
 	 * Find the references to a given symbol.
 	 */
 	public getReferencesForSymbol(symbol: SymbolDeclaration) {
-		const caseSensitive = !(symbol.type == ModelElementTypes.Action);
-		const name = caseSensitive ? symbol.name : symbol.name.toLowerCase();
-		const referencesToSymbol = (this.referenceLookupTable.getForName(name) || []).filter(x => (x.types[0] == symbol.type));
-		return referencesToSymbol;
+		const referredSymbol = (this.referenceLookupTable.getForName(symbol.name) || []);//.find(x => symbol.type.includes(x.type));
+		if (!referredSymbol && symbol.type.includes(ModelElementTypes.Action)){
+			return (this.referenceLookupTable.getForName(symbol.name.toLowerCase()) || []); //.find(x => symbol.type.includes(x.type));
+		}
+		return referredSymbol;
 	}
 
 	/**
