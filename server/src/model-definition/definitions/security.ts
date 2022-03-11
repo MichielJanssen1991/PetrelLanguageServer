@@ -581,12 +581,8 @@ export const SECURITY_DEFINITION: Definitions = {
 			},
 			{
 				name: "read",
-<<<<<<< HEAD
-				types: [default_permission_attribute_type]
-=======
-				autoadd: true,
-				type: default_permission_attribute_type
->>>>>>> main
+				types: [default_permission_attribute_type],
+				autoadd: true
 			},
 			{
 				name: "update",

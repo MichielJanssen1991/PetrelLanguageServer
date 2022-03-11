@@ -1,5 +1,5 @@
 import { AttributeTypes, Definition, Definitions, ModelDetailLevel, ModelElementTypes } from '../types/definitions';
-import { default_yes_no_attribute_type, comment_attribute, description_attribute, include_element } from './shared';
+import { default_yes_no_attribute_type, comment_attribute, description_attribute } from './shared';
 
 const action_definition_argument_element: Definition = {
 	description: "Allows to define attributes/inputs/outputs shared per module",
