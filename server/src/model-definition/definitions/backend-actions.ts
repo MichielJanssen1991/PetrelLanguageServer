@@ -1,4 +1,4 @@
-import { AttributeTypes, Definition, Definitions, ModelDetailLevel, ModelElementTypes } from '../types/definitions';
+import { AttributeTypes, Definition, Definitions, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes } from '../types/definitions';
 import { default_yes_no_attribute_type, comment_attribute, description_attribute, include_element } from './shared';
 
 const action_definition_argument_element: Definition = {
@@ -104,6 +104,7 @@ export const BACKEND_ACTIONS_DEFINITION: Definitions = {
 	"action": [{
 		description: "An action definition, containing instructions for the server how to handle this action.",
 		type: ModelElementTypes.Action,
+		subtype: ModelElementSubTypes.BackendAction,
 		isSymbolDeclaration: true,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,

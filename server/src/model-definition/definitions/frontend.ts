@@ -1,6 +1,6 @@
 import { AncestorTypes, AttributeOption, AttributeTypes, ChildDefinition, Definition, Definitions, ElementAttribute, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes } from '../types/definitions';
 import { combineMatchConditions, isIncludeBlockOfType, isViewControl } from './other';
-import { action_argument_element, action_call_output_elements, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_partial, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, is_declaration_attribute, is_public_attribute, override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element_partial, view_argument_element, view_group_attributes, events_children, tree_children, module_element } from './shared';
+import { action_argument_element, action_call_output_elements, decorations_element, decoration_argument_element, decoration_element, decorators_element, decorator_context_entity_element_partial, decorator_element, decorator_input_element, default_children, default_yes_no_attribute_type, comment_attribute, description_attribute, ignore_modelcheck_attribute, ignore_modelcheck_justification_attribute, is_declaration_attribute, is_public_attribute, override_rights_attribute, event_children, include_blocks_element, include_block_declaration_definition, include_element, input_element, merge_instruction_element, model_condition_element, search_condition_options_attribute_type, target_element_partial, view_argument_element, view_group_attributes, events_children, tree_children, module_element, action_call_element, infoset_action_call_element, rule_action_call_element } from './shared';
 
 const button_attributes: ElementAttribute[] =
 	[
@@ -1415,6 +1415,7 @@ const event_element: Definition = {
 	children: event_children
 };
 
+
 const meta_name_attribute_options: AttributeOption[] = [
 	{
 		name: "view"
@@ -1976,6 +1977,187 @@ const attribute_children: ChildDefinition[] = [
 	},
 	...default_children
 ];
+
+const frontend_action_call_element: Partial<Definition> = {
+	...action_call_element,
+	description: "A Frontend Action",
+	type: ModelElementTypes.ActionCall,
+	subtype: ModelElementSubTypes.FrontendAction,
+	attributes: [
+		...action_call_element.attributes,
+		{
+			name: "dataless",
+			description: "If the standard added data argument should be left out. It is now left out by default for performance (unless input-all is set). (Currently, only applicable for frontend calls to server actions.)",
+			types: [default_yes_no_attribute_type]
+		},
+		{
+			name: "bounded",
+			description: "If the action arguments are bound to the data, or just to local variables.",
+			types: [default_yes_no_attribute_type]
+		},
+		{
+			name: "record",
+			description: "A piped list of IIDs on which the action should be executed. This could be useful in a ListView context, especially when calling an action from a function"
+		},
+		{
+			name: "merge",
+			description: "",
+			types: [default_yes_no_attribute_type]
+		},
+		{
+			name: "merge-key",
+			description: "the key which is used to merge the function calls, defaults to the function name",
+			visibilityConditions: [
+				{
+					attribute: "merge",
+					condition: "==",
+					value: "yes"
+				}
+			],
+		},
+		{
+			name: "target",
+			description: "",
+			types: [
+				{
+					type: AttributeTypes.Enum,
+					options: [
+						{
+							name: "field"
+						},
+						{
+							name: "column"
+						},
+						{
+							name: "dropdown"
+						},
+						{
+							name: "label"
+						},
+						{
+							name: "group"
+						},
+						{
+							name: "button"
+						},
+						{
+							name: "view"
+						},
+						{
+							name: "popup"
+						},
+						{
+							name: "tab"
+						},
+						{
+							name: "toolbar"
+						},
+					]
+				}
+			]
+		},
+		{
+			name: "tabber",
+			description: "",
+			visibilityConditions: [
+				{
+					attribute: "target",
+					condition: "==",
+					value: "tab"
+				}
+			],
+			requiredConditions: [
+				{
+					attribute: "target",
+					condition: "==",
+					value: "tab"
+				}
+			]
+		},
+		{
+			name: "tab",
+			description: "",
+			visibilityConditions: [
+				{
+					attribute: "target",
+					condition: "==",
+					value: "tab"
+				}
+			],
+			requiredConditions: [
+				{
+					attribute: "target",
+					condition: "==",
+					value: "tab"
+				}
+			]
+		},
+		{
+			name: "button",
+			description: "",
+			visibilityConditions: [
+				{
+					attribute: "target",
+					condition: "==",
+					value: "button"
+				}
+			],
+			requiredConditions: [
+				{
+					attribute: "target",
+					condition: "==",
+					value: "button"
+				}
+			]
+		},
+		{
+			name: "field",
+			description: "",
+			visibilityConditions: [
+				{
+					attribute: "target",
+					condition: "==",
+					value: "field"
+				},
+				{
+					operator: "or",
+					attribute: "target",
+					condition: "==",
+					value: "label"
+				}
+			],
+			requiredConditions: [
+				{
+					attribute: "target",
+					condition: "==",
+					value: "tab"
+				},
+				{
+					operator: "or",
+					attribute: "target",
+					condition: "==",
+					value: "label"
+				}
+			]
+		},
+		{
+			name: "user-created",
+			description: "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
+			types: [default_yes_no_attribute_type],
+			visibilityConditions: [
+				{
+					attribute: "name",
+					condition: "==",
+					value: "rule"
+				}
+			]
+		},
+		ignore_modelcheck_attribute,
+		ignore_modelcheck_justification_attribute,
+		comment_attribute
+	],
+	children: action_children
+};
 
 const include_block_frontend_declaration_definition: Definition = {
 	...include_block_declaration_definition,
@@ -3905,156 +4087,16 @@ export const FRONTEND_DEFINITION: Definitions = {
 		children: []
 	}],
 	"action": [{
-		description: "An Action",
-		type: ModelElementTypes.ActionCall,
-		attributes: [
-			{
-				name: "name",
-				description: "The action to perform.",
-				required: true
-			},
-			{
-				name: "input-all",
-				description: "If yes, all available local variables (in the frontend, the non-data bound as well as the data bound variables) will be passed to the action. Default is no.",
-				types: [default_yes_no_attribute_type]
-			},
-			{
-				name: "output-all",
-				description: "If yes, all outputs returned by the action will be made available locally (in the frontend as non-data bound variables). Default is no.",
-				types: [default_yes_no_attribute_type]
-			},
-			{
-				name: "dataless",
-				description: "If the standard added data argument should be left out. It is now left out by default for performance (unless input-all is set). (Currently, only applicable for frontend calls to server actions.)",
-				types: [default_yes_no_attribute_type]
-			},
-			{
-				name: "bounded",
-				description: "If the action arguments are bound to the data, or just to local variables.",
-				types: [default_yes_no_attribute_type]
-			},
-			{
-				name: "record",
-				description: "A piped list of IIDs on which the action should be executed. This could be useful in a ListView context, especially when calling an action from a function"
-			},
-			{
-				name: "merge",
-				description: "",
-				types: [default_yes_no_attribute_type]
-			},
-			{
-				name: "merge-key",
-				description: "the key which is used to merge the function calls, defaults to the function name",
-				visibilityConditions: [
-					{
-						attribute: "merge",
-						condition: "==",
-						value: "yes"
-					}
-				],
-			},
-			{
-				name: "tabber",
-				description: "",
-				visibilityConditions: [
-					{
-						attribute: "target",
-						condition: "==",
-						value: "tab"
-					}
-				],
-				requiredConditions: [
-					{
-						attribute: "target",
-						condition: "==",
-						value: "tab"
-					}
-				]
-			},
-			{
-				name: "tab",
-				description: "",
-				visibilityConditions: [
-					{
-						attribute: "target",
-						condition: "==",
-						value: "tab"
-					}
-				],
-				requiredConditions: [
-					{
-						attribute: "target",
-						condition: "==",
-						value: "tab"
-					}
-				]
-			},
-			{
-				name: "button",
-				description: "",
-				visibilityConditions: [
-					{
-						attribute: "target",
-						condition: "==",
-						value: "button"
-					}
-				],
-				requiredConditions: [
-					{
-						attribute: "target",
-						condition: "==",
-						value: "button"
-					}
-				]
-			},
-			{
-				name: "field",
-				description: "",
-				visibilityConditions: [
-					{
-						attribute: "target",
-						condition: "==",
-						value: "field"
-					},
-					{
-						operator: "or",
-						attribute: "target",
-						condition: "==",
-						value: "label"
-					}
-				],
-				requiredConditions: [
-					{
-						attribute: "target",
-						condition: "==",
-						value: "tab"
-					},
-					{
-						operator: "or",
-						attribute: "target",
-						condition: "==",
-						value: "label"
-					}
-				]
-			},
-			{
-				name: "user-created",
-				description: "Set this flag to yes in case the rule name is not hard-coded. In that case the platform will check whether the current user is allowed to invoke the rule (the rule should be marked as external-invocable in the security.xml).",
-				types: [default_yes_no_attribute_type],
-				visibilityConditions: [
-					{
-						attribute: "name",
-						condition: "==",
-						value: "rule"
-					}
-				]
-			},
-			ignore_modelcheck_attribute,
-			ignore_modelcheck_justification_attribute,
-			comment_attribute
-		],
-		children: action_children
-	}],
+			...infoset_action_call_element
+		},
+		{
+			...rule_action_call_element
+		},
+		{
+			...action_call_element,
+			...frontend_action_call_element
+		},
+	],
 	"output": [
 		...action_call_output_elements,
 		{

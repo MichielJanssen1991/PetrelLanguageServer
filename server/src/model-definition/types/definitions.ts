@@ -83,6 +83,9 @@ export enum ModelElementTypes {
 export enum ModelElementSubTypes {
 	All = "All",
 	
+	BackendAction = "BackendAction",
+	FrontendAction = "FrontendAction",
+	
 	InfosetAction = "InfosetAction",
 	RuleAction = "RuleAction",
 

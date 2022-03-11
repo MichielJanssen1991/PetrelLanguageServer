@@ -1,5 +1,5 @@
-import { AttributeTypes, Definition, Definitions, ModelDetailLevel, ModelElementTypes } from '../types/definitions';
-import { default_yes_no_attribute_type, comment_attribute, description_attribute } from './shared';
+import { AttributeTypes, Definition, Definitions, ModelDetailLevel, ModelElementSubTypes, ModelElementTypes } from '../types/definitions';
+import { default_yes_no_attribute_type, comment_attribute, description_attribute, include_element } from './shared';
 
 const action_definition_argument_element: Definition = {
 	description: "Allows to define attributes/inputs/outputs shared per module",
@@ -63,12 +63,12 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 			{
 				name: "name",
 				description: "Namespace caption.",
-				required: true
+				autoadd: true
 			},
 			{
 				name: "description",
 				description: "Caption to show to the user.",
-				//required: true
+				autoadd: true
 			}
 		],
 		children: [] //For grouping element parents children are used
@@ -113,6 +113,7 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 	"action": [{
 		description: "An action definition",
 		type: ModelElementTypes.Action,
+		subtype: ModelElementSubTypes.FrontendAction,
 		isSymbolDeclaration: true,
 		prefixNameSpace: true,
 		detailLevel: ModelDetailLevel.Declarations,
@@ -272,7 +273,15 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 							name: "int"
 						},
 						{
+							name: "numeric",
+							obsolete: true // use int
+						},
+						{
 							name: "enum"
+						},
+						{
+							name: "radio",
+							obsolete: true	// use enum
 						},
 						{
 							name: "text"
@@ -505,5 +514,6 @@ export const FRONTEND_ACTIONS_DEFINITION: Definitions = {
 		attributes: [comment_attribute],
 		children: []
 		// only useful for modeler
-	}]
+	}],
+	"include": [include_element]
 };
