@@ -49,7 +49,7 @@ export class ModelManager extends SymbolAndReferenceManager {
 		return symbol.children.filter(x => (x.type == ModelElementTypes.Input));
 	}
 	public getMandatorySymbolInputs(symbol: SymbolDeclaration) {
-		return this.getSymbolInputs(symbol).filter(x => (x.attributes.required));
+		return this.getSymbolInputs(symbol).filter(x => (x.attributes.required && x.attributes.required.value == "yes"));
 	}
 	public getSymbolOutputs(symbol: SymbolDeclaration) {
 		return symbol.children.filter(x => (x.type == ModelElementTypes.Output));

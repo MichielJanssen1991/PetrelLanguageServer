@@ -599,6 +599,21 @@ const toolbarbutton_children: ChildDefinition[] = [
 	...default_children
 ];
 
+const node_children: ChildDefinition[] = [
+	{
+		element: "node"
+	},
+	{
+		element: "events",
+		occurence: "once"
+	},
+	{
+		element: "view",
+		occurence: "once"
+	},
+	...default_children
+];
+
 const default_view_children: ChildDefinition[] = [
 	{
 		element: "events"
@@ -2692,6 +2707,14 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			children: tree_children
 		},
+		{ // node
+			...include_block_frontend_declaration_definition,
+			subtype: ModelElementSubTypes.IncludeBlock_Node,
+			matchCondition: {
+				matchFunction: (x) => isIncludeBlockOfType(x, "node"),
+			},
+			children: node_children
+		},
 		{ // General
 			...include_block_frontend_declaration_definition,
 		},
@@ -2784,6 +2807,17 @@ export const FRONTEND_DEFINITION: Definitions = {
 	"node": [{
 		description: "Navigation tree node, which may be expandable into more nodes.",
 		type: ModelElementTypes.Node,
+		matchCondition: {
+			ancestors: [
+				{ type: ModelElementTypes.Node },
+				{ type: ModelElementTypes.Tree },
+				{
+					type: ModelElementTypes.IncludeBlock,
+					subtypes: [ModelElementSubTypes.IncludeBlock_Node],
+					ancestorType: AncestorTypes.Parent				
+				}
+			]
+		},
 		attributes: [
 			{
 				name: "name",
@@ -2835,20 +2869,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			ignore_modelcheck_justification_attribute,
 			comment_attribute
 		],
-		children: [
-			{
-				element: "node"
-			},
-			{
-				element: "events",
-				occurence: "once"
-			},
-			{
-				element: "view",
-				occurence: "once"
-			},
-			...default_children
-		]
+		children: node_children
 	}],
 	"toolbars": [{
 		description: "Used to group toolbars.",
@@ -3646,7 +3667,10 @@ export const FRONTEND_DEFINITION: Definitions = {
 					type: ModelElementTypes.SubView
 				},
 				{
-					type: ModelElementTypes.Group
+					type: ModelElementTypes.Group,
+					subtypes: [
+						ModelElementSubTypes.Group_View
+					]
 				},
 				{
 					type: ModelElementTypes.IncludeBlock,
