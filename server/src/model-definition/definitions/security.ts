@@ -389,6 +389,7 @@ export const SECURITY_DEFINITION: Definitions = {
 		description: "Definition of a profile",
 		prefixNameSpace: true,
 		type: ModelElementTypes.Profile,
+		detailLevel: ModelDetailLevel.Declarations,
 		attributes: [
 			{
 				name: "name",
