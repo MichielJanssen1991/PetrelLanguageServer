@@ -2,22 +2,22 @@ type ObjectsByName<Type> = { [name: string]: Type[] }
 type ObjectsByNameByFile<Type> = { [uri: string]: ObjectsByName<Type> }
 interface LookupTableObject {
 	uri: string;
-  }
+}
 
 export class LookupTable<Type extends LookupTableObject>{
 	private objectsByNameByFile: ObjectsByNameByFile<Type> = {};
 	private objectsByName: ObjectsByName<Type> = {};
 
-	public clearForUri(uri:string) {
+	public clearForUri(uri: string) {
 		const objects = this.objectsByNameByFile[uri];
-		if(objects){
+		if (objects) {
 			const referenceNames = Object.keys(objects);
-			referenceNames.forEach(name=> this.removeObject(uri, name));
+			referenceNames.forEach(name => this.removeObject(uri, name));
 		}
 		this.objectsByNameByFile[uri] = {};
 	}
 
-	public addObject(object: Type, name:string) {
+	public addObject(object: Type, name: string) {
 		const uri = object.uri;
 		this.pushToObjectsByName(name, object);
 		this.pushToObjectsByNameByFile(uri, name, object);
@@ -27,23 +27,23 @@ export class LookupTable<Type extends LookupTableObject>{
 		return this.objectsByName[name] || [];
 	}
 
-	public GetForFile(uri:string){
-		return this.objectsByNameByFile[uri];
+	public getForFile(uri: string) {
+		return this.objectsByNameByFile[uri] || [];
 	}
-	
-	public getByNameByFile(){
+
+	public getByNameByFile() {
 		return this.objectsByNameByFile;
 	}
-	
-	public getNames(){
+
+	public getNames() {
 		return Object.keys(this.objectsByName);
 	}
 
-	public getFiles(){
+	public getFiles() {
 		return Object.keys(this.objectsByNameByFile);
 	}
-	
-	private removeObject(uri: string, name:string) {
+
+	private removeObject(uri: string, name: string) {
 		let namedDeclarationsForName = this.objectsByName[name] || [];
 		namedDeclarationsForName = namedDeclarationsForName.filter(x => x.uri != uri);
 		this.objectsByName[name] = namedDeclarationsForName;

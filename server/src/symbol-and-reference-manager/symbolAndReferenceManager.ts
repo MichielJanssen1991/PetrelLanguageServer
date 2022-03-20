@@ -51,14 +51,14 @@ export class SymbolAndReferenceManager {
 	 * Returns the symbols for a given file by name
 	 */
 	public getSymbolsForFileByName(uri: string) {
-		return this.symbolLookupTable.GetForFile(uri);
+		return this.symbolLookupTable.getForFile(uri);
 	}
 
 	/**
 	 * Returns the references for a given file by name
 	 */
 	public getReferencesForFileByName(uri: string) {
-		return this.referenceLookupTable.GetForFile(uri);
+		return this.referenceLookupTable.getForFile(uri);
 	}
 
 	/**
@@ -273,7 +273,7 @@ export class SymbolAndReferenceManager {
 	private processAttributeForReferences(attribute: Attribute) {
 		if (attribute.isReference) {
 			const ref = attribute as Reference;
-			ref.types.forEach(type=>{
+			ref.types.forEach(type => {
 				if (standaloneObjectTypes.has(type)) {
 					const name = this.getReferenceKeyNameForLookupTable(ref);
 					this.referenceLookupTable.addObject(ref, name);
