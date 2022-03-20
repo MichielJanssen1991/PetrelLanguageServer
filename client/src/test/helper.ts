@@ -7,6 +7,8 @@ export let editor: vscode.TextEditor;
 export let documentEol: string;
 export let platformEol: string;
 
+let firstTest = true;
+
 /**
  * Activates the vscode.petrel-language-server extension
  */
@@ -17,7 +19,10 @@ export async function activate(docUri: vscode.Uri) {
 	try {
 		doc = await vscode.workspace.openTextDocument(docUri);
 		editor = await vscode.window.showTextDocument(doc);
-		await sleep(300); // Wait for server activation
+		if (firstTest) {
+			await sleep(1000); // Wait for server activation
+			firstTest = false;
+		}
 	} catch (e) {
 		console.error(e);
 	}
