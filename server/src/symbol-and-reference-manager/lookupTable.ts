@@ -23,8 +23,8 @@ export class LookupTable<Type extends LookupTableObject>{
 		this.pushToObjectsByNameByFile(uri, name, object);
 	}
 
-	public getForName(name:string){
-		return this.objectsByName[name];
+	public getForName(name: string) {
+		return this.objectsByName[name] || [];
 	}
 
 	public GetForFile(uri:string){

@@ -147,9 +147,9 @@ export class SymbolAndReferenceManager {
 	 * Find the referenced object for a given Reference.
 	 */
 	public getReferencedObject(reference: Reference): SymbolDeclaration | void{
-		const referredSymbol = (this.symbolLookupTable.getForName(reference.value) || []).find(x => reference.types.includes(x.type));
+		const referredSymbol = (this.symbolLookupTable.getForName(reference.value)).find(x => reference.types.includes(x.type));
 		if (!referredSymbol && reference.types.includes(ModelElementTypes.Action)){
-			return (this.symbolLookupTable.getForName(reference.value.toLowerCase()) || []).find(x => reference.types.includes(x.type));
+			return (this.symbolLookupTable.getForName(reference.value.toLowerCase())).find(x => reference.types.includes(x.type));
 		}
 		return referredSymbol;
 	}
@@ -158,11 +158,9 @@ export class SymbolAndReferenceManager {
 	 * Find the references to a given symbol.
 	 */
 	public getReferencesForSymbol(symbol: SymbolDeclaration) {
-		const referredSymbol = (this.referenceLookupTable.getForName(symbol.name) || []);//.find(x => symbol.type.includes(x.type));
-		if (!referredSymbol && symbol.type.includes(ModelElementTypes.Action)){
-			return (this.referenceLookupTable.getForName(symbol.name.toLowerCase()) || []); //.find(x => symbol.type.includes(x.type));
-		}
-		return referredSymbol;
+		const name = this.getSymbolKeyNameForLookupTable(symbol);
+		const referencesToSymbol = this.referenceLookupTable.getForName(name).filter(x => (x.types.includes(symbol.type)));
+		return referencesToSymbol;
 	}
 
 	/**
