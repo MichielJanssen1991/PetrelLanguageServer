@@ -9,27 +9,27 @@ import { SymbolAndReferenceManager } from './symbolAndReferenceManager';
 export class ModelManager extends SymbolAndReferenceManager {
 	public getChildrenOfType(object: TreeNode | SymbolDeclaration, type: ModelElementTypes): (TreeNode | SymbolDeclaration)[] {
 		const directChildren = object.children.filter(x => (x.type == type));
-		
-		const includedChildren: (TreeNode | SymbolDeclaration)[] = object.children.filter(c=>c.type == ModelElementTypes.Include).flatMap(c => {
+
+		const includedChildren: (TreeNode | SymbolDeclaration)[] = object.children.filter(c => c.type == ModelElementTypes.Include).flatMap(c => {
 			const includeBlockRef = c.attributes["block"] as Reference;
 			const decoratorsOrIncludeBlocks = includeBlockRef ? this.getReferencedObject(includeBlockRef) : undefined;
 			return decoratorsOrIncludeBlocks ? this.getChildrenOfType(decoratorsOrIncludeBlocks, type) : [];
 		});
 
-		const decorationsGroupChildren = object.children.filter(d=>d.type == ModelElementTypes.Decorations).flatMap(d=>{
+		const decorationsGroupChildren = object.children.filter(d => d.type == ModelElementTypes.Decorations).flatMap(d => {
 			return this.getChildrenOfType(d, type);
 		});
-		
-		const decorationChildren = object.children.filter(d=>d.type == ModelElementTypes.Decoration).flatMap(d=>{
+
+		const decorationChildren = object.children.filter(d => d.type == ModelElementTypes.Decoration).flatMap(d => {
 			const decoratorRef = d.attributes["name"] as Reference;
 			const decorator = decoratorRef ? this.getReferencedObject(decoratorRef) : undefined;
 			return decorator ? this.getChildrenOfType(decorator, type) : [];
 		});
-				
-		const targetChildren = object.children.filter(d=>d.type == ModelElementTypes.Target).flatMap(d=>{
-			return this.getChildrenOfType(d, type);		
-		});		
-		
+
+		const targetChildren = object.children.filter(d => d.type == ModelElementTypes.Target).flatMap(d => {
+			return this.getChildrenOfType(d, type);
+		});
+
 		return [...directChildren, ...includedChildren, ...decorationChildren, ...decorationsGroupChildren, ...targetChildren];
 	}
 

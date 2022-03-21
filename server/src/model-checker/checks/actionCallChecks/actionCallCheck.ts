@@ -15,9 +15,9 @@ export abstract class ActionCallCheck extends ModelCheck {
 		super(modelManager);
 	}
 
-	protected abstract getAdditionalInputsForSpecificAction(actionCall: TreeNode):string[]
-	protected abstract getAdditionalOutputsForSpecificAction(actionCall: TreeNode):string[]
-	protected abstract verifyActionCall(actionCall: TreeNode, options: ModelCheckerOptions):void
+	protected abstract getAdditionalInputsForSpecificAction(actionCall: TreeNode): string[]
+	protected abstract getAdditionalOutputsForSpecificAction(actionCall: TreeNode): string[]
+	protected abstract verifyActionCall(actionCall: TreeNode, options: ModelCheckerOptions): void
 
 	protected checkInternal(node: TreeNode, options: ModelCheckerOptions) {
 		this.verifyActionCall(node, options);
@@ -35,7 +35,7 @@ export abstract class ActionCallCheck extends ModelCheck {
 	}
 
 	protected verifyInputsAreKnownInReferencedObjects(actionCall: TreeNode) {
-		const referenceAndSubReferences = Object.values(actionCall.attributes).filter(x=>x.isReference) as Reference[];
+		const referenceAndSubReferences = Object.values(actionCall.attributes).filter(x => x.isReference) as Reference[];
 		const referencedSymbolInputs = referenceAndSubReferences.map(subRef => {
 			const referencedSymbol = this.modelManager.getReferencedObject(subRef);
 			return referencedSymbol ? this.modelManager.getSymbolInputs(referencedSymbol) : [];
@@ -53,7 +53,7 @@ export abstract class ActionCallCheck extends ModelCheck {
 	}
 
 	protected verifyOutputsAreKnownInReferencedObjects(actionCall: TreeNode) {
-		const referenceAndSubReferences = Object.values(actionCall.attributes).filter(x=>x.isReference) as Reference[];
+		const referenceAndSubReferences = Object.values(actionCall.attributes).filter(x => x.isReference) as Reference[];
 		const referencedSymbolOutputs = referenceAndSubReferences.map(subRef => {
 			const referencedSymbol = this.modelManager.getReferencedObject(subRef);
 			return referencedSymbol ? this.modelManager.getSymbolOutputs(referencedSymbol) : [];
@@ -99,7 +99,7 @@ export abstract class ActionCallCheck extends ModelCheck {
 
 		return inputNames;
 	}
-	
+
 	private getAdditionalOutputsForActions(actionCall: TreeNode) {
 		const outputNames: string[] = this.getAdditionalOutputsForSpecificAction(actionCall);
 		return outputNames;
