@@ -74,10 +74,10 @@ export class CompletionProvider {
 			attributeCompletions = this.mapAttributesToCompletionItem(allAttributes);
 			if (attributeCompletions.length > 0) {
 				return attributeCompletions;
-			} 
-			return [{label: "no attribute options found for " + node.tag}];
+			}
+			return [{ label: "no attribute options found for " + node.tag }];
 		}
-		return [{label: "no attribute options found"}];
+		return [{ label: "no attribute options found" }];
 	}
 
 	/**
@@ -210,11 +210,11 @@ export class CompletionProvider {
 							case ModelElementTypes.RuleContext:
 								symbols = context
 									.getFromContext(ModelElementTypes.Rule, [
-										{type: ModelElementTypes.ActionCallOutput, attribute: NAMES.ATTRIBUTE_LOCALNAME},
-										{type: ModelElementTypes.Input, attribute: NAMES.ATTRIBUTE_NAME},
-										{type: ModelElementTypes.SetVar, attribute: NAMES.ATTRIBUTE_NAME}
+										{ type: ModelElementTypes.ActionCallOutput, attribute: NAMES.ATTRIBUTE_LOCALNAME },
+										{ type: ModelElementTypes.Input, attribute: NAMES.ATTRIBUTE_NAME },
+										{ type: ModelElementTypes.SetVar, attribute: NAMES.ATTRIBUTE_NAME }
 									])
-									?.availableParams.filter(param=>param!=undefined).map(param => ({ label: param })) || [
+									?.availableParams.filter(param => param != undefined).map(param => ({ label: param })) || [
 										{ label: "no params found" },
 									];
 								break;
@@ -225,7 +225,7 @@ export class CompletionProvider {
 								break;
 						}
 					} else if (type.type == AttributeTypes.Enum && type.options) {
-						symbols = type.options.filter(option=>!option.obsolete).map(option => ({ label: option.name }));
+						symbols = type.options.filter(option => !option.obsolete).map(option => ({ label: option.name }));
 					}
 				});
 			}
@@ -249,16 +249,16 @@ export class CompletionProvider {
 		return this.getChildElementCompletionsForNode(modelFileContext, node);
 	}
 
-	private getChildElementCompletionsForNode(modelFileContext: ModelFileContext, node: TreeNode): CompletionItem[]{
+	private getChildElementCompletionsForNode(modelFileContext: ModelFileContext, node: TreeNode): CompletionItem[] {
 		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
 		//Return parents children if the current node is a grouping element
-		if(elementDefinition?.isGroupingElement && node.parent){
+		if (elementDefinition?.isGroupingElement && node.parent) {
 			return this.getChildElementCompletionsForNode(modelFileContext, node.parent);
 		}
 		if (elementDefinition && elementDefinition.children.length > 0) {
 			return this.mapChildrenToCompletionItems(elementDefinition.children, modelFileContext);
 		}
-		return [{label: "no child options found for " + node.tag }];
+		return [{ label: "no child options found for " + node.tag }];
 	}
 
 	private mapAttributesToCompletionItem(attributes: ElementAttribute[]): CompletionItem[] {
@@ -275,7 +275,7 @@ export class CompletionProvider {
 	private mapChildrenToCompletionItems(children: ChildDefinition[], modelFileContext: ModelFileContext): CompletionItem[] {
 		return children.map(
 			(child: ChildDefinition) => {
-				const childsOwnDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, child.element, child.type||ModelElementTypes.All, child.subtype);
+				const childsOwnDefinition = this.modelDefinitionManager.getModelDefinitionForTagAndType(modelFileContext, child.element, child.type || ModelElementTypes.All, child.subtype);
 				const snippet = this.buildChildElementSnippet(modelFileContext, child, childsOwnDefinition);
 				return {
 					label: child.element,
