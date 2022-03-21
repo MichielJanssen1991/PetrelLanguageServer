@@ -58,9 +58,14 @@ export class ModelManager extends SymbolAndReferenceManager {
 		return infoset.children.filter(x => (x.type == ModelElementTypes.InfosetVariable)) as SymbolDeclaration[];
 	}
 
-	public getReferencedTypeAttributes(typeRef: Reference): string[] {
-		const type = typeRef ? this.getReferencedObject(typeRef) : undefined;
-		return type ? this.getTypeAttributes(type) : [];
+	/**
+	 * Get the list of attributes for a given type. In case multiple definitions are found the union of attributes is returned
+	 * @param type: Reference to a type
+	 * @returns string[] containing all attribute names
+	 */
+	public getReferencedTypeAttributes(type: Reference): string[] {
+		const types = type ? this.getReferencedObjects(type) : [];
+		return Array.from(new Set(types.flatMap(type => this.getTypeAttributes(type))));
 	}
 
 	public getTypeAttributes(type: SymbolDeclaration): string[] {

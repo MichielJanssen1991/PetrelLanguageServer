@@ -144,21 +144,28 @@ export class SymbolAndReferenceManager {
 	}
 
 	/**
-	 * Find the referenced object for a given Reference.
+	 * Find the referenced objects for a given Reference. The definition is not always uniquely defined
 	 */
-	public getReferencedObject(reference: Reference): SymbolDeclaration | void{
-		const referredSymbol = (this.symbolLookupTable.getForName(reference.value)).find(x => reference.types.includes(x.type));
-		if (!referredSymbol && reference.types.includes(ModelElementTypes.Action)){
-			return (this.symbolLookupTable.getForName(reference.value.toLowerCase())).find(x => reference.types.includes(x.type));
-		}
-		return referredSymbol;
+	public getReferencedObjects(reference: Reference): SymbolDeclaration[] {
+		const referredSymbols = reference.types.flatMap(type => {
+			const name = this.getSymbolKeyNameForLookupTable(reference.value, type);
+			return this.symbolLookupTable.getForName(name).filter(x => (x.type == type));
+		});
+		return referredSymbols;
+	}
+	/**
+	 * Find the referenced object for a given Reference. Returs the first matching definition it encounters (non deterministic).
+	 */
+	public getReferencedObject(reference: Reference): SymbolDeclaration | undefined {
+		const referredSymbols = this.getReferencedObjects(reference);
+		return referredSymbols.length > 0 ? referredSymbols[0] : undefined;
 	}
 
 	/**
 	 * Find the references to a given symbol.
 	 */
 	public getReferencesForSymbol(symbol: SymbolDeclaration) {
-		const name = this.getSymbolKeyNameForLookupTable(symbol);
+		const name = this.getSymbolKeyNameForLookupTable(symbol.name, symbol.type);
 		const referencesToSymbol = this.referenceLookupTable.getForName(name).filter(x => (x.types.includes(symbol.type)));
 		return referencesToSymbol;
 	}
@@ -264,7 +271,7 @@ export class SymbolAndReferenceManager {
 		if (node.isSymbolDeclaration) {
 			const symbol = node as SymbolDeclaration;
 			if (standaloneObjectTypes.has(symbol.type)) {
-				const name = this.getSymbolKeyNameForLookupTable(symbol);
+				const name = this.getSymbolKeyNameForLookupTable(symbol.name, symbol.type);
 				this.symbolLookupTable.addObject(symbol, name);
 			}
 		}
@@ -275,17 +282,14 @@ export class SymbolAndReferenceManager {
 			const ref = attribute as Reference;
 			ref.types.forEach(type => {
 				if (standaloneObjectTypes.has(type)) {
-					const name = this.getReferenceKeyNameForLookupTable(ref);
+					const name = this.getSymbolKeyNameForLookupTable(ref.value, type);
 					this.referenceLookupTable.addObject(ref, name);
 				}
 			});
 		}
 	}
 
-	private getSymbolKeyNameForLookupTable(symbol: SymbolDeclaration) {
-		return symbol.type == ModelElementTypes.Action ? symbol.name.toLowerCase() : symbol.name;
-	}
-	private getReferenceKeyNameForLookupTable(reference: Reference) {
-		return reference.types[0] == ModelElementTypes.Action ? reference.value.toLowerCase() : reference.value;
+	private getSymbolKeyNameForLookupTable(name: string, type: ModelElementTypes) {
+		return type == ModelElementTypes.Action ? name.toLowerCase() : name;
 	}
 }

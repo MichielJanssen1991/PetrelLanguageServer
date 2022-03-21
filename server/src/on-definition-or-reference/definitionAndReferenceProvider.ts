@@ -15,8 +15,7 @@ export class DefinitionAndReferenceProvider {
 		let symbols: SymbolDeclaration[] = [];
 		if (node && attribute?.isReference) {
 			const reference = attribute as Reference;
-			const symbol = this.modelManager.getReferencedObject(reference);
-			symbols = symbol ? [symbol] : [];
+			symbols = this.modelManager.getReferencedObjects(reference);
 		} else {
 			symbols = this.modelManager.findSymbolsMatchingWord({ exactMatch: true, word });
 		}
