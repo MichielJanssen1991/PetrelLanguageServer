@@ -324,5 +324,6 @@ export type AttributeType = {
 	relatedTo?: ModelElementTypes,
 	options?: AttributeOption[],
 	pathHints?: AttributeOption[],
-	default?: string
+	default?: string,
+	prefixNameSpace?: boolean
 }

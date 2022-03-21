@@ -197,9 +197,9 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 			const { parsedObject, definition } = item;
 			const parentIndex = this.parsedObjectStack.length - 1;
 			const parent = parentIndex >= 0 ? this.parsedObjectStack[parentIndex] : undefined;
-			
+
 			//If no definition is found or detail level is specified only add the parsed tag when detail level is All
-			const defDetailLevel = definition?.detailLevel!=undefined ? definition.detailLevel : ModelDetailLevel.All;
+			const defDetailLevel = definition?.detailLevel != undefined ? definition.detailLevel : ModelDetailLevel.All;
 			if (this.detailLevel >= defDetailLevel) {
 				parsedObject.contextQualifiers = context;
 				parsedObject.fullRange.end = this.getTagRange().end;
@@ -302,12 +302,17 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	private parseAttributeForDefinition(attributeDefinition: ElementAttribute, node: XmlNode) {
 		let attribute;
 		const attributeName = attributeDefinition.name;
-		const attributeValue = node.attributes[attributeName];
+		let attributeValue = node.attributes[attributeName];
 		if (attributeValue) {
 			const { range, fullRange } = this.attributeRanges[attributeName];
-			if (attributeDefinition.types){
-				const relatedToTypes: ModelElementTypes[] = attributeDefinition.types.filter(type=>type.relatedTo).map(type=>type.relatedTo as ModelElementTypes);
-				if (relatedToTypes) {
+			if (attributeDefinition.types) {
+				const relatedToAttributeDefinitions = attributeDefinition.types.filter(type => type.relatedTo);
+				if (relatedToAttributeDefinitions.length > 0) {
+					const relatedToTypes: ModelElementTypes[] = relatedToAttributeDefinitions.map(type => type.relatedTo as ModelElementTypes);
+					if (relatedToAttributeDefinitions[0].prefixNameSpace) {
+						const nameSpacePrefix = this.getNameSpace();
+						attributeValue = (nameSpacePrefix.length > 0 ? nameSpacePrefix + "." : "") + attributeValue;
+					}
 					attribute = newReference(attributeName, attributeValue, relatedToTypes, range, fullRange, this.uri);
 				}
 				else {
@@ -319,7 +324,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 	}
 
 	private parseContextQualifiers(node: XmlNode) {
-		const contextQualifiers:ContextQualifiers = {};
+		const contextQualifiers: ContextQualifiers = {};
 		if (node.attributes.obsolete == "yes") {
 			contextQualifiers.isObsolete = true;
 		}

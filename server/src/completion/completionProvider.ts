@@ -202,6 +202,7 @@ export class CompletionProvider {
 			const attrName = typeof (attribute) == 'string' ? attribute : (attribute as Reference).name;
 			const attrDefinition = elementDefinition.attributes.find(attr => attr.name == attrName);
 			const types = attrDefinition?.types;
+			let nameSpacePrefix = "";
 			if (attrDefinition && types) {
 				types.forEach(type => {
 					if (type.type == AttributeTypes.Reference && type.relatedTo) {
@@ -218,7 +219,8 @@ export class CompletionProvider {
 									];
 								break;
 							default:
-								symbols = this.symbolAndReferenceManager.getAllSymbolsForType(type.relatedTo).filter(x=>x.name!=undefined).map(x=>({ label: x.name })) || [
+								if (type.prefixNameSpace && node.contextQualifiers.nameSpace) { nameSpacePrefix = node.contextQualifiers.nameSpace + "."; }
+								symbols = this.symbolAndReferenceManager.getAllSymbolsForType(type.relatedTo).filter(x => x.name != undefined && (nameSpacePrefix == "" || x.name.startsWith(nameSpacePrefix))).map(x => ({ label: x.name.substring(nameSpacePrefix.length) })) || [
 									{ label: `no ${type.relatedTo}s found` }];
 								break;
 						}
