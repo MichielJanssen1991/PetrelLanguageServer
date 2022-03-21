@@ -227,6 +227,7 @@ export class SymbolAndReferenceManager {
 		const lines = {
 			total: 0,
 			rules: 0,
+			ruletests: 0,
 			views: 0,
 			types: 0,
 			functions: 0,
@@ -235,6 +236,8 @@ export class SymbolAndReferenceManager {
 		};
 		const counts = {
 			rules: 0,
+			ruletests: 0,
+			ruletestsets: 0,
 			views: 0,
 			types: 0,
 			functions: 0,
@@ -255,6 +258,8 @@ export class SymbolAndReferenceManager {
 						case ModelElementTypes.Function: lines.functions += nLines; counts.functions++; break;
 						case ModelElementTypes.Infoset: lines.infosets += nLines; counts.infosets++; break;
 						case ModelElementTypes.Profile: lines.profiles += nLines; counts.profiles++; break;
+						case ModelElementTypes.RuleTests: lines.ruletests += nLines; counts.ruletests++; break;
+						case ModelElementTypes.RuleTestSets: counts.ruletestsets++; break; // No lines counted, already counted for RuleTests
 					}
 				},
 				() => { return; }

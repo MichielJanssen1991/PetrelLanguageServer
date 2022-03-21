@@ -41,6 +41,8 @@ export enum ModelElementTypes {
 	MetaDataInitialize = "MetaDataInitialize",
 	Rule = "Rule",
 	Rules = "Rules",
+	RuleTests = "RuleTests",
+	RuleTestSets = "RuleTestSets",
 	Output = "Output",
 	Profile = "Profile",
 	ProfileInclude = "ProfileInclude",

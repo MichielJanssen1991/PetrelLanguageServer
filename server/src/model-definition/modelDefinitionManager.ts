@@ -18,6 +18,7 @@ import { RULE_DEFINITION } from './definitions/rules';
 import { AncestorDefinition, AncestorTypes, Definition, Definitions, IXmlNodeContext, ModelElementSubTypes, ModelElementTypes } from './types/definitions';
 import { TreeNode, } from './types/tree';
 import { SECURITY_DEFINITION } from './definitions/security';
+import { RULE_TESTS_DEFINITION } from './definitions/rule-tests';
 
 export enum ModelFileContext {
 	Backend,
@@ -68,7 +69,7 @@ export class ModelDefinitionManager {
 		this.contextToModelDefinition[ModelFileContext.Unknown] = OTHER_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.BackendActions] = BACKEND_ACTIONS_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.FrontendActions] = FRONTEND_ACTIONS_DEFINITION;
-		this.contextToModelDefinition[ModelFileContext.RuleTests] = {};
+		this.contextToModelDefinition[ModelFileContext.RuleTests] = RULE_TESTS_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.InfosetTests] = {};
 		this.contextToModelDefinition[ModelFileContext.Security] = SECURITY_DEFINITION;
 		this.contextToModelDefinition[ModelFileContext.SecurityTests] = {};
