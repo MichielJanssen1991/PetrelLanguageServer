@@ -4,7 +4,7 @@ import { SymbolAndReferenceManager } from '../symbol-and-reference-manager/symbo
 import { ModelDefinitionManager, ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { ActionContext } from '../generic/actionContext';
 import { NAMES } from '../model-definition/types/constants';
-import { AttributeTypes, ChildDefinition, Definition, ElementAttribute, ModelElementTypes } from '../model-definition/types/definitions';
+import { AttributeType, AttributeTypes, ChildDefinition, Definition, ElementAttribute, ModelElementTypes } from '../model-definition/types/definitions';
 
 export class CompletionProvider {
 	private symbolAndReferenceManager: SymbolAndReferenceManager;
@@ -193,44 +193,73 @@ export class CompletionProvider {
 		return returnResult || false;
 	}
 
+	/**
+	 * Get a list of completion items for an attribute value completion.
+	 * @param modelFileContext 
+	 * @param context 
+	 * @returns a list of attribute value completions
+	 */
 	private getAttributeValueCompletions(modelFileContext: ModelFileContext, context: ActionContext): CompletionItem[] {
+		const attribute = context.attribute;
 		const node = context.currentNode as TreeNode;
 		const elementDefinition = this.modelDefinitionManager.getModelDefinitionForTreeNode(modelFileContext, node);
-		const attribute = context.attribute;
-		let symbols = [{ label: "no posibilities found" }];
-		if (attribute && elementDefinition && elementDefinition.attributes) {
-			const attrName = typeof (attribute) == 'string' ? attribute : (attribute as Reference).name;
-			const attrDefinition = elementDefinition.attributes.find(attr => attr.name == attrName);
-			const types = attrDefinition?.types;
-			let nameSpacePrefix = "";
-			if (attrDefinition && types) {
-				types.forEach(type => {
-					if (type.type == AttributeTypes.Reference && type.relatedTo) {
-						switch (type.relatedTo) {
-							case ModelElementTypes.RuleContext:
-								symbols = context
-									.getFromContext(ModelElementTypes.Rule, [
-										{ type: ModelElementTypes.ActionCallOutput, attribute: NAMES.ATTRIBUTE_LOCALNAME },
-										{ type: ModelElementTypes.Input, attribute: NAMES.ATTRIBUTE_NAME },
-										{ type: ModelElementTypes.SetVar, attribute: NAMES.ATTRIBUTE_NAME }
-									])
-									?.availableParams.filter(param => param != undefined).map(param => ({ label: param })) || [
-										{ label: "no params found" },
-									];
-								break;
-							default:
-								if (type.prefixNameSpace && node.contextQualifiers.nameSpace) { nameSpacePrefix = node.contextQualifiers.nameSpace + "."; }
-								symbols = this.symbolAndReferenceManager.getAllSymbolsForType(type.relatedTo).filter(x => x.name != undefined && (nameSpacePrefix == "" || x.name.startsWith(nameSpacePrefix))).map(x => ({ label: x.name.substring(nameSpacePrefix.length) })) || [
-									{ label: `no ${type.relatedTo}s found` }];
-								break;
-						}
-					} else if (type.type == AttributeTypes.Enum && type.options) {
-						symbols = type.options.filter(option => !option.obsolete).map(option => ({ label: option.name }));
+		let completions = [{ label: "no posibilities found" }];
+		if (attribute && elementDefinition) {
+			const attrDefinition = elementDefinition.attributes.find(attr => attr.name == attribute.name);
+			const types = attrDefinition?.types || [];
+			types.forEach(type => {
+				if (type.type == AttributeTypes.Reference && type.relatedTo) {
+					switch (type.relatedTo) {
+						case ModelElementTypes.RuleContext:
+							completions = this.getRuleContextCompletions(context);
+							break;
+						default:
+							completions = this.getRelatedToTypeCompletions(node, type);
+							break;
 					}
-				});
-			}
+				} else if (type.type == AttributeTypes.Enum && type.options) {
+					completions = type.options.filter(option => !option.obsolete).map(option => ({ label: option.name }));
+				}
+			});
 		}
-		return symbols;
+		return completions;
+	}
+
+	/**
+	 * Get a list of completion items for an attribute value completion for a given AttributeType in case the AttributeType is a reference.
+	 * @param node 
+	 * @param type 
+	 * @returns a list of attribute value completions
+	 */
+	private getRelatedToTypeCompletions(node: TreeNode, type: AttributeType) {
+		const symbolsForType = this.symbolAndReferenceManager.getAllSymbolsForType(type.relatedTo || ModelElementTypes.Unknown)
+			.filter(x => x.name != undefined);
+
+		let completions;
+		if (type.prefixNameSpace && node.contextQualifiers.nameSpace) {
+			const nameSpacePrefix = node.contextQualifiers.nameSpace + ".";
+			completions = symbolsForType.filter(x => (x.name.startsWith(nameSpacePrefix)))
+				.map(x => ({ label: x.name.substring(nameSpacePrefix.length) }));
+		} else {
+			completions = symbolsForType.map(x => ({ label: x.name }));
+		}
+		return completions || [{ label: `no ${type.relatedTo}s found` }];
+	}
+
+	/**
+	 * Get a list of completion items for an attribute value completion for a given AttributeType in case the AttributeType is a reference to a RuleContext.
+	 * @param context 
+	 * @returns a list of attribute value completions
+	 */
+	private getRuleContextCompletions(context: ActionContext) {
+		const symbols = context
+			.getFromContext(ModelElementTypes.Rule, [
+				{ type: ModelElementTypes.ActionCallOutput, attribute: NAMES.ATTRIBUTE_LOCALNAME },
+				{ type: ModelElementTypes.Input, attribute: NAMES.ATTRIBUTE_NAME },
+				{ type: ModelElementTypes.SetVar, attribute: NAMES.ATTRIBUTE_NAME }
+			])
+			?.availableParams.filter(param => param != undefined).map(param => ({ label: param }));
+		return symbols || [{ label: "no params found" }];
 	}
 
 	/**
