@@ -2814,7 +2814,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 				{
 					type: ModelElementTypes.IncludeBlock,
 					subtypes: [ModelElementSubTypes.IncludeBlock_Node],
-					ancestorType: AncestorTypes.Parent				
+					ancestorType: AncestorTypes.Parent
 				}
 			]
 		},
@@ -3438,14 +3438,15 @@ export const FRONTEND_DEFINITION: Definitions = {
 				ancestors: [
 					{ type: ModelElementTypes.View, ancestorType: AncestorTypes.GrandParent },
 					{ type: ModelElementTypes.SubView, ancestorType: AncestorTypes.GrandParent },
-					{ 
-						type: ModelElementTypes.IncludeBlock, 
+					{
+						type: ModelElementTypes.IncludeBlock,
 						subtypes: [
-							ModelElementSubTypes.IncludeBlock_View, 
-							ModelElementSubTypes.IncludeBlock_ObjectView, 
-							ModelElementSubTypes.IncludeBlock_ListView, 
-						], 
-						ancestorType: AncestorTypes.GrandParent }
+							ModelElementSubTypes.IncludeBlock_View,
+							ModelElementSubTypes.IncludeBlock_ObjectView,
+							ModelElementSubTypes.IncludeBlock_ListView,
+						],
+						ancestorType: AncestorTypes.GrandParent
+					}
 				]
 			},
 			attributes: [
@@ -4111,15 +4112,15 @@ export const FRONTEND_DEFINITION: Definitions = {
 		children: []
 	}],
 	"action": [{
-			...infoset_action_call_element
-		},
-		{
-			...rule_action_call_element
-		},
-		{
-			...action_call_element,
-			...frontend_action_call_element
-		},
+		...infoset_action_call_element
+	},
+	{
+		...rule_action_call_element
+	},
+	{
+		...action_call_element,
+		...frontend_action_call_element
+	},
 	],
 	"output": [
 		...action_call_output_elements,
@@ -4548,23 +4549,43 @@ export const FRONTEND_DEFINITION: Definitions = {
 	}],
 	"month-view": [{
 		attributes: [comment_attribute],
-		children: []
+		children: [
+			{
+				element: "appointments"
+			}
+		]
 	}],
 	"timeline-view": [{
 		attributes: [comment_attribute],
-		children: []
+		children: [
+			{
+				element: "appointments"
+			}
+		]
 	}],
 	"units-view": [{
 		attributes: [comment_attribute],
-		children: []
+		children: [
+			{
+				element: "appointments"
+			}
+		]
 	}],
 	"week-view": [{
 		attributes: [comment_attribute],
-		children: []
+		children: [
+			{
+				element: "appointments"
+			}
+		]
 	}],
 	"year-view": [{
 		attributes: [comment_attribute],
-		children: []
+		children: [
+			{
+				element: "appointments"
+			}
+		]
 	}],
 	"style-variables": [{
 		description: "Apply style variables to the view HTML element",
@@ -4884,7 +4905,8 @@ export const FRONTEND_DEFINITION: Definitions = {
 			},
 			{
 				element: "clear-var"
-			}
+			},
+			...default_children
 		]
 	}],
 };
