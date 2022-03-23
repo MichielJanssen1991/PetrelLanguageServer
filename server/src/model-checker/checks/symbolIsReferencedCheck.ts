@@ -14,24 +14,24 @@ export class SymbolIsReferencedCheck extends ModelCheck {
 		super(modelManager);
 	}
 
-	protected checkInternal(node: TreeNode,/*  options: ModelCheckerOptions */)
-	{
+	protected checkInternal(node: TreeNode) {
 		if (!standaloneObjectTypes.has(node.type)) { return; } //Nodes which require context are checked as part of their parent
 		const symbol = node as SymbolDeclaration;
 		const references = this.modelManager.getReferencesForSymbol(symbol);
 		const noReferencesFound = references.length <= 0;
 		if (noReferencesFound) {
-			if(node.type == ModelElementTypes.Infoset)
-			{
-				// if there are infoset variable children defined, the reference message will be skipped.
-				if (!node.children.some(x=>x.type == ModelElementTypes.InfosetVariable)){
-					this.addMessage(symbol.range, "ROC0004", CHECKS_MESSAGES.NO_REFERENCES_FOUND_INFOSET(symbol));
-				}
+			switch (node.type) {
+				case ModelElementTypes.Infoset:
+					// if there are infoset variable children defined, the reference message will be skipped.
+					if (!node.children.some(x => x.type == ModelElementTypes.InfosetVariable)) {
+						this.addMessage(symbol.range, "ROC0004", CHECKS_MESSAGES.NO_REFERENCES_FOUND_INFOSET(symbol));
+					}
+					break;
+				default:
+					this.addMessage(symbol.range, "ROC0005", CHECKS_MESSAGES.NO_REFERENCES_FOUND(symbol));
+					break;
 			}
-			else
-			{
-				this.addMessage(symbol.range, "ROC0005", CHECKS_MESSAGES.NO_REFERENCES_FOUND(symbol));
-			}
+
 		}
 	}
 

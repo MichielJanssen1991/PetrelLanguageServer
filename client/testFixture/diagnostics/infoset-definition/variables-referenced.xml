@@ -1,0 +1,23 @@
+<?cp-edit petrel/infosets?>
+<infosets>
+  <infoset name="InfosetWithVariableReferenced">
+    <search add-relations="no" type="KnownType">
+      <searchcolumn condition="Is" name="KnownAttribute" value="1" />
+    </search>
+    <variable name="VariableReferenced" attribute="KnownAttribute"/>
+  </infoset>
+  <module target-namespace="Namespace">
+    <infoset name="InfosetWithVariableReferenced">
+      <search add-relations="no" type="KnownType">
+        <searchcolumn condition="Is" name="KnownAttribute" value="1" />
+      </search>
+      <variable name="VariableReferenced" attribute="KnownAttribute"/>
+    </infoset>
+    <infoset name="InfosetWithVariableReferenced2">
+      <search add-relations="no" type="KnownType">
+        <searchcolumn condition="Is" name="KnownAttribute" value="1" />
+      </search>
+      <variable name="VariableReferenced2" attribute="KnownAttribute"/>
+    </infoset>
+  </module>
+</infosets>

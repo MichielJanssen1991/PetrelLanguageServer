@@ -1,0 +1,13 @@
+<?cp-edit petrel/rules?>
+<rules>
+  <rule name="ExampleRule">
+    <action name="Infoset" infoset-name="Namespace.KnownInfosetInNamespace">
+      <output local-name="KnownInfosetInNamespaceOutput" comment="Without namespace"/>
+    </action>
+    <action name="Infoset" infoset-name="Namespace.KnownInfosetInNamespace">
+      <output local-name="KnownInfosetInNamespaceOutput2" remote-name="Namespace.KnownInfosetInNamespaceOutput" comment="With namespace"/>
+    </action>
+    <output name="KnownInfosetInNamespaceOutput" attribute="KnownInfosetInNamespaceOutput"/>
+    <output name="KnownInfosetInNamespaceOutput2" attribute="KnownInfosetInNamespaceOutput2"/>
+  </rule>
+</rules>

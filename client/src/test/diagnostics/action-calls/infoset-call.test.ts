@@ -69,5 +69,10 @@ suite('Should get diagnostics for infoset call', () => {
 		const docUri = getDocUri(folder + 'valid.xml');
 		await testDiagnostics(docUri, []);
 	});
-});
 
+	test('No diagnoses for valid infoset call in namespace', async () => {
+		const docUri = getDocUri(folder + 'infoset-variables-namespace-valid.xml');
+		await testDiagnostics(docUri, []);
+	});
+
+});

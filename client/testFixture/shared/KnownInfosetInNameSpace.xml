@@ -1,0 +1,9 @@
+<?cp-edit petrel/infosets?>
+<infosets>
+  <module target-namespace="Namespace">
+    <infoset name="KnownInfosetInNamespace">
+      <search type="KnownType"/>
+      <variable name="KnownInfosetInNamespaceOutput"/>
+    </infoset>
+  </module>
+</infosets>

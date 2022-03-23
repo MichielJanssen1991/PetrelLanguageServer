@@ -1,0 +1,9 @@
+<?cp-edit petrel/infosets?>
+<infosets>
+  <infoset name="ExampleInfosetWithOutputNotReferenced">
+  <search add-relations="no" type="KnownType">
+      <searchcolumn condition="Is" name="KnownAttribute" value="1" />
+    </search>
+    <variable name="VariableNotReferenced" attribute="KnownAttribute"/>
+  </infoset>
+</infosets>

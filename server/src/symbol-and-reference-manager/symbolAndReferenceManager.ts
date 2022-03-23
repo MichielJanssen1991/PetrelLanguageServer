@@ -166,7 +166,18 @@ export class SymbolAndReferenceManager {
 	 */
 	public getReferencesForSymbol(symbol: SymbolDeclaration) {
 		const name = this.getSymbolKeyNameForLookupTable(symbol.name, symbol.type);
-		const referencesToSymbol = this.referenceLookupTable.getForName(name).filter(x => (x.types.includes(symbol.type)));
+		let referencesToSymbol = this.referenceLookupTable.getForName(name).filter(x => (x.types.includes(symbol.type)));
+		
+		if(symbol.type==ModelElementTypes.InfosetVariable){
+			//Infoset variables with namespace -> Check also for references without namespace
+			if(name.includes(".")){
+				const nameWithoutNamespace = name.split(".").pop() as string;
+				const referencesWithoutNamespace = this.referenceLookupTable.getForName(nameWithoutNamespace).filter(x => (x.types.includes(symbol.type)));
+				referencesToSymbol = referencesToSymbol.concat(referencesWithoutNamespace);
+			}
+			//TODO:Filter on infoset when it is specified (now also infoset variables are returned if an infoset call is done for a different infoset with the same output variable)
+		}
+		
 		return referencesToSymbol;
 	}
 

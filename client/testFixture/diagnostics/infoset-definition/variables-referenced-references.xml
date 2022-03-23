@@ -1,0 +1,16 @@
+<?cp-edit petrel/rules?>
+<rules>
+  <rule name="ExampleRule">
+    <action name="Infoset" infoset-name="InfosetWithVariableReferenced">
+      <output local-name="VariableReferenced"/>
+    </action>
+    <action name="Infoset" infoset-name="Namespace.InfosetWithVariableReferenced">
+      <output local-name="VariableReferenced2" remote-name="Namespace.VariableReferenced"/>
+    </action>
+    <action name="Infoset" infoset-name="Namespace.InfosetWithVariableReferenced2">
+      <output local-name="VariableReferenced2" remote-name="VariableReferenced2"/>
+    </action>
+    <output name="VariableReferenced" attribute="VariableReferenced"/>
+    <output name="VariableReferenced2" attribute="VariableReferenced2"/>
+  </rule>
+</rules>

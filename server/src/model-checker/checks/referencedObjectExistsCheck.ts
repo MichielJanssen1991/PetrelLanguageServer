@@ -28,6 +28,9 @@ export class ReferencedObjectExistsCheck extends ModelCheck {
 		const referencedSymbol = this.modelManager.getReferencedObject(reference);
 		const name = reference.value;
 		const referenceNotFound = (!referencedSymbol && name && !attributeValueIsAVariable(name)) as boolean;
+		
+		if (reference.types.includes(ModelElementTypes.InfosetVariable)){return;}//Handled in infoset action call check
+		
 		if (referenceNotFound) {
 			this.addMessage(reference.range, "ROC0001", CHECKS_MESSAGES.REFERENCE_NOT_FOUND(reference));
 		}
