@@ -236,7 +236,8 @@ const default_view_attributes: ElementAttribute[] = [
 		types: [{
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.Type
-		}]
+		}],
+		detailLevel: ModelDetailLevel.References
 	},
 	{
 		name: "view",
@@ -244,7 +245,8 @@ const default_view_attributes: ElementAttribute[] = [
 		types: [{
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.View
-		}]
+		}],
+		detailLevel: ModelDetailLevel.References
 	},
 	{
 		name: "toolbar",
@@ -253,6 +255,7 @@ const default_view_attributes: ElementAttribute[] = [
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.Toolbar
 		}],
+		detailLevel: ModelDetailLevel.References,
 		visibilityConditions: [
 			{
 				attribute: "child-element",	// TODO check on child elements instead of attribute
@@ -291,6 +294,7 @@ const default_view_attributes: ElementAttribute[] = [
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.Attribute
 		}],
+		detailLevel: ModelDetailLevel.References,
 		visibilityConditions: [
 			{
 				attribute: "parent-node",	// Todo This should be a check on parent node not an attribut
@@ -344,6 +348,7 @@ const default_view_attributes: ElementAttribute[] = [
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.Infoset
 		}],
+		detailLevel: ModelDetailLevel.References,
 		visibilityConditions: [
 			{
 				attribute: "control",
@@ -365,6 +370,7 @@ const default_view_attributes: ElementAttribute[] = [
 			type: AttributeTypes.Reference,
 			relatedTo: ModelElementTypes.TypeFilter
 		}],
+		detailLevel: ModelDetailLevel.References,
 		visibilityConditions: [
 			{
 				attribute: "type",
@@ -2240,6 +2246,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "ObjectView as a definition",
 			attributes: [
 				...objectview_element.attributes,
+				...default_view_attributes,
 				...default_definition_view_attributes,
 			]
 		},
@@ -2250,6 +2257,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "ObjectView as a child",
 			attributes: [
 				...objectview_element.attributes,
+				...default_view_attributes,
 				...default_subview_attributes
 			]
 		},
@@ -2260,6 +2268,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "ListView as a definition",
 			attributes: [
 				...listview_element.attributes,
+				...default_view_attributes,
 				...default_definition_view_attributes,
 			]
 		},
@@ -2270,6 +2279,7 @@ export const FRONTEND_DEFINITION: Definitions = {
 			description: "ListView as a child",
 			attributes: [
 				...listview_element.attributes,
+				...default_view_attributes,
 				...default_subview_attributes,
 			]
 		},
