@@ -98,7 +98,7 @@ export class RuleDeclarationCheck extends ModelCheck {
 		const value = node.attributes[NAMES.ATTRIBUTE_VALUE];
 		const expression = node.attributes[NAMES.ATTRIBUTE_EXPRESSION];
 		//Only consider the local name attribute a reference to a local name if no value/expression are filled
-		if (!(value && value.value != "" && expression && expression.value != "")) {
+		if ((!value && !expression) || (value && value.value == "" && expression && expression.value == "")) {
 			this.processLocalNameReferenceAttribute(node, NAMES.ATTRIBUTE_LOCALNAME);
 		}
 	}
