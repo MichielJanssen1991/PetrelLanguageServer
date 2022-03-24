@@ -1041,7 +1041,7 @@ export const BACKEND_DEFINITION: Definitions = {
 		children: keys_children
 	}],
 	"key": [{
-		description: "A database indexing key. Max lenght of 30 letters",
+		description: "A database indexing key. Max lenght of 60 letters",
 		attributes: [
 			{
 				name: "name",
@@ -1050,8 +1050,8 @@ export const BACKEND_DEFINITION: Definitions = {
 				validations: [
 					{
 						type: "regex",
-						value: /^\w{1,30}$/,
-						message: "Name can not be longer then 30 characters and only contain letters"
+						value: /^\w{1,60}$/,
+						message: "Name can not be longer then 60 characters and only contain letters"
 					}
 				]
 			},

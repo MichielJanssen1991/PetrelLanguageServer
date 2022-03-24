@@ -30,3 +30,13 @@ export function rangeIsRange(range1: Range, range2: Range): boolean {
 export function attributeValueIsAVariable(value: string) {
 	return /^\{.+\}$/.test(value);
 }
+
+//Returns true when the name is namespaced (contains a .)
+export function nameHasNamespace(name: string) {
+	return name.includes(".");
+}
+
+//Returns true when the name is namespaced (contains a .)
+export function removeNameSpace(name: string) {
+	return nameHasNamespace(name) ? name.split(".").pop() as string : name;
+}
