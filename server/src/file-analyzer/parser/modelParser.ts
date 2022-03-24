@@ -245,23 +245,23 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 			object = newTreeNode(node.name, type, this.getTagRange(), this.uri, definition.subtype);
 		}
 
-		object.attributes = this.parseAttributes(definition, node);
+		object.attributes = this.parseAttributes(definition, node, object);
 		object.contextQualifiers = this.parseContextQualifiers(node);
 		return object;
 	}
 
-	private parseAttributes(definition: Definition, node: XmlNode): Record<string, Reference | Attribute> {
+	private parseAttributes(definition: Definition, node: XmlNode, parentNode:TreeNode): Record<string, Reference | Attribute> {
 		let attributes: Record<string, Attribute | Reference> = {};
 		if (definition.attributes) {
 			definition.attributes.forEach(attributeDefinition => {
-				const attribute = this.parseAttributeForDefinition(attributeDefinition, node);
+				const attribute = this.parseAttributeForDefinition(attributeDefinition, node, parentNode);
 				if (attribute) { attributes[attributeDefinition.name] = attribute; }
 			});
 		}
 
 		// For now add fixed attributes for action calls (e.g. reference to rule / infoset or type).
 		if (definition.type == ModelElementTypes.ActionCall) {
-			attributes = { ...attributes, ...this.parseAdditionalActionCallAttributes(node) };
+			attributes = { ...attributes, ...this.parseAdditionalActionCallAttributes(node, parentNode) };
 		}
 
 		// When detail level is All add all attributes not yet recognized as otherattributes
@@ -286,20 +286,20 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 		return attributesNotRecognized;
 	}
 
-	private parseAdditionalActionCallAttributes(node: XmlNode) {
+	private parseAdditionalActionCallAttributes(node: XmlNode, parentNode: TreeNode) {
 		const attributes: Record<string, Attribute | Reference> = {};
 		const otherDefinition = this.modelDefinitionManager.getModelDefinition(ModelFileContext.Unknown);
 		const actionCallDefinition = otherDefinition["action"].find(x => x.type == ModelElementTypes.ActionCall);
 		if (actionCallDefinition && actionCallDefinition.attributes) {
 			actionCallDefinition.attributes.forEach(attributeDefinition => {
-				const attribute = this.parseAttributeForDefinition(attributeDefinition, node);
+				const attribute = this.parseAttributeForDefinition(attributeDefinition, node, parentNode);
 				if (attribute) { attributes[attributeDefinition.name] = attribute; }
 			});
 		}
 		return attributes;
 	}
 
-	private parseAttributeForDefinition(attributeDefinition: ElementAttribute, node: XmlNode) {
+	private parseAttributeForDefinition(attributeDefinition: ElementAttribute, node: XmlNode, parentNode:TreeNode) {
 		let attribute;
 		const attributeName = attributeDefinition.name;
 		let attributeValue = node.attributes[attributeName];
@@ -313,7 +313,7 @@ export class ModelParser extends FileParser implements IXmlNodeContext {
 						const nameSpacePrefix = this.getNameSpace();
 						attributeValue = (nameSpacePrefix.length > 0 ? nameSpacePrefix + "." : "") + attributeValue;
 					}
-					attribute = newReference(attributeName, attributeValue, relatedToTypes, range, fullRange, this.uri);
+					attribute = newReference(attributeName, attributeValue, relatedToTypes, range, fullRange, this.uri, parentNode);
 				}
 				else {
 					attribute = { name: attributeName, value: attributeValue, range, fullRange };

@@ -26,7 +26,8 @@ export interface Attribute {
 export interface Reference extends Attribute {
 	isReference: true,
 	types: ModelElementTypes[],
-	uri: string
+	uri: string,
+	parent: TreeNode
 }
 
 export interface SymbolDeclaration extends TreeNode {
@@ -34,15 +35,16 @@ export interface SymbolDeclaration extends TreeNode {
 	name: string,
 }
 
-export function newReference(name: string, value: string, types: ModelElementTypes[], range: LSP.Range, fullRange: LSP.Range, uri: string): Reference {
+export function newReference(name: string, value: string, types: ModelElementTypes[], range: LSP.Range, fullRange: LSP.Range, uri: string, parent:TreeNode): Reference {
 	return {
 		name,
 		value,
 		types,
-		range: {start: {...range.start}, end: {...range.end}},//Make copy
-		fullRange: {start: {...fullRange.start}, end: {...fullRange.end}},//Make copy
+		range: { start: { ...range.start }, end: { ...range.end } },//Make copy
+		fullRange: { start: { ...fullRange.start }, end: { ...fullRange.end } },//Make copy
 		uri,
-		isReference: true
+		isReference: true,
+		parent
 	};
 }
 
@@ -51,8 +53,8 @@ export function newTreeNode(tag: string, type: ModelElementTypes, range: LSP.Ran
 		type,
 		subtype,
 		tag,
-		range: {start: {...range.start}, end: {...range.end}},//Make copy
-		fullRange: {start: {...range.start}, end: {...range.end}},//Make copy
+		range: { start: { ...range.start }, end: { ...range.end } },//Make copy
+		fullRange: { start: { ...range.start }, end: { ...range.end } },//Make copy
 		uri,
 		children: [],
 		attributes: {},
@@ -66,8 +68,8 @@ export function newSymbolDeclaration(name: string, tag: string, type: ModelEleme
 		type,
 		subtype,
 		tag,
-		range: {start: {...range.start}, end: {...range.end}},
-		fullRange: {start: {...range.start}, end: {...range.end}},
+		range: { start: { ...range.start }, end: { ...range.end } },
+		fullRange: { start: { ...range.start }, end: { ...range.end } },
 		uri,
 		children: [],
 		attributes: {},
