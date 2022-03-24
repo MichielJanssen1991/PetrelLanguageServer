@@ -68,6 +68,11 @@ suite('Should get diagnostics for infoset declaration', () => {
 		const docUri = getDocUri(folder + 'variables-referenced.xml');
 		await testDiagnostics(docUri, []);
 	});
+	
+	test('No diagnoses for valid infoset on context-info', async () => {
+		const docUri = getDocUri(folder + 'valid-context-info.xml');
+		await testDiagnostics(docUri, []);
+	});
 
 	test('Diagnoses infoset variable not referenced', async () => {
 		const docUri = getDocUri(folder + 'variable-not-referenced.xml');

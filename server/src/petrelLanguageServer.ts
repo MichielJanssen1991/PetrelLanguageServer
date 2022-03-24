@@ -174,8 +174,7 @@ export default class PetrelLanguageServer {
 		const nodeSimplified = {
 			type: context?.node.type,
 			objectType: context?.node.isSymbolDeclaration,
-			tag: context?.node.tag,
-			attributes: context?.node.attributes
+			tag: context?.node.tag
 		}; // Only log essentials to avoid very large log messages (especially caused by chidren)
 		this.connection.console.log(
 			`${request} ${params.position.line}:${params.position.character} 

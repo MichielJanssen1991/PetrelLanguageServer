@@ -1,0 +1,15 @@
+<?cp-edit petrel/infosets?>
+<infosets>
+  <infoset name="SearchKnownTypeForUnknownAttribute">
+    <search add-relations="no" type="KnownType">
+      <searchcolumn condition="Is" name="created-by" value="1" is-context-info="yes"/>
+      <searchcolumn condition="Is" name="modified-by" value="1" is-context-info="yes"/>
+      <searchcolumn condition="Is" name="saved-from" value="1" is-context-info="yes"/>
+      <searchcolumn condition="Is" name="saved-from-component" value="1" is-context-info="yes"/>
+      <searchcolumn condition="Is" name="created-time-zone" value="1" is-context-info="yes"/>
+      <searchcolumn condition="Is" name="modified-time-zone" value="1" is-context-info="yes"/>
+      <searchcolumn condition="Is" name="modified-on" value="1" is-context-info="yes"/>
+      <searchcolumn condition="Is" name="created-on" value="1" is-context-info="yes"/>
+    </search>
+  </infoset>
+</infosets>

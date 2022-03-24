@@ -39,8 +39,16 @@ export class InfosetDeclarationCheck extends ModelCheck {
 				const attributeName = attributeRef.value;
 				//Check attributes which are not a variable
 				if (!attributeValueIsAVariable(attributeName)) {
-					if (!typeAttributes.includes(attributeName)) {
-						this.addMessage(attributeRef.range, "DC0001", CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND(attributeRef, typeRef));
+					const contextInfoAttribute = attributeRef.parent.attributes["is-context-info"];
+					if (contextInfoAttribute && contextInfoAttribute.value == "yes") {
+						const validContextInfoAttributes = ["created-by", "modified-by", "saved-from", "saved-from-component", "created-time-zone", "modified-time-zone", "modified-on", "created-on"];
+						if (!validContextInfoAttributes.includes(attributeName)) {
+							this.addMessage(attributeRef.range, "DC0001", CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND(attributeRef, typeRef));
+						}
+					} else {
+						if (!typeAttributes.includes(attributeName)) {
+							this.addMessage(attributeRef.range, "DC0001", CHECKS_MESSAGES.SEARCHCOLUMN_ATTRIBUTE_NOT_FOUND(attributeRef, typeRef));
+						}
 					}
 				}
 				//Check attributes which are a variable e.g. {AttributeName}
