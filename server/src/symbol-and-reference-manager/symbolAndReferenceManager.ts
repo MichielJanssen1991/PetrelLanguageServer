@@ -6,7 +6,7 @@ import { ModelFileContext } from '../model-definition/modelDefinitionManager';
 import { ModelElementTypes } from '../model-definition/types/definitions';
 import { Reference, SymbolDeclaration, TreeNode, Attribute } from '../model-definition/types/tree';
 import { flattenNestedObjectValues, flattenObjectValues } from '../util/array';
-import { pointIsInRange, rangeIsInRange } from '../util/other';
+import { nameHasNamespace, pointIsInRange, rangeIsInRange, removeNameSpace } from '../util/other';
 import { walkTree } from '../util/tree';
 import { LookupTable } from './lookupTable';
 
@@ -170,8 +170,8 @@ export class SymbolAndReferenceManager {
 		
 		if(symbol.type==ModelElementTypes.InfosetVariable){
 			//Infoset variables with namespace -> Check also for references without namespace
-			if(name.includes(".")){
-				const nameWithoutNamespace = name.split(".").pop() as string;
+			if(nameHasNamespace(name)){
+				const nameWithoutNamespace = removeNameSpace(name);
 				const referencesWithoutNamespace = this.referenceLookupTable.getForName(nameWithoutNamespace).filter(x => (x.types.includes(symbol.type)));
 				referencesToSymbol = referencesToSymbol.concat(referencesWithoutNamespace);
 			}

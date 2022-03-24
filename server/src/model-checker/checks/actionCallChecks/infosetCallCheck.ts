@@ -1,6 +1,7 @@
 import { NAMES } from '../../../model-definition/types/constants';
 import { TreeNode, Reference } from '../../../model-definition/types/tree';
 import { ModelManager } from '../../../symbol-and-reference-manager/modelManager';
+import { nameHasNamespace, removeNameSpace } from '../../../util/other';
 import { CHECKS_MESSAGES } from '../../messages';
 import { ActionCallCheck } from './actionCallCheck';
 
@@ -49,9 +50,8 @@ export class InfosetCallCheck extends ActionCallCheck {
 				const infosetVariables = this.modelManager.getInfosetVariables(infosetDef);
 				outputNames = infosetVariables.map(x => x.name);
 				infosetVariables.forEach(variable => {
-					if (variable.name.includes(".")) {
-						const varWithoutNameSpace = variable.name.split(".").pop() as string;
-						outputNames.push(varWithoutNameSpace);
+					if (nameHasNamespace(variable.name)) {
+						outputNames.push(removeNameSpace(variable.name));
 					}
 				});
 			}
